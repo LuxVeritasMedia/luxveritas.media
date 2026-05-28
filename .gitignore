@@ -1,0 +1,15 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+node_modules/
+.firebase/
+.codex-tools/
+*.log
+firepit-log.txt
+assets/qa-*.png
+source_docs/
+source_docs_round2/
+brief_extracts/
+brief_extracts_round2/
+*.zip

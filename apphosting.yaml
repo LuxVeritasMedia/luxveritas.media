@@ -1,0 +1,11 @@
+# Firebase App Hosting target config for the future Next.js build.
+# The current prototype is static and can deploy with firebase.json.
+runConfig:
+  minInstances: 0
+  maxInstances: 10
+  concurrency: 80
+  cpu: 1
+  memoryMiB: 512
+env:
+  - variable: NEXT_PUBLIC_SITE_URL
+    value: https://luxveritas.media

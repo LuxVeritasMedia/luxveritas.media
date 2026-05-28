@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Sanctum Codex access request shell for Lux Veritas." />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta property="og:title" content="Sanctum Codex | Lux Veritas" />
+    <meta property="og:description" content="Sanctum Codex access request shell for Lux Veritas." />
+    <meta property="og:image" content="../assets/luxveritas-threshold.png" />
+    <title>Sanctum Codex | Lux Veritas</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070909'/%3E%3Cpath d='M18 48V16h6v27h18v5H18Zm21-32h7L34 48h-6l11-32Z' fill='%23c8a86a'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body data-page="/codex-sanctum.html">
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header" data-header>
+      <a class="brand" href="/index.html" aria-label="Lux Veritas home">
+        <span class="brand-mark">LV</span>
+        <span>Lux Veritas</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" data-nav-toggle>
+        <span></span><span></span>
+      </button>
+      <nav id="primary-nav" class="primary-nav" data-nav><a  href="/index.html">Home</a><a  href="/music.html">Music</a><a  href="/film.html">Film</a><a  href="/events.html">Events</a><a  href="/codex.html">Codex</a><a  href="/about.html">About</a><a  href="/join.html">Join</a></nav>
+      <button class="header-action" data-open-form="request">Request Access</button>
+    </header>
+    <main id="main" class="">
+      <section class="page-hero section">
+    <div class="page-hero-inner">
+      <p class="kicker">Sanctum Codex</p>
+      <h1>Custodial access is not public.</h1>
+      <p>This layer opens by request. Public access ends at the visible Codex.</p>
+      <div class="hero-actions"><button class="button button-primary" data-open-form="codex">Request Sanctum Access</button><a class="button button-quiet" href="/codex.html">Return to Codex</a></div>
+    </div>
+  </section>
+    <section class="section empty-state"><p class="kicker">Access Layer</p><h2>Sanctum required.</h2><p>This area is not indexed publicly and opens only through invitation or approval.</p></section>
+    </main>
+    <footer class="site-footer">
+  <div>
+    <strong>Lux Veritas</strong>
+    <p>Truth, In Right Order</p>
+  </div>
+  <nav aria-label="Footer">
+    <a href="/works/index.html">Works</a>
+    <a href="/store.html">Store</a>
+    <a href="/membership.html">Membership</a>
+    <a href="/submissions.html">Submissions</a>
+    <a href="/press.html">Press</a>
+    <a href="/contact.html">Contact</a>
+    <a href="/legal/privacy.html">Privacy</a>
+    <a href="/legal/terms.html">Terms</a>
+  </nav>
+</footer>
+    <dialog class="form-dialog" data-dialog>
+  <form method="dialog" class="dialog-shell">
+    <button class="dialog-close" aria-label="Close" value="close">×</button>
+    <p class="kicker" data-form-kicker>Request Access</p>
+    <h2 data-form-title>Screened Access</h2>
+    <p data-form-copy>Tell us who you are and what door you are approaching.</p>
+    <div class="form-status" data-form-status hidden></div>
+    <label><span>Name</span><input name="name" autocomplete="name" required /></label>
+    <label><span>Email</span><input name="email" type="email" autocomplete="email" required /></label>
+    <label><span>Phone <em>optional</em></span><input name="phone" type="tel" autocomplete="tel" /></label>
+    <label><span>Interest</span><select name="interest" required>
+      <option value="">Select one</option><option>Music</option><option>Film</option><option>Events</option><option>Codex</option><option>Partnership</option><option>Press</option>
+    </select></label>
+    <label><span>Message</span><textarea name="message" rows="5" required></textarea></label>
+    <label class="check-row"><input type="checkbox" name="consent_email" value="yes" /> <span>Email follow-up is allowed.</span></label>
+    <label class="check-row"><input type="checkbox" name="consent_sms" value="yes" /> <span>SMS follow-up is allowed if a phone number is supplied.</span></label>
+    <input class="honeypot" name="company_url" tabindex="-1" autocomplete="off" />
+    <button class="button button-primary" value="submit" data-submit-form>Send</button>
+  </form>
+</dialog>
+    <script src="../app.js"></script>
+  </body>
+</html>
