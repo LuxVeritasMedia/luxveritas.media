@@ -5,6 +5,7 @@
 node_modules/
 .firebase/
 .codex-tools/
+gha-creds-*.json
 *.log
 firepit-log.txt
 assets/qa-*.png
