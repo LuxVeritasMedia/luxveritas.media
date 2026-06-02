@@ -84,8 +84,11 @@
     <label><span>Name</span><input name="name" autocomplete="name" required /></label>
     <label><span>Email</span><input name="email" type="email" autocomplete="email" required /></label>
     <label><span>Phone <em>optional</em></span><input name="phone" type="tel" autocomplete="tel" /></label>
-    <label><span>Interest</span><select name="interest" required>
-      <option value="">Select one</option><option>Music</option><option>Film</option><option>Events</option><option>Codex</option><option>Partnership</option><option>Press</option>
+    <label><span>Role path</span><select name="role_path" required>
+      <option value="">Select one</option><option>Member</option><option>Artist</option><option>Creator</option><option>Press</option><option>Partner</option><option>Investor</option><option>Event guest</option><option>General</option>
+    </select></label>
+    <label><span>Inquiry type</span><select name="inquiry_type" required>
+      <option value="">Select one</option><option>Membership</option><option>Submissions</option><option>Events</option><option>Press</option><option>Partnership</option><option>Licensing</option><option>Investor</option><option>Portal</option><option>General</option>
     </select></label>
     <label><span>Message</span><textarea name="message" rows="5" required></textarea></label>
     <label class="check-row"><input type="checkbox" name="consent_email" value="yes" /> <span>Email follow-up is allowed.</span></label>

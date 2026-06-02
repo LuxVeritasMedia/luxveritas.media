@@ -1,14 +1,43 @@
+# macOS / editor noise
 .DS_Store
+
+# Secrets and local environment
 .env
 .env.*
 !.env.example
-node_modules/
-.firebase/
-.codex-tools/
+*.local
 gha-creds-*.json
+*service-account*.json
+*firebase-adminsdk*.json
+
+# Dependencies and local tooling
+node_modules/
+.codex-tools/
+
+# Build artifacts and framework caches
+.next/
+**/.next/
+out/
+dist/
+build/
+coverage/
+.turbo/
+.vercel/
+
+# Firebase local/deploy cache and emulator logs
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+
+# Logs and generated QA/source artifacts
 *.log
 firepit-log.txt
 assets/qa-*.png
+
+# Internal ecosystem seeds and KYS planning docs stay local/Drive/private-repo only.
+docs/kys-*.md
+docs/lux-ecosystem-master-seed.md
 source_docs/
 source_docs_round2/
 brief_extracts/

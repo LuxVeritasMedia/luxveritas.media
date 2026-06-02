@@ -3,47 +3,38 @@ const formCopy = {
     kicker: "Request Access",
     title: "Screened Access",
     copy: "For events, partnerships, private links, and portal consideration.",
-    tag: "LV_RequestAccess"
+    tag: "request-access"
   },
   submission: {
     kicker: "Submissions",
     title: "Artist and Creator Intake",
     copy: "Send a concise signal. The review path is selective by design.",
-    tag: "LV_Submission"
+    tag: "submission"
   },
   press: {
     kicker: "Press / Partners",
     title: "Institutional Contact",
     copy: "For press, venues, distribution, investor, and brand partnership inquiries.",
-    tag: "LV_Press"
+    tag: "press"
   },
   event: {
     kicker: "Event RSVP",
     title: "Request Invitation",
     copy: "Event access is screened. Tell us which room you are approaching.",
-    tag: "LV_EventInterest"
+    tag: "event-interest"
   },
   codex: {
     kicker: "Codex Request",
-    title: "Tier Access Request",
-    copy: "Inner and Sanctum access require review, alignment, and server-side approval.",
-    tag: "LV_Codex_Request"
+    title: "Codex Access Request",
+    copy: "Inner and Sanctum access require review, alignment, and approval.",
+    tag: "codex-request"
   },
   fan: {
-    kicker: "Fan Engine",
+    kicker: "Membership",
     title: "Join the List",
     copy: "Get release signals and selected Lux Veritas updates.",
-    tag: "LV-TAG-Life::Lead"
+    tag: "membership-waitlist"
   }
-};
-
-const webhookConfig = {
-  request: "",
-  submission: "",
-  press: "",
-  event: "",
-  codex: "",
-  fan: ""
 };
 
 const header = document.querySelector("[data-header]");
@@ -56,18 +47,6 @@ let activeFormType = "request";
 
 function setScrolledHeader() {
   header?.classList.toggle("scrolled", window.scrollY > 24);
-}
-
-function getUtmParams() {
-  const params = new URLSearchParams(window.location.search);
-  const keys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
-  return Object.fromEntries(keys.map((key) => [key, params.get(key) || localStorage.getItem(key) || ""]));
-}
-
-function persistUtmParams() {
-  Object.entries(getUtmParams()).forEach(([key, value]) => {
-    if (value) localStorage.setItem(key, value);
-  });
 }
 
 function openForm(type) {
@@ -86,7 +65,6 @@ function trackEvent(name, detail = {}) {
     event: name,
     page: window.location.pathname,
     detail,
-    utm: getUtmParams(),
     timestamp: new Date().toISOString(),
     consent
   };
@@ -108,7 +86,6 @@ async function handleFormSubmit(event) {
     source_page: window.location.pathname,
     formType: activeFormType,
     tag: formCopy[activeFormType].tag,
-    ...getUtmParams(),
     timestamp: new Date().toISOString()
   };
 
@@ -116,19 +93,6 @@ async function handleFormSubmit(event) {
   submissions.push(payload);
   localStorage.setItem("luxveritas_submissions", JSON.stringify(submissions.slice(-50)));
   trackEvent("lead", { formType: activeFormType });
-
-  const endpoint = webhookConfig[activeFormType];
-  if (endpoint) {
-    try {
-      await fetch(endpoint, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-    } catch (error) {
-      console.warn("Webhook submission failed", error);
-    }
-  }
 
   statusBox.textContent = "Received. Your signal has been recorded.";
   statusBox.hidden = false;
@@ -156,7 +120,6 @@ function mountConsentBanner() {
 
 window.addEventListener("scroll", setScrolledHeader, { passive: true });
 setScrolledHeader();
-persistUtmParams();
 mountConsentBanner();
 trackEvent("view_content");
 

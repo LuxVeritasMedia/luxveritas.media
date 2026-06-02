@@ -6,6 +6,24 @@ LuxVeritas.media is the institutional front door for Lux Veritas: music, film, e
 
 Tone is quiet luxury: calm authority, strong boundaries, selective disclosure, long memory, no hype-feed behavior.
 
+## Product Boundary
+
+This repo is the external public website. Keep public LuxVeritas.media work here: public pages, SEO, submissions, events, press, contact, audience capture, and public portal entry points.
+
+Do not build internal LuxFlow OS app modules, DAMON, BlackGPT, AI Gateway, private audit logs, internal workspace/project state, admin dashboards, or private Firebase/Auth workflows in this repo.
+
+Internal LuxFlow work belongs here:
+
+```text
+/Users/frederickparent/Documents/Codex/LuxFlow-OS
+```
+
+Public LuxVeritas.media work belongs here:
+
+```text
+/Users/frederickparent/Documents/Codex/LuxVeritas-website
+```
+
 Slogan rules:
 
 - `Escape to Truth`: home hero and select campaign landings only.

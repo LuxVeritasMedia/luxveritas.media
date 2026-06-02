@@ -131,8 +131,11 @@ function formDialog() {
     <label><span>Name</span><input name="name" autocomplete="name" required /></label>
     <label><span>Email</span><input name="email" type="email" autocomplete="email" required /></label>
     <label><span>Phone <em>optional</em></span><input name="phone" type="tel" autocomplete="tel" /></label>
-    <label><span>Interest</span><select name="interest" required>
-      <option value="">Select one</option><option>Music</option><option>Film</option><option>Events</option><option>Codex</option><option>Partnership</option><option>Press</option>
+    <label><span>Role path</span><select name="role_path" required>
+      <option value="">Select one</option><option>Member</option><option>Artist</option><option>Creator</option><option>Press</option><option>Partner</option><option>Investor</option><option>Event guest</option><option>General</option>
+    </select></label>
+    <label><span>Inquiry type</span><select name="inquiry_type" required>
+      <option value="">Select one</option><option>Membership</option><option>Submissions</option><option>Events</option><option>Press</option><option>Partnership</option><option>Licensing</option><option>Investor</option><option>Portal</option><option>General</option>
     </select></label>
     <label><span>Message</span><textarea name="message" rows="5" required></textarea></label>
     <label class="check-row"><input type="checkbox" name="consent_email" value="yes" /> <span>Email follow-up is allowed.</span></label>
@@ -364,7 +367,7 @@ const pages = [
   ["/contact.html", utility("/contact.html", "Contact", "Use this path for aligned inquiries. The right team will route your message after review.", "<p>Use this path for aligned inquiries. The right team will route your message after review.</p>", "press", false, "Send Inquiry")],
   ["/press.html", utility("/press.html", "Press", "Short institutional boilerplate and screened media contact.", "<p>Lux Veritas is a global media and cultural studio creating music, film, and live experiences built on truth, order, and lineage.</p><p>A fuller press kit, visuals, and selected materials are shared by request.</p>", "press")],
   ["/submissions.html", utility("/submissions.html", "Submissions", "Lux Veritas accepts selected artist, creator, story, music, visual, and partnership submissions through a screened intake process.", "<p>Lux Veritas accepts selected artist, creator, story, music, visual, and partnership submissions through a screened intake process.</p><p>Please do not submit confidential material unless specifically invited. Submitting material does not create an obligation, partnership, employment relationship, or guarantee of review, response, release, or compensation.</p>", "submission", false, "Submit for review")],
-  ["/ledger.html", utility("/ledger.html", "Public Ledger", "The Lux Veritas Ledger is our public stance on trust, credit, rights literacy, and artist protection.", "<p>The Lux Veritas Ledger is our public stance on trust, credit, rights literacy, and artist protection.</p><p>We believe releases should be intentional, credits should be clear, and creative work should be protected before it is scaled.</p><p>Operational specifics remain outside the public Ledger.</p>", "request", false, "Request Access")],
+  ["/ledger.html", utility("/ledger.html", "Public Ledger", "The Lux Veritas Ledger is our public stance on trust, credit, rights literacy, and artist protection.", "<p>The Lux Veritas Ledger is our public stance on trust, credit, rights literacy, and artist protection.</p><p>We believe releases should be intentional, credits should be clear, and creative work should be protected before it is scaled.</p><p>Deeper details are shared only through approved access.</p>", "request", false, "Request Access")],
   ["/legal/privacy.html", utility("/legal/privacy.html", "Privacy", "This page describes Lux Veritas website practices at a high level and remains subject to legal review.", `
     <h2>Overview</h2>
     <p>This page describes, at a high level, how Lux Veritas may collect and use information through its public website, forms, events, memberships, submissions, and related experiences.</p>
