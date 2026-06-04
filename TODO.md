@@ -15,7 +15,8 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Rewrite Community as public join page + gated experience.
 - [x] Rewrite Music and SPMVP as listen/watch/join pages.
 - [x] Rewrite Events as request-access invitation layer.
-- [ ] Connect live form delivery after consent, validation, honeypot, and rate-limit review.
+- [x] Add static email handoff to `info@luxveritas.media` for public forms.
+- [ ] Replace static email handoff with server-side form delivery after consent, validation, honeypot, and rate-limit review.
 
 ## P2 - Content Model
 - [x] Split Codex into Outer / Inner / Sanctum.
@@ -53,3 +54,4 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Run local build after source edits.
 - [ ] Check mobile layout.
 - [x] Check primary CTAs in generated source.
+- [x] Check form modal open/action/button behavior locally.

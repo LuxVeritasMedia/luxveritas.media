@@ -89,7 +89,7 @@ function shell({ path, title, description, eyebrow = "Lux Veritas", body, heroCl
         <span></span><span></span>
       </button>
       <nav id="primary-nav" class="primary-nav" data-nav>${navLinks}</nav>
-      <button class="header-action" data-open-form="request">Request Access</button>
+      <button class="header-action" type="button" data-open-form="request">Request Access</button>
     </header>
     <main id="main" class="${heroClass}">
       ${body}
@@ -122,8 +122,8 @@ function footer() {
 
 function formDialog() {
   return `<dialog class="form-dialog" data-dialog>
-  <form method="dialog" class="dialog-shell">
-    <button class="dialog-close" aria-label="Close" value="close">×</button>
+  <form action="mailto:info@luxveritas.media" method="post" enctype="text/plain" class="dialog-shell">
+    <button class="dialog-close" type="button" aria-label="Close" data-close-dialog>×</button>
     <p class="kicker" data-form-kicker>Request Access</p>
     <h2 data-form-title>Screened Access</h2>
     <p data-form-copy>Tell us who you are and what door you are approaching.</p>
@@ -141,7 +141,7 @@ function formDialog() {
     <label class="check-row"><input type="checkbox" name="consent_email" value="yes" /> <span>Email follow-up is allowed.</span></label>
     <label class="check-row"><input type="checkbox" name="consent_sms" value="yes" /> <span>SMS follow-up is allowed if a phone number is supplied.</span></label>
     <input class="honeypot" name="company_url" tabindex="-1" autocomplete="off" />
-    <button class="button button-primary" value="submit" data-submit-form>Send</button>
+    <button class="button button-primary" type="submit" data-submit-form>Send to Lux Veritas</button>
   </form>
 </dialog>`;
 }
@@ -209,7 +209,7 @@ function music() {
     path: "/music.html",
     title: "Music | Lux Veritas",
     description: "Sound as signal. Lux Veritas releases music as the first doorway into a larger world.",
-    body: `${pageHero("Music", "Sound as signal.", "Lux Veritas releases music as the first doorway into a larger world: songs, visuals, live rooms, stories, and fan participation moving together.\n\nEvery release is intentional, protected, and built to last.", `<div class="hero-actions"><a class="button button-primary" href="/spmvp.html">Listen</a><button class="button button-quiet" data-track="youtube_click">Watch</button><button class="button button-quiet" data-open-form="fan">Join for early access</button></div>`)}
+    body: `${pageHero("Music", "Sound as signal.", "Lux Veritas releases music as the first doorway into a larger world: songs, visuals, live rooms, stories, and fan participation moving together.\n\nEvery release is intentional, protected, and built to last.", `<div class="hero-actions"><a class="button button-primary" href="/spmvp.html">Listen</a><button class="button button-quiet" type="button" data-open-form="fan">Watch</button><button class="button button-quiet" type="button" data-open-form="fan">Join for early access</button></div>`)}
     <section class="section"><div class="release-rail">${releaseCards.map(([title, type, body]) => `<article><span>${type}</span><h3>${title}</h3><p>${body}</p></article>`).join("")}</div></section>
     <section class="section split-band"><div><p class="kicker">Current Motion</p><h2>Music that arrives with atmosphere.</h2></div><div class="checklist"><p>Follow the latest release rooms, filmed sessions, and live appearances. If the work meets you, the next door is easy: listen, watch, join.</p><div class="hero-actions"><a class="button button-primary" href="/spmvp.html">Listen</a><button class="button button-quiet" data-open-form="fan">Join for early access</button></div></div></section>${cta()}`
   });
@@ -418,7 +418,7 @@ const pages = [
     <h2>Contact</h2>
     <p>For questions about these terms, use the contact path available on this site.</p>
   `, "press", true, "Contact")],
-  ["/spmvp.html", shell({ path: "/spmvp.html", title: "SPMVP | Lux Veritas", description: "A release room for a new Lux Veritas music drop.", body: `${pageHero("New Drop", "SPMVP", "Start with the drop. Follow the signal. Join for the deeper version.", `<div class="hero-actions"><button class="button button-primary" data-track="listen_click">Listen</button><button class="button button-quiet" data-track="youtube_click">Watch</button><button class="button button-quiet" data-open-form="fan">Join for early access</button></div>`)}<section class="section split-band"><div><p class="kicker">Context</p><h2>Enter through the work.</h2></div><div><p>Listen, watch, and enter the Lux Veritas circle for early access, private drops, and future live rooms.</p></div></section>` })],
+  ["/spmvp.html", shell({ path: "/spmvp.html", title: "SPMVP | Lux Veritas", description: "A release room for a new Lux Veritas music drop.", body: `${pageHero("New Drop", "SPMVP", "Start with the drop. Follow the signal. Join for the deeper version.", `<div class="hero-actions"><button class="button button-primary" type="button" data-open-form="fan">Listen</button><button class="button button-quiet" type="button" data-open-form="fan">Watch</button><button class="button button-quiet" type="button" data-open-form="fan">Join for early access</button></div>`)}<section class="section split-band"><div><p class="kicker">Context</p><h2>Enter through the work.</h2></div><div><p>Listen, watch, and enter the Lux Veritas circle for early access, private drops, and future live rooms.</p></div></section>` })],
   ["/auth/signin.html", signInShell()],
   ["/portal/index.html", shell({ path: "/portal/index.html", title: "Portal | Lux Veritas", description: "Private access for approved members, collaborators, and selected guests.", noindex: true, body: `${pageHero("Private Access", "Private Access", "This portal is for approved artists, creators, partners, members, and operators.", `<div class="hero-actions"><a class="button button-primary" href="/auth/signin.html">Sign In</a><button class="button button-quiet" data-open-form="request">Request Access</button></div>`)}<section class="section empty-state"><p class="kicker">Screened Entry</p><h2>Access is screened by role and invitation.</h2><p>Use the sign-in page if you already have access, or request access if you are entering through submissions, membership, press, partnerships, licensing, or investor inquiry.</p></section>` })],
   ["/portal/library.html", accessShell("/portal/library.html", "Creator", "Private creator materials are available by screened access.", "Creator tools and private materials are not published in the public layer.")],

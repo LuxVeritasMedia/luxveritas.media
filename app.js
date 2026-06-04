@@ -43,7 +43,93 @@ const navToggle = document.querySelector("[data-nav-toggle]");
 const dialog = document.querySelector("[data-dialog]");
 const dialogForm = dialog?.querySelector(".dialog-shell");
 const statusBox = document.querySelector("[data-form-status]");
+const contactEmail = "info@luxveritas.media";
 let activeFormType = "request";
+
+function readJson(key, fallback) {
+  try {
+    return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+  } catch {
+    return fallback;
+  }
+}
+
+function writeJson(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Storage can fail in private browsing or locked-down browsers. Form handoff still works.
+  }
+}
+
+function getStoredValue(key) {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function setStoredValue(key, value) {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // Non-critical: consent and local event history are best-effort only.
+  }
+}
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
+function submissionSubject(payload) {
+  const label = formCopy[payload.formType]?.title || "Lux Veritas Website Inquiry";
+  return `${label} - ${payload.name || "Website visitor"}`;
+}
+
+function submissionBody(payload) {
+  return [
+    "Lux Veritas website submission",
+    "",
+    `Name: ${payload.name || ""}`,
+    `Email: ${payload.email || ""}`,
+    `Phone: ${payload.phone || ""}`,
+    `Role path: ${payload.role_path || ""}`,
+    `Inquiry type: ${payload.inquiry_type || ""}`,
+    `Form type: ${payload.formType || ""}`,
+    `Source page: ${payload.source_page || ""}`,
+    `Timestamp: ${payload.timestamp || ""}`,
+    `Email consent: ${payload.consent_email ? "yes" : "no"}`,
+    `SMS consent: ${payload.consent_sms ? "yes" : "no"}`,
+    "",
+    "Message:",
+    payload.message || ""
+  ].join("\n");
+}
+
+function mailtoHref(payload) {
+  const subject = encodeURIComponent(submissionSubject(payload));
+  const body = encodeURIComponent(submissionBody(payload));
+  return `mailto:${contactEmail}?subject=${subject}&body=${body}`;
+}
+
+async function copySubmissionToClipboard(text) {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    // Clipboard permission is optional. The visible mail link remains the fallback.
+  }
+  return false;
+}
 
 function setScrolledHeader() {
   header?.classList.toggle("scrolled", window.scrollY > 24);
@@ -56,11 +142,12 @@ function openForm(type) {
   document.querySelector("[data-form-title]").textContent = config.title;
   document.querySelector("[data-form-copy]").textContent = config.copy;
   statusBox.hidden = true;
-  dialog.showModal();
+  statusBox.textContent = "";
+  if (!dialog.open) dialog.showModal();
 }
 
 function trackEvent(name, detail = {}) {
-  const consent = localStorage.getItem("luxveritas_consent");
+  const consent = getStoredValue("luxveritas_consent");
   const payload = {
     event: name,
     page: window.location.pathname,
@@ -68,17 +155,27 @@ function trackEvent(name, detail = {}) {
     timestamp: new Date().toISOString(),
     consent
   };
-  const events = JSON.parse(localStorage.getItem("luxveritas_events") || "[]");
+  const events = readJson("luxveritas_events", []);
   events.push(payload);
-  localStorage.setItem("luxveritas_events", JSON.stringify(events.slice(-100)));
+  writeJson("luxveritas_events", events.slice(-100));
   window.dataLayer = window.dataLayer || [];
   if (consent === "accepted") window.dataLayer.push(payload);
 }
 
 async function handleFormSubmit(event) {
   event.preventDefault();
+  if (!dialogForm.reportValidity()) return;
+
+  const submitButton = dialogForm.querySelector("[data-submit-form]");
+  submitButton.disabled = true;
+  submitButton.textContent = "Preparing email...";
+
   const data = Object.fromEntries(new FormData(dialogForm).entries());
-  if (data.company_url) return;
+  if (data.company_url) {
+    submitButton.disabled = false;
+    submitButton.textContent = "Send to Lux Veritas";
+    return;
+  }
 
   const payload = {
     ...data,
@@ -88,37 +185,45 @@ async function handleFormSubmit(event) {
     tag: formCopy[activeFormType].tag,
     timestamp: new Date().toISOString()
   };
+  const body = submissionBody(payload);
+  const href = mailtoHref(payload);
+  const copied = await copySubmissionToClipboard(body);
 
-  const submissions = JSON.parse(localStorage.getItem("luxveritas_submissions") || "[]");
+  const submissions = readJson("luxveritas_submissions", []);
   submissions.push(payload);
-  localStorage.setItem("luxveritas_submissions", JSON.stringify(submissions.slice(-50)));
+  writeJson("luxveritas_submissions", submissions.slice(-50));
   trackEvent("lead", { formType: activeFormType });
 
-  statusBox.textContent = "Received. Your signal has been recorded.";
+  statusBox.innerHTML = `Your email app should open now. Send the drafted message to complete your submission to Lux Veritas.${copied ? " A copy has also been placed on your clipboard." : ""}<br /><a href="${escapeHtml(href)}">Open email manually</a>`;
   statusBox.hidden = false;
-  dialogForm.reset();
+  window.location.href = href;
+  submitButton.disabled = false;
+  submitButton.textContent = "Send to Lux Veritas";
 }
 
 function mountConsentBanner() {
-  if (localStorage.getItem("luxveritas_consent")) return;
+  if (getStoredValue("luxveritas_consent")) return;
   const banner = document.createElement("div");
   banner.className = "consent-banner show";
   banner.innerHTML = `<p>Lux Veritas uses essential local storage for forms and optional analytics after consent.</p>
     <div class="consent-actions">
-      <button class="button button-primary" data-consent="accepted">Accept all</button>
-      <button class="button button-quiet" data-consent="rejected">Reject non-essential</button>
+      <button class="button button-primary" type="button" data-consent="accepted">Accept all</button>
+      <button class="button button-quiet" type="button" data-consent="rejected">Reject non-essential</button>
     </div>`;
   document.body.appendChild(banner);
   banner.addEventListener("click", (event) => {
     const button = event.target.closest("[data-consent]");
     if (!button) return;
-    localStorage.setItem("luxveritas_consent", button.dataset.consent);
+    setStoredValue("luxveritas_consent", button.dataset.consent);
     banner.remove();
     trackEvent("consent_update", { value: button.dataset.consent });
   });
 }
 
 window.addEventListener("scroll", setScrolledHeader, { passive: true });
+document.querySelectorAll("button:not([type])").forEach((button) => {
+  button.type = "button";
+});
 setScrolledHeader();
 mountConsentBanner();
 trackEvent("view_content");
@@ -126,6 +231,10 @@ trackEvent("view_content");
 navToggle?.addEventListener("click", () => {
   const isOpen = nav.classList.toggle("open");
   navToggle.setAttribute("aria-expanded", String(isOpen));
+});
+
+document.querySelectorAll("[data-close-dialog]").forEach((button) => {
+  button.addEventListener("click", () => dialog?.close());
 });
 
 document.querySelectorAll("[data-open-form]").forEach((button) => {

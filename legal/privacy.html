@@ -23,7 +23,7 @@
         <span></span><span></span>
       </button>
       <nav id="primary-nav" class="primary-nav" data-nav><a  href="/index.html">Home</a><a  href="/music.html">Music</a><a  href="/film.html">Film</a><a  href="/events.html">Events</a><a  href="/codex.html">Codex</a><a  href="/about.html">About</a><a  href="/join.html">Join</a></nav>
-      <button class="header-action" data-open-form="request">Request Access</button>
+      <button class="header-action" type="button" data-open-form="request">Request Access</button>
     </header>
     <main id="main" class="">
       <section class="page-hero section">
@@ -76,8 +76,8 @@
   </nav>
 </footer>
     <dialog class="form-dialog" data-dialog>
-  <form method="dialog" class="dialog-shell">
-    <button class="dialog-close" aria-label="Close" value="close">×</button>
+  <form action="mailto:info@luxveritas.media" method="post" enctype="text/plain" class="dialog-shell">
+    <button class="dialog-close" type="button" aria-label="Close" data-close-dialog>×</button>
     <p class="kicker" data-form-kicker>Request Access</p>
     <h2 data-form-title>Screened Access</h2>
     <p data-form-copy>Tell us who you are and what door you are approaching.</p>
@@ -95,7 +95,7 @@
     <label class="check-row"><input type="checkbox" name="consent_email" value="yes" /> <span>Email follow-up is allowed.</span></label>
     <label class="check-row"><input type="checkbox" name="consent_sms" value="yes" /> <span>SMS follow-up is allowed if a phone number is supplied.</span></label>
     <input class="honeypot" name="company_url" tabindex="-1" autocomplete="off" />
-    <button class="button button-primary" value="submit" data-submit-form>Send</button>
+    <button class="button button-primary" type="submit" data-submit-form>Send to Lux Veritas</button>
   </form>
 </dialog>
     <script src="../../app.js"></script>

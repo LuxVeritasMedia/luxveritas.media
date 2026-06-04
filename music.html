@@ -23,7 +23,7 @@
         <span></span><span></span>
       </button>
       <nav id="primary-nav" class="primary-nav" data-nav><a  href="/index.html">Home</a><a class="active" href="/music.html">Music</a><a  href="/film.html">Film</a><a  href="/events.html">Events</a><a  href="/codex.html">Codex</a><a  href="/about.html">About</a><a  href="/join.html">Join</a></nav>
-      <button class="header-action" data-open-form="request">Request Access</button>
+      <button class="header-action" type="button" data-open-form="request">Request Access</button>
     </header>
     <main id="main" class="">
       <section class="page-hero section">
@@ -33,7 +33,7 @@
       <p>Lux Veritas releases music as the first doorway into a larger world: songs, visuals, live rooms, stories, and fan participation moving together.
 
 Every release is intentional, protected, and built to last.</p>
-      <div class="hero-actions"><a class="button button-primary" href="/spmvp.html">Listen</a><button class="button button-quiet" data-track="youtube_click">Watch</button><button class="button button-quiet" data-open-form="fan">Join for early access</button></div>
+      <div class="hero-actions"><a class="button button-primary" href="/spmvp.html">Listen</a><button class="button button-quiet" type="button" data-open-form="fan">Watch</button><button class="button button-quiet" type="button" data-open-form="fan">Join for early access</button></div>
     </div>
   </section>
     <section class="section"><div class="release-rail"><article><span>Current release</span><h3>SPMVP</h3><p>A first doorway into the Lux Veritas sound world, built for listening, watching, and return visits.</p></article><article><span>Performance</span><h3>Live Sessions</h3><p>Intimate rooms, filmed moments, and selected appearances that carry the atmosphere into the body.</p></article><article><span>Ongoing development</span><h3>Artist Worlds</h3><p>Long-arc collaborations shaped with patience, restraint, and a clear sense of identity.</p></article></div></section>
@@ -66,8 +66,8 @@ Every release is intentional, protected, and built to last.</p>
   </nav>
 </footer>
     <dialog class="form-dialog" data-dialog>
-  <form method="dialog" class="dialog-shell">
-    <button class="dialog-close" aria-label="Close" value="close">×</button>
+  <form action="mailto:info@luxveritas.media" method="post" enctype="text/plain" class="dialog-shell">
+    <button class="dialog-close" type="button" aria-label="Close" data-close-dialog>×</button>
     <p class="kicker" data-form-kicker>Request Access</p>
     <h2 data-form-title>Screened Access</h2>
     <p data-form-copy>Tell us who you are and what door you are approaching.</p>
@@ -85,7 +85,7 @@ Every release is intentional, protected, and built to last.</p>
     <label class="check-row"><input type="checkbox" name="consent_email" value="yes" /> <span>Email follow-up is allowed.</span></label>
     <label class="check-row"><input type="checkbox" name="consent_sms" value="yes" /> <span>SMS follow-up is allowed if a phone number is supplied.</span></label>
     <input class="honeypot" name="company_url" tabindex="-1" autocomplete="off" />
-    <button class="button button-primary" value="submit" data-submit-form>Send</button>
+    <button class="button button-primary" type="submit" data-submit-form>Send to Lux Veritas</button>
   </form>
 </dialog>
     <script src="../app.js"></script>
