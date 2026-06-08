@@ -4,24 +4,34 @@
     "runtime": "nodejs20"
   },
   "hosting": {
-    "public": ".",
+    "public": "dist",
     "ignore": [
       "firebase.json",
       "README.md",
       "AGENTS.md",
       "TODO.md",
       "apphosting.yaml",
+      ".git/**",
+      ".github/**",
+      ".firebase/**",
+      ".codex/**",
+      ".agents/**",
+      ".DS_Store",
       "**/.*",
       "**/node_modules/**",
       "functions/**",
+      "breadington-mvp/**",
+      "buddington-mvp/**",
+      "lowkey-hungry-mvp/**",
+      "omelette-tv-guide/**",
+      "mic-proof.html",
       "assets/qa-*.png",
       "tools/**",
       "docs/**",
       "*.md",
       "source_docs/**",
       "source_docs_round2/**",
-      "brief_extracts/**"
-      ,
+      "brief_extracts/**",
       "brief_extracts_round2/**"
     ],
     "headers": [

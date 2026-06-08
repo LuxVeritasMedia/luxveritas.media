@@ -144,6 +144,7 @@ export const submitForm = onRequest(
   {
     region: "us-central1",
     cors: false,
+    invoker: "public",
     maxInstances: 10
   },
   async (req, res) => {
