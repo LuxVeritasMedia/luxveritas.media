@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260608-private-report";
+const assetVersion = "20260608-form-endpoint";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 
 const nav = [
@@ -125,7 +125,7 @@ function footer() {
 
 function formDialog() {
   return `<dialog class="form-dialog" data-dialog>
-  <form action="mailto:info@luxveritas.media" method="post" enctype="text/plain" class="dialog-shell">
+  <form action="/api/submit" method="post" class="dialog-shell" data-form-endpoint="/api/submit">
     <button class="dialog-close" type="button" aria-label="Close" data-close-dialog>×</button>
     <p class="kicker" data-form-kicker>Request Access</p>
     <h2 data-form-title>Screened Access</h2>

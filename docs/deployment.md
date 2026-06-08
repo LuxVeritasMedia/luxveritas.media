@@ -34,7 +34,7 @@ The Firebase Function:
 - applies best-effort rate limiting
 - logs submissions to Firestore when available
 - sends email through Resend when runtime config is present
-- falls back to the visitor mail app if the server relay is unavailable or not fully configured
+- accepts and records submissions even when email notification is not fully configured
 
 The site event function:
 

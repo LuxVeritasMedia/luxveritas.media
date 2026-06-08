@@ -10,7 +10,7 @@
     <meta property="og:image" content="../assets/luxveritas-threshold.png" />
     <title>Events | Lux Veritas</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070909'/%3E%3Cpath d='M18 48V16h6v27h18v5H18Zm21-32h7L34 48h-6l11-32Z' fill='%23c8a86a'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="../styles.css?v=20260608-private-report" />
+    <link rel="stylesheet" href="../styles.css?v=20260608-form-endpoint" />
   </head>
   <body data-page="/events.html">
     <a class="skip-link" href="#main">Skip to content</a>
@@ -66,7 +66,7 @@ Some rooms are public. Some are screened. All are built for signal, presence, an
   </nav>
 </footer>
     <dialog class="form-dialog" data-dialog>
-  <form action="mailto:info@luxveritas.media" method="post" enctype="text/plain" class="dialog-shell">
+  <form action="/api/submit" method="post" class="dialog-shell" data-form-endpoint="/api/submit">
     <button class="dialog-close" type="button" aria-label="Close" data-close-dialog>×</button>
     <p class="kicker" data-form-kicker>Request Access</p>
     <h2 data-form-title>Screened Access</h2>
@@ -88,6 +88,6 @@ Some rooms are public. Some are screened. All are built for signal, presence, an
     <button class="button button-primary" type="submit" data-submit-form>Send to Lux Veritas</button>
   </form>
 </dialog>
-    <script src="../app.js?v=20260608-private-report"></script>
+    <script src="../app.js?v=20260608-form-endpoint"></script>
   </body>
 </html>

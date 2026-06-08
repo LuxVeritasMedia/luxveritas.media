@@ -57,10 +57,20 @@ if (!appJs.includes('result.delivery === "stored"')) {
 if (!appJs.includes("Received. Thank you. Your request is recorded with Lux Veritas.")) {
   issues.push("app.js: missing stored-submission success message");
 }
+if (!appJs.includes('const submitEndpoint = "/api/submit";')) {
+  issues.push("app.js: missing server-side form endpoint");
+}
 
 for (const file of files) {
   const rel = relative(root, file);
   const html = await readFile(file, "utf8");
+
+  if (/action\s*=\s*["']mailto:/i.test(html)) {
+    issues.push(`${rel}: form action still uses mailto`);
+  }
+  if (/href\s*=\s*["']mailto:/i.test(html)) {
+    issues.push(`${rel}: static link still uses mailto`);
+  }
 
   for (const match of html.matchAll(/<button\b([^>]*)>([\s\S]*?)<\/button>/gi)) {
     const attrs = match[1];

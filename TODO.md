@@ -65,6 +65,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Check primary CTAs in generated source.
 - [x] Check form modal open/action/button behavior locally.
 - [x] Replace automatic `mailto:` jump with visible email-draft fallback to prevent submit-page freeze.
+- [x] Remove `mailto:` form actions from generated public pages and add QA coverage to prevent regressions.
 - [x] Add deploy-artifact button QA for dead public buttons.
 - [x] Add public-site QA for internal links, nav/footer, noindex routes, banned terms, and media requirements.
 - [x] Add private noindex local activity report for pilot testing.
