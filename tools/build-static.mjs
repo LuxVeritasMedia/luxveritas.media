@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260608-form-relay";
+const assetVersion = "20260608-media-player";
 
 const nav = [
   ["Home", "/index.html"],
@@ -173,6 +173,42 @@ function cta() {
   </section>`;
 }
 
+function mediaPlayerShell(context = "music") {
+  const compact = context === "spmvp";
+  return `<section class="section media-player-section" data-media-player data-player-context="${context}">
+    <div class="media-player-copy">
+      <p class="kicker">Lux Player</p>
+      <h2>${compact ? "Start with the drop." : "Listen. Watch. Return."}</h2>
+      <p>${compact ? "SPMVP is the current doorway. The public player captures listen, watch, and radio intent while deeper access opens by request." : "A fan-facing player for releases, visuals, sessions, and future radio programming. Public actions are remembered on this device today so the experience can become more personal as the world opens."}</p>
+    </div>
+    <div class="media-player" aria-label="Lux Veritas media player">
+      <div class="media-now">
+        <span data-media-mode>Signal</span>
+        <h3 data-media-title>SPMVP</h3>
+        <p data-media-status>Ready for public preview routing.</p>
+        <div class="media-progress" aria-hidden="true"><span data-media-progress></span></div>
+        <div class="media-actions">
+          <button class="button button-primary" type="button" data-media-action="play">Play Signal</button>
+          <button class="button button-quiet" type="button" data-media-action="watch">Watch</button>
+          <button class="button button-quiet" type="button" data-media-action="radio">Radio</button>
+        </div>
+      </div>
+      <div class="media-queue" role="list" aria-label="Media queue">
+        <button class="media-item active" type="button" data-media-item data-kind="release" data-title="SPMVP" data-status="Current release signal. Full listening links open as approved release paths go live." role="listitem">
+          <span>Release</span><strong>SPMVP</strong><small>Current doorway</small>
+        </button>
+        <button class="media-item" type="button" data-media-item data-kind="visual" data-title="Visual World" data-status="Visual chapter routing is ready. Public video source attaches here when approved." role="listitem">
+          <span>Visual</span><strong>Visual World</strong><small>Watch path</small>
+        </button>
+        <button class="media-item" type="button" data-media-item data-kind="radio" data-title="Lux Radio" data-status="Radio mode is queued for scheduled programming, DJ notes, and future live rooms." role="listitem">
+          <span>Radio</span><strong>Lux Radio</strong><small>Coming signal</small>
+        </button>
+      </div>
+      <div class="media-report" data-media-report>0 media actions recorded in this session.</div>
+    </div>
+  </section>`;
+}
+
 function home() {
   return shell({
     path: "/index.html",
@@ -212,6 +248,7 @@ function music() {
     title: "Music | Lux Veritas",
     description: "Sound as signal. Lux Veritas releases music as the first doorway into a larger world.",
     body: `${pageHero("Music", "Sound as signal.", "Lux Veritas releases music as the first doorway into a larger world: songs, visuals, live rooms, stories, and fan participation moving together.\n\nEvery release is intentional, protected, and built to last.", `<div class="hero-actions"><a class="button button-primary" href="/spmvp.html">Listen</a><button class="button button-quiet" type="button" data-open-form="fan">Watch</button><button class="button button-quiet" type="button" data-open-form="fan">Join for early access</button></div>`)}
+    ${mediaPlayerShell("music")}
     <section class="section"><div class="release-rail">${releaseCards.map(([title, type, body]) => `<article><span>${type}</span><h3>${title}</h3><p>${body}</p></article>`).join("")}</div></section>
     <section class="section split-band"><div><p class="kicker">Current Motion</p><h2>Music that arrives with atmosphere.</h2></div><div class="checklist"><p>Follow the latest release rooms, filmed sessions, and live appearances. If the work meets you, the next door is easy: listen, watch, join.</p><div class="hero-actions"><a class="button button-primary" href="/spmvp.html">Listen</a><button class="button button-quiet" data-open-form="fan">Join for early access</button></div></div></section>${cta()}`
   });
@@ -421,7 +458,7 @@ const pages = [
     <h2>Contact</h2>
     <p>For questions about these terms, use the contact path available on this site.</p>
   `, "press", true, "Contact")],
-  ["/spmvp.html", shell({ path: "/spmvp.html", title: "SPMVP | Lux Veritas", description: "A release room for a new Lux Veritas music drop.", body: `${pageHero("New Drop", "SPMVP", "Start with the drop. Follow the signal. Join for the deeper version.", `<div class="hero-actions"><button class="button button-primary" type="button" data-open-form="fan">Listen</button><button class="button button-quiet" type="button" data-open-form="fan">Watch</button><button class="button button-quiet" type="button" data-open-form="fan">Join for early access</button></div>`)}<section class="section split-band"><div><p class="kicker">Context</p><h2>Enter through the work.</h2></div><div><p>Listen, watch, and enter the Lux Veritas circle for early access, private drops, and future live rooms.</p></div></section>` })],
+  ["/spmvp.html", shell({ path: "/spmvp.html", title: "SPMVP | Lux Veritas", description: "A release room for a new Lux Veritas music drop.", body: `${pageHero("New Drop", "SPMVP", "Start with the drop. Follow the signal. Join for the deeper version.", `<div class="hero-actions"><button class="button button-primary" type="button" data-media-action="play">Listen</button><button class="button button-quiet" type="button" data-media-action="watch">Watch</button><button class="button button-quiet" type="button" data-open-form="fan">Join for early access</button></div>`)}${mediaPlayerShell("spmvp")}<section class="section split-band"><div><p class="kicker">Context</p><h2>Enter through the work.</h2></div><div><p>Listen, watch, and enter the Lux Veritas circle for early access, private drops, and future live rooms.</p></div></section>` })],
   ["/auth/signin.html", signInShell()],
   ["/portal/index.html", shell({ path: "/portal/index.html", title: "Portal | Lux Veritas", description: "Private access for approved members, collaborators, and selected guests.", noindex: true, body: `${pageHero("Private Access", "Private Access", "This portal is for approved artists, creators, partners, members, and operators.", `<div class="hero-actions"><a class="button button-primary" href="/auth/signin.html">Sign In</a><button class="button button-quiet" data-open-form="request">Request Access</button></div>`)}<section class="section empty-state"><p class="kicker">Screened Entry</p><h2>Access is screened by role and invitation.</h2><p>Use the sign-in page if you already have access, or request access if you are entering through submissions, membership, press, partnerships, licensing, or investor inquiry.</p></section>` })],
   ["/portal/library.html", accessShell("/portal/library.html", "Creator", "Private creator materials are available by screened access.", "Creator tools and private materials are not published in the public layer.")],

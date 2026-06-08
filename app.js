@@ -181,6 +181,74 @@ function trackEvent(name, detail = {}) {
   if (consent === "accepted") window.dataLayer.push(payload);
 }
 
+function mediaEvents() {
+  return readJson("luxveritas_media_events", []);
+}
+
+function writeMediaEvent(action, player, item = {}) {
+  const payload = {
+    action,
+    context: player?.dataset.playerContext || document.body.dataset.page || "site",
+    title: item.title || player?.querySelector("[data-media-title]")?.textContent?.trim() || "SPMVP",
+    kind: item.kind || player?.querySelector("[data-media-mode]")?.textContent?.trim()?.toLowerCase() || "signal",
+    source_page: window.location.pathname,
+    timestamp: new Date().toISOString()
+  };
+  const events = mediaEvents();
+  events.push(payload);
+  writeJson("luxveritas_media_events", events.slice(-100));
+  trackEvent("media_action", payload);
+  return events.length;
+}
+
+function updateMediaReport(player) {
+  const report = player?.querySelector("[data-media-report]");
+  if (!report) return;
+  const count = mediaEvents().filter((event) => event.source_page === window.location.pathname).length;
+  report.textContent = `${count} media action${count === 1 ? "" : "s"} recorded from this page.`;
+}
+
+function setMediaProgress(player, percent) {
+  const bar = player?.querySelector("[data-media-progress]");
+  if (bar) bar.style.width = `${Math.max(0, Math.min(percent, 100))}%`;
+}
+
+function setActiveMediaItem(player, item) {
+  if (!player || !item) return;
+  player.querySelectorAll("[data-media-item]").forEach((button) => {
+    button.classList.toggle("active", button === item);
+  });
+  player.querySelector("[data-media-mode]").textContent = item.dataset.kind || "signal";
+  player.querySelector("[data-media-title]").textContent = item.dataset.title || "SPMVP";
+  player.querySelector("[data-media-status]").textContent = item.dataset.status || "Ready for public preview routing.";
+  setMediaProgress(player, 18);
+  writeMediaEvent("select", player, item.dataset);
+  updateMediaReport(player);
+}
+
+function handleMediaAction(action, player) {
+  if (!player) {
+    player = document.querySelector("[data-media-player]");
+  }
+  if (!player) {
+    openForm(action === "watch" ? "fan" : "request");
+    return;
+  }
+
+  const title = player.querySelector("[data-media-title]")?.textContent?.trim() || "SPMVP";
+  const status = player.querySelector("[data-media-status]");
+  const messages = {
+    play: `${title} listen intent recorded. Full audio source attaches here when the approved release link is live.`,
+    watch: `${title} watch intent recorded. Public video routing is ready for the approved visual source.`,
+    radio: "Lux Radio intent recorded. Programming slots, live-room notes, and future episodes will attach here."
+  };
+
+  if (status) status.textContent = messages[action] || "Media intent recorded.";
+  setMediaProgress(player, action === "play" ? 48 : action === "watch" ? 66 : 82);
+  writeMediaEvent(action, player);
+  updateMediaReport(player);
+}
+
 async function handleFormSubmit(event) {
   event.preventDefault();
   if (!dialogForm.reportValidity()) return;
@@ -304,6 +372,20 @@ document.addEventListener("click", (event) => {
   openForm(button.dataset.openForm);
 });
 
+document.addEventListener("click", (event) => {
+  const item = event.target.closest("[data-media-item]");
+  if (!item) return;
+  event.preventDefault();
+  setActiveMediaItem(item.closest("[data-media-player]"), item);
+});
+
+document.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-media-action]");
+  if (!button) return;
+  event.preventDefault();
+  handleMediaAction(button.dataset.mediaAction, button.closest("[data-media-player]"));
+});
+
 document.querySelectorAll("[data-track]").forEach((button) => {
   button.addEventListener("click", () => {
     trackEvent(button.dataset.track, { label: button.textContent.trim() });
@@ -312,8 +394,9 @@ document.querySelectorAll("[data-track]").forEach((button) => {
 
 dialogForm?.addEventListener("submit", handleFormSubmit);
 portalSigninForm?.addEventListener("submit", handlePortalSignin);
+document.querySelectorAll("[data-media-player]").forEach(updateMediaReport);
 
-document.querySelectorAll(".section, .vertical-card, .release-rail article, .slate div, .event-card, .codex-card, .ops-grid article, .portal-grid article").forEach((el) => {
+document.querySelectorAll(".section, .vertical-card, .release-rail article, .slate div, .event-card, .codex-card, .ops-grid article, .portal-grid article, .media-player").forEach((el) => {
   el.setAttribute("data-reveal", "");
 });
 

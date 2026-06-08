@@ -10,7 +10,7 @@
     <meta property="og:image" content="../assets/luxveritas-threshold.png" />
     <title>Music | Lux Veritas</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070909'/%3E%3Cpath d='M18 48V16h6v27h18v5H18Zm21-32h7L34 48h-6l11-32Z' fill='%23c8a86a'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="../styles.css?v=20260608-form-relay" />
+    <link rel="stylesheet" href="../styles.css?v=20260608-media-player" />
   </head>
   <body data-page="/music.html">
     <a class="skip-link" href="#main">Skip to content</a>
@@ -34,6 +34,38 @@
 
 Every release is intentional, protected, and built to last.</p>
       <div class="hero-actions"><a class="button button-primary" href="/spmvp.html">Listen</a><button class="button button-quiet" type="button" data-open-form="fan">Watch</button><button class="button button-quiet" type="button" data-open-form="fan">Join for early access</button></div>
+    </div>
+  </section>
+    <section class="section media-player-section" data-media-player data-player-context="music">
+    <div class="media-player-copy">
+      <p class="kicker">Lux Player</p>
+      <h2>Listen. Watch. Return.</h2>
+      <p>A fan-facing player for releases, visuals, sessions, and future radio programming. Public actions are remembered on this device today so the experience can become more personal as the world opens.</p>
+    </div>
+    <div class="media-player" aria-label="Lux Veritas media player">
+      <div class="media-now">
+        <span data-media-mode>Signal</span>
+        <h3 data-media-title>SPMVP</h3>
+        <p data-media-status>Ready for public preview routing.</p>
+        <div class="media-progress" aria-hidden="true"><span data-media-progress></span></div>
+        <div class="media-actions">
+          <button class="button button-primary" type="button" data-media-action="play">Play Signal</button>
+          <button class="button button-quiet" type="button" data-media-action="watch">Watch</button>
+          <button class="button button-quiet" type="button" data-media-action="radio">Radio</button>
+        </div>
+      </div>
+      <div class="media-queue" role="list" aria-label="Media queue">
+        <button class="media-item active" type="button" data-media-item data-kind="release" data-title="SPMVP" data-status="Current release signal. Full listening links open as approved release paths go live." role="listitem">
+          <span>Release</span><strong>SPMVP</strong><small>Current doorway</small>
+        </button>
+        <button class="media-item" type="button" data-media-item data-kind="visual" data-title="Visual World" data-status="Visual chapter routing is ready. Public video source attaches here when approved." role="listitem">
+          <span>Visual</span><strong>Visual World</strong><small>Watch path</small>
+        </button>
+        <button class="media-item" type="button" data-media-item data-kind="radio" data-title="Lux Radio" data-status="Radio mode is queued for scheduled programming, DJ notes, and future live rooms." role="listitem">
+          <span>Radio</span><strong>Lux Radio</strong><small>Coming signal</small>
+        </button>
+      </div>
+      <div class="media-report" data-media-report>0 media actions recorded in this session.</div>
     </div>
   </section>
     <section class="section"><div class="release-rail"><article><span>Current release</span><h3>SPMVP</h3><p>A first doorway into the Lux Veritas sound world, built for listening, watching, and return visits.</p></article><article><span>Performance</span><h3>Live Sessions</h3><p>Intimate rooms, filmed moments, and selected appearances that carry the atmosphere into the body.</p></article><article><span>Ongoing development</span><h3>Artist Worlds</h3><p>Long-arc collaborations shaped with patience, restraint, and a clear sense of identity.</p></article></div></section>
@@ -88,6 +120,6 @@ Every release is intentional, protected, and built to last.</p>
     <button class="button button-primary" type="submit" data-submit-form>Send to Lux Veritas</button>
   </form>
 </dialog>
-    <script src="../app.js?v=20260608-form-relay"></script>
+    <script src="../app.js?v=20260608-media-player"></script>
   </body>
 </html>

@@ -60,3 +60,9 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Check primary CTAs in generated source.
 - [x] Check form modal open/action/button behavior locally.
 - [x] Add deploy-artifact button QA for dead public buttons.
+
+## P7 - Media MVP
+- [x] Add Lux Player MVP to Music and SPMVP with listen/watch/radio actions.
+- [x] Record media intent events locally for reporting bridge readiness.
+- [ ] Attach approved release audio, video, and radio sources.
+- [ ] Relay media events server-side after Firebase/Cloud Run IAM is fixed.

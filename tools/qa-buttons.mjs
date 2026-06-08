@@ -10,6 +10,8 @@ const actionAttributes = [
   "data-nav-toggle",
   "data-consent",
   "data-track",
+  "data-media-action",
+  "data-media-item",
   "data-portal-signin",
   "data-submit-form"
 ];
@@ -67,6 +69,17 @@ for (const file of files) {
     const href = attrValue(match[1], "href");
     if (href === "#") {
       issues.push(`${rel}: link uses href="#"`);
+    }
+  }
+
+  if (["music.html", "spmvp.html"].includes(rel)) {
+    if (!html.includes("data-media-player")) {
+      issues.push(`${rel}: missing media player`);
+    }
+    for (const action of ["play", "watch", "radio"]) {
+      if (!html.includes(`data-media-action="${action}"`)) {
+        issues.push(`${rel}: missing media action "${action}"`);
+      }
     }
   }
 }
