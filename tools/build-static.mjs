@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260608-stored-submit";
+const assetVersion = "20260608-private-report";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 
 const nav = [
@@ -385,10 +385,34 @@ function portal(path, title, cards = "") {
 function portalReport() {
   return shell({
     path: "/portal/reporting.html",
-    title: "Local Activity Report | Lux Veritas Portal",
-    description: "Private local activity report for Lux Veritas pilot testing.",
+    title: "Activity Report | Lux Veritas Portal",
+    description: "Private activity report for Lux Veritas pilot testing.",
     noindex: true,
-    body: `${pageHero("Portal", "Local Activity Report", "A private pilot view for checking activity captured on this device.")}
+    body: `${pageHero("Portal", "Activity Report", "A private pilot view for checking local and approved operator activity.")}
+    <section class="section report-panel" data-private-report>
+      <div class="section-heading">
+        <p class="kicker">Private Activity</p>
+        <h2>Load approved capture and engagement records.</h2>
+        <p>Use an approved operator token to review protected submission and engagement totals.</p>
+      </div>
+      <div class="report-key-row">
+        <label>Operator token
+          <input type="password" name="report_token" autocomplete="off" data-report-token placeholder="Paste token" />
+        </label>
+        <button class="button button-primary" type="button" data-report-action="load-private">Load Private Activity</button>
+      </div>
+      <div class="report-grid" aria-label="Private activity totals">
+        <article><span>Submissions</span><strong data-private-count="submissions">-</strong><small>Stored public requests</small></article>
+        <article><span>Events</span><strong data-private-count="events">-</strong><small>Consented site actions</small></article>
+      </div>
+      <div class="report-detail">
+        <div>
+          <p class="kicker">Latest Protected Activity</p>
+          <ul class="report-list" data-private-report-list><li>Load private activity to view records.</li></ul>
+        </div>
+      </div>
+      <div class="form-status" data-private-report-status hidden></div>
+    </section>
     <section class="section report-panel" data-local-report>
       <div class="section-heading">
         <p class="kicker">Pilot Signals</p>

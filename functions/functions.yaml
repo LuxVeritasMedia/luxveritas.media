@@ -1,5 +1,22 @@
 {
   "endpoints": {
+    "reportActivity": {
+      "availableMemoryMb": null,
+      "timeoutSeconds": null,
+      "minInstances": null,
+      "maxInstances": 5,
+      "ingressSettings": null,
+      "concurrency": null,
+      "serviceAccountEmail": null,
+      "vpc": null,
+      "platform": "gcfv2",
+      "region": [
+        "us-central1"
+      ],
+      "labels": {},
+      "httpsTrigger": {},
+      "entryPoint": "reportActivity"
+    },
     "submitForm": {
       "availableMemoryMb": null,
       "timeoutSeconds": null,

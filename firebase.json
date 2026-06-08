@@ -70,6 +70,13 @@
         }
       },
       {
+        "source": "/api/report",
+        "function": {
+          "functionId": "reportActivity",
+          "region": "us-central1"
+        }
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

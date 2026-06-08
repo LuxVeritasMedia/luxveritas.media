@@ -3,14 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Private local activity report for Lux Veritas pilot testing." />
+    <meta name="description" content="Private activity report for Lux Veritas pilot testing." />
     <meta name="robots" content="noindex, nofollow" />
-    <meta property="og:title" content="Local Activity Report | Lux Veritas Portal" />
-    <meta property="og:description" content="Private local activity report for Lux Veritas pilot testing." />
+    <meta property="og:title" content="Activity Report | Lux Veritas Portal" />
+    <meta property="og:description" content="Private activity report for Lux Veritas pilot testing." />
     <meta property="og:image" content="../../assets/luxveritas-threshold.png" />
-    <title>Local Activity Report | Lux Veritas Portal</title>
+    <title>Activity Report | Lux Veritas Portal</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070909'/%3E%3Cpath d='M18 48V16h6v27h18v5H18Zm21-32h7L34 48h-6l11-32Z' fill='%23c8a86a'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="../../styles.css?v=20260608-stored-submit" />
+    <link rel="stylesheet" href="../../styles.css?v=20260608-private-report" />
   </head>
   <body data-page="/portal/reporting.html">
     <a class="skip-link" href="#main">Skip to content</a>
@@ -29,11 +29,35 @@
       <section class="page-hero section">
     <div class="page-hero-inner">
       <p class="kicker">Portal</p>
-      <h1>Local Activity Report</h1>
-      <p>A private pilot view for checking activity captured on this device.</p>
+      <h1>Activity Report</h1>
+      <p>A private pilot view for checking local and approved operator activity.</p>
       
     </div>
   </section>
+    <section class="section report-panel" data-private-report>
+      <div class="section-heading">
+        <p class="kicker">Private Activity</p>
+        <h2>Load approved capture and engagement records.</h2>
+        <p>Use an approved operator token to review protected submission and engagement totals.</p>
+      </div>
+      <div class="report-key-row">
+        <label>Operator token
+          <input type="password" name="report_token" autocomplete="off" data-report-token placeholder="Paste token" />
+        </label>
+        <button class="button button-primary" type="button" data-report-action="load-private">Load Private Activity</button>
+      </div>
+      <div class="report-grid" aria-label="Private activity totals">
+        <article><span>Submissions</span><strong data-private-count="submissions">-</strong><small>Stored public requests</small></article>
+        <article><span>Events</span><strong data-private-count="events">-</strong><small>Consented site actions</small></article>
+      </div>
+      <div class="report-detail">
+        <div>
+          <p class="kicker">Latest Protected Activity</p>
+          <ul class="report-list" data-private-report-list><li>Load private activity to view records.</li></ul>
+        </div>
+      </div>
+      <div class="form-status" data-private-report-status hidden></div>
+    </section>
     <section class="section report-panel" data-local-report>
       <div class="section-heading">
         <p class="kicker">Pilot Signals</p>
@@ -99,6 +123,6 @@
     <button class="button button-primary" type="submit" data-submit-form>Send to Lux Veritas</button>
   </form>
 </dialog>
-    <script src="../../app.js?v=20260608-stored-submit"></script>
+    <script src="../../app.js?v=20260608-private-report"></script>
   </body>
 </html>

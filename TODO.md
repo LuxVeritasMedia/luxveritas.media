@@ -24,6 +24,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Enable Cloud Firestore and create default Firestore Native database in `nam5` for form submission storage.
 - [x] Confirm live valid form submissions return `stored:true` from `/api/submit`.
 - [x] Add consented site-event relay for CTA, media, portal, and content-view reporting.
+- [x] Add protected activity report API for approved operator review.
 - [ ] Configure email provider runtime secrets for inbox notification after Firestore capture.
 
 ## P2 - Content Model
@@ -67,6 +68,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add deploy-artifact button QA for dead public buttons.
 - [x] Add public-site QA for internal links, nav/footer, noindex routes, banned terms, and media requirements.
 - [x] Add private noindex local activity report for pilot testing.
+- [x] Add private noindex operator activity report for stored submissions and consented events.
 - [x] Add post-deploy live smoke QA for production routes, player shell, manifest, noindex, and `/api/submit` status.
 
 ## P7 - Media MVP

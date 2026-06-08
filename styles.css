@@ -393,6 +393,13 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
   background: var(--line);
   margin-top: 44px;
 }
+.report-key-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: .75rem;
+  align-items: end;
+  margin-top: 28px;
+}
 .report-grid article {
   min-height: 190px;
   background: #0b0f0e;

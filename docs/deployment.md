@@ -13,6 +13,7 @@ Firebase Hosting serves the static site and rewrites:
 
 - `/api/submit` to the Firebase Function `submitForm`
 - `/api/event` to the Firebase Function `trackSiteEvent`
+- `/api/report` to the Firebase Function `reportActivity`
 
 ```bash
 firebase login
@@ -42,6 +43,12 @@ The site event function:
 - hashes client network identity before storage
 - leaves browser-local reporting intact as a fallback
 
+The activity report function:
+
+- requires a Google/Firebase bearer token from an approved Lux Veritas account
+- returns protected counts and latest records from `form_submissions` and `site_events`
+- is intended for the noindex private portal reporting page only
+
 Cloud Firestore is enabled for `lux-veritas-media`, with the default Firestore Native database in `nam5`.
 
 This Google Workspace organization blocks public `allUsers` IAM bindings, so the public form relay uses Cloud Run's Invoker IAM check disabled setting on the generated `submitform` service. The manual functions workflow reapplies that setting after function deploys:
@@ -49,6 +56,7 @@ This Google Workspace organization blocks public `allUsers` IAM bindings, so the
 ```bash
 gcloud run services update submitform --region us-central1 --project lux-veritas-media --no-invoker-iam-check
 gcloud run services update tracksiteevent --region us-central1 --project lux-veritas-media --no-invoker-iam-check
+gcloud run services update reportactivity --region us-central1 --project lux-veritas-media --no-invoker-iam-check
 ```
 
 Do not re-add `invoker: "public"` to the v2 function unless the org policy changes; Firebase deploy will try to write an `allUsers` IAM binding and fail.

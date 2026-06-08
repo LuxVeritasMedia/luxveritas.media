@@ -9,7 +9,7 @@ const requiredRoutes = [
   "/submissions.html",
   "/portal/reporting.html"
 ];
-const expectedAssetVersion = "20260608-stored-submit";
+const expectedAssetVersion = "20260608-private-report";
 
 async function fetchWithTimeout(path, options = {}) {
   const controller = new AbortController();
@@ -122,6 +122,23 @@ try {
   }
 } catch (error) {
   issues.push(`/api/event: request failed (${error.message})`);
+}
+
+try {
+  const { response, text } = await fetchWithTimeout("/api/report", {
+    method: "GET",
+    headers: { Accept: "application/json" },
+    readBody: true
+  });
+  if (response.status === 403 && /Forbidden/i.test(text)) {
+    issues.push("/api/report: Cloud Run public access is blocked (HTTP 403).");
+  } else if (response.status === 401) {
+    // Missing token should reach the function and be rejected there.
+  } else {
+    issues.push(`/api/report: expected protected HTTP 401, received ${response.status}`);
+  }
+} catch (error) {
+  issues.push(`/api/report: request failed (${error.message})`);
 }
 
 if (warnings.length) {

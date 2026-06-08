@@ -39,3 +39,4 @@ jobs:
         run: |
           gcloud run services update submitform --region us-central1 --project lux-veritas-media --no-invoker-iam-check
           gcloud run services update tracksiteevent --region us-central1 --project lux-veritas-media --no-invoker-iam-check
+          gcloud run services update reportactivity --region us-central1 --project lux-veritas-media --no-invoker-iam-check

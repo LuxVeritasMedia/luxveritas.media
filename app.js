@@ -47,6 +47,7 @@ const portalSigninForm = document.querySelector("[data-portal-signin-form]");
 const contactEmail = "info@luxveritas.media";
 const submitEndpoint = "/api/submit";
 const eventEndpoint = "/api/event";
+const reportEndpoint = "/api/report";
 const mediaManifestPath = "/data/lux-media-manifest.json";
 let activeFormType = "request";
 let mediaManifestPromise = null;
@@ -430,6 +431,68 @@ function setReportStatus(message) {
   status.hidden = false;
 }
 
+function setPrivateReportStatus(message) {
+  const status = document.querySelector("[data-private-report-status]");
+  if (!status) return;
+  status.textContent = message;
+  status.hidden = false;
+}
+
+function renderPrivateReport(report) {
+  const panel = document.querySelector("[data-private-report]");
+  if (!panel) return;
+
+  for (const [key, value] of Object.entries(report.counts || {})) {
+    const target = panel.querySelector(`[data-private-count="${key}"]`);
+    if (target) target.textContent = String(value);
+  }
+
+  const list = panel.querySelector("[data-private-report-list]");
+  if (!list) return;
+
+  const items = [
+    ...(report.latest?.submissions || []).map((item) => ({ ...item, type: "submission" })),
+    ...(report.latest?.events || []).map((item) => ({ ...item, type: "event" }))
+  ].sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || ""))).slice(0, 12);
+
+  if (!items.length) {
+    list.innerHTML = "<li>No protected activity found yet.</li>";
+    return;
+  }
+
+  list.innerHTML = items.map((item) => {
+    const label = item.client_submission_id || item.event || item.type || "activity";
+    const detail = item.formType || item.inquiry_type || item.page || item.role_path || "Lux Veritas";
+    const time = item.createdAt ? new Date(item.createdAt).toLocaleString() : "Recent";
+    return `<li><strong>${escapeHtml(label)}</strong><span>${escapeHtml(detail)}</span><small>${escapeHtml(time)}</small></li>`;
+  }).join("");
+}
+
+async function loadPrivateReport() {
+  const token = document.querySelector("[data-report-token]")?.value.trim();
+  if (!token) {
+    setPrivateReportStatus("Enter an approved operator token first.");
+    return;
+  }
+
+  setPrivateReportStatus("Loading private activity...");
+  try {
+    const response = await fetch(reportEndpoint, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`
+      }
+    });
+    const report = await response.json().catch(() => ({}));
+    if (!response.ok || !report.ok) throw new Error(report.error || "report_unavailable");
+    renderPrivateReport(report);
+    setPrivateReportStatus("Private activity loaded.");
+  } catch {
+    setPrivateReportStatus("Private activity is unavailable for this token.");
+  }
+}
+
 function exportLocalReport() {
   const report = localReportData();
   const blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" });
@@ -457,6 +520,10 @@ function clearLocalReport() {
 }
 
 function handleReportAction(action) {
+  if (action === "load-private") {
+    loadPrivateReport();
+    return;
+  }
   if (action === "export") {
     exportLocalReport();
     return;

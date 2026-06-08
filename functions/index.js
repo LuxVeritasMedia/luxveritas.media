@@ -14,6 +14,7 @@ const allowedOrigins = new Set([
 const rateWindowMs = 10 * 60 * 1000;
 const maxRequestsPerWindow = 5;
 const maxEventsPerWindow = 40;
+const maxReportsPerWindow = 20;
 const rateBuckets = new Map();
 
 function getDb() {
@@ -31,8 +32,8 @@ function setCors(req, res) {
     res.set("Access-Control-Allow-Origin", origin);
     res.set("Vary", "Origin");
   }
-  res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.set("Access-Control-Allow-Headers", "Content-Type");
+  res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
 }
 
 function clientKey(req) {
@@ -113,6 +114,52 @@ function validateEvent(payload) {
     },
     errors
   };
+}
+
+async function authorizeReport(req) {
+  const header = req.get("authorization") || "";
+  const token = header.toLowerCase().startsWith("bearer ") ? header.slice(7).trim() : "";
+  if (!token) return { ok: false, status: 401, error: "missing_token" };
+
+  const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?access_token=${encodeURIComponent(token)}`);
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) return { ok: false, status: 401, error: "invalid_token" };
+
+  const email = text(body.email, 240).toLowerCase();
+  const hostedDomain = text(body.hd, 120).toLowerCase();
+  const allowedEmails = new Set(
+    text(process.env.REPORT_ALLOWED_EMAILS || "info@luxveritas.media", 1000)
+      .split(",")
+      .map((item) => item.trim().toLowerCase())
+      .filter(Boolean)
+  );
+  const allowedDomain = text(process.env.REPORT_ALLOWED_DOMAIN || "luxveritas.media", 120).toLowerCase();
+  const allowed = allowedEmails.has(email) || (allowedDomain && hostedDomain === allowedDomain);
+
+  if (!allowed) return { ok: false, status: 403, error: "not_allowed" };
+  return { ok: true, email };
+}
+
+function cleanDoc(snapshot) {
+  const data = snapshot.data() || {};
+  const createdAt = data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : null;
+  return {
+    id: snapshot.id,
+    createdAt,
+    event: data.event || null,
+    page: data.page || data.source_page || null,
+    formType: data.formType || null,
+    inquiry_type: data.inquiry_type || null,
+    role_path: data.role_path || null,
+    deliveryStatus: data.deliveryStatus || null,
+    client_submission_id: data.client_submission_id || null,
+    detail: data.detail || null
+  };
+}
+
+async function collectionCount(collection) {
+  const result = await collection.count().get();
+  return result.data().count || 0;
 }
 
 function subjectFor(payload) {
@@ -306,6 +353,71 @@ export const trackSiteEvent = onRequest(
         errorMessage: error?.message || String(error)
       });
       json(res, 202, { ok: true, delivery: "fallback", reason: "storage_unavailable", id, stored: false });
+    }
+  }
+);
+
+export const reportActivity = onRequest(
+  {
+    region: "us-central1",
+    cors: false,
+    maxInstances: 5
+  },
+  async (req, res) => {
+    setCors(req, res);
+
+    if (req.method === "OPTIONS") {
+      res.status(204).send("");
+      return;
+    }
+
+    if (req.method !== "GET") {
+      json(res, 405, { ok: false, error: "method_not_allowed" });
+      return;
+    }
+
+    if (isRateLimited(req, maxReportsPerWindow, "report")) {
+      json(res, 429, { ok: false, error: "rate_limited" });
+      return;
+    }
+
+    const auth = await authorizeReport(req);
+    if (!auth.ok) {
+      json(res, auth.status, { ok: false, error: auth.error });
+      return;
+    }
+
+    const db = getDb();
+    const submissions = db.collection("form_submissions");
+    const events = db.collection("site_events");
+
+    try {
+      const [submissionCount, eventCount, latestSubmissions, latestEvents] = await Promise.all([
+        collectionCount(submissions),
+        collectionCount(events),
+        submissions.orderBy("createdAt", "desc").limit(20).get(),
+        events.orderBy("createdAt", "desc").limit(20).get()
+      ]);
+
+      json(res, 200, {
+        ok: true,
+        generatedAt: new Date().toISOString(),
+        viewer: auth.email,
+        counts: {
+          submissions: submissionCount,
+          events: eventCount
+        },
+        latest: {
+          submissions: latestSubmissions.docs.map(cleanDoc),
+          events: latestEvents.docs.map(cleanDoc)
+        }
+      });
+    } catch (error) {
+      logger.error("Activity report failed", {
+        errorCode: error?.code || null,
+        errorMessage: error?.message || String(error)
+      });
+      json(res, 500, { ok: false, error: "report_unavailable" });
     }
   }
 );
