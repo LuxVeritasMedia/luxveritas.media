@@ -1,6 +1,8 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
+const assetVersion = "20260608-form-relay";
+
 const nav = [
   ["Home", "/index.html"],
   ["Music", "/music.html"],
@@ -76,7 +78,7 @@ function shell({ path, title, description, eyebrow = "Lux Veritas", body, heroCl
     <meta property="og:image" content="${asset(path)}" />
     <title>${title}</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070909'/%3E%3Cpath d='M18 48V16h6v27h18v5H18Zm21-32h7L34 48h-6l11-32Z' fill='%23c8a86a'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="${root}styles.css" />
+    <link rel="stylesheet" href="${root}styles.css?v=${assetVersion}" />
   </head>
   <body data-page="${path}">
     <a class="skip-link" href="#main">Skip to content</a>
@@ -96,7 +98,7 @@ function shell({ path, title, description, eyebrow = "Lux Veritas", body, heroCl
     </main>
     ${footer()}
     ${formDialog()}
-    <script src="${root}app.js"></script>
+    <script src="${root}app.js?v=${assetVersion}"></script>
   </body>
 </html>`;
 }
