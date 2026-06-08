@@ -17,6 +17,8 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Rewrite Events as request-access invitation layer.
 - [x] Add static email handoff to `info@luxveritas.media` for public forms.
 - [x] Add Firebase server-side form relay with validation, honeypot, rate limiting, and email fallback.
+- [x] Deploy public site from a clean `dist` artifact instead of the repo root.
+- [ ] Fix Firebase/Cloud Run IAM so `submitForm` can be invoked by Hosting.
 - [ ] Configure email provider runtime secrets so server relay sends silently without visitor mail app.
 
 ## P2 - Content Model
