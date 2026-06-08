@@ -43,6 +43,7 @@ const navToggle = document.querySelector("[data-nav-toggle]");
 const dialog = document.querySelector("[data-dialog]");
 const dialogForm = dialog?.querySelector(".dialog-shell");
 const statusBox = document.querySelector("[data-form-status]");
+const portalSigninForm = document.querySelector("[data-portal-signin-form]");
 const contactEmail = "info@luxveritas.media";
 const submitEndpoint = "/api/submit";
 let activeFormType = "request";
@@ -233,6 +234,33 @@ async function handleFormSubmit(event) {
   submitButton.textContent = "Send to Lux Veritas";
 }
 
+function handlePortalSignin(event) {
+  event.preventDefault();
+  if (!portalSigninForm?.reportValidity()) return;
+
+  const email = portalSigninForm.email.value.trim().toLowerCase();
+  const status = portalSigninForm.querySelector("[data-portal-status]");
+  const attempts = readJson("luxveritas_portal_attempts", []);
+  const payload = {
+    email,
+    source_page: window.location.pathname,
+    timestamp: new Date().toISOString(),
+    status: "screened_access_required"
+  };
+
+  attempts.push(payload);
+  writeJson("luxveritas_portal_attempts", attempts.slice(-50));
+  trackEvent("portal_signin_attempt", { status: payload.status });
+
+  const dialogEmail = dialogForm?.querySelector('[name="email"]');
+  if (dialogEmail && !dialogEmail.value) dialogEmail.value = email;
+
+  if (status) {
+    status.innerHTML = `Portal access is screened. If this email is already approved, account access will open during the private portal phase. Otherwise, use <button class="inline-link" type="button" data-open-form="request">Request Access</button>.`;
+    status.hidden = false;
+  }
+}
+
 function mountConsentBanner() {
   if (getStoredValue("luxveritas_consent")) return;
   const banner = document.createElement("div");
@@ -269,11 +297,11 @@ document.querySelectorAll("[data-close-dialog]").forEach((button) => {
   button.addEventListener("click", () => dialog?.close());
 });
 
-document.querySelectorAll("[data-open-form]").forEach((button) => {
-  button.addEventListener("click", (event) => {
-    event.preventDefault();
-    openForm(button.dataset.openForm);
-  });
+document.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-open-form]");
+  if (!button) return;
+  event.preventDefault();
+  openForm(button.dataset.openForm);
 });
 
 document.querySelectorAll("[data-track]").forEach((button) => {
@@ -283,6 +311,7 @@ document.querySelectorAll("[data-track]").forEach((button) => {
 });
 
 dialogForm?.addEventListener("submit", handleFormSubmit);
+portalSigninForm?.addEventListener("submit", handlePortalSignin);
 
 document.querySelectorAll(".section, .vertical-card, .release-rail article, .slate div, .event-card, .codex-card, .ops-grid article, .portal-grid article").forEach((el) => {
   el.setAttribute("data-reveal", "");

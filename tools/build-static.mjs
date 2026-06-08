@@ -311,10 +311,11 @@ function signInShell() {
     noindex: true,
     body: `${pageHero("Private Access", "Sign In", "Use the email connected to your approved Lux Veritas access.\n\nAccess is screened by role and invitation.\n\nThis portal is for approved artists, creators, partners, members, and operators.\n\nSign in if you already have access, or request access if you are entering through submissions, membership, press, partnerships, licensing, or investor inquiry.")}
     <section class="section prose-block">
-      <form class="inline-form auth-form" action="#" method="dialog">
-        <label><span>Email</span><input type="email" name="email" autocomplete="email" placeholder="you@example.com" /></label>
+      <form class="inline-form auth-form" action="/portal/index.html" method="get" data-portal-signin-form>
+        <label><span>Email</span><input type="email" name="email" autocomplete="email" placeholder="you@example.com" required /></label>
+        <div class="form-status" data-portal-status hidden></div>
         <div class="hero-actions">
-          <button class="button button-primary" type="button">Continue</button>
+          <button class="button button-primary" type="submit" data-portal-signin>Continue</button>
           <button class="button button-quiet" type="button" data-open-form="request">Request Access</button>
         </div>
       </form>

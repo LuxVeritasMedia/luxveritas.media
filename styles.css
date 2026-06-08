@@ -367,6 +367,17 @@ select option { color: var(--ink); }
   color: var(--gold);
   padding: .8rem;
 }
+.inline-link {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--gold);
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 .consent-banner {
   position: fixed;
   z-index: 25;

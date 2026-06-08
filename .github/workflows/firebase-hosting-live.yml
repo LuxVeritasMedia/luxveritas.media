@@ -35,6 +35,9 @@ jobs:
       - name: Prepare Hosting artifact
         run: node tools/prepare-hosting.mjs
 
+      - name: QA public buttons
+        run: node tools/qa-buttons.mjs
+
       - name: Install Functions dependencies
         run: npm --prefix functions ci
 
