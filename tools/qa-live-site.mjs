@@ -9,7 +9,7 @@ const requiredRoutes = [
   "/submissions.html",
   "/portal/reporting.html"
 ];
-const expectedAssetVersion = "20260608-site-events";
+const expectedAssetVersion = "20260608-stored-submit";
 
 async function fetchWithTimeout(path, options = {}) {
   const controller = new AbortController();

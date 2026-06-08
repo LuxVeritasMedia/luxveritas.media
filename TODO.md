@@ -24,7 +24,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Enable Cloud Firestore and create default Firestore Native database in `nam5` for form submission storage.
 - [x] Confirm live valid form submissions return `stored:true` from `/api/submit`.
 - [x] Add consented site-event relay for CTA, media, portal, and content-view reporting.
-- [ ] Configure email provider runtime secrets so server relay sends silently without visitor mail app.
+- [ ] Configure email provider runtime secrets for inbox notification after Firestore capture.
 
 ## P2 - Content Model
 - [x] Split Codex into Outer / Inner / Sanctum.

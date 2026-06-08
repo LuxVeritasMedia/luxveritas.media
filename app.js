@@ -179,10 +179,17 @@ function sendEventToServer(payload) {
 }
 
 function fallbackIntro(result) {
-  if (result?.delivery === "stored") {
-    return "Your request was accepted. To make sure it reaches the inbox today, send the drafted email below as well.";
-  }
   return "The direct handoff is not available from this browser right now. Send the drafted email below to complete your submission.";
+}
+
+function showSubmissionSuccess(payload, message) {
+  statusBox.innerHTML = `${escapeHtml(message)}<br /><span class="receipt-code">Receipt ${escapeHtml(payload.client_submission_id)}</span>`;
+  statusBox.hidden = false;
+  dialogForm.reset();
+  trackEvent("lead_accepted", {
+    formType: payload.formType,
+    receipt: payload.client_submission_id
+  });
 }
 
 function showEmailFallback(payload, href, result, copied) {
@@ -567,9 +574,13 @@ async function handleFormSubmit(event) {
       delivered_at: result.delivery === "sent" ? new Date().toISOString() : null
     });
     if (result.delivery === "sent") {
-      statusBox.innerHTML = `Sent. Thank you. Your message has reached Lux Veritas.<br /><span class="receipt-code">Receipt ${escapeHtml(payload.client_submission_id)}</span>`;
-      statusBox.hidden = false;
-      dialogForm.reset();
+      showSubmissionSuccess(payload, "Sent. Thank you. Your message has reached Lux Veritas.");
+      submitButton.disabled = false;
+      submitButton.textContent = "Send to Lux Veritas";
+      return;
+    }
+    if (result.delivery === "stored") {
+      showSubmissionSuccess(payload, "Received. Thank you. Your request is recorded with Lux Veritas.");
       submitButton.disabled = false;
       submitButton.textContent = "Send to Lux Veritas";
       return;

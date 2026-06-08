@@ -49,6 +49,14 @@ for (const file of requiredFiles) {
 }
 
 const files = (await walk(root)).filter((file) => file.endsWith(".html"));
+const appJs = await readFile(join(root, "app.js"), "utf8");
+
+if (!appJs.includes('result.delivery === "stored"')) {
+  issues.push("app.js: stored form submissions are not handled as accepted");
+}
+if (!appJs.includes("Received. Thank you. Your request is recorded with Lux Veritas.")) {
+  issues.push("app.js: missing stored-submission success message");
+}
 
 for (const file of files) {
   const rel = relative(root, file);

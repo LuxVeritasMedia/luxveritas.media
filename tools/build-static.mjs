@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260608-site-events";
+const assetVersion = "20260608-stored-submit";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 
 const nav = [
