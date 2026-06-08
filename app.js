@@ -150,6 +150,24 @@ async function submitToServer(payload) {
   return result;
 }
 
+function fallbackIntro(result) {
+  if (result?.delivery === "stored") {
+    return "Your request was accepted. To make sure it reaches the inbox today, send the drafted email below as well.";
+  }
+  return "The direct handoff is not available from this browser right now. Send the drafted email below to complete your submission.";
+}
+
+function showEmailFallback(payload, href, result, copied) {
+  const intro = fallbackIntro(result);
+  statusBox.innerHTML = `${escapeHtml(intro)}${copied ? " A copy has also been placed on your clipboard." : ""}<br /><a class="button button-primary" href="${escapeHtml(href)}">Open email draft</a>`;
+  statusBox.hidden = false;
+  trackEvent("lead_fallback", {
+    formType: payload.formType,
+    delivery: result?.delivery || "email_draft",
+    copied
+  });
+}
+
 function setScrolledHeader() {
   header?.classList.toggle("scrolled", window.scrollY > 24);
 }
@@ -255,12 +273,16 @@ async function handleFormSubmit(event) {
 
   const submitButton = dialogForm.querySelector("[data-submit-form]");
   submitButton.disabled = true;
-  submitButton.textContent = "Preparing email...";
+  submitButton.textContent = "Sending...";
+  statusBox.textContent = "Sending your request...";
+  statusBox.hidden = false;
 
   const data = Object.fromEntries(new FormData(dialogForm).entries());
   if (data.company_url) {
     submitButton.disabled = false;
     submitButton.textContent = "Send to Lux Veritas";
+    statusBox.hidden = true;
+    statusBox.textContent = "";
     return;
   }
 
@@ -280,8 +302,9 @@ async function handleFormSubmit(event) {
   writeJson("luxveritas_submissions", submissions.slice(-50));
   trackEvent("lead", { formType: activeFormType });
 
+  let result = null;
   try {
-    const result = await submitToServer(payload);
+    result = await submitToServer(payload);
     if (result.delivery === "sent") {
       statusBox.textContent = "Sent. Thank you. Your message has reached Lux Veritas.";
       statusBox.hidden = false;
@@ -291,13 +314,11 @@ async function handleFormSubmit(event) {
       return;
     }
   } catch {
-    // Fall through to email-draft fallback.
+    result = null;
   }
 
   const copied = await copySubmissionToClipboard(body);
-  statusBox.innerHTML = `Your email app should open now. Send the drafted message to complete your submission to Lux Veritas.${copied ? " A copy has also been placed on your clipboard." : ""}<br /><a href="${escapeHtml(href)}">Open email manually</a>`;
-  statusBox.hidden = false;
-  window.location.href = href;
+  showEmailFallback(payload, href, result, copied);
   submitButton.disabled = false;
   submitButton.textContent = "Send to Lux Veritas";
 }

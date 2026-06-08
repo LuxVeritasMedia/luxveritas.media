@@ -19,7 +19,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add Firebase server-side form relay with validation, honeypot, rate limiting, and email fallback.
 - [x] Deploy public site from a clean `dist` artifact instead of the repo root.
 - [x] Split Firebase Functions deploy into a manual workflow until Cloud Run IAM is fixed.
-- [ ] Fix Firebase/Cloud Run IAM so `submitForm` can be invoked by Hosting.
+- [ ] Fix Firebase/Cloud Run IAM so `submitForm` can be invoked by Hosting. Current blocker: deploy reaches Cloud Run, then fails on `Unable to set the invoker for the IAM policy` for `submitForm(us-central1)`.
 - [ ] Configure email provider runtime secrets so server relay sends silently without visitor mail app.
 
 ## P2 - Content Model
@@ -59,6 +59,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [ ] Check mobile layout.
 - [x] Check primary CTAs in generated source.
 - [x] Check form modal open/action/button behavior locally.
+- [x] Replace automatic `mailto:` jump with visible email-draft fallback to prevent submit-page freeze.
 - [x] Add deploy-artifact button QA for dead public buttons.
 - [x] Add public-site QA for internal links, nav/footer, noindex routes, banned terms, and media requirements.
 
