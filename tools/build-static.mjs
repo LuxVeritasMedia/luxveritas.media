@@ -1,7 +1,8 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260608-media-player";
+const assetVersion = "20260608-media-manifest";
+const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 
 const nav = [
   ["Home", "/index.html"],
@@ -175,6 +176,7 @@ function cta() {
 
 function mediaPlayerShell(context = "music") {
   const compact = context === "spmvp";
+  const items = mediaManifest.items.filter((item) => item.contexts.includes(context));
   return `<section class="section media-player-section" data-media-player data-player-context="${context}">
     <div class="media-player-copy">
       <p class="kicker">Lux Player</p>
@@ -194,15 +196,9 @@ function mediaPlayerShell(context = "music") {
         </div>
       </div>
       <div class="media-queue" role="list" aria-label="Media queue">
-        <button class="media-item active" type="button" data-media-item data-kind="release" data-title="SPMVP" data-status="Current release signal. Full listening links open as approved release paths go live." role="listitem">
-          <span>Release</span><strong>SPMVP</strong><small>Current doorway</small>
-        </button>
-        <button class="media-item" type="button" data-media-item data-kind="visual" data-title="Visual World" data-status="Visual chapter routing is ready. Public video source attaches here when approved." role="listitem">
-          <span>Visual</span><strong>Visual World</strong><small>Watch path</small>
-        </button>
-        <button class="media-item" type="button" data-media-item data-kind="radio" data-title="Lux Radio" data-status="Radio mode is queued for scheduled programming, DJ notes, and future live rooms." role="listitem">
-          <span>Radio</span><strong>Lux Radio</strong><small>Coming signal</small>
-        </button>
+        ${items.map((item, index) => `<button class="media-item${index === 0 ? " active" : ""}" type="button" data-media-item data-media-id="${item.id}" data-kind="${item.kind}" data-title="${item.title}" data-status="${item.status}" data-action="${item.primaryAction}" data-access="${item.access}" data-source-url="${item.sourceUrl || ""}" role="listitem">
+          <span>${item.label}</span><strong>${item.title}</strong><small>${item.summary}</small>
+        </button>`).join("")}
       </div>
       <div class="media-report" data-media-report>0 media actions recorded in this session.</div>
     </div>

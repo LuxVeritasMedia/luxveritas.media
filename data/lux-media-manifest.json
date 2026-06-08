@@ -1,0 +1,45 @@
+{
+  "version": "2026-06-08-media-mvp",
+  "updatedAt": "2026-06-08T00:00:00.000Z",
+  "items": [
+    {
+      "id": "spmvp-release",
+      "contexts": ["music", "spmvp"],
+      "kind": "release",
+      "label": "Release",
+      "title": "SPMVP",
+      "summary": "Current doorway",
+      "status": "Current release signal. Full listening links open as approved release paths go live.",
+      "access": "public-preview",
+      "primaryAction": "play",
+      "sourceUrl": null,
+      "posterUrl": null
+    },
+    {
+      "id": "visual-world",
+      "contexts": ["music", "spmvp"],
+      "kind": "visual",
+      "label": "Visual",
+      "title": "Visual World",
+      "summary": "Watch path",
+      "status": "Visual chapter routing is ready. Public video source attaches here when approved.",
+      "access": "public-preview",
+      "primaryAction": "watch",
+      "sourceUrl": null,
+      "posterUrl": null
+    },
+    {
+      "id": "lux-radio",
+      "contexts": ["music", "spmvp"],
+      "kind": "radio",
+      "label": "Radio",
+      "title": "Lux Radio",
+      "summary": "Coming signal",
+      "status": "Radio mode is queued for scheduled programming, DJ notes, and future live rooms.",
+      "access": "waitlist",
+      "primaryAction": "radio",
+      "sourceUrl": null,
+      "posterUrl": null
+    }
+  ]
+}

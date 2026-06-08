@@ -10,7 +10,7 @@
     <meta property="og:image" content="../assets/luxveritas-threshold.png" />
     <title>Music | Lux Veritas</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070909'/%3E%3Cpath d='M18 48V16h6v27h18v5H18Zm21-32h7L34 48h-6l11-32Z' fill='%23c8a86a'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="../styles.css?v=20260608-media-player" />
+    <link rel="stylesheet" href="../styles.css?v=20260608-media-manifest" />
   </head>
   <body data-page="/music.html">
     <a class="skip-link" href="#main">Skip to content</a>
@@ -55,13 +55,11 @@ Every release is intentional, protected, and built to last.</p>
         </div>
       </div>
       <div class="media-queue" role="list" aria-label="Media queue">
-        <button class="media-item active" type="button" data-media-item data-kind="release" data-title="SPMVP" data-status="Current release signal. Full listening links open as approved release paths go live." role="listitem">
+        <button class="media-item active" type="button" data-media-item data-media-id="spmvp-release" data-kind="release" data-title="SPMVP" data-status="Current release signal. Full listening links open as approved release paths go live." data-action="play" data-access="public-preview" data-source-url="" role="listitem">
           <span>Release</span><strong>SPMVP</strong><small>Current doorway</small>
-        </button>
-        <button class="media-item" type="button" data-media-item data-kind="visual" data-title="Visual World" data-status="Visual chapter routing is ready. Public video source attaches here when approved." role="listitem">
+        </button><button class="media-item" type="button" data-media-item data-media-id="visual-world" data-kind="visual" data-title="Visual World" data-status="Visual chapter routing is ready. Public video source attaches here when approved." data-action="watch" data-access="public-preview" data-source-url="" role="listitem">
           <span>Visual</span><strong>Visual World</strong><small>Watch path</small>
-        </button>
-        <button class="media-item" type="button" data-media-item data-kind="radio" data-title="Lux Radio" data-status="Radio mode is queued for scheduled programming, DJ notes, and future live rooms." role="listitem">
+        </button><button class="media-item" type="button" data-media-item data-media-id="lux-radio" data-kind="radio" data-title="Lux Radio" data-status="Radio mode is queued for scheduled programming, DJ notes, and future live rooms." data-action="radio" data-access="waitlist" data-source-url="" role="listitem">
           <span>Radio</span><strong>Lux Radio</strong><small>Coming signal</small>
         </button>
       </div>
@@ -120,6 +118,6 @@ Every release is intentional, protected, and built to last.</p>
     <button class="button button-primary" type="submit" data-submit-form>Send to Lux Veritas</button>
   </form>
 </dialog>
-    <script src="../app.js?v=20260608-media-player"></script>
+    <script src="../app.js?v=20260608-media-manifest"></script>
   </body>
 </html>

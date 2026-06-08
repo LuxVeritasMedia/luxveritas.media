@@ -9,6 +9,7 @@ const requiredFiles = [
   "styles.css",
   "robots.txt",
   "sitemap.xml",
+  "data/lux-media-manifest.json",
   "assets/luxveritas-threshold.png"
 ];
 const expectedNav = ["Home", "Music", "Film", "Events", "Codex", "About", "Join"];
@@ -148,6 +149,36 @@ for (const file of htmlFiles) {
 const appJs = await readFile(join(root, "app.js"), "utf8");
 for (const pattern of bannedTerms) {
   if (pattern.test(appJs)) issues.push(`app.js: banned public term matched ${pattern}`);
+}
+
+const mediaManifestRaw = await readFile(join(root, "data/lux-media-manifest.json"), "utf8");
+for (const pattern of bannedTerms) {
+  if (pattern.test(mediaManifestRaw)) issues.push(`data/lux-media-manifest.json: banned public term matched ${pattern}`);
+}
+
+try {
+  const mediaManifest = JSON.parse(mediaManifestRaw);
+  const items = Array.isArray(mediaManifest.items) ? mediaManifest.items : [];
+  const kinds = new Set(items.map((item) => item.kind));
+  for (const kind of ["release", "visual", "radio"]) {
+    if (!kinds.has(kind)) issues.push(`data/lux-media-manifest.json: missing media kind ${kind}`);
+  }
+  for (const item of items) {
+    if (!item.id || !item.title || !item.kind || !item.status) {
+      issues.push(`data/lux-media-manifest.json: item is missing required public fields`);
+    }
+    if (!Array.isArray(item.contexts) || !item.contexts.length) {
+      issues.push(`data/lux-media-manifest.json: ${item.id || "item"} missing contexts`);
+    }
+    if (item.sourceUrl && !/^https:\/\//i.test(item.sourceUrl)) {
+      issues.push(`data/lux-media-manifest.json: ${item.id || "item"} has non-HTTPS sourceUrl`);
+    }
+    if (item.posterUrl && !/^https:\/\//i.test(item.posterUrl) && !item.posterUrl.startsWith("/assets/")) {
+      issues.push(`data/lux-media-manifest.json: ${item.id || "item"} has invalid posterUrl`);
+    }
+  }
+} catch (error) {
+  issues.push(`data/lux-media-manifest.json: invalid JSON (${error.message})`);
 }
 
 if (issues.length) {

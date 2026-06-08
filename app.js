@@ -46,7 +46,9 @@ const statusBox = document.querySelector("[data-form-status]");
 const portalSigninForm = document.querySelector("[data-portal-signin-form]");
 const contactEmail = "info@luxveritas.media";
 const submitEndpoint = "/api/submit";
+const mediaManifestPath = "/data/lux-media-manifest.json";
 let activeFormType = "request";
+let mediaManifestPromise = null;
 
 function readJson(key, fallback) {
   try {
@@ -207,8 +209,10 @@ function writeMediaEvent(action, player, item = {}) {
   const payload = {
     action,
     context: player?.dataset.playerContext || document.body.dataset.page || "site",
+    media_id: item.mediaId || item.id || null,
     title: item.title || player?.querySelector("[data-media-title]")?.textContent?.trim() || "SPMVP",
     kind: item.kind || player?.querySelector("[data-media-mode]")?.textContent?.trim()?.toLowerCase() || "signal",
+    access: item.access || null,
     source_page: window.location.pathname,
     timestamp: new Date().toISOString()
   };
@@ -231,17 +235,68 @@ function setMediaProgress(player, percent) {
   if (bar) bar.style.width = `${Math.max(0, Math.min(percent, 100))}%`;
 }
 
-function setActiveMediaItem(player, item) {
+function setActiveMediaItem(player, item, options = {}) {
   if (!player || !item) return;
   player.querySelectorAll("[data-media-item]").forEach((button) => {
     button.classList.toggle("active", button === item);
   });
-  player.querySelector("[data-media-mode]").textContent = item.dataset.kind || "signal";
-  player.querySelector("[data-media-title]").textContent = item.dataset.title || "SPMVP";
-  player.querySelector("[data-media-status]").textContent = item.dataset.status || "Ready for public preview routing.";
+  const mode = player.querySelector("[data-media-mode]");
+  const title = player.querySelector("[data-media-title]");
+  const status = player.querySelector("[data-media-status]");
+  if (mode) mode.textContent = item.dataset.kind || "signal";
+  if (title) title.textContent = item.dataset.title || "SPMVP";
+  if (status) status.textContent = item.dataset.status || "Ready for public preview routing.";
   setMediaProgress(player, 18);
-  writeMediaEvent("select", player, item.dataset);
+  if (options.record !== false) writeMediaEvent("select", player, item.dataset);
   updateMediaReport(player);
+}
+
+function mediaItemMarkup(item, index) {
+  const sourceUrl = item.sourceUrl || "";
+  return `<button class="media-item${index === 0 ? " active" : ""}" type="button" data-media-item data-media-id="${escapeHtml(item.id)}" data-kind="${escapeHtml(item.kind)}" data-title="${escapeHtml(item.title)}" data-status="${escapeHtml(item.status)}" data-action="${escapeHtml(item.primaryAction)}" data-access="${escapeHtml(item.access)}" data-source-url="${escapeHtml(sourceUrl)}" role="listitem">
+    <span>${escapeHtml(item.label)}</span><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.summary)}</small>
+  </button>`;
+}
+
+function itemsForPlayer(manifest, player) {
+  const context = player?.dataset.playerContext || "music";
+  return (manifest.items || []).filter((item) => Array.isArray(item.contexts) && item.contexts.includes(context));
+}
+
+async function loadMediaManifest() {
+  if (!mediaManifestPromise) {
+    mediaManifestPromise = fetch(mediaManifestPath, { headers: { Accept: "application/json" } })
+      .then((response) => {
+        if (!response.ok) throw new Error("media_manifest_unavailable");
+        return response.json();
+      })
+      .then((manifest) => {
+        if (!Array.isArray(manifest.items)) throw new Error("media_manifest_invalid");
+        return manifest;
+      });
+  }
+  return mediaManifestPromise;
+}
+
+function renderMediaPlayer(player, manifest) {
+  const queue = player?.querySelector(".media-queue");
+  const items = itemsForPlayer(manifest, player);
+  if (!queue || !items.length) {
+    updateMediaReport(player);
+    return;
+  }
+
+  queue.innerHTML = items.map(mediaItemMarkup).join("");
+  const first = queue.querySelector("[data-media-item]");
+  setActiveMediaItem(player, first, { record: false });
+}
+
+function hydrateMediaPlayers() {
+  const players = [...document.querySelectorAll("[data-media-player]")];
+  if (!players.length) return;
+  loadMediaManifest()
+    .then((manifest) => players.forEach((player) => renderMediaPlayer(player, manifest)))
+    .catch(() => players.forEach(updateMediaReport));
 }
 
 function handleMediaAction(action, player) {
@@ -255,6 +310,8 @@ function handleMediaAction(action, player) {
 
   const title = player.querySelector("[data-media-title]")?.textContent?.trim() || "SPMVP";
   const status = player.querySelector("[data-media-status]");
+  const activeItem = player.querySelector(".media-item.active");
+  const approvedSource = activeItem?.dataset.sourceUrl;
   const messages = {
     play: `${title} listen intent recorded. Full audio source attaches here when the approved release link is live.`,
     watch: `${title} watch intent recorded. Public video routing is ready for the approved visual source.`,
@@ -263,8 +320,12 @@ function handleMediaAction(action, player) {
 
   if (status) status.textContent = messages[action] || "Media intent recorded.";
   setMediaProgress(player, action === "play" ? 48 : action === "watch" ? 66 : 82);
-  writeMediaEvent(action, player);
+  writeMediaEvent(action, player, activeItem?.dataset || {});
   updateMediaReport(player);
+
+  if (approvedSource) {
+    window.open(approvedSource, "_blank", "noopener");
+  }
 }
 
 async function handleFormSubmit(event) {
@@ -415,7 +476,7 @@ document.querySelectorAll("[data-track]").forEach((button) => {
 
 dialogForm?.addEventListener("submit", handleFormSubmit);
 portalSigninForm?.addEventListener("submit", handlePortalSignin);
-document.querySelectorAll("[data-media-player]").forEach(updateMediaReport);
+hydrateMediaPlayers();
 
 document.querySelectorAll(".section, .vertical-card, .release-rail article, .slate div, .event-card, .codex-card, .ops-grid article, .portal-grid article, .media-player").forEach((el) => {
   el.setAttribute("data-reveal", "");

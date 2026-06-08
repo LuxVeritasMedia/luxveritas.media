@@ -54,5 +54,7 @@ for (const file of files) {
 
 await mkdir(join(dist, "assets"), { recursive: true });
 await cp("assets/luxveritas-threshold.png", join(dist, "assets/luxveritas-threshold.png"));
+await mkdir(join(dist, "data"), { recursive: true });
+await cp("data/lux-media-manifest.json", join(dist, "data/lux-media-manifest.json"));
 
-console.log(`Prepared Firebase Hosting artifact with ${files.length + 1} files.`);
+console.log(`Prepared Firebase Hosting artifact with ${files.length + 2} files.`);
