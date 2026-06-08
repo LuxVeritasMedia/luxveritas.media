@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260608-media-manifest";
+const assetVersion = "20260608-local-reporting";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 
 const nav = [
@@ -378,6 +378,41 @@ function portal(path, title, cards = "") {
   });
 }
 
+function portalReport() {
+  return shell({
+    path: "/portal/reporting.html",
+    title: "Local Activity Report | Lux Veritas Portal",
+    description: "Private local activity report for Lux Veritas pilot testing.",
+    noindex: true,
+    body: `${pageHero("Portal", "Local Activity Report", "A private pilot view for checking activity captured on this device.")}
+    <section class="section report-panel" data-local-report>
+      <div class="section-heading">
+        <p class="kicker">Pilot Signals</p>
+        <h2>Captured here, exportable when needed.</h2>
+        <p>This report reads only activity remembered by this browser: page events, media actions, form drafts, and private access attempts.</p>
+      </div>
+      <div class="report-grid" aria-label="Local activity totals">
+        <article><span>Site Events</span><strong data-report-count="events">0</strong><small>Views and consent updates</small></article>
+        <article><span>Media Actions</span><strong data-report-count="media">0</strong><small>Listen, watch, radio, and queue selections</small></article>
+        <article><span>Form Drafts</span><strong data-report-count="submissions">0</strong><small>Requests prepared from this browser</small></article>
+        <article><span>Portal Attempts</span><strong data-report-count="portal">0</strong><small>Private access email checks</small></article>
+      </div>
+      <div class="report-detail">
+        <div>
+          <p class="kicker">Latest Activity</p>
+          <ul class="report-list" data-report-list><li>No local activity recorded yet.</li></ul>
+        </div>
+        <div class="report-actions">
+          <button class="button button-primary" type="button" data-report-action="refresh">Refresh Report</button>
+          <button class="button button-quiet" type="button" data-report-action="export">Export JSON</button>
+          <button class="button button-quiet" type="button" data-report-action="clear">Clear Local Report</button>
+        </div>
+      </div>
+      <div class="form-status" data-report-status hidden></div>
+    </section>`
+  });
+}
+
 function placeholder(path, title, description) {
   return shell({
     path,
@@ -459,6 +494,7 @@ const pages = [
   ["/portal/index.html", shell({ path: "/portal/index.html", title: "Portal | Lux Veritas", description: "Private access for approved members, collaborators, and selected guests.", noindex: true, body: `${pageHero("Private Access", "Private Access", "This portal is for approved artists, creators, partners, members, and operators.", `<div class="hero-actions"><a class="button button-primary" href="/auth/signin.html">Sign In</a><button class="button button-quiet" data-open-form="request">Request Access</button></div>`)}<section class="section empty-state"><p class="kicker">Screened Entry</p><h2>Access is screened by role and invitation.</h2><p>Use the sign-in page if you already have access, or request access if you are entering through submissions, membership, press, partnerships, licensing, or investor inquiry.</p></section>` })],
   ["/portal/library.html", accessShell("/portal/library.html", "Creator", "Private creator materials are available by screened access.", "Creator tools and private materials are not published in the public layer.")],
   ["/portal/releases.html", accessShell("/portal/releases.html", "Licensing", "Private release and licensing materials are available by request.", "Licensing conversations and private release materials are screened before access opens.")],
+  ["/portal/reporting.html", portalReport()],
   ["/portal/admin.html", accessShell("/portal/admin.html", "Admin", "This area is not available for public browsing.", "Administrative views are internal-only and not published in client-facing markup.")],
   ["/portal/admin/users.html", accessShell("/portal/admin/users.html", "Users", "This area is not available for public browsing.", "Administrative views are internal-only and not published in client-facing markup.")],
   ["/works/index.html", utility("/works/index.html", "Works", "Selected published projects and intentional teasers from across Lux Veritas.", "<p>Works gathers music, film, and related releases that are ready to be seen publicly. What appears here has been chosen for public view with intention.</p>")],

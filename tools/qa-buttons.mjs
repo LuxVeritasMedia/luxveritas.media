@@ -13,6 +13,7 @@ const actionAttributes = [
   "data-media-action",
   "data-media-item",
   "data-portal-signin",
+  "data-report-action",
   "data-submit-form"
 ];
 

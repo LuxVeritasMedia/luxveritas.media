@@ -299,6 +299,102 @@ function hydrateMediaPlayers() {
     .catch(() => players.forEach(updateMediaReport));
 }
 
+function localReportData() {
+  const events = readJson("luxveritas_events", []);
+  const media = readJson("luxveritas_media_events", []);
+  const submissions = readJson("luxveritas_submissions", []);
+  const portal = readJson("luxveritas_portal_attempts", []);
+  return {
+    generatedAt: new Date().toISOString(),
+    source: "luxveritas.media",
+    page: window.location.pathname,
+    counts: {
+      events: events.length,
+      media: media.length,
+      submissions: submissions.length,
+      portal: portal.length
+    },
+    latest: [...events, ...media, ...submissions, ...portal]
+      .filter(Boolean)
+      .sort((a, b) => String(b.timestamp || "").localeCompare(String(a.timestamp || "")))
+      .slice(0, 12),
+    events,
+    media,
+    submissions,
+    portal
+  };
+}
+
+function renderLocalReport() {
+  const panel = document.querySelector("[data-local-report]");
+  if (!panel) return;
+  const report = localReportData();
+  for (const [key, value] of Object.entries(report.counts)) {
+    const target = panel.querySelector(`[data-report-count="${key}"]`);
+    if (target) target.textContent = String(value);
+  }
+
+  const list = panel.querySelector("[data-report-list]");
+  if (!list) return;
+  if (!report.latest.length) {
+    list.innerHTML = "<li>No local activity recorded yet.</li>";
+    return;
+  }
+
+  list.innerHTML = report.latest.map((item) => {
+    const label = item.event || item.action || item.formType || item.status || "activity";
+    const detail = item.title || item.role_path || item.email || item.page || item.source_page || "Lux Veritas";
+    const time = item.timestamp ? new Date(item.timestamp).toLocaleString() : "Recent";
+    return `<li><strong>${escapeHtml(label)}</strong><span>${escapeHtml(detail)}</span><small>${escapeHtml(time)}</small></li>`;
+  }).join("");
+}
+
+function setReportStatus(message) {
+  const status = document.querySelector("[data-report-status]");
+  if (!status) return;
+  status.textContent = message;
+  status.hidden = false;
+}
+
+function exportLocalReport() {
+  const report = localReportData();
+  const blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `luxveritas-local-report-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  setReportStatus("Local report exported from this browser.");
+}
+
+function clearLocalReport() {
+  for (const key of ["luxveritas_events", "luxveritas_media_events", "luxveritas_submissions", "luxveritas_portal_attempts"]) {
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      // Best-effort cleanup for locked-down browsers.
+    }
+  }
+  renderLocalReport();
+  setReportStatus("Local report cleared on this device.");
+}
+
+function handleReportAction(action) {
+  if (action === "export") {
+    exportLocalReport();
+    return;
+  }
+  if (action === "clear") {
+    clearLocalReport();
+    return;
+  }
+  renderLocalReport();
+  setReportStatus("Local report refreshed.");
+}
+
 function handleMediaAction(action, player) {
   if (!player) {
     player = document.querySelector("[data-media-player]");
@@ -468,6 +564,13 @@ document.addEventListener("click", (event) => {
   handleMediaAction(button.dataset.mediaAction, button.closest("[data-media-player]"));
 });
 
+document.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-report-action]");
+  if (!button) return;
+  event.preventDefault();
+  handleReportAction(button.dataset.reportAction);
+});
+
 document.querySelectorAll("[data-track]").forEach((button) => {
   button.addEventListener("click", () => {
     trackEvent(button.dataset.track, { label: button.textContent.trim() });
@@ -477,6 +580,7 @@ document.querySelectorAll("[data-track]").forEach((button) => {
 dialogForm?.addEventListener("submit", handleFormSubmit);
 portalSigninForm?.addEventListener("submit", handlePortalSignin);
 hydrateMediaPlayers();
+renderLocalReport();
 
 document.querySelectorAll(".section, .vertical-card, .release-rail article, .slate div, .event-card, .codex-card, .ops-grid article, .portal-grid article, .media-player").forEach((el) => {
   el.setAttribute("data-reveal", "");

@@ -364,6 +364,76 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
   font-size: .82rem;
   padding: 14px 18px;
 }
+.report-panel {
+  max-width: var(--wide);
+  margin-inline: auto;
+  border-top: 1px solid var(--line);
+}
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+  margin-top: 44px;
+}
+.report-grid article {
+  min-height: 190px;
+  background: #0b0f0e;
+  padding: 26px;
+}
+.report-grid span, .report-list small {
+  display: block;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  font-size: .68rem;
+}
+.report-grid strong {
+  display: block;
+  margin: 1rem 0 .6rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.5rem, 5vw, 5rem);
+  font-weight: 400;
+  line-height: .95;
+}
+.report-grid small { color: var(--muted); }
+.report-detail {
+  display: grid;
+  grid-template-columns: 1fr minmax(220px, 320px);
+  gap: clamp(24px, 4vw, 48px);
+  margin-top: 1px;
+  background: rgba(200,168,106,.18);
+}
+.report-detail > div {
+  background: #0b0f0e;
+  padding: 26px;
+}
+.report-list {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--line);
+}
+.report-list li {
+  display: grid;
+  grid-template-columns: minmax(120px, 180px) 1fr minmax(120px, 180px);
+  gap: 1rem;
+  align-items: start;
+  background: #09100f;
+  padding: 16px;
+}
+.report-list strong {
+  color: var(--bone);
+  font-weight: 500;
+}
+.report-list span { color: var(--muted); }
+.report-actions {
+  align-content: start;
+  gap: .75rem;
+}
+.report-actions .button { width: 100%; }
 .split-band, .cta-band {
   display: grid;
   grid-template-columns: minmax(260px, 440px) 1fr;
@@ -644,7 +714,7 @@ select option { color: var(--ink); }
     justify-content: flex-start;
   }
   .primary-nav.open { display: flex; }
-  .section-grid, .card-grid, .release-rail, .slate, .ops-grid, .portal-grid, .event-grid, .codex-list, .split-band, .cta-band, .site-footer, .consent-banner, .damon-console, .damon-law-grid, .damon-metrics, .damon-graph, .damon-output-stack, .damon-control-grid, .media-player-section, .media-player {
+  .section-grid, .card-grid, .release-rail, .slate, .ops-grid, .portal-grid, .event-grid, .codex-list, .split-band, .cta-band, .site-footer, .consent-banner, .damon-console, .damon-law-grid, .damon-metrics, .damon-graph, .damon-output-stack, .damon-control-grid, .media-player-section, .media-player, .report-grid, .report-detail, .report-list li {
     grid-template-columns: 1fr;
   }
   .consent-banner {

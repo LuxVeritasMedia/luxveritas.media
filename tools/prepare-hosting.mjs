@@ -39,6 +39,7 @@ const files = [
   "portal/admin/users.html",
   "portal/index.html",
   "portal/library.html",
+  "portal/reporting.html",
   "portal/releases.html",
   "works/index.html",
   "works/sample.html"

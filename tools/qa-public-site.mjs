@@ -18,6 +18,7 @@ const noindexRoutes = [
   "auth/signin.html",
   "portal/index.html",
   "portal/library.html",
+  "portal/reporting.html",
   "portal/releases.html",
   "portal/admin.html",
   "portal/admin/users.html",
