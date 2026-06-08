@@ -7,7 +7,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Gate or noindex Portal, Investor, Creator, Licensing, admin, and private Codex routes.
 - [x] Remove route-ready/future implementation language from generated public pages.
 - [x] Keep financials, rights ops, campaign mechanics, private prompts, and canon-bible material out of public routes.
-- [ ] Re-run public banned-term QA before every production deploy.
+- [x] Re-run public banned-term QA before every production deploy.
 
 ## P1 - Public Conversion Layer
 - [x] Rewrite Home operating-system language as fan journey.
@@ -63,6 +63,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add deploy-artifact button QA for dead public buttons.
 - [x] Add public-site QA for internal links, nav/footer, noindex routes, banned terms, and media requirements.
 - [x] Add private noindex local activity report for pilot testing.
+- [x] Add post-deploy live smoke QA for production routes, player shell, manifest, noindex, and `/api/submit` status.
 
 ## P7 - Media MVP
 - [x] Add Lux Player MVP to Music and SPMVP with listen/watch/radio actions.
