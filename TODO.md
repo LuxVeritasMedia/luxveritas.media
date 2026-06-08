@@ -20,7 +20,9 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add client-side receipt IDs for form submissions and local report exports.
 - [x] Deploy public site from a clean `dist` artifact instead of the repo root.
 - [x] Split Firebase Functions deploy into a manual workflow until Cloud Run IAM is fixed.
-- [ ] Fix Firebase/Cloud Run IAM so `submitForm` can be invoked by Hosting. Current blocker: deploy reaches Cloud Run, then fails on `Unable to set the invoker for the IAM policy` for `submitForm(us-central1)`.
+- [x] Fix Firebase/Cloud Run public access so `submitForm` can be invoked by Hosting. Org policy blocks `allUsers`; Cloud Run Invoker IAM check is disabled on the `submitform` service instead.
+- [x] Enable Cloud Firestore and create default Firestore Native database in `nam5` for form submission storage.
+- [x] Confirm live valid form submissions return `stored:true` from `/api/submit`.
 - [ ] Configure email provider runtime secrets so server relay sends silently without visitor mail app.
 
 ## P2 - Content Model

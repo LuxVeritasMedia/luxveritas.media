@@ -92,9 +92,9 @@ try {
     readBody: true
   });
   if (response.status === 403 && /Forbidden/i.test(text)) {
-    warnings.push("/api/submit: known Cloud Run IAM blocker still present (HTTP 403).");
+    issues.push("/api/submit: Cloud Run public access is blocked (HTTP 403).");
   } else if (response.status === 400 || response.status === 429) {
-    warnings.push(`/api/submit: function is reachable and returned expected validation/rate status ${response.status}.`);
+    // Empty payload should reach the function and fail validation, not Cloud Run IAM.
   } else if (response.ok) {
     warnings.push(`/api/submit: function is reachable and returned HTTP ${response.status}.`);
   } else {

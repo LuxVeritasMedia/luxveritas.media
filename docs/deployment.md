@@ -32,6 +32,16 @@ The Firebase Function:
 - sends email through Resend when runtime config is present
 - falls back to the visitor mail app if the server relay is unavailable or not fully configured
 
+Cloud Firestore is enabled for `lux-veritas-media`, with the default Firestore Native database in `nam5`.
+
+This Google Workspace organization blocks public `allUsers` IAM bindings, so the public form relay uses Cloud Run's Invoker IAM check disabled setting on the generated `submitform` service. The manual functions workflow reapplies that setting after function deploys:
+
+```bash
+gcloud run services update submitform --region us-central1 --project lux-veritas-media --no-invoker-iam-check
+```
+
+Do not re-add `invoker: "public"` to the v2 function unless the org policy changes; Firebase deploy will try to write an `allUsers` IAM binding and fail.
+
 Configure these runtime environment values in Firebase/Google Cloud before treating silent email as complete:
 
 ```text

@@ -3,9 +3,6 @@ import crypto from "node:crypto";
 import { onRequest } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions";
 
-admin.initializeApp();
-
-const db = admin.firestore();
 const allowedOrigins = new Set([
   "https://luxveritas.media",
   "https://www.luxveritas.media",
@@ -17,6 +14,11 @@ const allowedOrigins = new Set([
 const rateWindowMs = 10 * 60 * 1000;
 const maxRequestsPerWindow = 5;
 const rateBuckets = new Map();
+
+function getDb() {
+  if (!admin.apps.length) admin.initializeApp();
+  return admin.firestore();
+}
 
 function json(res, status, body) {
   res.status(status).json(body);
@@ -147,7 +149,6 @@ export const submitForm = onRequest(
   {
     region: "us-central1",
     cors: false,
-    invoker: "public",
     maxInstances: 10
   },
   async (req, res) => {
@@ -176,7 +177,7 @@ export const submitForm = onRequest(
     }
 
     const id = crypto.randomUUID();
-    const doc = db.collection("form_submissions").doc(id);
+    const doc = getDb().collection("form_submissions").doc(id);
     let stored = false;
 
     try {
@@ -189,7 +190,11 @@ export const submitForm = onRequest(
       });
       stored = true;
     } catch (error) {
-      logger.error("Submission storage failed", { id, error });
+      logger.error("Submission storage failed", {
+        id,
+        errorCode: error?.code || null,
+        errorMessage: error?.message || String(error)
+      });
     }
 
     try {
@@ -208,7 +213,11 @@ export const submitForm = onRequest(
         json(res, 202, { ok: true, delivery: stored ? "stored" : "fallback", reason: delivery.reason, id, stored });
       }
     } catch (error) {
-      logger.error("Submission relay failed", { id, error });
+      logger.error("Submission relay failed", {
+        id,
+        errorCode: error?.code || null,
+        errorMessage: error?.message || String(error)
+      });
       if (stored) {
         await doc.update({
           deliveryStatus: "relay_error",
