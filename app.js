@@ -145,7 +145,7 @@ async function submitToServer(payload) {
 
   const result = await response.json().catch(() => ({}));
   if (!response.ok && response.status !== 202) {
-    throw new Error(result.error || "form_relay_failed");
+    throw new Error(result.error || "submission_failed");
   }
   return result;
 }
