@@ -17,6 +17,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Rewrite Events as request-access invitation layer.
 - [x] Add static email handoff to `info@luxveritas.media` for public forms.
 - [x] Add Firebase server-side form relay with validation, honeypot, rate limiting, and email fallback.
+- [x] Add client-side receipt IDs for form submissions and local report exports.
 - [x] Deploy public site from a clean `dist` artifact instead of the repo root.
 - [x] Split Firebase Functions deploy into a manual workflow until Cloud Run IAM is fixed.
 - [ ] Fix Firebase/Cloud Run IAM so `submitForm` can be invoked by Hosting. Current blocker: deploy reaches Cloud Run, then fails on `Unable to set the invoker for the IAM policy` for `submitForm(us-central1)`.

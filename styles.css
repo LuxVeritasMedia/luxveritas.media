@@ -544,6 +544,14 @@ select option { color: var(--ink); }
   color: var(--gold);
   padding: .8rem;
 }
+.receipt-code {
+  display: inline-block;
+  margin: .55rem 0;
+  color: var(--bone);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .82rem;
+  letter-spacing: .04em;
+}
 .inline-link {
   appearance: none;
   border: 0;

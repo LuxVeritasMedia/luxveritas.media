@@ -57,6 +57,7 @@ function text(value, max = 2000) {
 function validate(payload) {
   const errors = [];
   const clean = {
+    client_submission_id: text(payload.client_submission_id, 80),
     name: text(payload.name, 140),
     email: text(payload.email, 180).toLowerCase(),
     phone: text(payload.phone, 80),
@@ -84,7 +85,8 @@ function validate(payload) {
 
 function subjectFor(payload) {
   const type = payload.inquiry_type || payload.formType || "Website Inquiry";
-  return `Lux Veritas ${type}: ${payload.name}`;
+  const receipt = payload.client_submission_id ? ` [${payload.client_submission_id}]` : "";
+  return `Lux Veritas ${type}: ${payload.name}${receipt}`;
 }
 
 function emailText(payload, id) {
@@ -92,6 +94,7 @@ function emailText(payload, id) {
     "Lux Veritas website submission",
     "",
     `Submission ID: ${id}`,
+    `Receipt ID: ${payload.client_submission_id || id}`,
     `Name: ${payload.name}`,
     `Email: ${payload.email}`,
     `Phone: ${payload.phone}`,

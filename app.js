@@ -94,13 +94,15 @@ function escapeHtml(value) {
 
 function submissionSubject(payload) {
   const label = formCopy[payload.formType]?.title || "Lux Veritas Website Inquiry";
-  return `${label} - ${payload.name || "Website visitor"}`;
+  const receipt = payload.client_submission_id ? ` [${payload.client_submission_id}]` : "";
+  return `${label}${receipt} - ${payload.name || "Website visitor"}`;
 }
 
 function submissionBody(payload) {
   return [
     "Lux Veritas website submission",
     "",
+    `Receipt ID: ${payload.client_submission_id || ""}`,
     `Name: ${payload.name || ""}`,
     `Email: ${payload.email || ""}`,
     `Phone: ${payload.phone || ""}`,
@@ -115,6 +117,12 @@ function submissionBody(payload) {
     "Message:",
     payload.message || ""
   ].join("\n");
+}
+
+function submissionReceiptId() {
+  const stamp = new Date().toISOString().replace(/[-:.TZ]/g, "").slice(0, 14);
+  const random = Math.random().toString(36).slice(2, 7).toUpperCase();
+  return `LV-${stamp}-${random}`;
 }
 
 function mailtoHref(payload) {
@@ -161,13 +169,29 @@ function fallbackIntro(result) {
 
 function showEmailFallback(payload, href, result, copied) {
   const intro = fallbackIntro(result);
-  statusBox.innerHTML = `${escapeHtml(intro)}${copied ? " A copy has also been placed on your clipboard." : ""}<br /><a class="button button-primary" href="${escapeHtml(href)}">Open email draft</a>`;
+  statusBox.innerHTML = `${escapeHtml(intro)}${copied ? " A copy has also been placed on your clipboard." : ""}<br /><span class="receipt-code">Receipt ${escapeHtml(payload.client_submission_id)}</span><br /><a class="button button-primary" href="${escapeHtml(href)}">Open email draft</a>`;
   statusBox.hidden = false;
   trackEvent("lead_fallback", {
     formType: payload.formType,
+    receipt: payload.client_submission_id,
     delivery: result?.delivery || "email_draft",
     copied
   });
+}
+
+function saveLocalSubmission(payload) {
+  const submissions = readJson("luxveritas_submissions", []);
+  const next = submissions.filter((item) => item.client_submission_id !== payload.client_submission_id);
+  next.push(payload);
+  writeJson("luxveritas_submissions", next.slice(-50));
+}
+
+function updateLocalSubmission(id, updates) {
+  const submissions = readJson("luxveritas_submissions", []);
+  const next = submissions.map((item) => (
+    item.client_submission_id === id ? { ...item, ...updates } : item
+  ));
+  writeJson("luxveritas_submissions", next.slice(-50));
 }
 
 function setScrolledHeader() {
@@ -364,8 +388,8 @@ function renderLocalReport() {
   }
 
   list.innerHTML = report.latest.map((item) => {
-    const label = item.event || item.action || item.formType || item.status || "activity";
-    const detail = item.title || item.role_path || item.email || item.page || item.source_page || "Lux Veritas";
+    const label = item.client_submission_id || item.event || item.action || item.formType || item.status || "activity";
+    const detail = item.formType || item.delivery_status || item.title || item.role_path || item.email || item.page || item.source_page || "Lux Veritas";
     const time = item.timestamp ? new Date(item.timestamp).toLocaleString() : "Recent";
     return `<li><strong>${escapeHtml(label)}</strong><span>${escapeHtml(detail)}</span><small>${escapeHtml(time)}</small></li>`;
   }).join("");
@@ -499,25 +523,30 @@ async function handleFormSubmit(event) {
 
   const payload = {
     ...data,
+    client_submission_id: submissionReceiptId(),
     source: "luxveritas.media",
     source_page: window.location.pathname,
     formType: activeFormType,
     tag: formCopy[activeFormType].tag,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    delivery_status: "prepared"
   };
   const body = submissionBody(payload);
   const href = mailtoHref(payload);
 
-  const submissions = readJson("luxveritas_submissions", []);
-  submissions.push(payload);
-  writeJson("luxveritas_submissions", submissions.slice(-50));
-  trackEvent("lead", { formType: activeFormType });
+  saveLocalSubmission(payload);
+  trackEvent("lead", { formType: activeFormType, receipt: payload.client_submission_id });
 
   let result = null;
   try {
     result = await submitToServer(payload);
+    updateLocalSubmission(payload.client_submission_id, {
+      delivery_status: result.delivery || "accepted",
+      provider_submission_id: result.id || null,
+      delivered_at: result.delivery === "sent" ? new Date().toISOString() : null
+    });
     if (result.delivery === "sent") {
-      statusBox.textContent = "Sent. Thank you. Your message has reached Lux Veritas.";
+      statusBox.innerHTML = `Sent. Thank you. Your message has reached Lux Veritas.<br /><span class="receipt-code">Receipt ${escapeHtml(payload.client_submission_id)}</span>`;
       statusBox.hidden = false;
       dialogForm.reset();
       submitButton.disabled = false;
@@ -529,6 +558,11 @@ async function handleFormSubmit(event) {
   }
 
   const copied = await copySubmissionToClipboard(body);
+  updateLocalSubmission(payload.client_submission_id, {
+    delivery_status: result?.delivery || "email_draft",
+    provider_submission_id: result?.id || null,
+    fallback_at: new Date().toISOString()
+  });
   showEmailFallback(payload, href, result, copied);
   submitButton.disabled = false;
   submitButton.textContent = "Send to Lux Veritas";
