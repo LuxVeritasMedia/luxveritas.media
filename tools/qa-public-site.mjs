@@ -141,6 +141,7 @@ for (const file of htmlFiles) {
 
   if (["music.html", "spmvp.html"].includes(rel)) {
     if (!html.includes("data-media-player")) issues.push(`${rel}: missing Lux Player`);
+    if (!html.includes("data-media-source-shell")) issues.push(`${rel}: missing source-ready playback shell`);
     for (const action of ["play", "watch", "radio"]) {
       if (!html.includes(`data-media-action="${action}"`)) issues.push(`${rel}: missing media action ${action}`);
     }
@@ -167,6 +168,9 @@ try {
   for (const item of items) {
     if (!item.id || !item.title || !item.kind || !item.status) {
       issues.push(`data/lux-media-manifest.json: item is missing required public fields`);
+    }
+    if (!["audio", "video", "stream", "external"].includes(item.sourceType)) {
+      issues.push(`data/lux-media-manifest.json: ${item.id || "item"} has invalid sourceType`);
     }
     if (!Array.isArray(item.contexts) || !item.contexts.length) {
       issues.push(`data/lux-media-manifest.json: ${item.id || "item"} missing contexts`);

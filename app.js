@@ -235,6 +235,26 @@ function setMediaProgress(player, percent) {
   if (bar) bar.style.width = `${Math.max(0, Math.min(percent, 100))}%`;
 }
 
+function resetMediaSources(player) {
+  const shell = player?.querySelector("[data-media-source-shell]");
+  const audio = player?.querySelector("[data-media-audio]");
+  const video = player?.querySelector("[data-media-video]");
+  if (audio) {
+    audio.pause();
+    audio.removeAttribute("src");
+    audio.hidden = true;
+    audio.load();
+  }
+  if (video) {
+    video.pause();
+    video.removeAttribute("src");
+    video.removeAttribute("poster");
+    video.hidden = true;
+    video.load();
+  }
+  if (shell) shell.hidden = true;
+}
+
 function setActiveMediaItem(player, item, options = {}) {
   if (!player || !item) return;
   player.querySelectorAll("[data-media-item]").forEach((button) => {
@@ -247,13 +267,15 @@ function setActiveMediaItem(player, item, options = {}) {
   if (title) title.textContent = item.dataset.title || "SPMVP";
   if (status) status.textContent = item.dataset.status || "Ready for public preview routing.";
   setMediaProgress(player, 18);
+  resetMediaSources(player);
   if (options.record !== false) writeMediaEvent("select", player, item.dataset);
   updateMediaReport(player);
 }
 
 function mediaItemMarkup(item, index) {
   const sourceUrl = item.sourceUrl || "";
-  return `<button class="media-item${index === 0 ? " active" : ""}" type="button" data-media-item data-media-id="${escapeHtml(item.id)}" data-kind="${escapeHtml(item.kind)}" data-title="${escapeHtml(item.title)}" data-status="${escapeHtml(item.status)}" data-action="${escapeHtml(item.primaryAction)}" data-access="${escapeHtml(item.access)}" data-source-url="${escapeHtml(sourceUrl)}" role="listitem">
+  const posterUrl = item.posterUrl || "";
+  return `<button class="media-item${index === 0 ? " active" : ""}" type="button" data-media-item data-media-id="${escapeHtml(item.id)}" data-kind="${escapeHtml(item.kind)}" data-title="${escapeHtml(item.title)}" data-status="${escapeHtml(item.status)}" data-action="${escapeHtml(item.primaryAction)}" data-access="${escapeHtml(item.access)}" data-source-type="${escapeHtml(item.sourceType)}" data-source-url="${escapeHtml(sourceUrl)}" data-poster-url="${escapeHtml(posterUrl)}" role="listitem">
     <span>${escapeHtml(item.label)}</span><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.summary)}</small>
   </button>`;
 }
@@ -408,6 +430,8 @@ function handleMediaAction(action, player) {
   const status = player.querySelector("[data-media-status]");
   const activeItem = player.querySelector(".media-item.active");
   const approvedSource = activeItem?.dataset.sourceUrl;
+  const sourceType = activeItem?.dataset.sourceType;
+  const posterUrl = activeItem?.dataset.posterUrl;
   const messages = {
     play: `${title} listen intent recorded. Full audio source attaches here when the approved release link is live.`,
     watch: `${title} watch intent recorded. Public video routing is ready for the approved visual source.`,
@@ -419,9 +443,39 @@ function handleMediaAction(action, player) {
   writeMediaEvent(action, player, activeItem?.dataset || {});
   updateMediaReport(player);
 
-  if (approvedSource) {
-    window.open(approvedSource, "_blank", "noopener");
+  if (approvedSource) loadApprovedMedia(player, { sourceUrl: approvedSource, sourceType, posterUrl, title });
+}
+
+function loadApprovedMedia(player, item) {
+  const shell = player?.querySelector("[data-media-source-shell]");
+  const audio = player?.querySelector("[data-media-audio]");
+  const video = player?.querySelector("[data-media-video]");
+  const status = player?.querySelector("[data-media-status]");
+  if (!shell) return;
+
+  resetMediaSources(player);
+  shell.hidden = false;
+
+  if (["audio", "stream"].includes(item.sourceType) && audio) {
+    audio.src = item.sourceUrl;
+    audio.hidden = false;
+    audio.play().catch(() => {
+      if (status) status.textContent = `${item.title} is ready. Press play in the audio control to begin.`;
+    });
+    return;
   }
+
+  if (item.sourceType === "video" && video) {
+    video.src = item.sourceUrl;
+    if (item.posterUrl) video.poster = item.posterUrl;
+    video.hidden = false;
+    video.play().catch(() => {
+      if (status) status.textContent = `${item.title} is ready. Press play in the video control to begin.`;
+    });
+    return;
+  }
+
+  window.open(item.sourceUrl, "_blank", "noopener");
 }
 
 async function handleFormSubmit(event) {

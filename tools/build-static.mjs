@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260608-local-reporting";
+const assetVersion = "20260608-source-ready-player";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 
 const nav = [
@@ -189,6 +189,10 @@ function mediaPlayerShell(context = "music") {
         <h3 data-media-title>SPMVP</h3>
         <p data-media-status>Ready for public preview routing.</p>
         <div class="media-progress" aria-hidden="true"><span data-media-progress></span></div>
+        <div class="media-source-shell" data-media-source-shell hidden>
+          <audio controls preload="none" data-media-audio hidden></audio>
+          <video controls playsinline preload="metadata" data-media-video hidden></video>
+        </div>
         <div class="media-actions">
           <button class="button button-primary" type="button" data-media-action="play">Play Signal</button>
           <button class="button button-quiet" type="button" data-media-action="watch">Watch</button>
@@ -196,7 +200,7 @@ function mediaPlayerShell(context = "music") {
         </div>
       </div>
       <div class="media-queue" role="list" aria-label="Media queue">
-        ${items.map((item, index) => `<button class="media-item${index === 0 ? " active" : ""}" type="button" data-media-item data-media-id="${item.id}" data-kind="${item.kind}" data-title="${item.title}" data-status="${item.status}" data-action="${item.primaryAction}" data-access="${item.access}" data-source-url="${item.sourceUrl || ""}" role="listitem">
+        ${items.map((item, index) => `<button class="media-item${index === 0 ? " active" : ""}" type="button" data-media-item data-media-id="${item.id}" data-kind="${item.kind}" data-title="${item.title}" data-status="${item.status}" data-action="${item.primaryAction}" data-access="${item.access}" data-source-type="${item.sourceType}" data-source-url="${item.sourceUrl || ""}" data-poster-url="${item.posterUrl || ""}" role="listitem">
           <span>${item.label}</span><strong>${item.title}</strong><small>${item.summary}</small>
         </button>`).join("")}
       </div>

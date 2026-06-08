@@ -68,5 +68,6 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add Lux Player MVP to Music and SPMVP with listen/watch/radio actions.
 - [x] Record media intent events locally for reporting bridge readiness.
 - [x] Add public media manifest for release, visual, and radio player entries.
+- [x] Add source-ready audio/video/stream playback shell for approved media URLs.
 - [ ] Attach approved release audio, video, and radio sources.
 - [ ] Relay media events server-side after Firebase/Cloud Run IAM is fixed.

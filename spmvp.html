@@ -10,7 +10,7 @@
     <meta property="og:image" content="../assets/luxveritas-threshold.png" />
     <title>SPMVP | Lux Veritas</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070909'/%3E%3Cpath d='M18 48V16h6v27h18v5H18Zm21-32h7L34 48h-6l11-32Z' fill='%23c8a86a'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="../styles.css?v=20260608-local-reporting" />
+    <link rel="stylesheet" href="../styles.css?v=20260608-source-ready-player" />
   </head>
   <body data-page="/spmvp.html">
     <a class="skip-link" href="#main">Skip to content</a>
@@ -45,6 +45,10 @@
         <h3 data-media-title>SPMVP</h3>
         <p data-media-status>Ready for public preview routing.</p>
         <div class="media-progress" aria-hidden="true"><span data-media-progress></span></div>
+        <div class="media-source-shell" data-media-source-shell hidden>
+          <audio controls preload="none" data-media-audio hidden></audio>
+          <video controls playsinline preload="metadata" data-media-video hidden></video>
+        </div>
         <div class="media-actions">
           <button class="button button-primary" type="button" data-media-action="play">Play Signal</button>
           <button class="button button-quiet" type="button" data-media-action="watch">Watch</button>
@@ -52,11 +56,11 @@
         </div>
       </div>
       <div class="media-queue" role="list" aria-label="Media queue">
-        <button class="media-item active" type="button" data-media-item data-media-id="spmvp-release" data-kind="release" data-title="SPMVP" data-status="Current release signal. Full listening links open as approved release paths go live." data-action="play" data-access="public-preview" data-source-url="" role="listitem">
+        <button class="media-item active" type="button" data-media-item data-media-id="spmvp-release" data-kind="release" data-title="SPMVP" data-status="Current release signal. Full listening links open as approved release paths go live." data-action="play" data-access="public-preview" data-source-type="audio" data-source-url="" data-poster-url="" role="listitem">
           <span>Release</span><strong>SPMVP</strong><small>Current doorway</small>
-        </button><button class="media-item" type="button" data-media-item data-media-id="visual-world" data-kind="visual" data-title="Visual World" data-status="Visual chapter routing is ready. Public video source attaches here when approved." data-action="watch" data-access="public-preview" data-source-url="" role="listitem">
+        </button><button class="media-item" type="button" data-media-item data-media-id="visual-world" data-kind="visual" data-title="Visual World" data-status="Visual chapter routing is ready. Public video source attaches here when approved." data-action="watch" data-access="public-preview" data-source-type="video" data-source-url="" data-poster-url="" role="listitem">
           <span>Visual</span><strong>Visual World</strong><small>Watch path</small>
-        </button><button class="media-item" type="button" data-media-item data-media-id="lux-radio" data-kind="radio" data-title="Lux Radio" data-status="Radio mode is queued for scheduled programming, DJ notes, and future live rooms." data-action="radio" data-access="waitlist" data-source-url="" role="listitem">
+        </button><button class="media-item" type="button" data-media-item data-media-id="lux-radio" data-kind="radio" data-title="Lux Radio" data-status="Radio mode is queued for scheduled programming, DJ notes, and future live rooms." data-action="radio" data-access="waitlist" data-source-type="stream" data-source-url="" data-poster-url="" role="listitem">
           <span>Radio</span><strong>Lux Radio</strong><small>Coming signal</small>
         </button>
       </div>
@@ -103,6 +107,6 @@
     <button class="button button-primary" type="submit" data-submit-form>Send to Lux Veritas</button>
   </form>
 </dialog>
-    <script src="../app.js?v=20260608-local-reporting"></script>
+    <script src="../app.js?v=20260608-source-ready-player"></script>
   </body>
 </html>

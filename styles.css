@@ -323,6 +323,23 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
   background: var(--gold);
   transition: width .35s ease;
 }
+.media-source-shell {
+  margin-top: 1.25rem;
+  border: 1px solid rgba(243,238,228,.12);
+  background: rgba(6,8,7,.58);
+}
+.media-source-shell audio,
+.media-source-shell video {
+  display: block;
+  width: 100%;
+}
+.media-source-shell audio {
+  min-height: 48px;
+}
+.media-source-shell video {
+  aspect-ratio: 16 / 9;
+  background: #020403;
+}
 .media-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.4rem; }
 .media-queue {
   display: grid;
