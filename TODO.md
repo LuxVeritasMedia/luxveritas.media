@@ -16,7 +16,8 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Rewrite Music and SPMVP as listen/watch/join pages.
 - [x] Rewrite Events as request-access invitation layer.
 - [x] Add static email handoff to `info@luxveritas.media` for public forms.
-- [ ] Replace static email handoff with server-side form delivery after consent, validation, honeypot, and rate-limit review.
+- [x] Add Firebase server-side form relay with validation, honeypot, rate limiting, and email fallback.
+- [ ] Configure email provider runtime secrets so server relay sends silently without visitor mail app.
 
 ## P2 - Content Model
 - [x] Split Codex into Outer / Inner / Sanctum.

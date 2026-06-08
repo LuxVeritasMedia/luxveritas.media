@@ -9,6 +9,7 @@
       "apphosting.yaml",
       "**/.*",
       "**/node_modules/**",
+      "functions/**",
       "assets/qa-*.png",
       "tools/**",
       "docs/**",
@@ -31,6 +32,13 @@
       }
     ],
     "rewrites": [
+      {
+        "source": "/api/submit",
+        "function": {
+          "functionId": "submitForm",
+          "region": "us-central1"
+        }
+      },
       {
         "source": "**",
         "destination": "/index.html"

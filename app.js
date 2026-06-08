@@ -44,6 +44,7 @@ const dialog = document.querySelector("[data-dialog]");
 const dialogForm = dialog?.querySelector(".dialog-shell");
 const statusBox = document.querySelector("[data-form-status]");
 const contactEmail = "info@luxveritas.media";
+const submitEndpoint = "/api/submit";
 let activeFormType = "request";
 
 function readJson(key, fallback) {
@@ -131,6 +132,23 @@ async function copySubmissionToClipboard(text) {
   return false;
 }
 
+async function submitToServer(payload) {
+  const response = await fetch(submitEndpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok && response.status !== 202) {
+    throw new Error(result.error || "form_relay_failed");
+  }
+  return result;
+}
+
 function setScrolledHeader() {
   header?.classList.toggle("scrolled", window.scrollY > 24);
 }
@@ -187,13 +205,27 @@ async function handleFormSubmit(event) {
   };
   const body = submissionBody(payload);
   const href = mailtoHref(payload);
-  const copied = await copySubmissionToClipboard(body);
 
   const submissions = readJson("luxveritas_submissions", []);
   submissions.push(payload);
   writeJson("luxveritas_submissions", submissions.slice(-50));
   trackEvent("lead", { formType: activeFormType });
 
+  try {
+    const result = await submitToServer(payload);
+    if (result.delivery === "sent") {
+      statusBox.textContent = "Sent. Thank you. Your message has reached Lux Veritas.";
+      statusBox.hidden = false;
+      dialogForm.reset();
+      submitButton.disabled = false;
+      submitButton.textContent = "Send to Lux Veritas";
+      return;
+    }
+  } catch {
+    // Fall through to email-draft fallback.
+  }
+
+  const copied = await copySubmissionToClipboard(body);
   statusBox.innerHTML = `Your email app should open now. Send the drafted message to complete your submission to Lux Veritas.${copied ? " A copy has also been placed on your clipboard." : ""}<br /><a href="${escapeHtml(href)}">Open email manually</a>`;
   statusBox.hidden = false;
   window.location.href = href;

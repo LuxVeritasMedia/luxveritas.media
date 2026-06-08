@@ -32,5 +32,8 @@ jobs:
       - name: Build static site
         run: node tools/build-static.mjs
 
-      - name: Deploy to Firebase Hosting
-        run: npx firebase-tools@latest deploy --only hosting --project lux-veritas-media --non-interactive
+      - name: Install Functions dependencies
+        run: npm --prefix functions ci
+
+      - name: Deploy to Firebase Hosting and Functions
+        run: npx firebase-tools@latest deploy --only hosting,functions --project lux-veritas-media --non-interactive
