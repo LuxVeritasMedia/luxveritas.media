@@ -1,13 +1,10 @@
-name: Deploy Firebase Hosting
+name: Deploy Firebase Functions
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
-  deploy:
+  deploy-functions:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -29,14 +26,8 @@ jobs:
         with:
           node-version: 22
 
-      - name: Build static site
-        run: node tools/build-static.mjs
+      - name: Install Functions dependencies
+        run: npm --prefix functions ci
 
-      - name: Prepare Hosting artifact
-        run: node tools/prepare-hosting.mjs
-
-      - name: QA public buttons
-        run: node tools/qa-buttons.mjs
-
-      - name: Deploy to Firebase Hosting
-        run: npx firebase-tools@latest deploy --only hosting --project lux-veritas-media --non-interactive
+      - name: Deploy Firebase Functions
+        run: npx firebase-tools@latest deploy --only functions --project lux-veritas-media --non-interactive --force
