@@ -13,6 +13,7 @@ const allowedOrigins = new Set([
 ]);
 const rateWindowMs = 10 * 60 * 1000;
 const maxRequestsPerWindow = 5;
+const maxEventsPerWindow = 40;
 const rateBuckets = new Map();
 
 function getDb() {
@@ -42,14 +43,14 @@ function clientHash(req) {
   return crypto.createHash("sha256").update(clientKey(req)).digest("hex");
 }
 
-function isRateLimited(req) {
+function isRateLimited(req, maxRequests = maxRequestsPerWindow, namespace = "default") {
   const now = Date.now();
-  const key = clientKey(req);
+  const key = `${namespace}:${clientKey(req)}`;
   const bucket = rateBuckets.get(key) || [];
   const recent = bucket.filter((time) => now - time < rateWindowMs);
   recent.push(now);
   rateBuckets.set(key, recent);
-  return recent.length > maxRequestsPerWindow;
+  return recent.length > maxRequests;
 }
 
 function text(value, max = 2000) {
@@ -83,6 +84,35 @@ function validate(payload) {
   if (!clean.message) errors.push("message is required");
 
   return { clean, errors };
+}
+
+function validateEvent(payload) {
+  const event = text(payload.event, 80);
+  const page = text(payload.page, 240);
+  const consent = text(payload.consent, 40);
+  const timestamp = text(payload.timestamp, 80);
+  const detail = payload.detail && typeof payload.detail === "object" && !Array.isArray(payload.detail)
+    ? Object.fromEntries(Object.entries(payload.detail).slice(0, 24).map(([key, value]) => [
+      text(key, 80),
+      typeof value === "object" ? text(JSON.stringify(value), 500) : text(value, 500)
+    ]))
+    : {};
+  const errors = [];
+
+  if (!event) errors.push("event is required");
+  if (!page) errors.push("page is required");
+  if (consent !== "accepted") errors.push("analytics consent is required");
+
+  return {
+    clean: {
+      event,
+      page,
+      consent,
+      timestamp,
+      detail
+    },
+    errors
+  };
 }
 
 function subjectFor(payload) {
@@ -164,7 +194,7 @@ export const submitForm = onRequest(
       return;
     }
 
-    if (isRateLimited(req)) {
+    if (isRateLimited(req, maxRequestsPerWindow, "submit")) {
       json(res, 429, { ok: false, error: "rate_limited" });
       return;
     }
@@ -225,6 +255,57 @@ export const submitForm = onRequest(
         });
       }
       json(res, 202, { ok: true, delivery: stored ? "stored" : "fallback", reason: "relay_error", id, stored });
+    }
+  }
+);
+
+export const trackSiteEvent = onRequest(
+  {
+    region: "us-central1",
+    cors: false,
+    maxInstances: 10
+  },
+  async (req, res) => {
+    setCors(req, res);
+
+    if (req.method === "OPTIONS") {
+      res.status(204).send("");
+      return;
+    }
+
+    if (req.method !== "POST") {
+      json(res, 405, { ok: false, error: "method_not_allowed" });
+      return;
+    }
+
+    if (isRateLimited(req, maxEventsPerWindow, "event")) {
+      json(res, 429, { ok: false, error: "rate_limited" });
+      return;
+    }
+
+    const { clean, errors } = validateEvent(req.body || {});
+    if (errors.length) {
+      json(res, 400, { ok: false, error: "validation_failed", errors });
+      return;
+    }
+
+    const id = crypto.randomUUID();
+
+    try {
+      await getDb().collection("site_events").doc(id).set({
+        ...clean,
+        userAgent: text(req.get("user-agent"), 400),
+        clientHash: clientHash(req),
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+      json(res, 202, { ok: true, delivery: "stored", id, stored: true });
+    } catch (error) {
+      logger.error("Site event storage failed", {
+        id,
+        errorCode: error?.code || null,
+        errorMessage: error?.message || String(error)
+      });
+      json(res, 202, { ok: true, delivery: "fallback", reason: "storage_unavailable", id, stored: false });
     }
   }
 );

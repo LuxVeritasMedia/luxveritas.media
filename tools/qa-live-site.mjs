@@ -9,7 +9,7 @@ const requiredRoutes = [
   "/submissions.html",
   "/portal/reporting.html"
 ];
-const expectedAssetVersion = "20260608-source-ready-player";
+const expectedAssetVersion = "20260608-site-events";
 
 async function fetchWithTimeout(path, options = {}) {
   const controller = new AbortController();
@@ -102,6 +102,26 @@ try {
   }
 } catch (error) {
   issues.push(`/api/submit: request failed (${error.message})`);
+}
+
+try {
+  const { response, text } = await fetchWithTimeout("/api/event", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({}),
+    readBody: true
+  });
+  if (response.status === 403 && /Forbidden/i.test(text)) {
+    issues.push("/api/event: Cloud Run public access is blocked (HTTP 403).");
+  } else if (response.status === 400 || response.status === 429) {
+    // Empty payload should reach the function and fail validation, not Hosting or Cloud Run IAM.
+  } else if (response.ok) {
+    warnings.push(`/api/event: function is reachable and returned HTTP ${response.status}.`);
+  } else {
+    issues.push(`/api/event: unexpected HTTP ${response.status}`);
+  }
+} catch (error) {
+  issues.push(`/api/event: request failed (${error.message})`);
 }
 
 if (warnings.length) {

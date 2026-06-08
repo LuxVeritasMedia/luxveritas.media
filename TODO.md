@@ -23,6 +23,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Fix Firebase/Cloud Run public access so `submitForm` can be invoked by Hosting. Org policy blocks `allUsers`; Cloud Run Invoker IAM check is disabled on the `submitform` service instead.
 - [x] Enable Cloud Firestore and create default Firestore Native database in `nam5` for form submission storage.
 - [x] Confirm live valid form submissions return `stored:true` from `/api/submit`.
+- [x] Add consented site-event relay for CTA, media, portal, and content-view reporting.
 - [ ] Configure email provider runtime secrets so server relay sends silently without visitor mail app.
 
 ## P2 - Content Model
@@ -71,7 +72,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 ## P7 - Media MVP
 - [x] Add Lux Player MVP to Music and SPMVP with listen/watch/radio actions.
 - [x] Record media intent events locally for reporting bridge readiness.
+- [x] Relay consented media and CTA events server-side to Firestore.
 - [x] Add public media manifest for release, visual, and radio player entries.
 - [x] Add source-ready audio/video/stream playback shell for approved media URLs.
 - [ ] Attach approved release audio, video, and radio sources.
-- [ ] Relay media events server-side after Firebase/Cloud Run IAM is fixed.

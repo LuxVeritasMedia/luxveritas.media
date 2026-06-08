@@ -63,6 +63,13 @@
         }
       },
       {
+        "source": "/api/event",
+        "function": {
+          "functionId": "trackSiteEvent",
+          "region": "us-central1"
+        }
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

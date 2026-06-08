@@ -46,6 +46,7 @@ const statusBox = document.querySelector("[data-form-status]");
 const portalSigninForm = document.querySelector("[data-portal-signin-form]");
 const contactEmail = "info@luxveritas.media";
 const submitEndpoint = "/api/submit";
+const eventEndpoint = "/api/event";
 const mediaManifestPath = "/data/lux-media-manifest.json";
 let activeFormType = "request";
 let mediaManifestPromise = null;
@@ -160,6 +161,23 @@ async function submitToServer(payload) {
   return result;
 }
 
+function sendEventToServer(payload) {
+  try {
+    const body = JSON.stringify(payload);
+    fetch(eventEndpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json"
+      },
+      body,
+      keepalive: body.length < 60000
+    }).catch(() => {});
+  } catch {
+    // Server-side event reporting is best-effort; local reporting remains available.
+  }
+}
+
 function fallbackIntro(result) {
   if (result?.delivery === "stored") {
     return "Your request was accepted. To make sure it reaches the inbox today, send the drafted email below as well.";
@@ -222,7 +240,10 @@ function trackEvent(name, detail = {}) {
   events.push(payload);
   writeJson("luxveritas_events", events.slice(-100));
   window.dataLayer = window.dataLayer || [];
-  if (consent === "accepted") window.dataLayer.push(payload);
+  if (consent === "accepted") {
+    window.dataLayer.push(payload);
+    sendEventToServer(payload);
+  }
 }
 
 function mediaEvents() {

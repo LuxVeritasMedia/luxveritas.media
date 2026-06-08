@@ -36,4 +36,6 @@ jobs:
         run: npx firebase-tools@latest deploy --only functions --project lux-veritas-media --non-interactive --force
 
       - name: Set public form relay access
-        run: gcloud run services update submitform --region us-central1 --project lux-veritas-media --no-invoker-iam-check
+        run: |
+          gcloud run services update submitform --region us-central1 --project lux-veritas-media --no-invoker-iam-check
+          gcloud run services update tracksiteevent --region us-central1 --project lux-veritas-media --no-invoker-iam-check

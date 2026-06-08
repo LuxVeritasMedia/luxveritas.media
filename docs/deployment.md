@@ -9,7 +9,10 @@ node tools/build-static.mjs
 python3 -m http.server 4173
 ```
 
-Firebase Hosting serves the static site and rewrites `/api/submit` to the Firebase Function `submitForm`.
+Firebase Hosting serves the static site and rewrites:
+
+- `/api/submit` to the Firebase Function `submitForm`
+- `/api/event` to the Firebase Function `trackSiteEvent`
 
 ```bash
 firebase login
@@ -32,12 +35,20 @@ The Firebase Function:
 - sends email through Resend when runtime config is present
 - falls back to the visitor mail app if the server relay is unavailable or not fully configured
 
+The site event function:
+
+- accepts only consented analytics events
+- stores CTA, media, portal, and content-view activity in Firestore `site_events`
+- hashes client network identity before storage
+- leaves browser-local reporting intact as a fallback
+
 Cloud Firestore is enabled for `lux-veritas-media`, with the default Firestore Native database in `nam5`.
 
 This Google Workspace organization blocks public `allUsers` IAM bindings, so the public form relay uses Cloud Run's Invoker IAM check disabled setting on the generated `submitform` service. The manual functions workflow reapplies that setting after function deploys:
 
 ```bash
 gcloud run services update submitform --region us-central1 --project lux-veritas-media --no-invoker-iam-check
+gcloud run services update tracksiteevent --region us-central1 --project lux-veritas-media --no-invoker-iam-check
 ```
 
 Do not re-add `invoker: "public"` to the v2 function unless the org policy changes; Firebase deploy will try to write an `allUsers` IAM binding and fail.
