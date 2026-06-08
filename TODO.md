@@ -70,6 +70,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add public-site QA for internal links, nav/footer, noindex routes, banned terms, and media requirements.
 - [x] Add private noindex local activity report for pilot testing.
 - [x] Add private noindex operator activity report for stored submissions and consented events.
+- [x] Add structured CTA, nav, link, and report-action tracking for consented engagement reporting.
 - [x] Add post-deploy live smoke QA for production routes, player shell, manifest, noindex, and `/api/submit` status.
 
 ## P7 - Media MVP

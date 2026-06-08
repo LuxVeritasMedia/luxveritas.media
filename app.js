@@ -254,6 +254,32 @@ function trackEvent(name, detail = {}) {
   }
 }
 
+function elementLabel(element) {
+  const label = element?.getAttribute("aria-label") || element?.textContent || "";
+  return label.replace(/\s+/g, " ").trim().slice(0, 120) || "Unlabeled interaction";
+}
+
+function interactionSurface(element) {
+  if (!element) return "site";
+  if (element.closest(".site-header")) return "header";
+  if (element.closest(".site-footer")) return "footer";
+  if (element.closest(".hero-actions")) return "hero";
+  if (element.closest(".cta-actions, .cta-band")) return "cta";
+  if (element.closest(".media-player")) return "media_player";
+  if (element.closest(".event-grid")) return "events";
+  if (element.closest(".portal-grid")) return "portal";
+  if (element.closest(".form-dialog")) return "form_dialog";
+  return element.closest("section")?.querySelector(".kicker")?.textContent?.trim()?.toLowerCase().replace(/\s+/g, "_").slice(0, 80) || "content";
+}
+
+function trackInteraction(type, element, detail = {}) {
+  trackEvent(type, {
+    label: elementLabel(element),
+    surface: interactionSurface(element),
+    ...detail
+  });
+}
+
 function mediaEvents() {
   return readJson("luxveritas_media_events", []);
 }
@@ -418,7 +444,7 @@ function renderLocalReport() {
 
   list.innerHTML = report.latest.map((item) => {
     const label = item.client_submission_id || item.event || item.action || item.formType || item.status || "activity";
-    const detail = item.formType || item.delivery_status || item.title || item.role_path || item.email || item.page || item.source_page || "Lux Veritas";
+    const detail = item.detail?.destination || item.detail?.formType || item.detail?.surface || item.formType || item.delivery_status || item.title || item.role_path || item.email || item.page || item.source_page || "Lux Veritas";
     const time = item.timestamp ? new Date(item.timestamp).toLocaleString() : "Recent";
     return `<li><strong>${escapeHtml(label)}</strong><span>${escapeHtml(detail)}</span><small>${escapeHtml(time)}</small></li>`;
   }).join("");
@@ -462,7 +488,7 @@ function renderPrivateReport(report) {
 
   list.innerHTML = items.map((item) => {
     const label = item.client_submission_id || item.event || item.type || "activity";
-    const detail = item.formType || item.inquiry_type || item.page || item.role_path || "Lux Veritas";
+    const detail = item.detail?.destination || item.detail?.formType || item.detail?.surface || item.formType || item.inquiry_type || item.page || item.role_path || "Lux Veritas";
     const time = item.createdAt ? new Date(item.createdAt).toLocaleString() : "Recent";
     return `<li><strong>${escapeHtml(label)}</strong><span>${escapeHtml(detail)}</span><small>${escapeHtml(time)}</small></li>`;
   }).join("");
@@ -724,6 +750,7 @@ trackEvent("view_content");
 navToggle?.addEventListener("click", () => {
   const isOpen = nav.classList.toggle("open");
   navToggle.setAttribute("aria-expanded", String(isOpen));
+  trackInteraction("nav_toggle", navToggle, { open: isOpen });
 });
 
 document.querySelectorAll("[data-close-dialog]").forEach((button) => {
@@ -734,6 +761,7 @@ document.addEventListener("click", (event) => {
   const button = event.target.closest("[data-open-form]");
   if (!button) return;
   event.preventDefault();
+  trackInteraction("form_open", button, { formType: button.dataset.openForm || "request" });
   openForm(button.dataset.openForm);
 });
 
@@ -755,12 +783,25 @@ document.addEventListener("click", (event) => {
   const button = event.target.closest("[data-report-action]");
   if (!button) return;
   event.preventDefault();
+  trackInteraction("report_action", button, { action: button.dataset.reportAction });
   handleReportAction(button.dataset.reportAction);
 });
 
-document.querySelectorAll("[data-track]").forEach((button) => {
-  button.addEventListener("click", () => {
-    trackEvent(button.dataset.track, { label: button.textContent.trim() });
+document.addEventListener("click", (event) => {
+  const tracked = event.target.closest("[data-track]");
+  if (tracked) {
+    trackInteraction(tracked.dataset.track, tracked);
+    return;
+  }
+
+  const link = event.target.closest("a[href]");
+  if (!link) return;
+
+  const href = link.getAttribute("href") || "";
+  if (!href || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:")) return;
+  trackInteraction("link_click", link, {
+    destination: href,
+    outbound: /^https?:\/\//i.test(href) && !href.includes(window.location.hostname)
   });
 });
 

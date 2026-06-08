@@ -60,6 +60,11 @@ if (!appJs.includes("Received. Thank you. Your request is recorded with Lux Veri
 if (!appJs.includes('const submitEndpoint = "/api/submit";')) {
   issues.push("app.js: missing server-side form endpoint");
 }
+for (const marker of ['trackInteraction("form_open"', 'trackInteraction("link_click"', 'trackInteraction("report_action"']) {
+  if (!appJs.includes(marker)) {
+    issues.push(`app.js: missing interaction reporting marker ${marker}`);
+  }
+}
 
 for (const file of files) {
   const rel = relative(root, file);
