@@ -1,4 +1,8 @@
 {
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs20"
+  },
   "hosting": {
     "public": ".",
     "ignore": [
@@ -43,7 +47,10 @@
     "rewrites": [
       {
         "source": "/api/submit",
-        "function": "submitForm"
+        "function": {
+          "functionId": "submitForm",
+          "region": "us-central1"
+        }
       },
       {
         "source": "**",
