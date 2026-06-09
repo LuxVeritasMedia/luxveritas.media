@@ -7,6 +7,66 @@ const bundledPlaywrightPath = "/Users/frederickparent/.cache/codex-runtimes/code
 const issues = [];
 const submissions = [];
 const events = [];
+const reportRequests = [];
+
+const mockReport = {
+  ok: true,
+  generatedAt: "2026-06-09T00:00:00.000Z",
+  viewer: "info@luxveritas.media",
+  counts: {
+    submissions: 42,
+    events: 128
+  },
+  latest: {
+    submissions: [
+      {
+        id: "sub_qa_1",
+        createdAt: "2026-06-09T00:00:00.000Z",
+        formType: "fan",
+        inquiry_type: "Membership",
+        role_path: "Member",
+        access_path: "member",
+        portal_role_target: "member",
+        inquiry_key: "membership",
+        deliveryStatus: "stored",
+        integrationStatus: "integration_not_configured",
+        client_submission_id: "LV-QA-REPORT"
+      }
+    ],
+    events: [
+      {
+        id: "evt_qa_1",
+        createdAt: "2026-06-09T00:01:00.000Z",
+        event: "media_action",
+        page: "/music.html",
+        detail: {
+          action: "play",
+          title: "SPMVP",
+          surface: "media_player",
+          destination: "/spmvp.html"
+        }
+      }
+    ]
+  },
+  delivery: {
+    inboxNotification: "needs_setup",
+    storeFirstCapture: "ready",
+    integrationWebhook: "needs_setup",
+    missing: ["RESEND_API_KEY", "FORM_INTEGRATION_URL"]
+  },
+  summary: {
+    submissions: {
+      byFormType: [{ label: "fan", count: 18 }],
+      byRolePath: [{ label: "Member", count: 24 }],
+      byIntegrationStatus: [{ label: "integration_not_configured", count: 42 }]
+    },
+    events: {
+      byEvent: [{ label: "media_action", count: 64 }],
+      byDestination: [{ label: "/spmvp.html", count: 31 }],
+      byPage: [{ label: "/music.html", count: 40 }]
+    }
+  }
+};
 
 const mimeTypes = {
   ".css": "text/css; charset=utf-8",
@@ -147,13 +207,87 @@ async function mediaFlow(page, baseUrl, path) {
   }
 }
 
+async function operatorReportFlow(page, baseUrl) {
+  await page.goto(`${baseUrl}/portal/reporting.html`, { waitUntil: "domcontentloaded" });
+  await page.click('[data-report-action="load-private"]');
+  await page.waitForSelector("[data-private-report-status]:not([hidden])", { timeout: 5000 });
+  let statusText = await page.locator("[data-private-report-status]").innerText();
+  if (!/Enter an approved operator token first/i.test(statusText)) {
+    issues.push(`/portal/reporting.html: missing empty-token status, found "${statusText}"`);
+  }
+
+  await page.fill("[data-report-token]", "qa-operator-token");
+  await page.click('[data-report-action="load-private"]');
+  await page.waitForFunction(() => {
+    const status = document.querySelector("[data-private-report-status]");
+    return status && /Private activity loaded\./i.test(status.textContent || "");
+  }, null, { timeout: 6000 });
+
+  statusText = await page.locator("[data-private-report-status]").innerText();
+  if (!/Private activity loaded\./i.test(statusText)) {
+    issues.push(`/portal/reporting.html: private report did not load, found "${statusText}"`);
+  }
+
+  const submissionCount = await page.locator('[data-private-count="submissions"]').innerText();
+  const eventCount = await page.locator('[data-private-count="events"]').innerText();
+  const deliveryStatus = await page.locator('[data-private-delivery="status"]').innerText();
+  const deliveryDetail = await page.locator('[data-private-delivery="detail"]').innerText();
+  const formsSummary = await page.locator('[data-private-summary="forms"]').innerText();
+  const rolesSummary = await page.locator('[data-private-summary="roles"]').innerText();
+  const integrationsSummary = await page.locator('[data-private-summary="integrations"]').innerText();
+  const eventsSummary = await page.locator('[data-private-summary="events"]').innerText();
+  const destinationsSummary = await page.locator('[data-private-summary="destinations"]').innerText();
+  const latest = await page.locator("[data-private-report-list]").innerText();
+
+  if (submissionCount !== "42") issues.push(`/portal/reporting.html: expected 42 submissions, found ${submissionCount}`);
+  if (eventCount !== "128") issues.push(`/portal/reporting.html: expected 128 events, found ${eventCount}`);
+  if (deliveryStatus !== "Setup") issues.push(`/portal/reporting.html: expected delivery setup status, found ${deliveryStatus}`);
+  if (!/RESEND_API_KEY/.test(deliveryDetail) || !/FORM_INTEGRATION_URL/.test(deliveryDetail)) {
+    issues.push(`/portal/reporting.html: missing delivery setup detail`);
+  }
+  for (const [label, text] of [
+    ["forms", formsSummary],
+    ["roles", rolesSummary],
+    ["integrations", integrationsSummary],
+    ["events", eventsSummary],
+    ["destinations", destinationsSummary],
+    ["latest", latest]
+  ]) {
+    if (!text || /Load private activity|No records found/i.test(text)) {
+      issues.push(`/portal/reporting.html: ${label} report did not render loaded values`);
+    }
+  }
+  if (!/LV-QA-REPORT/.test(latest) || !/media_action/.test(latest)) {
+    issues.push(`/portal/reporting.html: latest protected activity missing mocked records`);
+  }
+
+  for (const [action, expectedName] of [
+    ["export-private-json", "luxveritas-private-report-"],
+    ["export-private-csv", "luxveritas-private-report-"]
+  ]) {
+    const downloadPromise = page.waitForEvent("download", { timeout: 5000 });
+    await page.click(`[data-report-action="${action}"]`);
+    const download = await downloadPromise;
+    if (!download.suggestedFilename().startsWith(expectedName)) {
+      issues.push(`/portal/reporting.html: ${action} suggested unexpected filename ${download.suggestedFilename()}`);
+    }
+  }
+
+  const request = reportRequests.at(-1);
+  if (!request || request.authorization !== "Bearer qa-operator-token") {
+    issues.push(`/portal/reporting.html: private report did not send bearer token`);
+  }
+}
+
 const { server, baseUrl } = await startServer();
 let browser;
+let context;
 
 try {
   const { chromium } = await loadPlaywright();
   browser = await chromium.launch({ headless: true });
-  const page = await browser.newPage();
+  context = await browser.newContext({ acceptDownloads: true });
+  const page = await context.newPage();
 
   await page.route("**/api/submit", async (route) => {
     const payload = JSON.parse(route.request().postData() || "{}");
@@ -181,15 +315,28 @@ try {
     });
   });
 
+  await page.route("**/api/report", async (route) => {
+    reportRequests.push({
+      authorization: route.request().headers().authorization || ""
+    });
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(mockReport)
+    });
+  });
+
   for (const flow of flows) {
     await openFlow(page, baseUrl, flow);
   }
   for (const path of ["/music.html", "/spmvp.html"]) {
     await mediaFlow(page, baseUrl, path);
   }
+  await operatorReportFlow(page, baseUrl);
 } catch (error) {
   issues.push(`browser flow failed: ${error.message}`);
 } finally {
+  if (context) await context.close();
   if (browser) await browser.close();
   await new Promise((resolve) => server.close(resolve));
 }
@@ -200,4 +347,4 @@ if (issues.length) {
   process.exit(1);
 }
 
-console.log(`Browser flow QA passed for ${flows.length} form flows and 2 media flows.`);
+console.log(`Browser flow QA passed for ${flows.length} form flows, 2 media flows, and operator reporting.`);
