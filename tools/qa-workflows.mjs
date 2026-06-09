@@ -5,6 +5,9 @@ const hosting = await readFile(".github/workflows/firebase-hosting-live.yml", "u
 const functions = await readFile(".github/workflows/firebase-functions-manual.yml", "utf8");
 
 for (const marker of [
+  "concurrency:",
+  "group: firebase-hosting-live",
+  "timeout-minutes: 15",
   "node tools/qa-buttons.mjs",
   "node tools/qa-public-site.mjs",
   "node tools/qa-access-model.mjs",
@@ -15,6 +18,10 @@ for (const marker of [
 }
 
 for (const marker of [
+  "concurrency:",
+  "group: firebase-functions",
+  "timeout-minutes: 10",
+  "timeout-minutes: 20",
   "workflow_dispatch:",
   "push:",
   '"functions/**"',
