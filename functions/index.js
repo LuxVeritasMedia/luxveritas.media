@@ -72,6 +72,17 @@ function clientHash(req) {
   return crypto.createHash("sha256").update(clientKey(req)).digest("hex");
 }
 
+function sha256(value) {
+  return crypto.createHash("sha256").update(String(value || "")).digest("hex");
+}
+
+function safeEqualHex(a, b) {
+  const left = String(a || "").trim().toLowerCase();
+  const right = String(b || "").trim().toLowerCase();
+  if (!/^[a-f0-9]{64}$/.test(left) || !/^[a-f0-9]{64}$/.test(right)) return false;
+  return crypto.timingSafeEqual(Buffer.from(left, "hex"), Buffer.from(right, "hex"));
+}
+
 function isRateLimited(req, maxRequests = maxRequestsPerWindow, namespace = "default") {
   const now = Date.now();
   const key = `${namespace}:${clientKey(req)}`;
@@ -291,6 +302,15 @@ async function authorizeReport(req) {
   const token = header.toLowerCase().startsWith("bearer ") ? header.slice(7).trim() : "";
   if (!token) return { ok: false, status: 401, error: "missing_token" };
 
+  const operatorTokenHash = text(process.env.REPORT_OPERATOR_TOKEN_SHA256, 80).toLowerCase();
+  if (operatorTokenHash && safeEqualHex(sha256(token), operatorTokenHash)) {
+    return {
+      ok: true,
+      email: text(process.env.REPORT_OPERATOR_EMAIL || "operator@luxveritas.media", 240).toLowerCase(),
+      authMode: "operator_token"
+    };
+  }
+
   const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?access_token=${encodeURIComponent(token)}`);
   const body = await response.json().catch(() => ({}));
   if (!response.ok) return { ok: false, status: 401, error: "invalid_token" };
@@ -307,7 +327,7 @@ async function authorizeReport(req) {
   const allowed = allowedEmails.has(email) || (allowedDomain && hostedDomain === allowedDomain);
 
   if (!allowed) return { ok: false, status: 403, error: "not_allowed" };
-  return { ok: true, email };
+  return { ok: true, email, authMode: "google_oauth" };
 }
 
 function cleanDoc(snapshot) {
@@ -1007,6 +1027,7 @@ export const reportActivity = onRequest(
         ok: true,
         generatedAt: new Date().toISOString(),
         viewer: auth.email,
+        authMode: auth.authMode || "approved",
         counts: {
           submissions: submissionCount,
           events: eventCount,

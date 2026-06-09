@@ -503,6 +503,7 @@ function portalReport() {
         <article><span>Pending Handoff</span><strong data-private-count="pendingIntegrations">-</strong><small>Stored records awaiting private routing</small></article>
         <article><span>Inbox</span><strong data-private-delivery="status">-</strong><small data-private-delivery="detail">Load private activity</small></article>
         <article><span>Handoff Target</span><strong data-private-delivery="target">-</strong><small data-private-delivery="targetDetail">Protected workflow profile</small></article>
+        <article><span>Report Access</span><strong data-private-auth="mode">-</strong><small data-private-auth="viewer">Approved operator only</small></article>
       </div>
       <div class="report-detail">
         <div>

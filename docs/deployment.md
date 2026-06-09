@@ -137,6 +137,18 @@ These fields let the private report and future server-side integration separate 
 
 After inbox delivery is configured, open `/portal/reporting.html`, load private activity with an approved operator token, and use `Replay Pending Inbox` to retry stored submissions that were captured while email was offline. The replay endpoint only sends records whose `deliveryStatus` indicates a pending or failed inbox notification.
 
+For pilot reporting access, use a private operator token hash. Generate a strong token outside the repo, keep the raw token in the private operator password manager, and configure only its SHA-256 hash on the `reportactivity` service:
+
+```bash
+printf "%s" "paste-private-operator-token-here" | shasum -a 256
+gcloud run services update reportactivity \
+  --region us-central1 \
+  --project lux-veritas-media \
+  --set-env-vars REPORT_OPERATOR_TOKEN_SHA256=<sha256>,REPORT_OPERATOR_EMAIL=operator@luxveritas.media
+```
+
+The report endpoint still accepts approved Google OAuth bearer tokens for `REPORT_ALLOWED_EMAILS` or `REPORT_ALLOWED_DOMAIN`. The hash token path is for controlled pilot access before full authenticated portal accounts are ready.
+
 Optional server-side integration fanout can forward validated, stored form submissions to an approved private tool such as a CRM, Google workflow, or automation router. Keep this server-side only. Do not place integration URLs in public markup or client JavaScript.
 
 Set `FORM_INTEGRATION_TARGET` to a short protected workflow profile label, such as `private_workflow`. This label is not a provider URL; it lets private reporting and receivers confirm which approved handoff profile is active. The server sends it in the `X-Lux-Target` header and in the payload receiver metadata.

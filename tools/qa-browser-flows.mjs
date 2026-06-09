@@ -13,6 +13,7 @@ const mockReport = {
   ok: true,
   generatedAt: "2026-06-09T00:00:00.000Z",
   viewer: "info@luxveritas.media",
+  authMode: "operator_token",
   counts: {
     submissions: 42,
     events: 128,
@@ -320,6 +321,8 @@ async function operatorReportFlow(page, baseUrl) {
   const deliveryDetail = await page.locator('[data-private-delivery="detail"]').innerText();
   const handoffTargetStatus = await page.locator('[data-private-delivery="target"]').innerText();
   const handoffTargetDetail = await page.locator('[data-private-delivery="targetDetail"]').innerText();
+  const reportAuthMode = await page.locator('[data-private-auth="mode"]').innerText();
+  const reportAuthViewer = await page.locator('[data-private-auth="viewer"]').innerText();
   const formsSummary = await page.locator('[data-private-summary="forms"]').innerText();
   const rolesSummary = await page.locator('[data-private-summary="roles"]').innerText();
   const routingSummary = await page.locator('[data-private-summary="routing"]').innerText();
@@ -345,6 +348,9 @@ async function operatorReportFlow(page, baseUrl) {
   }
   if (!/Target profile not configured/i.test(handoffTargetDetail)) {
     issues.push(`/portal/reporting.html: missing handoff target detail`);
+  }
+  if (reportAuthMode !== "operator_token" || reportAuthViewer !== "info@luxveritas.media") {
+    issues.push(`/portal/reporting.html: report auth details did not render`);
   }
   for (const [label, text] of [
     ["forms", formsSummary],

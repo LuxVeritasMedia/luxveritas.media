@@ -879,6 +879,11 @@ function renderPrivateReport(report) {
     if (target) target.textContent = String(value);
   }
 
+  const authMode = panel.querySelector('[data-private-auth="mode"]');
+  const authViewer = panel.querySelector('[data-private-auth="viewer"]');
+  if (authMode) authMode.textContent = report.authMode || "approved";
+  if (authViewer) authViewer.textContent = report.viewer || "Approved operator";
+
   renderPrivateDelivery(panel, report.delivery);
   renderLaunchReadinessReport(report);
   renderPrivateFunnel(panel, report.summary?.funnel || report.funnel);
