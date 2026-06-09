@@ -84,6 +84,16 @@ gcloud run services update submitform \
 
 If `RESEND_API_KEY` is not already in Google Secret Manager, create it from the Google Cloud console or with `gcloud secrets create RESEND_API_KEY --replication-policy=automatic`, then add a secret version. The browser form now times out after 12 seconds and the email provider call times out after 8 seconds; when inbox delivery is not configured or unavailable, the submission is still recorded when Firestore is available and the visitor sees the visible email-draft fallback.
 
+Form delivery QA:
+
+```bash
+node tools/qa-form-delivery.mjs
+LUX_FORM_WRITE=1 node tools/qa-form-delivery.mjs
+LUX_FORM_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-form-delivery.mjs
+```
+
+The default command checks validation without creating a submission. `LUX_FORM_WRITE=1` creates one safe QA submission and reports whether it was sent to inbox or stored only. Add `LUX_EXPECT_EMAIL_SENT=1` after email configuration to make the command fail unless inbox delivery is active.
+
 ## Future Production Build
 
 The approved production build should move to Next.js App Router and Firebase App Hosting. Store all secrets in Firebase App Hosting environment configuration or Google Cloud Secret Manager.

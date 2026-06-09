@@ -193,6 +193,27 @@ function summarizeActivity(submissionDocs, eventDocs) {
   };
 }
 
+function deliveryReadiness() {
+  const to = text(process.env.FORM_TO_EMAIL || "info@luxveritas.media", 240);
+  const from = text(process.env.FORM_FROM_EMAIL, 240);
+  const hasEmailProvider = Boolean(process.env.RESEND_API_KEY);
+  const ready = Boolean(hasEmailProvider && from && to);
+
+  return {
+    inboxNotification: ready ? "ready" : "needs_setup",
+    storeFirstCapture: "ready",
+    toConfigured: Boolean(to),
+    fromConfigured: Boolean(from),
+    emailProviderConfigured: hasEmailProvider,
+    toEmail: to,
+    missing: [
+      hasEmailProvider ? null : "RESEND_API_KEY",
+      from ? null : "FORM_FROM_EMAIL",
+      to ? null : "FORM_TO_EMAIL"
+    ].filter(Boolean)
+  };
+}
+
 async function collectionCount(collection) {
   const result = await collection.count().get();
   return result.data().count || 0;
@@ -468,6 +489,7 @@ export const reportActivity = onRequest(
           submissions: latestSubmissions.docs.map(cleanDoc),
           events: latestEvents.docs.map(cleanDoc)
         },
+        delivery: deliveryReadiness(),
         summary: summarizeActivity(summarySubmissions.docs, summaryEvents.docs)
       });
     } catch (error) {

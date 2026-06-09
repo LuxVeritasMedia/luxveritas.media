@@ -571,6 +571,7 @@ function renderPrivateReport(report) {
     if (target) target.textContent = String(value);
   }
 
+  renderPrivateDelivery(panel, report.delivery);
   renderPrivateSummary(panel, "forms", report.summary?.submissions?.byFormType);
   renderPrivateSummary(panel, "roles", report.summary?.submissions?.byRolePath);
   renderPrivateSummary(panel, "events", report.summary?.events?.byEvent);
@@ -607,6 +608,19 @@ function renderPrivateSummary(panel, key, items = []) {
   list.innerHTML = items.map((item) => (
     `<li><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.count)} signal${item.count === 1 ? "" : "s"}</span></li>`
   )).join("");
+}
+
+function renderPrivateDelivery(panel, delivery = {}) {
+  const status = panel.querySelector('[data-private-delivery="status"]');
+  const detail = panel.querySelector('[data-private-delivery="detail"]');
+  const ready = delivery.inboxNotification === "ready";
+  if (status) status.textContent = ready ? "Ready" : "Setup";
+  if (detail) {
+    const missing = Array.isArray(delivery.missing) && delivery.missing.length
+      ? `Missing ${delivery.missing.join(", ")}`
+      : "Store-first capture is ready";
+    detail.textContent = ready ? "Inbox notifications active" : missing;
+  }
 }
 
 async function loadPrivateReport() {
