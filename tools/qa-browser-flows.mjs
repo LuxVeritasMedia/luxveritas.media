@@ -247,14 +247,28 @@ async function operatorReportFlow(page, baseUrl) {
     const summary = document.querySelector("[data-media-readiness-summary]");
     return summary && /source-ready|unavailable/i.test(summary.textContent || "");
   }, null, { timeout: 5000 });
+  await page.waitForFunction(() => {
+    const summary = document.querySelector("[data-launch-readiness-summary]");
+    return summary && /launch gates ready|unavailable/i.test(summary.textContent || "");
+  }, null, { timeout: 5000 });
   const mediaSummary = await page.locator("[data-media-readiness-summary]").innerText();
   const mediaReadiness = await page.locator("[data-media-readiness-list]").innerText();
+  const launchSummaryBeforeLoad = await page.locator("[data-launch-readiness-summary]").innerText();
+  const launchReadinessBeforeLoad = await page.locator("[data-launch-readiness-list]").innerText();
   if (!/0 of 3 source-ready/.test(mediaSummary)) {
     issues.push(`/portal/reporting.html: expected media readiness summary, found "${mediaSummary}"`);
+  }
+  if (!/0 of 6 launch gates ready/.test(launchSummaryBeforeLoad)) {
+    issues.push(`/portal/reporting.html: expected launch readiness summary, found "${launchSummaryBeforeLoad}"`);
   }
   for (const label of ["SPMVP", "Visual World", "Lux Radio"]) {
     if (!mediaReadiness.includes(label)) {
       issues.push(`/portal/reporting.html: media readiness missing ${label}`);
+    }
+  }
+  for (const label of ["Media Sources", "Inbox Notifications", "Privacy Review", "WWW Redirect"]) {
+    if (!launchReadinessBeforeLoad.includes(label)) {
+      issues.push(`/portal/reporting.html: launch readiness missing ${label}`);
     }
   }
 
@@ -276,6 +290,10 @@ async function operatorReportFlow(page, baseUrl) {
   if (!/Private activity loaded\./i.test(statusText)) {
     issues.push(`/portal/reporting.html: private report did not load, found "${statusText}"`);
   }
+  await page.waitForFunction(() => {
+    const list = document.querySelector("[data-launch-readiness-list]");
+    return list && /Inbox notification provider is not active/i.test(list.textContent || "");
+  }, null, { timeout: 5000 }).catch(() => {});
 
   const submissionCount = await page.locator('[data-private-count="submissions"]').innerText();
   const eventCount = await page.locator('[data-private-count="events"]').innerText();
@@ -289,6 +307,8 @@ async function operatorReportFlow(page, baseUrl) {
   const ctasSummary = await page.locator('[data-private-summary="ctas"]').innerText();
   const destinationsSummary = await page.locator('[data-private-summary="destinations"]').innerText();
   const funnelSummary = await page.locator("[data-private-funnel]").innerText();
+  const launchSummary = await page.locator("[data-launch-readiness-summary]").innerText();
+  const launchReadiness = await page.locator("[data-launch-readiness-list]").innerText();
   const latest = await page.locator("[data-private-report-list]").innerText();
 
   if (submissionCount !== "42") issues.push(`/portal/reporting.html: expected 42 submissions, found ${submissionCount}`);
@@ -323,6 +343,9 @@ async function operatorReportFlow(page, baseUrl) {
   }
   if (!/Server captures/.test(funnelSummary) || !/Media actions/.test(funnelSummary)) {
     issues.push(`/portal/reporting.html: pilot funnel missing capture/media values`);
+  }
+  if (!/0 of 6 launch gates ready/.test(launchSummary) || !/Inbox notification provider is not active/i.test(launchReadiness)) {
+    issues.push(`/portal/reporting.html: launch gates did not render blocker state (summary="${launchSummary}", list="${launchReadiness.replace(/\s+/g, " ")}")`);
   }
 
   for (const [action, expectedName] of [

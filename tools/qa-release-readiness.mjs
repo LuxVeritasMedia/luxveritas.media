@@ -64,20 +64,28 @@ async function resolveHost(hostname) {
   }
 }
 
-const [todo, manifestRaw, workflow] = await Promise.all([
+const [todo, manifestRaw, checklistRaw, workflow] = await Promise.all([
   readFile("TODO.md", "utf8"),
   readFile("data/lux-media-manifest.json", "utf8"),
+  readFile("data/lux-launch-readiness.json", "utf8"),
   readFile(".github/workflows/firebase-hosting-live.yml", "utf8")
 ]);
 
 const mediaManifest = JSON.parse(manifestRaw);
+const launchChecklist = JSON.parse(checklistRaw);
 const mediaItems = Array.isArray(mediaManifest.items) ? mediaManifest.items : [];
+const launchGates = Array.isArray(launchChecklist.gates) ? launchChecklist.gates : [];
+const launchGateIds = new Set(launchGates.map((gate) => gate.id));
 const sourceRequiredTypes = new Set(["audio", "video", "stream"]);
 const missingSources = mediaItems.filter((item) => sourceRequiredTypes.has(item.sourceType) && !validHttps(item.sourceUrl));
 const invalidPosters = mediaItems.filter((item) => item.posterUrl && !validHttps(item.posterUrl));
 const sourceTypes = new Set(mediaItems.map((item) => item.sourceType));
 
 add(mediaItems.length > 0, "Media manifest contains release items.");
+add(launchGates.length >= 6, "Launch readiness checklist contains required launch gates.");
+for (const gateId of ["media_sources", "inbox_notifications", "private_handoff", "privacy_review", "terms_review", "www_redirect"]) {
+  add(launchGateIds.has(gateId), `Launch readiness checklist includes ${gateId}.`);
+}
 add(sourceTypes.has("audio"), "Media manifest includes an audio release path.");
 add(sourceTypes.has("video"), "Media manifest includes a video/visual path.");
 add(sourceTypes.has("stream"), "Media manifest includes a radio/stream path.");

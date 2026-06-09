@@ -9,6 +9,7 @@ const requiredFiles = [
   "styles.css",
   "robots.txt",
   "sitemap.xml",
+  "data/lux-launch-readiness.json",
   "data/lux-media-manifest.json",
   "assets/luxveritas-threshold.png"
 ];

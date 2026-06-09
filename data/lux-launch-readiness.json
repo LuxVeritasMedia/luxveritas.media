@@ -1,0 +1,54 @@
+{
+  "version": "2026-06-09-launch-gates",
+  "updatedAt": "2026-06-09T00:00:00.000Z",
+  "gates": [
+    {
+      "id": "media_sources",
+      "label": "Media Sources",
+      "category": "release",
+      "status": "dynamic",
+      "nextAction": "Attach approved audio, video, and radio source URLs.",
+      "requiredForPublicLaunch": true
+    },
+    {
+      "id": "inbox_notifications",
+      "label": "Inbox Notifications",
+      "category": "capture",
+      "status": "dynamic",
+      "nextAction": "Configure the approved sender and inbox provider, then replay pending inbox records.",
+      "requiredForPublicLaunch": true
+    },
+    {
+      "id": "private_handoff",
+      "label": "Private Handoff",
+      "category": "capture",
+      "status": "blocked",
+      "nextAction": "Choose the approved private workflow target and configure protected hosting settings.",
+      "requiredForPublicLaunch": true
+    },
+    {
+      "id": "privacy_review",
+      "label": "Privacy Review",
+      "category": "legal",
+      "status": "blocked",
+      "nextAction": "Complete legal review of the Privacy page before full public launch.",
+      "requiredForPublicLaunch": true
+    },
+    {
+      "id": "terms_review",
+      "label": "Terms Review",
+      "category": "legal",
+      "status": "blocked",
+      "nextAction": "Complete legal review of the Terms page before full public launch.",
+      "requiredForPublicLaunch": true
+    },
+    {
+      "id": "www_redirect",
+      "label": "WWW Redirect",
+      "category": "domain",
+      "status": "blocked",
+      "nextAction": "Configure www.luxveritas.media DNS and Hosting redirect after the root domain remains stable.",
+      "requiredForPublicLaunch": true
+    }
+  ]
+}

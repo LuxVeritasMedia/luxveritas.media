@@ -86,6 +86,11 @@ for (const marker of ["showMediaFollowup", "media_followup_offered"]) {
     issues.push(`app.js: missing media follow-up marker ${marker}`);
   }
 }
+for (const marker of ["launchChecklistPath", "renderLaunchReadinessReport", "evaluateLaunchGate", "launchGateStatusLabel"]) {
+  if (!appJs.includes(marker)) {
+    issues.push(`app.js: missing launch readiness marker ${marker}`);
+  }
+}
 for (const marker of ["cta_id", "interactionId", "interactionIntent", "slugify"]) {
   if (!appJs.includes(marker)) {
     issues.push(`app.js: missing stable CTA reporting marker ${marker}`);
@@ -158,6 +163,9 @@ for (const file of files) {
     }
     if (!html.includes("data-private-funnel")) {
       issues.push(`${rel}: missing private pilot funnel report`);
+    }
+    if (!html.includes("data-launch-readiness-summary") || !html.includes("data-launch-readiness-list")) {
+      issues.push(`${rel}: missing launch gates report`);
     }
     for (const action of ["export-private-json", "export-private-csv", "export-csv"]) {
       if (!html.includes(`data-report-action="${action}"`)) {

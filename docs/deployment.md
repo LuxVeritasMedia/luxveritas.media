@@ -55,6 +55,8 @@ The activity report function:
 - reports pending inbox notification backlog for stored submissions
 - is intended for the noindex private portal reporting page only
 
+The private reporting page also loads `data/lux-launch-readiness.json` and the public media manifest to render Launch Gates. This gives operators a browser-visible view of remaining public-launch blockers: media sources, inbox notifications, private handoff, legal review, and domain redirect status.
+
 The notification replay action:
 
 - requires the same approved operator bearer token as the private report

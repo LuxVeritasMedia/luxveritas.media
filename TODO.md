@@ -35,6 +35,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add protected pilot funnel reporting for capture and engagement health.
 - [x] Add protected form-delivery readiness reporting for stored-vs-inbox status.
 - [x] Add private media-source readiness reporting for audio, video, and radio slots.
+- [x] Add private launch-gates reporting for release, capture, legal, and domain blockers.
 - [x] Add optional server-side integration fanout for validated form submissions.
 - [x] Add protected pending-inbox replay for stored submissions after email provider setup.
 - [x] Add screened intake routing fields for Phase 6 reporting and future server-side handoff.
@@ -96,6 +97,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add integration QA for server-side submission fanout and private reporting readiness.
 - [x] Add browser-flow QA for real CTA clicks, modal submits, submit reset, and media follow-up routing.
 - [x] Add release-readiness QA for launch blockers, media sources, DNS, legal, email, and integration status.
+- [x] Add deploy-artifact QA for private launch-gates reporting.
 
 ## P7 - Media MVP
 - [x] Add Lux Player MVP to Music and SPMVP with listen/watch/radio actions.

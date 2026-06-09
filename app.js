@@ -108,9 +108,11 @@ const submitEndpoint = "/api/submit";
 const eventEndpoint = "/api/event";
 const reportEndpoint = "/api/report";
 const mediaManifestPath = "/data/lux-media-manifest.json";
+const launchChecklistPath = "/data/lux-launch-readiness.json";
 const submitTimeoutMs = 12000;
 let activeFormType = "request";
 let mediaManifestPromise = null;
+let launchChecklistPromise = null;
 let privateReportCache = null;
 
 function readJson(key, fallback) {
@@ -549,6 +551,21 @@ async function loadMediaManifest() {
   return mediaManifestPromise;
 }
 
+async function loadLaunchChecklist() {
+  if (!launchChecklistPromise) {
+    launchChecklistPromise = fetch(launchChecklistPath, { headers: { Accept: "application/json" } })
+      .then((response) => {
+        if (!response.ok) throw new Error("launch_checklist_unavailable");
+        return response.json();
+      })
+      .then((checklist) => {
+        if (!Array.isArray(checklist.gates)) throw new Error("launch_checklist_invalid");
+        return checklist;
+      });
+  }
+  return launchChecklistPromise;
+}
+
 function renderMediaPlayer(player, manifest) {
   const queue = player?.querySelector(".media-queue");
   const items = itemsForPlayer(manifest, player);
@@ -605,6 +622,88 @@ function renderMediaReadinessReport() {
       if (summary) summary.textContent = "Media readiness unavailable";
       if (list) list.innerHTML = "<li>Media readiness could not be loaded.</li>";
     });
+}
+
+function launchGateStatusLabel(status) {
+  if (status === "ready") return "Ready";
+  if (status === "blocked") return "Blocked";
+  if (status === "setup") return "Setup";
+  if (status === "queued") return "Queued";
+  return "Review";
+}
+
+function evaluateLaunchGate(gate, manifest, report) {
+  const items = Array.isArray(manifest?.items) ? manifest.items : [];
+  const missingMedia = items.filter((item) => ["audio", "video", "stream"].includes(item.sourceType) && !/^https:\/\//i.test(item.sourceUrl || ""));
+  const delivery = report?.delivery || {};
+
+  if (gate.id === "media_sources") {
+    return {
+      ...gate,
+      status: missingMedia.length ? "blocked" : "ready",
+      detail: missingMedia.length
+        ? `Missing ${missingMedia.map((item) => item.title || item.id).join(", ")}`
+        : "All public media sources are attached."
+    };
+  }
+
+  if (gate.id === "inbox_notifications") {
+    const ready = delivery.inboxNotification === "ready";
+    return {
+      ...gate,
+      status: ready ? "ready" : "blocked",
+      detail: ready ? "Inbox notifications are active." : "Inbox notification provider is not active."
+    };
+  }
+
+  if (gate.id === "private_handoff") {
+    const ready = delivery.integrationWebhook === "ready";
+    return {
+      ...gate,
+      status: ready ? "ready" : "blocked",
+      detail: ready ? "Private handoff is active." : gate.nextAction
+    };
+  }
+
+  return {
+    ...gate,
+    detail: gate.nextAction || "Review before launch."
+  };
+}
+
+async function renderLaunchReadinessReport(report = privateReportCache) {
+  const summary = document.querySelector("[data-launch-readiness-summary]");
+  const list = document.querySelector("[data-launch-readiness-list]");
+  if (!summary && !list) return;
+
+  try {
+    const [checklist, manifest] = await Promise.all([
+      loadLaunchChecklist(),
+      loadMediaManifest().catch(() => ({ items: [] }))
+    ]);
+    const gates = checklist.gates.map((gate) => evaluateLaunchGate(gate, manifest, report));
+    const required = gates.filter((gate) => gate.requiredForPublicLaunch);
+    const ready = required.filter((gate) => gate.status === "ready");
+    const blocked = required.filter((gate) => gate.status !== "ready");
+
+    if (summary) {
+      summary.textContent = `${ready.length} of ${required.length} launch gates ready`;
+    }
+    if (list) {
+      list.innerHTML = gates.map((gate) => (
+        `<li><strong>${escapeHtml(gate.label)}</strong><span>${escapeHtml(launchGateStatusLabel(gate.status))}</span><small>${escapeHtml(gate.detail || gate.nextAction || "Review before launch.")}</small></li>`
+      )).join("");
+    }
+
+    trackEvent("launch_readiness_view", {
+      ready: ready.length,
+      blocked: blocked.length,
+      required: required.length
+    });
+  } catch {
+    if (summary) summary.textContent = "Launch readiness unavailable";
+    if (list) list.innerHTML = "<li>Launch readiness could not be loaded.</li>";
+  }
 }
 
 function localReportData() {
@@ -768,6 +867,7 @@ function renderPrivateReport(report) {
   }
 
   renderPrivateDelivery(panel, report.delivery);
+  renderLaunchReadinessReport(report);
   renderPrivateFunnel(panel, report.summary?.funnel || report.funnel);
   renderPrivateSummary(panel, "forms", report.summary?.submissions?.byFormType);
   renderPrivateSummary(panel, "roles", report.summary?.submissions?.byRolePath);
@@ -1247,6 +1347,7 @@ dialogForm?.addEventListener("submit", handleFormSubmit);
 portalSigninForm?.addEventListener("submit", handlePortalSignin);
 hydrateMediaPlayers();
 renderMediaReadinessReport();
+renderLaunchReadinessReport();
 renderLocalReport();
 
 document.querySelectorAll(".section, .vertical-card, .release-rail article, .slate div, .event-card, .codex-card, .ops-grid article, .portal-grid article, .media-player").forEach((el) => {

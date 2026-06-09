@@ -32,6 +32,7 @@ for (const marker of [
   "data-report-action=\"replay-private\"",
   "data-private-count=\"pendingNotifications\"",
   "data-private-funnel",
+  "data-launch-readiness-summary",
   "data-private-summary=\"routing\"",
   "data-private-summary=\"ctas\"",
   "Integrations"
@@ -44,6 +45,7 @@ for (const marker of [
   "byRoutingQueue",
   "byCtaId",
   "byCtaLabel",
+  "renderLaunchReadinessReport",
   "renderPrivateSummary(panel, \"routing\"",
   "renderPrivateSummary(panel, \"ctas\"",
   "renderPrivateSummary(panel, \"integrations\"",
