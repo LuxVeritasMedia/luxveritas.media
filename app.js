@@ -810,6 +810,37 @@ async function loadPrivateReport() {
   }
 }
 
+async function replayPendingNotifications() {
+  const token = document.querySelector("[data-report-token]")?.value.trim();
+  if (!token) {
+    setPrivateReportStatus("Enter an approved operator token first.");
+    return;
+  }
+
+  setPrivateReportStatus("Checking pending inbox notifications...");
+  try {
+    const response = await fetch(reportEndpoint, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ action: "replay_pending", limit: 20 })
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result.ok) throw new Error(result.error || "replay_unavailable");
+    if (result.skipped) {
+      setPrivateReportStatus("Inbox provider is not configured yet. Stored submissions remain ready for replay.");
+      return;
+    }
+    setPrivateReportStatus(`Replay checked ${result.checked || 0} pending record${result.checked === 1 ? "" : "s"} and sent ${result.replayed || 0}.`);
+    await loadPrivateReport();
+  } catch {
+    setPrivateReportStatus("Pending notification replay is unavailable for this token.");
+  }
+}
+
 function exportLocalReport() {
   const report = localReportData();
   downloadTextFile(
@@ -872,6 +903,10 @@ function clearLocalReport() {
 function handleReportAction(action) {
   if (action === "load-private") {
     loadPrivateReport();
+    return;
+  }
+  if (action === "replay-private") {
+    replayPendingNotifications();
     return;
   }
   if (action === "export") {

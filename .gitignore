@@ -26,6 +26,7 @@ coverage/
 
 # Firebase local/deploy cache and emulator logs
 .firebase/
+functions/functions.yaml
 firebase-debug.log*
 firestore-debug.log*
 ui-debug.log*

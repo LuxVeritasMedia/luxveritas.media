@@ -14,6 +14,10 @@ for (const marker of [
   "integrationStatus",
   "byIntegrationStatus",
   "integrationWebhook",
+  "replayPendingInbox",
+  "replay_pending",
+  "pendingNotificationCount",
+  "pendingNotifications",
   "https:\\/\\/"
 ]) {
   if (!functionJs.includes(marker)) issues.push(`functions/index.js: missing integration marker ${marker}`);
@@ -21,6 +25,8 @@ for (const marker of [
 
 for (const marker of [
   "data-private-summary=\"integrations\"",
+  "data-report-action=\"replay-private\"",
+  "data-private-count=\"pendingNotifications\"",
   "Integrations"
 ]) {
   if (!buildScript.includes(marker)) issues.push(`tools/build-static.mjs: missing private integration summary marker ${marker}`);
@@ -28,7 +34,8 @@ for (const marker of [
 
 for (const marker of [
   "byIntegrationStatus",
-  "renderPrivateSummary(panel, \"integrations\""
+  "renderPrivateSummary(panel, \"integrations\"",
+  "replayPendingNotifications"
 ]) {
   if (!appJs.includes(marker)) issues.push(`app.js: missing private integration rendering marker ${marker}`);
 }
@@ -36,6 +43,7 @@ for (const marker of [
 for (const marker of [
   "FORM_INTEGRATION_URL",
   "FORM_INTEGRATION_SIGNING_SECRET",
+  "replay_pending",
   "server-side integration"
 ]) {
   if (!docs.includes(marker)) issues.push(`docs/deployment.md: missing integration setup marker ${marker}`);

@@ -160,6 +160,32 @@ try {
   issues.push(`/api/report: request failed (${error.message})`);
 }
 
+try {
+  const reportToken = process.env.LUX_REPORT_TOKEN;
+  const { response, text } = await fetchWithTimeout("/api/report", {
+    method: "POST",
+    headers: reportToken
+      ? { Accept: "application/json", "Content-Type": "application/json", Authorization: `Bearer ${reportToken}` }
+      : { Accept: "application/json", "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "replay_pending", limit: 1 }),
+    readBody: true
+  });
+  if (reportToken && (response.ok || response.status === 202)) {
+    const replay = JSON.parse(text);
+    if (!replay.ok) issues.push("/api/report replay: approved response did not return ok:true");
+  } else if (reportToken) {
+    issues.push(`/api/report replay: approved token expected accepted response, received ${response.status}`);
+  } else if (response.status === 403 && /Forbidden/i.test(text)) {
+    issues.push("/api/report replay: Cloud Run public access is blocked (HTTP 403).");
+  } else if (response.status === 401) {
+    // Missing token should reach the function and be rejected there.
+  } else {
+    issues.push(`/api/report replay: expected protected HTTP 401, received ${response.status}`);
+  }
+} catch (error) {
+  issues.push(`/api/report replay: request failed (${error.message})`);
+}
+
 if (warnings.length) {
   console.warn("Live smoke warnings:");
   for (const warning of warnings) console.warn(`- ${warning}`);

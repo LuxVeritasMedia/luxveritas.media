@@ -1,12 +1,8 @@
 import admin from "firebase-admin";
 import crypto from "node:crypto";
-import { defineSecret } from "firebase-functions/params";
 import { onRequest } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions";
 
-const resendApiKey = defineSecret("RESEND_API_KEY");
-const formIntegrationUrl = defineSecret("FORM_INTEGRATION_URL");
-const formIntegrationSigningSecret = defineSecret("FORM_INTEGRATION_SIGNING_SECRET");
 const defaultToEmail = "info@luxveritas.media";
 const defaultFromEmail = "Lux Veritas <forms@luxveritas.media>";
 const allowedOrigins = new Set([
@@ -21,9 +17,19 @@ const rateWindowMs = 10 * 60 * 1000;
 const maxRequestsPerWindow = 5;
 const maxEventsPerWindow = 40;
 const maxReportsPerWindow = 20;
+const maxReplayPerWindow = 8;
 const emailTimeoutMs = 6000;
 const integrationTimeoutMs = 6000;
 const rateBuckets = new Map();
+const pendingDeliveryStatuses = [
+  "received",
+  "email_provider_not_configured",
+  "email_provider_timeout",
+  "email_provider_request_failed",
+  "email_provider_error",
+  "email_relay_error",
+  "relay_error"
+];
 
 function getDb() {
   if (!admin.apps.length) admin.initializeApp();
@@ -67,27 +73,15 @@ function text(value, max = 2000) {
 }
 
 function emailProviderKey() {
-  try {
-    return resendApiKey.value() || process.env.RESEND_API_KEY || "";
-  } catch {
-    return process.env.RESEND_API_KEY || "";
-  }
+  return process.env.RESEND_API_KEY || "";
 }
 
 function integrationUrl() {
-  try {
-    return formIntegrationUrl.value() || process.env.FORM_INTEGRATION_URL || "";
-  } catch {
-    return process.env.FORM_INTEGRATION_URL || "";
-  }
+  return process.env.FORM_INTEGRATION_URL || "";
 }
 
 function integrationSigningSecret() {
-  try {
-    return formIntegrationSigningSecret.value() || process.env.FORM_INTEGRATION_SIGNING_SECRET || "";
-  } catch {
-    return process.env.FORM_INTEGRATION_SIGNING_SECRET || "";
-  }
+  return process.env.FORM_INTEGRATION_SIGNING_SECRET || "";
 }
 
 const accessPathMap = {
@@ -225,6 +219,29 @@ function cleanDoc(snapshot) {
   };
 }
 
+function cleanReplayDoc(snapshot) {
+  const data = snapshot.data() || {};
+  return {
+    id: snapshot.id,
+    client_submission_id: data.client_submission_id || null,
+    name: data.name || "",
+    email: data.email || "",
+    phone: data.phone || "",
+    role_path: data.role_path || "",
+    access_path: data.access_path || "",
+    portal_role_target: data.portal_role_target || "",
+    inquiry_type: data.inquiry_type || "",
+    inquiry_key: data.inquiry_key || "",
+    formType: data.formType || "",
+    tag: data.tag || "",
+    source: data.source || "luxveritas.media",
+    source_page: data.source_page || "",
+    consent_email: Boolean(data.consent_email),
+    consent_sms: Boolean(data.consent_sms),
+    message: data.message || ""
+  };
+}
+
 function topCounts(items, pick, limit = 8) {
   const counts = new Map();
   for (const item of items) {
@@ -290,6 +307,11 @@ function deliveryReadiness() {
 
 async function collectionCount(collection) {
   const result = await collection.count().get();
+  return result.data().count || 0;
+}
+
+async function pendingNotificationCount(collection) {
+  const result = await collection.where("deliveryStatus", "in", pendingDeliveryStatuses).count().get();
   return result.data().count || 0;
 }
 
@@ -476,11 +498,66 @@ async function updateDocSafe(doc, data, id, stage) {
   }
 }
 
+async function replayPendingInbox(req, res, auth) {
+  const readiness = deliveryReadiness();
+  if (!readiness.emailProviderConfigured) {
+    json(res, 202, {
+      ok: true,
+      replayed: 0,
+      skipped: true,
+      reason: "email_provider_not_configured",
+      delivery: readiness
+    });
+    return;
+  }
+
+  const limit = Math.max(1, Math.min(Number(req.body?.limit) || 20, 50));
+  const db = getDb();
+  const submissions = db.collection("form_submissions");
+
+  try {
+    const pendingSnapshot = await submissions
+      .where("deliveryStatus", "in", pendingDeliveryStatuses)
+      .limit(limit)
+      .get();
+
+    const results = [];
+    for (const snapshot of pendingSnapshot.docs) {
+      const payload = cleanReplayDoc(snapshot);
+      const delivery = await sendEmail(payload, snapshot.id);
+      await updateDocSafe(snapshot.ref, {
+        deliveryStatus: delivery.delivered ? "sent" : delivery.reason,
+        delivery,
+        replayedBy: auth.email,
+        replayedAt: admin.firestore.FieldValue.serverTimestamp(),
+        deliveredAt: delivery.delivered ? admin.firestore.FieldValue.serverTimestamp() : null
+      }, snapshot.id, "replay_delivery");
+      results.push({
+        id: snapshot.id,
+        receiptId: payload.client_submission_id || snapshot.id,
+        deliveryStatus: delivery.delivered ? "sent" : delivery.reason
+      });
+    }
+
+    json(res, 200, {
+      ok: true,
+      replayed: results.filter((item) => item.deliveryStatus === "sent").length,
+      checked: results.length,
+      results
+    });
+  } catch (error) {
+    logger.error("Pending notification replay failed", {
+      errorCode: error?.code || null,
+      errorMessage: error?.message || String(error)
+    });
+    json(res, 500, { ok: false, error: "replay_unavailable" });
+  }
+}
+
 export const submitForm = onRequest(
   {
     region: "us-central1",
     cors: false,
-    secrets: [resendApiKey, formIntegrationUrl, formIntegrationSigningSecret],
     maxInstances: 10
   },
   async (req, res) => {
@@ -624,7 +701,6 @@ export const reportActivity = onRequest(
   {
     region: "us-central1",
     cors: false,
-    secrets: [resendApiKey, formIntegrationUrl, formIntegrationSigningSecret],
     maxInstances: 5
   },
   async (req, res) => {
@@ -635,12 +711,15 @@ export const reportActivity = onRequest(
       return;
     }
 
-    if (req.method !== "GET") {
+    if (!["GET", "POST"].includes(req.method)) {
       json(res, 405, { ok: false, error: "method_not_allowed" });
       return;
     }
 
-    if (isRateLimited(req, maxReportsPerWindow, "report")) {
+    const isReplay = req.method === "POST" && req.body?.action === "replay_pending";
+    const namespace = isReplay ? "replay" : "report";
+    const maxRequests = isReplay ? maxReplayPerWindow : maxReportsPerWindow;
+    if (isRateLimited(req, maxRequests, namespace)) {
       json(res, 429, { ok: false, error: "rate_limited" });
       return;
     }
@@ -651,14 +730,24 @@ export const reportActivity = onRequest(
       return;
     }
 
+    if (req.method === "POST") {
+      if (!isReplay) {
+        json(res, 400, { ok: false, error: "unknown_report_action" });
+        return;
+      }
+      await replayPendingInbox(req, res, auth);
+      return;
+    }
+
     const db = getDb();
     const submissions = db.collection("form_submissions");
     const events = db.collection("site_events");
 
     try {
-      const [submissionCount, eventCount, latestSubmissions, latestEvents, summarySubmissions, summaryEvents] = await Promise.all([
+      const [submissionCount, eventCount, pendingNotifications, latestSubmissions, latestEvents, summarySubmissions, summaryEvents] = await Promise.all([
         collectionCount(submissions),
         collectionCount(events),
+        pendingNotificationCount(submissions),
         submissions.orderBy("createdAt", "desc").limit(20).get(),
         events.orderBy("createdAt", "desc").limit(20).get(),
         submissions.orderBy("createdAt", "desc").limit(200).get(),
@@ -671,7 +760,8 @@ export const reportActivity = onRequest(
         viewer: auth.email,
         counts: {
           submissions: submissionCount,
-          events: eventCount
+          events: eventCount,
+          pendingNotifications
         },
         latest: {
           submissions: latestSubmissions.docs.map(cleanDoc),

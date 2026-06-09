@@ -34,6 +34,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add protected form-delivery readiness reporting for stored-vs-inbox status.
 - [x] Add private media-source readiness reporting for audio, video, and radio slots.
 - [x] Add optional server-side integration fanout for validated form submissions.
+- [x] Add protected pending-inbox replay for stored submissions after email provider setup.
 - [ ] Configure and verify email provider runtime secret `RESEND_API_KEY` plus approved sender domain for inbox notification after Firestore capture.
 - [ ] Configure approved private integration endpoint secret after CRM/Google workflow target is chosen.
 
