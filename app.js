@@ -671,7 +671,7 @@ function privateReportRows(report) {
       timestamp: item.createdAt || "",
       page: item.page || "",
       label: item.client_submission_id || item.formType || item.inquiry_type || "",
-      detail: item.deliveryStatus || item.role_path || item.access_path || ""
+      detail: item.routing_queue || item.deliveryStatus || item.role_path || item.access_path || ""
     })),
     ...events.map((item) => ({
       source: "protected",
@@ -736,6 +736,7 @@ function renderPrivateReport(report) {
   renderPrivateFunnel(panel, report.summary?.funnel || report.funnel);
   renderPrivateSummary(panel, "forms", report.summary?.submissions?.byFormType);
   renderPrivateSummary(panel, "roles", report.summary?.submissions?.byRolePath);
+  renderPrivateSummary(panel, "routing", report.summary?.submissions?.byRoutingQueue);
   renderPrivateSummary(panel, "integrations", report.summary?.submissions?.byIntegrationStatus);
   renderPrivateSummary(panel, "events", report.summary?.events?.byEvent);
   renderPrivateSummary(panel, "destinations", report.summary?.events?.byDestination || report.summary?.events?.byPage);
@@ -755,7 +756,7 @@ function renderPrivateReport(report) {
 
   list.innerHTML = items.map((item) => {
     const label = item.client_submission_id || item.event || item.type || "activity";
-    const detail = item.detail?.destination || item.detail?.formType || item.detail?.surface || item.formType || item.inquiry_type || item.page || item.role_path || "Lux Veritas";
+    const detail = item.routing_label || item.routing_queue || item.detail?.destination || item.detail?.formType || item.detail?.surface || item.formType || item.inquiry_type || item.page || item.role_path || "Lux Veritas";
     const time = item.createdAt ? new Date(item.createdAt).toLocaleString() : "Recent";
     return `<li><strong>${escapeHtml(label)}</strong><span>${escapeHtml(detail)}</span><small>${escapeHtml(time)}</small></li>`;
   }).join("");

@@ -32,6 +32,7 @@ The Firebase Function:
 - validates required fields
 - rejects honeypot spam
 - applies best-effort rate limiting
+- assigns screened intake routing fields for protected review
 - logs submissions to Firestore when available
 - sends email through Resend when runtime config is present
 - accepts and records submissions even when email notification is not fully configured
@@ -48,6 +49,7 @@ The activity report function:
 - requires a Google/Firebase bearer token from an approved Lux Veritas account
 - returns protected counts and latest records from `form_submissions` and `site_events`
 - returns operator summaries for lead paths, role demand, event demand, page paths, and clicked destinations
+- returns screened routing summaries for intake queues and follow-up priority
 - reports pending inbox notification backlog for stored submissions
 - is intended for the noindex private portal reporting page only
 
@@ -104,6 +106,18 @@ gcloud run services update submitform \
 ```
 
 The browser form times out after 12 seconds, and server-side email/integration relays each time out after 6 seconds. Email and optional integration fanout run in parallel so a slow secondary relay does not hold the browser hostage. When inbox delivery is not configured or unavailable, the submission is still recorded when Firestore is available and the visitor sees a recorded-submission or email-draft fallback instead of a stuck submit state.
+
+## Screened Intake Routing
+
+Every validated form submission receives protected routing fields before storage and relay:
+
+- `routing_queue`
+- `routing_label`
+- `routing_priority`
+- `routing_next_action`
+- `routing_sla`
+
+These fields let the private report and future server-side integration separate membership, submissions, events, press, partner/licensing, investor, and general access requests without exposing private tools or internal workflows on the public site.
 
 After inbox delivery is configured, open `/portal/reporting.html`, load private activity with an approved operator token, and use `Replay Pending Inbox` to retry stored submissions that were captured while email was offline. The replay endpoint only sends records whose `deliveryStatus` indicates a pending or failed inbox notification.
 

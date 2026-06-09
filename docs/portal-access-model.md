@@ -65,6 +65,28 @@ Every public form request should carry:
 - `consent_sms`
 - `timestamp`
 
+## Screened Intake Routing
+
+Validated submissions receive stable server-side routing fields before storage, notification, private reporting, or optional integration fanout:
+
+- `routing_queue`
+- `routing_label`
+- `routing_priority`
+- `routing_next_action`
+- `routing_sla`
+
+Current routing queues:
+
+- `membership_waitlist` - member and first-access requests.
+- `submission_review` - artist, creator, story, music, and visual review.
+- `event_access` - event guest and room-access requests.
+- `press_contact` - press and media inquiries.
+- `partner_licensing` - licensing, venue, studio, brand, and partner requests.
+- `strategic_access` - investor and strategic-access requests.
+- `access_review` - general portal and uncategorized access requests.
+
+Routing fields are for protected reporting and server-side intake handoff only. They must not expose internal tooling, private dashboards, secrets, or LuxFlow app logic in public markup.
+
 ## Portal Surface Model
 
 Phase 5 portal pages may show screened entry paths and protected pilot reporting only.

@@ -18,6 +18,9 @@ for (const marker of [
   "replay_pending",
   "pendingNotificationCount",
   "pendingNotifications",
+  "routing_queue",
+  "routing_next_action",
+  "routing: {",
   "buildPilotFunnel",
   "https:\\/\\/"
 ]) {
@@ -29,6 +32,7 @@ for (const marker of [
   "data-report-action=\"replay-private\"",
   "data-private-count=\"pendingNotifications\"",
   "data-private-funnel",
+  "data-private-summary=\"routing\"",
   "Integrations"
 ]) {
   if (!buildScript.includes(marker)) issues.push(`tools/build-static.mjs: missing private integration summary marker ${marker}`);
@@ -36,6 +40,8 @@ for (const marker of [
 
 for (const marker of [
   "byIntegrationStatus",
+  "byRoutingQueue",
+  "renderPrivateSummary(panel, \"routing\"",
   "renderPrivateSummary(panel, \"integrations\"",
   "renderPrivateFunnel",
   "replayPendingNotifications"
@@ -47,6 +53,7 @@ for (const marker of [
   "FORM_INTEGRATION_URL",
   "FORM_INTEGRATION_SIGNING_SECRET",
   "replay_pending",
+  "Screened Intake Routing",
   "server-side integration"
 ]) {
   if (!docs.includes(marker)) issues.push(`docs/deployment.md: missing integration setup marker ${marker}`);

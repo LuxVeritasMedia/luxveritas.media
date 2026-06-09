@@ -107,13 +107,99 @@ const inquiryKeyMap = {
   General: "general"
 };
 
+const routingMap = {
+  membership: {
+    routing_queue: "membership_waitlist",
+    routing_label: "Membership Waitlist",
+    routing_priority: "standard",
+    routing_next_action: "Send first-access follow-up",
+    routing_sla: "3 business days"
+  },
+  submissions: {
+    routing_queue: "submission_review",
+    routing_label: "Submission Review",
+    routing_priority: "high",
+    routing_next_action: "Review materials and rights-safe fit",
+    routing_sla: "5 business days"
+  },
+  events: {
+    routing_queue: "event_access",
+    routing_label: "Event Access",
+    routing_priority: "standard",
+    routing_next_action: "Screen event fit and invitation path",
+    routing_sla: "3 business days"
+  },
+  event_guest: {
+    routing_queue: "event_access",
+    routing_label: "Event Access",
+    routing_priority: "standard",
+    routing_next_action: "Screen event fit and invitation path",
+    routing_sla: "3 business days"
+  },
+  press: {
+    routing_queue: "press_contact",
+    routing_label: "Press Contact",
+    routing_priority: "standard",
+    routing_next_action: "Route to press response",
+    routing_sla: "2 business days"
+  },
+  partnership: {
+    routing_queue: "partner_licensing",
+    routing_label: "Partner / Licensing",
+    routing_priority: "high",
+    routing_next_action: "Screen use case and access level",
+    routing_sla: "3 business days"
+  },
+  licensing: {
+    routing_queue: "partner_licensing",
+    routing_label: "Partner / Licensing",
+    routing_priority: "high",
+    routing_next_action: "Screen use case and access level",
+    routing_sla: "3 business days"
+  },
+  partner: {
+    routing_queue: "partner_licensing",
+    routing_label: "Partner / Licensing",
+    routing_priority: "high",
+    routing_next_action: "Screen use case and access level",
+    routing_sla: "3 business days"
+  },
+  investor: {
+    routing_queue: "strategic_access",
+    routing_label: "Strategic Access",
+    routing_priority: "high",
+    routing_next_action: "Screen strategic fit before materials",
+    routing_sla: "2 business days"
+  },
+  portal: {
+    routing_queue: "access_review",
+    routing_label: "Access Review",
+    routing_priority: "standard",
+    routing_next_action: "Confirm role path and access need",
+    routing_sla: "3 business days"
+  },
+  general: {
+    routing_queue: "access_review",
+    routing_label: "Access Review",
+    routing_priority: "standard",
+    routing_next_action: "Confirm role path and access need",
+    routing_sla: "3 business days"
+  }
+};
+
+function deriveRouting(payload = {}) {
+  return routingMap[payload.inquiry_key]
+    || routingMap[payload.access_path]
+    || routingMap.general;
+}
+
 function validate(payload) {
   const errors = [];
   const rolePath = text(payload.role_path, 80);
   const inquiryType = text(payload.inquiry_type, 80);
   const accessPath = accessPathMap[rolePath] || null;
   const inquiryKey = inquiryKeyMap[inquiryType] || null;
-  const clean = {
+  const cleanBase = {
     client_submission_id: text(payload.client_submission_id, 80),
     name: text(payload.name, 140),
     email: text(payload.email, 180).toLowerCase(),
@@ -131,6 +217,10 @@ function validate(payload) {
     consent_email: payload.consent_email === "yes" || payload.consent_email === true,
     consent_sms: payload.consent_sms === "yes" || payload.consent_sms === true,
     company_url: text(payload.company_url, 240)
+  };
+  const clean = {
+    ...cleanBase,
+    ...deriveRouting(cleanBase)
   };
 
   if (clean.company_url) errors.push("spam");
@@ -201,6 +291,7 @@ async function authorizeReport(req) {
 function cleanDoc(snapshot) {
   const data = snapshot.data() || {};
   const createdAt = data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : null;
+  const routing = deriveRouting(data);
   return {
     id: snapshot.id,
     createdAt,
@@ -212,6 +303,11 @@ function cleanDoc(snapshot) {
     access_path: data.access_path || null,
     portal_role_target: data.portal_role_target || null,
     inquiry_key: data.inquiry_key || null,
+    routing_queue: data.routing_queue || routing.routing_queue,
+    routing_label: data.routing_label || routing.routing_label,
+    routing_priority: data.routing_priority || routing.routing_priority,
+    routing_next_action: data.routing_next_action || routing.routing_next_action,
+    routing_sla: data.routing_sla || routing.routing_sla,
     deliveryStatus: data.deliveryStatus || null,
     integrationStatus: data.integrationStatus || null,
     client_submission_id: data.client_submission_id || null,
@@ -221,6 +317,7 @@ function cleanDoc(snapshot) {
 
 function cleanReplayDoc(snapshot) {
   const data = snapshot.data() || {};
+  const routing = deriveRouting(data);
   return {
     id: snapshot.id,
     client_submission_id: data.client_submission_id || null,
@@ -232,6 +329,11 @@ function cleanReplayDoc(snapshot) {
     portal_role_target: data.portal_role_target || "",
     inquiry_type: data.inquiry_type || "",
     inquiry_key: data.inquiry_key || "",
+    routing_queue: data.routing_queue || routing.routing_queue,
+    routing_label: data.routing_label || routing.routing_label,
+    routing_priority: data.routing_priority || routing.routing_priority,
+    routing_next_action: data.routing_next_action || routing.routing_next_action,
+    routing_sla: data.routing_sla || routing.routing_sla,
     formType: data.formType || "",
     tag: data.tag || "",
     source: data.source || "luxveritas.media",
@@ -322,6 +424,8 @@ function summarizeActivity(submissionDocs, eventDocs) {
       byRolePath: topCounts(submissionItems, (item) => item.role_path),
       byAccessPath: topCounts(submissionItems, (item) => item.access_path),
       byPortalRoleTarget: topCounts(submissionItems, (item) => item.portal_role_target),
+      byRoutingQueue: topCounts(submissionItems, (item) => item.routing_label || item.routing_queue),
+      byRoutingPriority: topCounts(submissionItems, (item) => item.routing_priority),
       byDeliveryStatus: topCounts(submissionItems, (item) => item.deliveryStatus),
       byIntegrationStatus: topCounts(submissionItems, (item) => item.integrationStatus),
       bySourcePage: topCounts(submissionItems, (item) => item.source_page)
@@ -391,6 +495,10 @@ function emailText(payload, id) {
     `Portal role target: ${payload.portal_role_target}`,
     `Inquiry type: ${payload.inquiry_type}`,
     `Inquiry key: ${payload.inquiry_key}`,
+    `Routing queue: ${payload.routing_queue}`,
+    `Routing priority: ${payload.routing_priority}`,
+    `Routing next action: ${payload.routing_next_action}`,
+    `Routing SLA: ${payload.routing_sla}`,
     `Form type: ${payload.formType}`,
     `Source page: ${payload.source_page}`,
     `Email consent: ${payload.consent_email ? "yes" : "no"}`,
@@ -467,6 +575,13 @@ function integrationPayload(payload, id) {
     rolePath: payload.role_path || "",
     accessPath: payload.access_path || "",
     portalRoleTarget: payload.portal_role_target || "",
+    routing: {
+      queue: payload.routing_queue || "",
+      label: payload.routing_label || "",
+      priority: payload.routing_priority || "",
+      nextAction: payload.routing_next_action || "",
+      sla: payload.routing_sla || ""
+    },
     contact: {
       name: payload.name,
       email: payload.email,

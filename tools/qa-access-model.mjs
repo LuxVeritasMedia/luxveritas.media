@@ -20,6 +20,9 @@ const payloadFields = [
   "portal_role_target",
   "inquiry_type",
   "inquiry_key",
+  "routing_queue",
+  "routing_priority",
+  "routing_next_action",
   "consent_email",
   "consent_sms"
 ];
@@ -91,7 +94,10 @@ for (const marker of [
   "recognized role path is required",
   "recognized inquiry type is required",
   "byAccessPath",
-  "byPortalRoleTarget"
+  "byPortalRoleTarget",
+  "deriveRouting",
+  "byRoutingQueue",
+  "byRoutingPriority"
 ]) {
   if (!functionJs.includes(marker)) issues.push(`functions/index.js: missing access-model marker ${marker}`);
 }

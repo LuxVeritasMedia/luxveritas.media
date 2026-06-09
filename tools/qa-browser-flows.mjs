@@ -28,6 +28,10 @@ const mockReport = {
         access_path: "member",
         portal_role_target: "member",
         inquiry_key: "membership",
+        routing_queue: "membership_waitlist",
+        routing_label: "Membership Waitlist",
+        routing_priority: "standard",
+        routing_next_action: "Send first-access follow-up",
         deliveryStatus: "stored",
         integrationStatus: "integration_not_configured",
         client_submission_id: "LV-QA-REPORT"
@@ -64,6 +68,8 @@ const mockReport = {
     submissions: {
       byFormType: [{ label: "fan", count: 18 }],
       byRolePath: [{ label: "Member", count: 24 }],
+      byRoutingQueue: [{ label: "Membership Waitlist", count: 24 }],
+      byRoutingPriority: [{ label: "standard", count: 24 }],
       byIntegrationStatus: [{ label: "integration_not_configured", count: 42 }]
     },
     events: {
@@ -275,6 +281,7 @@ async function operatorReportFlow(page, baseUrl) {
   const deliveryDetail = await page.locator('[data-private-delivery="detail"]').innerText();
   const formsSummary = await page.locator('[data-private-summary="forms"]').innerText();
   const rolesSummary = await page.locator('[data-private-summary="roles"]').innerText();
+  const routingSummary = await page.locator('[data-private-summary="routing"]').innerText();
   const integrationsSummary = await page.locator('[data-private-summary="integrations"]').innerText();
   const eventsSummary = await page.locator('[data-private-summary="events"]').innerText();
   const destinationsSummary = await page.locator('[data-private-summary="destinations"]').innerText();
@@ -290,6 +297,7 @@ async function operatorReportFlow(page, baseUrl) {
   for (const [label, text] of [
     ["forms", formsSummary],
     ["roles", rolesSummary],
+    ["routing", routingSummary],
     ["integrations", integrationsSummary],
     ["events", eventsSummary],
     ["destinations", destinationsSummary],
@@ -302,6 +310,9 @@ async function operatorReportFlow(page, baseUrl) {
   }
   if (!/LV-QA-REPORT/.test(latest) || !/media_action/.test(latest)) {
     issues.push(`/portal/reporting.html: latest protected activity missing mocked records`);
+  }
+  if (!/Membership Waitlist/.test(routingSummary)) {
+    issues.push(`/portal/reporting.html: screened routing summary missing mocked queue`);
   }
   if (!/Server captures/.test(funnelSummary) || !/Media actions/.test(funnelSummary)) {
     issues.push(`/portal/reporting.html: pilot funnel missing capture/media values`);
