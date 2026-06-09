@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260608-report-summaries";
+const assetVersion = "20260609-form-intents";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 
 const nav = [
@@ -360,13 +360,13 @@ function signInShell() {
   });
 }
 
-function accessShell(path, title, description, bodyCopy = "Access opens by request. Public information ends here.", primaryLabel = "Request Access", secondaryLabel = "Join") {
+function accessShell(path, title, description, bodyCopy = "Access opens by request. Public information ends here.", primaryLabel = "Request Access", secondaryLabel = "Join", formType = "request") {
   return shell({
     path,
     title: `${title} | Lux Veritas`,
     description,
     noindex: true,
-    body: `${pageHero("Access", title, description, `<div class="hero-actions"><button class="button button-primary" data-open-form="request">${primaryLabel}</button><a class="button button-quiet" href="/join.html">${secondaryLabel}</a></div>`)}
+    body: `${pageHero("Access", title, description, `<div class="hero-actions"><button class="button button-primary" data-open-form="${formType}">${primaryLabel}</button><a class="button button-quiet" href="/join.html">${secondaryLabel}</a></div>`)}
     <section class="section empty-state"><p class="kicker">Screened Entry</p><h2>Available by request.</h2><p>${bodyCopy}</p></section>`
   });
 }
@@ -480,7 +480,7 @@ const pages = [
   ["/codex-sanctum.html", gated("/codex-sanctum.html", "Sanctum")],
   ["/blackgpt-damon.html", blackgptDamon()],
   ["/about.html", about()],
-  ["/join.html", utility("/join.html", "Join", "Join Lux Veritas through releases, invitations, and selected access.", "<p>Start with the clearest door for you: join the list, request access, or send your work for review. The public layer is where trust begins. The private layer opens in time.</p>", "request", false, "Request Access")],
+  ["/join.html", utility("/join.html", "Join", "Join Lux Veritas through releases, invitations, and selected access.", "<p>Start with the clearest door for you: join the list, request access, or send your work for review. The public layer is where trust begins. The private layer opens in time.</p>", "fan", false, "Join the list")],
   ["/contact.html", utility("/contact.html", "Contact", "Use this path for aligned inquiries. The right team will route your message after review.", "<p>Use this path for aligned inquiries. The right team will route your message after review.</p>", "press", false, "Send Inquiry")],
   ["/press.html", utility("/press.html", "Press", "Short institutional boilerplate and screened media contact.", "<p>Lux Veritas is a global media and cultural studio creating music, film, and live experiences built on truth, order, and lineage.</p><p>A fuller press kit, visuals, and selected materials are shared by request.</p>", "press")],
   ["/submissions.html", utility("/submissions.html", "Submissions", "Lux Veritas accepts selected artist, creator, story, music, visual, and partnership submissions through a screened intake process.", "<p>Lux Veritas accepts selected artist, creator, story, music, visual, and partnership submissions through a screened intake process.</p><p>Please do not submit confidential material unless specifically invited. Submitting material does not create an obligation, partnership, employment relationship, or guarantee of review, response, release, or compensation.</p>", "submission", false, "Submit for review")],
@@ -538,8 +538,8 @@ const pages = [
   ["/spmvp.html", shell({ path: "/spmvp.html", title: "SPMVP | Lux Veritas", description: "A release room for a new Lux Veritas music drop.", body: `${pageHero("New Drop", "SPMVP", "Start with the drop. Follow the signal. Join for the deeper version.", `<div class="hero-actions"><button class="button button-primary" type="button" data-media-action="play">Listen</button><button class="button button-quiet" type="button" data-media-action="watch">Watch</button><button class="button button-quiet" type="button" data-open-form="fan">Join for early access</button></div>`)}${mediaPlayerShell("spmvp")}<section class="section split-band"><div><p class="kicker">Context</p><h2>Enter through the work.</h2></div><div><p>Listen, watch, and enter the Lux Veritas circle for early access, private drops, and future live rooms.</p></div></section>` })],
   ["/auth/signin.html", signInShell()],
   ["/portal/index.html", shell({ path: "/portal/index.html", title: "Portal | Lux Veritas", description: "Private access for approved members, collaborators, and selected guests.", noindex: true, body: `${pageHero("Private Access", "Private Access", "This portal is for approved artists, creators, partners, members, and operators.", `<div class="hero-actions"><a class="button button-primary" href="/auth/signin.html">Sign In</a><button class="button button-quiet" data-open-form="request">Request Access</button></div>`)}<section class="section empty-state"><p class="kicker">Screened Entry</p><h2>Access is screened by role and invitation.</h2><p>Use the sign-in page if you already have access, or request access if you are entering through submissions, membership, press, partnerships, licensing, or investor inquiry.</p></section>` })],
-  ["/portal/library.html", accessShell("/portal/library.html", "Creator", "Private creator materials are available by screened access.", "Creator tools and private materials are not published in the public layer.")],
-  ["/portal/releases.html", accessShell("/portal/releases.html", "Licensing", "Private release and licensing materials are available by request.", "Licensing conversations and private release materials are screened before access opens.")],
+  ["/portal/library.html", accessShell("/portal/library.html", "Creator", "Private creator materials are available by screened access.", "Creator tools and private materials are not published in the public layer.", "Request Creator Access", "Join", "creator")],
+  ["/portal/releases.html", accessShell("/portal/releases.html", "Licensing", "Private release and licensing materials are available by request.", "Licensing conversations and private release materials are screened before access opens.", "Request Licensing Access", "Join", "licensing")],
   ["/portal/reporting.html", portalReport()],
   ["/portal/admin.html", accessShell("/portal/admin.html", "Admin", "This area is not available for public browsing.", "Administrative views are internal-only and not published in client-facing markup.")],
   ["/portal/admin/users.html", accessShell("/portal/admin/users.html", "Users", "This area is not available for public browsing.", "Administrative views are internal-only and not published in client-facing markup.")],
@@ -550,7 +550,7 @@ const pages = [
   ["/store.html", utility("/store.html", "Store", "A drop list for collectible releases and selected objects from the Lux Veritas world.", "<p>The store opens through selected drops. Join the waitlist for first notice on music, objects, and limited pieces as they arrive.</p>", "fan", false, "Join the waitlist")],
   ["/insights.html", utility("/insights.html", "Insights", "Selected Outer Codex essays and public writing from Lux Veritas.", "<p>Insights will gather public-facing essays, principles, and reflections from the Outer Codex.</p><p>Private maps, internal playbooks, and unpublished materials are not part of this public archive.</p>", "request", false)],
   ["/membership.html", utility("/membership.html", "Membership", "Membership begins with first access.", "<p>Join the Lux Veritas circle for early access, private drops, listening rooms, presales, behind-the-scenes releases, deeper Codex/lore, community moments, and exclusive merch.</p><p>Membership begins with first access.</p>", "fan", false, "Join the waitlist")],
-  ["/investor.html", accessShell("/investor.html", "Strategic Access", "Investor, licensing, studio, and strategic partnership materials are available by screened request only.", "Use this page to request access. Public materials are intentionally limited.", "Request investor access", "Join")],
+  ["/investor.html", accessShell("/investor.html", "Strategic Access", "Investor, licensing, studio, and strategic partnership materials are available by screened request only.", "Use this page to request access. Public materials are intentionally limited.", "Request investor access", "Join", "investor")],
   ["/community.html", utility("/community.html", "Community", "Join the list to enter the circle.", "<p>The Lux Veritas community begins with owned fan identity: first access, private drops, member rooms, creator challenges, and live cultural moments.</p><p>Join the list to enter the circle.</p>", "fan", false, "Join the list")],
 ];
 

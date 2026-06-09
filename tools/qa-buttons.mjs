@@ -68,6 +68,19 @@ for (const marker of ['trackInteraction("form_open"', 'trackInteraction("link_cl
 if (!appJs.includes("renderPrivateSummary")) {
   issues.push("app.js: missing private report summary rendering");
 }
+for (const marker of [
+  'rolePath: "Member"',
+  'inquiryType: "Membership"',
+  'rolePath: "Investor"',
+  'inquiryType: "Investor"',
+  'rolePath: "Partner"',
+  'inquiryType: "Licensing"',
+  'rolePath: "Creator"'
+]) {
+  if (!appJs.includes(marker)) {
+    issues.push(`app.js: missing form intent default ${marker}`);
+  }
+}
 
 for (const file of files) {
   const rel = relative(root, file);
@@ -116,6 +129,18 @@ for (const file of files) {
         issues.push(`${rel}: missing private summary "${summary}"`);
       }
     }
+  }
+
+  const routeIntentChecks = {
+    "join.html": 'data-open-form="fan"',
+    "investor.html": 'data-open-form="investor"',
+    "portal/library.html": 'data-open-form="creator"',
+    "portal/releases.html": 'data-open-form="licensing"',
+    "submissions.html": 'data-open-form="submission"',
+    "membership.html": 'data-open-form="fan"'
+  };
+  if (routeIntentChecks[rel] && !html.includes(routeIntentChecks[rel])) {
+    issues.push(`${rel}: missing ${routeIntentChecks[rel]}`);
   }
 }
 

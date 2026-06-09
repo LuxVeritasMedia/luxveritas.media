@@ -3,37 +3,73 @@ const formCopy = {
     kicker: "Request Access",
     title: "Screened Access",
     copy: "For events, partnerships, private links, and portal consideration.",
-    tag: "request-access"
+    tag: "request-access",
+    rolePath: "General",
+    inquiryType: "Portal"
   },
   submission: {
     kicker: "Submissions",
     title: "Artist and Creator Intake",
     copy: "Send a concise signal. The review path is selective by design.",
-    tag: "submission"
+    tag: "submission",
+    rolePath: "Creator",
+    inquiryType: "Submissions"
   },
   press: {
     kicker: "Press / Partners",
     title: "Institutional Contact",
     copy: "For press, venues, distribution, investor, and brand partnership inquiries.",
-    tag: "press"
+    tag: "press",
+    rolePath: "Press",
+    inquiryType: "Press"
   },
   event: {
     kicker: "Event RSVP",
     title: "Request Invitation",
     copy: "Event access is screened. Tell us which room you are approaching.",
-    tag: "event-interest"
+    tag: "event-interest",
+    rolePath: "Event guest",
+    inquiryType: "Events"
   },
   codex: {
     kicker: "Codex Request",
     title: "Codex Access Request",
     copy: "Inner and Sanctum access require review, alignment, and approval.",
-    tag: "codex-request"
+    tag: "codex-request",
+    rolePath: "Creator",
+    inquiryType: "Portal"
   },
   fan: {
     kicker: "Membership",
     title: "Join the List",
     copy: "Get release signals and selected Lux Veritas updates.",
-    tag: "membership-waitlist"
+    tag: "membership-waitlist",
+    rolePath: "Member",
+    inquiryType: "Membership"
+  },
+  investor: {
+    kicker: "Strategic Access",
+    title: "Investor / Partner Request",
+    copy: "Strategic materials are screened before access opens.",
+    tag: "investor-access",
+    rolePath: "Investor",
+    inquiryType: "Investor"
+  },
+  licensing: {
+    kicker: "Licensing",
+    title: "Licensing Request",
+    copy: "Tell us which release, use case, or partnership path you are approaching.",
+    tag: "licensing-access",
+    rolePath: "Partner",
+    inquiryType: "Licensing"
+  },
+  creator: {
+    kicker: "Creator Access",
+    title: "Creator Request",
+    copy: "Creator materials open by screened access and fit.",
+    tag: "creator-access",
+    rolePath: "Creator",
+    inquiryType: "Portal"
   }
 };
 
@@ -230,6 +266,10 @@ function openForm(type) {
   document.querySelector("[data-form-kicker]").textContent = config.kicker;
   document.querySelector("[data-form-title]").textContent = config.title;
   document.querySelector("[data-form-copy]").textContent = config.copy;
+  const rolePath = dialogForm?.elements.role_path;
+  const inquiryType = dialogForm?.elements.inquiry_type;
+  if (rolePath && config.rolePath) rolePath.value = config.rolePath;
+  if (inquiryType && config.inquiryType) inquiryType.value = config.inquiryType;
   statusBox.hidden = true;
   statusBox.textContent = "";
   if (!dialog.open) dialog.showModal();

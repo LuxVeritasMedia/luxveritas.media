@@ -9,7 +9,7 @@ const requiredRoutes = [
   "/submissions.html",
   "/portal/reporting.html"
 ];
-const expectedAssetVersion = "20260608-report-summaries";
+const expectedAssetVersion = "20260609-form-intents";
 
 async function fetchWithTimeout(path, options = {}) {
   const controller = new AbortController();
