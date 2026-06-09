@@ -151,6 +151,9 @@ for (const file of files) {
     if (!html.includes("data-media-readiness-summary") || !html.includes("data-media-readiness-list")) {
       issues.push(`${rel}: missing media readiness report`);
     }
+    if (!html.includes("data-private-funnel")) {
+      issues.push(`${rel}: missing private pilot funnel report`);
+    }
     for (const action of ["export-private-json", "export-private-csv", "export-csv"]) {
       if (!html.includes(`data-report-action="${action}"`)) {
         issues.push(`${rel}: missing report export action "${action}"`);

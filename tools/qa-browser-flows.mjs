@@ -55,6 +55,12 @@ const mockReport = {
     missing: ["RESEND_API_KEY", "FORM_INTEGRATION_URL"]
   },
   summary: {
+    funnel: [
+      { label: "Tracked views", value: 128, detail: "Consented page views in the recent activity sample" },
+      { label: "Form opens", value: 42, detail: "33% of tracked views" },
+      { label: "Server captures", value: 24, detail: "57% of form opens" },
+      { label: "Media actions", value: 64, detail: "Listen, watch, radio, and media queue intent" }
+    ],
     submissions: {
       byFormType: [{ label: "fan", count: 18 }],
       byRolePath: [{ label: "Member", count: 24 }],
@@ -252,6 +258,7 @@ async function operatorReportFlow(page, baseUrl) {
   const integrationsSummary = await page.locator('[data-private-summary="integrations"]').innerText();
   const eventsSummary = await page.locator('[data-private-summary="events"]').innerText();
   const destinationsSummary = await page.locator('[data-private-summary="destinations"]').innerText();
+  const funnelSummary = await page.locator("[data-private-funnel]").innerText();
   const latest = await page.locator("[data-private-report-list]").innerText();
 
   if (submissionCount !== "42") issues.push(`/portal/reporting.html: expected 42 submissions, found ${submissionCount}`);
@@ -266,6 +273,7 @@ async function operatorReportFlow(page, baseUrl) {
     ["integrations", integrationsSummary],
     ["events", eventsSummary],
     ["destinations", destinationsSummary],
+    ["funnel", funnelSummary],
     ["latest", latest]
   ]) {
     if (!text || /Load private activity|No records found/i.test(text)) {
@@ -274,6 +282,9 @@ async function operatorReportFlow(page, baseUrl) {
   }
   if (!/LV-QA-REPORT/.test(latest) || !/media_action/.test(latest)) {
     issues.push(`/portal/reporting.html: latest protected activity missing mocked records`);
+  }
+  if (!/Server captures/.test(funnelSummary) || !/Media actions/.test(funnelSummary)) {
+    issues.push(`/portal/reporting.html: pilot funnel missing capture/media values`);
   }
 
   for (const [action, expectedName] of [

@@ -256,10 +256,66 @@ function topCounts(items, pick, limit = 8) {
     .map(([label, count]) => ({ label, count }));
 }
 
+function countWhere(items, pick) {
+  return items.reduce((count, item) => count + (pick(item) ? 1 : 0), 0);
+}
+
+function percent(numerator, denominator) {
+  if (!denominator) return 0;
+  return Math.round((numerator / denominator) * 100);
+}
+
+function buildPilotFunnel(submissionItems, eventItems) {
+  const views = countWhere(eventItems, (item) => item.event === "view_content");
+  const formOpens = countWhere(eventItems, (item) => item.event === "form_open");
+  const mediaActions = countWhere(eventItems, (item) => item.event === "media_action");
+  const acceptedLeads = countWhere(eventItems, (item) => item.event === "lead_accepted");
+  const fallbackLeads = countWhere(eventItems, (item) => item.event === "lead_fallback");
+  const rejectedLeads = countWhere(eventItems, (item) => item.event === "lead_rejected");
+  const serverCaptures = submissionItems.length;
+  const memberDemand = countWhere(submissionItems, (item) => item.access_path === "member" || item.inquiry_key === "membership");
+  const creatorDemand = countWhere(submissionItems, (item) => ["artist", "creator"].includes(item.access_path) || item.inquiry_key === "submissions");
+  const partnerDemand = countWhere(submissionItems, (item) => ["partner", "investor"].includes(item.access_path) || ["partnership", "licensing", "investor"].includes(item.inquiry_key));
+
+  return [
+    {
+      label: "Tracked views",
+      value: views,
+      detail: "Consented page views in the recent activity sample"
+    },
+    {
+      label: "Form opens",
+      value: formOpens,
+      detail: `${percent(formOpens, views)}% of tracked views`
+    },
+    {
+      label: "Server captures",
+      value: serverCaptures,
+      detail: `${percent(serverCaptures, formOpens)}% of form opens`
+    },
+    {
+      label: "Accepted locally",
+      value: acceptedLeads,
+      detail: `${fallbackLeads} fallback, ${rejectedLeads} rejected`
+    },
+    {
+      label: "Media actions",
+      value: mediaActions,
+      detail: "Listen, watch, radio, and media queue intent"
+    },
+    {
+      label: "Member demand",
+      value: memberDemand,
+      detail: `${creatorDemand} creator path, ${partnerDemand} partner path`
+    }
+  ];
+}
+
 function summarizeActivity(submissionDocs, eventDocs) {
   const submissionItems = submissionDocs.map((snapshot) => snapshot.data() || {});
   const eventItems = eventDocs.map((snapshot) => snapshot.data() || {});
   return {
+    funnel: buildPilotFunnel(submissionItems, eventItems),
     submissions: {
       byFormType: topCounts(submissionItems, (item) => item.formType || "request"),
       byInquiryType: topCounts(submissionItems, (item) => item.inquiry_type),

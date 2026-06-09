@@ -733,6 +733,7 @@ function renderPrivateReport(report) {
   }
 
   renderPrivateDelivery(panel, report.delivery);
+  renderPrivateFunnel(panel, report.summary?.funnel || report.funnel);
   renderPrivateSummary(panel, "forms", report.summary?.submissions?.byFormType);
   renderPrivateSummary(panel, "roles", report.summary?.submissions?.byRolePath);
   renderPrivateSummary(panel, "integrations", report.summary?.submissions?.byIntegrationStatus);
@@ -758,6 +759,18 @@ function renderPrivateReport(report) {
     const time = item.createdAt ? new Date(item.createdAt).toLocaleString() : "Recent";
     return `<li><strong>${escapeHtml(label)}</strong><span>${escapeHtml(detail)}</span><small>${escapeHtml(time)}</small></li>`;
   }).join("");
+}
+
+function renderPrivateFunnel(panel, items = []) {
+  const list = panel.querySelector("[data-private-funnel]");
+  if (!list) return;
+  if (!items.length) {
+    list.innerHTML = "<li>No funnel records found yet.</li>";
+    return;
+  }
+  list.innerHTML = items.map((item) => (
+    `<li><strong>${escapeHtml(item.value ?? 0)}</strong><span>${escapeHtml(item.label || "Signal")}</span><small>${escapeHtml(item.detail || "Recent activity sample")}</small></li>`
+  )).join("");
 }
 
 function renderPrivateSummary(panel, key, items = []) {

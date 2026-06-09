@@ -18,6 +18,7 @@ for (const marker of [
   "replay_pending",
   "pendingNotificationCount",
   "pendingNotifications",
+  "buildPilotFunnel",
   "https:\\/\\/"
 ]) {
   if (!functionJs.includes(marker)) issues.push(`functions/index.js: missing integration marker ${marker}`);
@@ -27,6 +28,7 @@ for (const marker of [
   "data-private-summary=\"integrations\"",
   "data-report-action=\"replay-private\"",
   "data-private-count=\"pendingNotifications\"",
+  "data-private-funnel",
   "Integrations"
 ]) {
   if (!buildScript.includes(marker)) issues.push(`tools/build-static.mjs: missing private integration summary marker ${marker}`);
@@ -35,6 +37,7 @@ for (const marker of [
 for (const marker of [
   "byIntegrationStatus",
   "renderPrivateSummary(panel, \"integrations\"",
+  "renderPrivateFunnel",
   "replayPendingNotifications"
 ]) {
   if (!appJs.includes(marker)) issues.push(`app.js: missing private integration rendering marker ${marker}`);
