@@ -193,6 +193,10 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
   border-color: var(--gold);
   box-shadow: 0 0 0 1px rgba(200,168,106,.25) inset;
 }
+.button:disabled {
+  cursor: wait;
+  opacity: .64;
+}
 .signal-strip {
   position: absolute;
   left: clamp(20px, 5vw, 70px);

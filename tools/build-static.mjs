@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260609-media-followup";
+const assetVersion = "20260609-form-submit";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 
@@ -131,7 +131,7 @@ function formDialog() {
     <p class="kicker" data-form-kicker>Request Access</p>
     <h2 data-form-title>Screened Access</h2>
     <p data-form-copy>Tell us who you are and what door you are approaching.</p>
-    <div class="form-status" data-form-status hidden></div>
+    <div class="form-status" data-form-status role="status" aria-live="polite" hidden></div>
     <label><span>Name</span><input name="name" autocomplete="name" required /></label>
     <label><span>Email</span><input name="email" type="email" autocomplete="email" required /></label>
     <label><span>Phone <em>optional</em></span><input name="phone" type="tel" autocomplete="tel" /></label>
@@ -150,7 +150,7 @@ function formDialog() {
     <input type="hidden" name="terms_version" value="${publicTerms.termsVersion}" />
     <input type="hidden" name="submission_terms_version" value="${publicTerms.submissionTermsVersion}" />
     <input class="honeypot" name="company_url" tabindex="-1" autocomplete="off" />
-    <button class="button button-primary" type="submit" data-submit-form>Send to Lux Veritas</button>
+    <button class="button button-primary" type="submit" data-submit-form data-default-label="Send to Lux Veritas">Send to Lux Veritas</button>
   </form>
 </dialog>`;
 }

@@ -10,7 +10,7 @@
     <meta property="og:image" content="../../assets/luxveritas-threshold.png" />
     <title>Terms | Lux Veritas</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070909'/%3E%3Cpath d='M18 48V16h6v27h18v5H18Zm21-32h7L34 48h-6l11-32Z' fill='%23c8a86a'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="../../styles.css?v=20260609-media-followup" />
+    <link rel="stylesheet" href="../../styles.css?v=20260609-form-submit" />
   </head>
   <body data-page="/legal/terms.html">
     <a class="skip-link" href="#main">Skip to content</a>
@@ -83,7 +83,7 @@
     <p class="kicker" data-form-kicker>Request Access</p>
     <h2 data-form-title>Screened Access</h2>
     <p data-form-copy>Tell us who you are and what door you are approaching.</p>
-    <div class="form-status" data-form-status hidden></div>
+    <div class="form-status" data-form-status role="status" aria-live="polite" hidden></div>
     <label><span>Name</span><input name="name" autocomplete="name" required /></label>
     <label><span>Email</span><input name="email" type="email" autocomplete="email" required /></label>
     <label><span>Phone <em>optional</em></span><input name="phone" type="tel" autocomplete="tel" /></label>
@@ -102,9 +102,9 @@
     <input type="hidden" name="terms_version" value="terms-draft-2026-06-09" />
     <input type="hidden" name="submission_terms_version" value="submission-draft-2026-06-09" />
     <input class="honeypot" name="company_url" tabindex="-1" autocomplete="off" />
-    <button class="button button-primary" type="submit" data-submit-form>Send to Lux Veritas</button>
+    <button class="button button-primary" type="submit" data-submit-form data-default-label="Send to Lux Veritas">Send to Lux Veritas</button>
   </form>
 </dialog>
-    <script src="../../app.js?v=20260609-media-followup"></script>
+    <script src="../../app.js?v=20260609-form-submit"></script>
   </body>
 </html>

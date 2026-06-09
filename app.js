@@ -272,6 +272,13 @@ function showSubmissionSuccess(payload, message) {
   });
 }
 
+function storedSubmissionMessage(result) {
+  if (result?.reason === "email_provider_not_configured") {
+    return "Received. Thank you. Your request is recorded for Lux Veritas review.";
+  }
+  return "Received. Thank you. Your request is recorded with Lux Veritas.";
+}
+
 function showEmailFallback(payload, href, result, copied) {
   const intro = fallbackIntro(result);
   statusBox.innerHTML = `${escapeHtml(intro)}${copied ? " A copy has also been placed on your clipboard." : ""}<br /><span class="receipt-code">Receipt ${escapeHtml(payload.client_submission_id)}</span><br /><a class="button button-primary" href="${escapeHtml(href)}">Open email draft</a>`;
@@ -1228,7 +1235,10 @@ async function handleFormSubmit(event) {
   if (!dialogForm.reportValidity()) return;
 
   const submitButton = dialogForm.querySelector("[data-submit-form]");
+  if (submitButton.disabled) return;
+  const defaultLabel = submitButton.dataset.defaultLabel || submitButton.textContent || "Send to Lux Veritas";
   submitButton.disabled = true;
+  submitButton.setAttribute("aria-busy", "true");
   submitButton.textContent = "Sending...";
   statusBox.textContent = "Sending your request...";
   statusBox.hidden = false;
@@ -1273,7 +1283,7 @@ async function handleFormSubmit(event) {
         return;
       }
       if (result.delivery === "stored") {
-        showSubmissionSuccess(payload, "Received. Thank you. Your request is recorded with Lux Veritas.");
+        showSubmissionSuccess(payload, storedSubmissionMessage(result));
         return;
       }
     } catch (error) {
@@ -1302,7 +1312,8 @@ async function handleFormSubmit(event) {
     });
   } finally {
     submitButton.disabled = false;
-    submitButton.textContent = "Send to Lux Veritas";
+    submitButton.removeAttribute("aria-busy");
+    submitButton.textContent = defaultLabel;
   }
 }
 
