@@ -4,7 +4,8 @@ import { onRequest } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions";
 import {
   buildIntegrationPayload,
-  integrationBaseHeaders
+  integrationBaseHeaders,
+  normalizeIntegrationTarget
 } from "./integration-contract.js";
 
 const defaultToEmail = "info@luxveritas.media";
@@ -95,6 +96,10 @@ function integrationUrl() {
 
 function integrationSigningSecret() {
   return process.env.FORM_INTEGRATION_SIGNING_SECRET || "";
+}
+
+function integrationTarget() {
+  return normalizeIntegrationTarget(process.env.FORM_INTEGRATION_TARGET);
 }
 
 const accessPathMap = {
@@ -472,6 +477,7 @@ function deliveryReadiness() {
   const from = text(process.env.FORM_FROM_EMAIL || defaultFromEmail, 240);
   const hasEmailProvider = Boolean(emailProviderKey());
   const hasIntegration = Boolean(integrationUrl());
+  const target = integrationTarget();
   const ready = Boolean(hasEmailProvider && from && to);
 
   return {
@@ -482,10 +488,13 @@ function deliveryReadiness() {
     fromConfigured: Boolean(from),
     emailProviderConfigured: hasEmailProvider,
     integrationConfigured: hasIntegration,
+    integrationTarget: target,
+    integrationTargetConfigured: target !== "unconfigured",
     toEmail: to,
     missing: [
       hasEmailProvider ? null : "RESEND_API_KEY",
       hasIntegration ? null : "FORM_INTEGRATION_URL",
+      target !== "unconfigured" ? null : "FORM_INTEGRATION_TARGET",
       from ? null : "FORM_FROM_EMAIL",
       to ? null : "FORM_TO_EMAIL"
     ].filter(Boolean)
@@ -598,7 +607,9 @@ async function sendEmail(payload, id) {
 }
 
 function integrationPayload(payload, id) {
-  return buildIntegrationPayload(payload, id);
+  return buildIntegrationPayload(payload, id, {
+    integrationTarget: integrationTarget()
+  });
 }
 
 async function sendIntegration(payload, id) {
@@ -612,7 +623,9 @@ async function sendIntegration(payload, id) {
 
   const body = JSON.stringify(integrationPayload(payload, id));
   const secret = integrationSigningSecret();
-  const headers = integrationBaseHeaders(id);
+  const headers = integrationBaseHeaders(id, {
+    integrationTarget: integrationTarget()
+  });
   if (secret) {
     headers["X-Lux-Signature"] = crypto.createHmac("sha256", secret).update(body).digest("hex");
   }

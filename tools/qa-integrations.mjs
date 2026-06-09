@@ -10,13 +10,17 @@ const docs = await readFile("docs/deployment.md", "utf8");
 for (const marker of [
   "FORM_INTEGRATION_URL",
   "FORM_INTEGRATION_SIGNING_SECRET",
+  "FORM_INTEGRATION_TARGET",
   "sendIntegration",
   "integrationPayload",
   "buildIntegrationPayload",
   "integrationBaseHeaders",
+  "normalizeIntegrationTarget",
   "integrationStatus",
   "byIntegrationStatus",
   "integrationWebhook",
+  "integrationTarget",
+  "integrationTargetConfigured",
   "replayPendingInbox",
   "replayPendingIntegration",
   "replay_pending",
@@ -42,11 +46,15 @@ for (const marker of [
   "integrationBaseHeaders",
   "integrationContractVersion",
   "integrationEventType",
+  "defaultIntegrationTarget",
+  "normalizeIntegrationTarget",
   "integrationIdempotencyKey",
   "luxveritas.form_submission.v1",
   "form.submission.received",
   "idempotencyKey",
   "replaySafe",
+  "integrationTarget",
+  "receiver: {",
   "routing: {",
   "legal: {",
   "publicTermsVersion",
@@ -54,7 +62,8 @@ for (const marker of [
   "termsVersion",
   "submissionTermsVersion",
   "X-Lux-Event",
-  "X-Lux-Idempotency-Key"
+  "X-Lux-Idempotency-Key",
+  "X-Lux-Target"
 ]) {
   if (!contractJs.includes(marker)) issues.push(`functions/integration-contract.js: missing contract marker ${marker}`);
 }
@@ -65,6 +74,8 @@ for (const marker of [
   "data-report-action=\"replay-integration\"",
   "data-private-count=\"pendingNotifications\"",
   "data-private-count=\"pendingIntegrations\"",
+  "data-private-delivery=\"target\"",
+  "data-private-delivery=\"targetDetail\"",
   "data-private-funnel",
   "data-launch-readiness-summary",
   "data-private-summary=\"routing\"",
@@ -84,6 +95,8 @@ for (const marker of [
   "renderPrivateSummary(panel, \"ctas\"",
   "renderPrivateSummary(panel, \"integrations\"",
   "renderPrivateFunnel",
+  "integrationTargetConfigured",
+  "data-private-delivery=\"target\"",
   "replayPendingNotifications",
   "replayPendingIntegration"
 ]) {
@@ -93,7 +106,9 @@ for (const marker of [
 for (const marker of [
   "FORM_INTEGRATION_URL",
   "FORM_INTEGRATION_SIGNING_SECRET",
+  "FORM_INTEGRATION_TARGET",
   "luxveritas.form_submission.v1",
+  "X-Lux-Target",
   "idempotency",
   "replay_pending",
   "replay_integration",

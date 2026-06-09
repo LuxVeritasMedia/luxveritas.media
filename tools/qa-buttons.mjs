@@ -178,6 +178,9 @@ for (const file of files) {
     if (!html.includes('data-private-delivery="status"')) {
       issues.push(`${rel}: missing private delivery readiness tile`);
     }
+    if (!html.includes('data-private-delivery="target"') || !html.includes('data-private-delivery="targetDetail"')) {
+      issues.push(`${rel}: missing private handoff target readiness tile`);
+    }
     if (!html.includes("data-media-readiness-summary") || !html.includes("data-media-readiness-list")) {
       issues.push(`${rel}: missing media readiness report`);
     }

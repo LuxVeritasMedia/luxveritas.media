@@ -670,7 +670,7 @@ function evaluateLaunchGate(gate, manifest, report) {
   }
 
   if (gate.id === "private_handoff") {
-    const ready = delivery.integrationWebhook === "ready";
+    const ready = delivery.integrationWebhook === "ready" && delivery.integrationTargetConfigured === true;
     return {
       ...gate,
       status: ready ? "ready" : "blocked",
@@ -938,6 +938,8 @@ function renderPrivateSummary(panel, key, items = []) {
 function renderPrivateDelivery(panel, delivery = {}) {
   const status = panel.querySelector('[data-private-delivery="status"]');
   const detail = panel.querySelector('[data-private-delivery="detail"]');
+  const target = panel.querySelector('[data-private-delivery="target"]');
+  const targetDetail = panel.querySelector('[data-private-delivery="targetDetail"]');
   const ready = delivery.inboxNotification === "ready";
   if (status) status.textContent = ready ? "Ready" : "Setup";
   if (detail) {
@@ -945,6 +947,15 @@ function renderPrivateDelivery(panel, delivery = {}) {
       ? `Missing ${delivery.missing.join(", ")}`
       : "Store-first capture is ready";
     detail.textContent = ready ? "Inbox notifications active" : missing;
+  }
+  if (target) {
+    target.textContent = delivery.integrationWebhook === "ready" && delivery.integrationTargetConfigured ? "Ready" : "Setup";
+  }
+  if (targetDetail) {
+    const value = delivery.integrationTarget && delivery.integrationTarget !== "unconfigured"
+      ? delivery.integrationTarget
+      : "Target profile not configured";
+    targetDetail.textContent = value;
   }
 }
 

@@ -59,7 +59,9 @@ const mockReport = {
     inboxNotification: "needs_setup",
     storeFirstCapture: "ready",
     integrationWebhook: "needs_setup",
-    missing: ["RESEND_API_KEY", "FORM_INTEGRATION_URL"]
+    integrationTarget: "unconfigured",
+    integrationTargetConfigured: false,
+    missing: ["RESEND_API_KEY", "FORM_INTEGRATION_URL", "FORM_INTEGRATION_TARGET"]
   },
   summary: {
     funnel: [
@@ -315,6 +317,8 @@ async function operatorReportFlow(page, baseUrl) {
   const pendingHandoffCount = await page.locator('[data-private-count="pendingIntegrations"]').innerText();
   const deliveryStatus = await page.locator('[data-private-delivery="status"]').innerText();
   const deliveryDetail = await page.locator('[data-private-delivery="detail"]').innerText();
+  const handoffTargetStatus = await page.locator('[data-private-delivery="target"]').innerText();
+  const handoffTargetDetail = await page.locator('[data-private-delivery="targetDetail"]').innerText();
   const formsSummary = await page.locator('[data-private-summary="forms"]').innerText();
   const rolesSummary = await page.locator('[data-private-summary="roles"]').innerText();
   const routingSummary = await page.locator('[data-private-summary="routing"]').innerText();
@@ -331,8 +335,14 @@ async function operatorReportFlow(page, baseUrl) {
   if (eventCount !== "128") issues.push(`/portal/reporting.html: expected 128 events, found ${eventCount}`);
   if (pendingHandoffCount !== "11") issues.push(`/portal/reporting.html: expected 11 pending integrations, found ${pendingHandoffCount}`);
   if (deliveryStatus !== "Setup") issues.push(`/portal/reporting.html: expected delivery setup status, found ${deliveryStatus}`);
-  if (!/RESEND_API_KEY/.test(deliveryDetail) || !/FORM_INTEGRATION_URL/.test(deliveryDetail)) {
+  if (!/RESEND_API_KEY/.test(deliveryDetail) || !/FORM_INTEGRATION_URL/.test(deliveryDetail) || !/FORM_INTEGRATION_TARGET/.test(deliveryDetail)) {
     issues.push(`/portal/reporting.html: missing delivery setup detail`);
+  }
+  if (handoffTargetStatus !== "Setup") {
+    issues.push(`/portal/reporting.html: expected handoff target setup status, found ${handoffTargetStatus}`);
+  }
+  if (!/Target profile not configured/i.test(handoffTargetDetail)) {
+    issues.push(`/portal/reporting.html: missing handoff target detail`);
   }
   for (const [label, text] of [
     ["forms", formsSummary],

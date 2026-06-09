@@ -1,9 +1,11 @@
 import {
   buildIntegrationPayload,
+  defaultIntegrationTarget,
   integrationBaseHeaders,
   integrationContractVersion,
   integrationEventType,
-  integrationIdempotencyKey
+  integrationIdempotencyKey,
+  normalizeIntegrationTarget
 } from "../functions/integration-contract.js";
 
 const issues = [];
@@ -37,8 +39,10 @@ const sample = {
   message: "Integration contract QA"
 };
 
-const payload = buildIntegrationPayload(sample, submissionId, { receivedAt });
-const headers = integrationBaseHeaders(submissionId);
+const integrationTarget = normalizeIntegrationTarget("Private Workflow");
+const payload = buildIntegrationPayload(sample, submissionId, { receivedAt, integrationTarget });
+const headers = integrationBaseHeaders(submissionId, { integrationTarget });
+const defaultHeaders = integrationBaseHeaders(submissionId);
 const expectedIdempotencyKey = `luxveritas:form_submission:${submissionId}`;
 
 function expectEqual(actual, expected, label) {
@@ -47,11 +51,16 @@ function expectEqual(actual, expected, label) {
 
 expectEqual(integrationContractVersion, "luxveritas.form_submission.v1", "contract version");
 expectEqual(integrationEventType, "form.submission.received", "event type");
+expectEqual(defaultIntegrationTarget, "unconfigured", "default integration target");
 expectEqual(integrationIdempotencyKey(submissionId), expectedIdempotencyKey, "idempotency helper");
+expectEqual(integrationTarget, "private_workflow", "normalized integration target");
 expectEqual(payload.schemaVersion, integrationContractVersion, "payload schemaVersion");
 expectEqual(payload.eventType, integrationEventType, "payload eventType");
 expectEqual(payload.idempotencyKey, expectedIdempotencyKey, "payload idempotencyKey");
 expectEqual(payload.replaySafe, true, "payload replaySafe");
+expectEqual(payload.integrationTarget, "private_workflow", "payload integration target");
+expectEqual(payload.receiver.target, "private_workflow", "payload receiver target");
+expectEqual(payload.receiver.contractVersion, integrationContractVersion, "payload receiver contract version");
 expectEqual(payload.submissionId, submissionId, "payload submissionId");
 expectEqual(payload.receiptId, "LV-CONTRACT-QA", "payload receiptId");
 expectEqual(payload.receivedAt, receivedAt, "payload receivedAt");
@@ -69,6 +78,8 @@ expectEqual(payload.submission.id, submissionId, "payload nested submission id")
 expectEqual(payload.submission.receiptId, "LV-CONTRACT-QA", "payload nested receipt");
 expectEqual(headers["X-Lux-Event"], integrationContractVersion, "header X-Lux-Event");
 expectEqual(headers["X-Lux-Idempotency-Key"], expectedIdempotencyKey, "header idempotency key");
+expectEqual(headers["X-Lux-Target"], "private_workflow", "header target");
+expectEqual(defaultHeaders["X-Lux-Target"], "unconfigured", "default header target");
 expectEqual(headers["User-Agent"], "LuxVeritas-FormIntegration/1.0", "header user agent");
 
 if (!payload.message || !payload.formType || !payload.tag) {

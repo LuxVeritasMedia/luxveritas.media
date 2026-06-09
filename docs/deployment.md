@@ -139,7 +139,9 @@ After inbox delivery is configured, open `/portal/reporting.html`, load private 
 
 Optional server-side integration fanout can forward validated, stored form submissions to an approved private tool such as a CRM, Google workflow, or automation router. Keep this server-side only. Do not place integration URLs in public markup or client JavaScript.
 
-After the private integration target is configured, use `Replay Pending Handoff` on `/portal/reporting.html` to retry stored submissions whose `integrationStatus` indicates a pending or failed private handoff.
+Set `FORM_INTEGRATION_TARGET` to a short protected workflow profile label, such as `private_workflow`. This label is not a provider URL; it lets private reporting and receivers confirm which approved handoff profile is active. The server sends it in the `X-Lux-Target` header and in the payload receiver metadata.
+
+After the private integration target and target profile are configured, use `Replay Pending Handoff` on `/portal/reporting.html` to retry stored submissions whose `integrationStatus` indicates a pending or failed private handoff.
 
 ```bash
 gcloud secrets create FORM_INTEGRATION_URL --project lux-veritas-media --replication-policy automatic
@@ -150,10 +152,18 @@ gcloud run services update submitform \
   --region us-central1 \
   --project lux-veritas-media \
   --set-secrets FORM_INTEGRATION_URL=FORM_INTEGRATION_URL:latest,FORM_INTEGRATION_SIGNING_SECRET=FORM_INTEGRATION_SIGNING_SECRET:latest
+gcloud run services update submitform \
+  --region us-central1 \
+  --project lux-veritas-media \
+  --set-env-vars FORM_INTEGRATION_TARGET=private_workflow
 gcloud run services update reportactivity \
   --region us-central1 \
   --project lux-veritas-media \
   --set-secrets FORM_INTEGRATION_URL=FORM_INTEGRATION_URL:latest,FORM_INTEGRATION_SIGNING_SECRET=FORM_INTEGRATION_SIGNING_SECRET:latest
+gcloud run services update reportactivity \
+  --region us-central1 \
+  --project lux-veritas-media \
+  --set-env-vars FORM_INTEGRATION_TARGET=private_workflow
 ```
 
 `FORM_INTEGRATION_URL` must be HTTPS. `FORM_INTEGRATION_SIGNING_SECRET` is optional but recommended; when present, the function sends an `X-Lux-Signature` HMAC header with each submission payload.
@@ -176,6 +186,7 @@ The function also sends:
 ```text
 X-Lux-Event: luxveritas.form_submission.v1
 X-Lux-Idempotency-Key: luxveritas:form_submission:<submissionId>
+X-Lux-Target: <protected workflow profile>
 X-Lux-Signature: <hmac-sha256 body signature when configured>
 ```
 
