@@ -535,6 +535,43 @@ function hydrateMediaPlayers() {
     .catch(() => players.forEach(updateMediaReport));
 }
 
+function sourceTypeLabel(sourceType) {
+  if (sourceType === "audio") return "Audio";
+  if (sourceType === "video") return "Video";
+  if (sourceType === "stream") return "Radio";
+  return "Media";
+}
+
+function renderMediaReadinessReport() {
+  const list = document.querySelector("[data-media-readiness-list]");
+  const summary = document.querySelector("[data-media-readiness-summary]");
+  if (!list && !summary) return;
+
+  loadMediaManifest()
+    .then((manifest) => {
+      const items = Array.isArray(manifest.items) ? manifest.items : [];
+      const readyItems = items.filter((item) => /^https:\/\//i.test(item.sourceUrl || ""));
+      if (summary) {
+        summary.textContent = `${readyItems.length} of ${items.length} source-ready`;
+      }
+      if (!list) return;
+      if (!items.length) {
+        list.innerHTML = "<li>No public media slots found.</li>";
+        return;
+      }
+      list.innerHTML = items.map((item) => {
+        const ready = /^https:\/\//i.test(item.sourceUrl || "");
+        const label = `${sourceTypeLabel(item.sourceType)} ${ready ? "ready" : "queued"}`;
+        const status = item.status || "Awaiting approved source.";
+        return `<li><strong>${escapeHtml(item.title || item.id || "Media")}</strong><span>${escapeHtml(label)}</span><small>${escapeHtml(status)}</small></li>`;
+      }).join("");
+    })
+    .catch(() => {
+      if (summary) summary.textContent = "Media readiness unavailable";
+      if (list) list.innerHTML = "<li>Media readiness could not be loaded.</li>";
+    });
+}
+
 function localReportData() {
   const events = readJson("luxveritas_events", []);
   const media = readJson("luxveritas_media_events", []);
@@ -1124,6 +1161,7 @@ document.addEventListener("click", (event) => {
 dialogForm?.addEventListener("submit", handleFormSubmit);
 portalSigninForm?.addEventListener("submit", handlePortalSignin);
 hydrateMediaPlayers();
+renderMediaReadinessReport();
 renderLocalReport();
 
 document.querySelectorAll(".section, .vertical-card, .release-rail article, .slate div, .event-card, .codex-card, .ops-grid article, .portal-grid article, .media-player").forEach((el) => {

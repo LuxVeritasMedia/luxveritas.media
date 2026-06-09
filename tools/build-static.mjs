@@ -410,6 +410,13 @@ function portalReport() {
         <article><span>Events</span><strong data-private-count="events">-</strong><small>Consented site actions</small></article>
         <article><span>Inbox</span><strong data-private-delivery="status">-</strong><small data-private-delivery="detail">Load private activity</small></article>
       </div>
+      <div class="report-detail">
+        <div>
+          <p class="kicker">Release Readiness</p>
+          <h3 data-media-readiness-summary>Checking media source status...</h3>
+          <ul class="report-list" data-media-readiness-list><li>Checking audio, video, and radio source status.</li></ul>
+        </div>
+      </div>
       <div class="report-detail report-summary">
         <div>
           <p class="kicker">Lead Paths</p>

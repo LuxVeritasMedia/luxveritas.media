@@ -32,6 +32,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add protected activity report API for approved operator review.
 - [x] Add protected operator summaries for lead paths, roles, events, pages, and clicked destinations.
 - [x] Add protected form-delivery readiness reporting for stored-vs-inbox status.
+- [x] Add private media-source readiness reporting for audio, video, and radio slots.
 - [x] Add optional server-side integration fanout for validated form submissions.
 - [ ] Configure and verify email provider runtime secret `RESEND_API_KEY` plus approved sender domain for inbox notification after Firestore capture.
 - [ ] Configure approved private integration endpoint secret after CRM/Google workflow target is chosen.
@@ -96,4 +97,5 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add public media manifest for release, visual, and radio player entries.
 - [x] Add source-ready audio/video/stream playback shell for approved media URLs.
 - [x] Add media follow-up conversion path when approved audio/video/radio sources are not yet live.
+- [x] Show queued vs source-ready media status in the private pilot report.
 - [ ] Attach approved release audio, video, and radio sources.

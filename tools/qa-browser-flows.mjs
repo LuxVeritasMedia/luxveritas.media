@@ -209,6 +209,21 @@ async function mediaFlow(page, baseUrl, path) {
 
 async function operatorReportFlow(page, baseUrl) {
   await page.goto(`${baseUrl}/portal/reporting.html`, { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() => {
+    const summary = document.querySelector("[data-media-readiness-summary]");
+    return summary && /source-ready|unavailable/i.test(summary.textContent || "");
+  }, null, { timeout: 5000 });
+  const mediaSummary = await page.locator("[data-media-readiness-summary]").innerText();
+  const mediaReadiness = await page.locator("[data-media-readiness-list]").innerText();
+  if (!/0 of 3 source-ready/.test(mediaSummary)) {
+    issues.push(`/portal/reporting.html: expected media readiness summary, found "${mediaSummary}"`);
+  }
+  for (const label of ["SPMVP", "Visual World", "Lux Radio"]) {
+    if (!mediaReadiness.includes(label)) {
+      issues.push(`/portal/reporting.html: media readiness missing ${label}`);
+    }
+  }
+
   await page.click('[data-report-action="load-private"]');
   await page.waitForSelector("[data-private-report-status]:not([hidden])", { timeout: 5000 });
   let statusText = await page.locator("[data-private-report-status]").innerText();
