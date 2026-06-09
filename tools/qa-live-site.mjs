@@ -64,8 +64,13 @@ if (musicHtml) {
 }
 
 const reportHtml = await checkRoute("/portal/reporting.html");
-if (reportHtml && !reportHtml.includes('name="robots" content="noindex, nofollow"')) {
-  issues.push("/portal/reporting.html: missing noindex metadata");
+if (reportHtml) {
+  if (!reportHtml.includes('name="robots" content="noindex, nofollow"')) {
+    issues.push("/portal/reporting.html: missing noindex metadata");
+  }
+  for (const marker of ["data-media-readiness-summary", "data-media-readiness-list"]) {
+    if (!reportHtml.includes(marker)) issues.push(`/portal/reporting.html: missing ${marker}`);
+  }
 }
 
 try {
@@ -76,6 +81,10 @@ try {
     const manifest = JSON.parse(text);
     const items = Array.isArray(manifest.items) ? manifest.items : [];
     const sourceTypes = new Set(items.map((item) => item.sourceType));
+    const ids = new Set(items.map((item) => item.id));
+    for (const id of ["spmvp-release", "visual-world", "lux-radio"]) {
+      if (!ids.has(id)) issues.push(`/data/lux-media-manifest.json: missing media item ${id}`);
+    }
     for (const sourceType of ["audio", "video", "stream"]) {
       if (!sourceTypes.has(sourceType)) issues.push(`/data/lux-media-manifest.json: missing sourceType ${sourceType}`);
     }
