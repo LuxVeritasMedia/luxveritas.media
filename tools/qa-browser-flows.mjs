@@ -207,7 +207,9 @@ async function openFlow(page, baseUrl, flow) {
 }
 
 async function mediaFlow(page, baseUrl, path) {
+  const beforeEventCount = events.length;
   await page.goto(`${baseUrl}${path}`, { waitUntil: "domcontentloaded" });
+  await page.evaluate(() => localStorage.setItem("luxveritas_consent", "accepted"));
   await page.click('[data-media-action="play"]');
   await page.waitForSelector("[data-media-followup]:not([hidden])", { timeout: 5000 });
   const followupText = await page.locator("[data-media-followup]").innerText();
@@ -220,6 +222,17 @@ async function mediaFlow(page, baseUrl, path) {
   const inquiry = await page.locator('select[name="inquiry_type"]').inputValue();
   if (role !== "Member" || inquiry !== "Membership") {
     issues.push(`${path}: media follow-up did not open membership defaults`);
+  }
+  const mediaEvent = events.slice(beforeEventCount).find((item) => item.event === "media_action");
+  if (!mediaEvent) {
+    issues.push(`${path}: media action did not report to event endpoint`);
+    return;
+  }
+  for (const field of ["source_status", "source_ready", "source_required", "reporting_key"]) {
+    if (mediaEvent.detail?.[field] == null) issues.push(`${path}: media event missing ${field}`);
+  }
+  if (mediaEvent.detail?.source_status !== "queued" || mediaEvent.detail?.source_ready !== false) {
+    issues.push(`${path}: media event did not report queued source state`);
   }
 }
 

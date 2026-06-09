@@ -428,6 +428,11 @@ function writeMediaEvent(action, player, item = {}) {
     title: item.title || player?.querySelector("[data-media-title]")?.textContent?.trim() || "SPMVP",
     kind: item.kind || player?.querySelector("[data-media-mode]")?.textContent?.trim()?.toLowerCase() || "signal",
     access: item.access || null,
+    source_type: item.sourceType || null,
+    source_status: item.sourceStatus || "queued",
+    source_ready: /^https:\/\//i.test(item.sourceUrl || ""),
+    source_required: item.sourceRequired === "true" || item.sourceRequired === true,
+    reporting_key: item.reportingKey || null,
     source_page: window.location.pathname,
     timestamp: new Date().toISOString()
   };
@@ -502,8 +507,12 @@ function showMediaFollowup(player, action, title) {
 
   if (copy) copy.textContent = config.copy;
   button.textContent = config.label;
+  if (action && button.dataset) {
+    const activeItem = player?.querySelector(".media-item.active");
+    button.dataset.openForm = activeItem?.dataset.fallbackFormType || "fan";
+  }
   followup.hidden = false;
-  trackEvent("media_followup_offered", { action, title, formType: "fan" });
+  trackEvent("media_followup_offered", { action, title, formType: button.dataset.openForm || "fan" });
 }
 
 function setActiveMediaItem(player, item, options = {}) {
@@ -526,7 +535,7 @@ function setActiveMediaItem(player, item, options = {}) {
 function mediaItemMarkup(item, index) {
   const sourceUrl = item.sourceUrl || "";
   const posterUrl = item.posterUrl || "";
-  return `<button class="media-item${index === 0 ? " active" : ""}" type="button" data-media-item data-media-id="${escapeHtml(item.id)}" data-kind="${escapeHtml(item.kind)}" data-title="${escapeHtml(item.title)}" data-status="${escapeHtml(item.status)}" data-action="${escapeHtml(item.primaryAction)}" data-access="${escapeHtml(item.access)}" data-source-type="${escapeHtml(item.sourceType)}" data-source-url="${escapeHtml(sourceUrl)}" data-poster-url="${escapeHtml(posterUrl)}" role="listitem">
+  return `<button class="media-item${index === 0 ? " active" : ""}" type="button" data-media-item data-media-id="${escapeHtml(item.id)}" data-kind="${escapeHtml(item.kind)}" data-title="${escapeHtml(item.title)}" data-status="${escapeHtml(item.status)}" data-action="${escapeHtml(item.primaryAction)}" data-access="${escapeHtml(item.access)}" data-source-status="${escapeHtml(item.sourceStatus || "queued")}" data-source-required="${escapeHtml(String(Boolean(item.sourceRequired)))}" data-source-type="${escapeHtml(item.sourceType)}" data-source-url="${escapeHtml(sourceUrl)}" data-poster-url="${escapeHtml(posterUrl)}" data-reporting-key="${escapeHtml(item.reportingKey || item.id || "")}" data-fallback-form-type="${escapeHtml(item.fallbackFormType || "fan")}" role="listitem">
     <span>${escapeHtml(item.label)}</span><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.summary)}</small>
   </button>`;
 }
@@ -613,7 +622,7 @@ function renderMediaReadinessReport() {
       }
       list.innerHTML = items.map((item) => {
         const ready = /^https:\/\//i.test(item.sourceUrl || "");
-        const label = `${sourceTypeLabel(item.sourceType)} ${ready ? "ready" : "queued"}`;
+        const label = `${sourceTypeLabel(item.sourceType)} ${ready ? "ready" : item.sourceStatus || "queued"}`;
         const status = item.status || "Awaiting approved source.";
         return `<li><strong>${escapeHtml(item.title || item.id || "Media")}</strong><span>${escapeHtml(label)}</span><small>${escapeHtml(status)}</small></li>`;
       }).join("");
@@ -1133,6 +1142,7 @@ function handleMediaAction(action, player) {
   const approvedSource = activeItem?.dataset.sourceUrl;
   const sourceType = activeItem?.dataset.sourceType;
   const posterUrl = activeItem?.dataset.posterUrl;
+  const sourceReady = /^https:\/\//i.test(approvedSource || "");
   const messages = {
     play: `${title} listen intent recorded. Full audio source attaches here when the approved release link is live.`,
     watch: `${title} watch intent recorded. Public video routing is ready for the approved visual source.`,
@@ -1144,7 +1154,7 @@ function handleMediaAction(action, player) {
   writeMediaEvent(action, player, activeItem?.dataset || {});
   updateMediaReport(player);
 
-  if (approvedSource) {
+  if (sourceReady) {
     loadApprovedMedia(player, { sourceUrl: approvedSource, sourceType, posterUrl, title });
   } else {
     showMediaFollowup(player, action, title);

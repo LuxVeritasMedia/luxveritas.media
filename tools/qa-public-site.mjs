@@ -163,11 +163,14 @@ try {
   const mediaManifest = JSON.parse(mediaManifestRaw);
   const items = Array.isArray(mediaManifest.items) ? mediaManifest.items : [];
   const kinds = new Set(items.map((item) => item.kind));
+  if (mediaManifest.schemaVersion !== "luxveritas.media_manifest.v1") {
+    issues.push("data/lux-media-manifest.json: missing schemaVersion luxveritas.media_manifest.v1");
+  }
   for (const kind of ["release", "visual", "radio"]) {
     if (!kinds.has(kind)) issues.push(`data/lux-media-manifest.json: missing media kind ${kind}`);
   }
   for (const item of items) {
-    if (!item.id || !item.title || !item.kind || !item.status) {
+    if (!item.id || !item.title || !item.kind || !item.status || !item.sourceStatus || !item.reportingKey) {
       issues.push(`data/lux-media-manifest.json: item is missing required public fields`);
     }
     if (!["audio", "video", "stream", "external"].includes(item.sourceType)) {
@@ -178,6 +181,9 @@ try {
     }
     if (item.sourceUrl && !/^https:\/\//i.test(item.sourceUrl)) {
       issues.push(`data/lux-media-manifest.json: ${item.id || "item"} has non-HTTPS sourceUrl`);
+    }
+    if (!["queued", "ready", "external"].includes(item.sourceStatus)) {
+      issues.push(`data/lux-media-manifest.json: ${item.id || "item"} has invalid sourceStatus`);
     }
     if (item.posterUrl && !/^https:\/\//i.test(item.posterUrl) && !item.posterUrl.startsWith("/assets/")) {
       issues.push(`data/lux-media-manifest.json: ${item.id || "item"} has invalid posterUrl`);

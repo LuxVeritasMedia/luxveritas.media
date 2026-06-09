@@ -13,6 +13,7 @@ for (const marker of [
   "node tools/qa-access-model.mjs",
   "node tools/qa-integrations.mjs",
   "node tools/qa-integration-contract.mjs",
+  "node tools/qa-media-contract.mjs",
   "node tools/qa-mobile-layout.mjs",
   "node tools/qa-accessibility.mjs",
   "node tools/qa-release-readiness.mjs",

@@ -57,6 +57,8 @@ The activity report function:
 
 The private reporting page also loads `data/lux-launch-readiness.json` and the public media manifest to render Launch Gates. This gives operators a browser-visible view of remaining public-launch blockers: media sources, inbox notifications, private handoff, legal review, and domain redirect status.
 
+The public media manifest uses `luxveritas.media_manifest.v1`. Each media item carries source status, source-required, source type, reporting key, queued CTA, and fallback form path so listen/watch/radio intent can be reported even before approved media URLs are attached.
+
 The notification replay action:
 
 - requires the same approved operator bearer token as the private report
@@ -183,6 +185,7 @@ Form delivery QA:
 node tools/qa-form-delivery.mjs
 node tools/qa-integrations.mjs
 node tools/qa-integration-contract.mjs
+node tools/qa-media-contract.mjs
 node tools/qa-release-readiness.mjs
 /Users/frederickparent/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node tools/qa-browser-flows.mjs
 LUX_FORM_WRITE=1 node tools/qa-form-delivery.mjs

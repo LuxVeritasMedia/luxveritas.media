@@ -1,6 +1,7 @@
 {
-  "version": "2026-06-08-media-mvp",
-  "updatedAt": "2026-06-08T00:00:00.000Z",
+  "schemaVersion": "luxveritas.media_manifest.v1",
+  "version": "2026-06-09-media-contract",
+  "updatedAt": "2026-06-09T00:00:00.000Z",
   "items": [
     {
       "id": "spmvp-release",
@@ -12,9 +13,14 @@
       "status": "Current release signal. Full listening links open as approved release paths go live.",
       "access": "public-preview",
       "primaryAction": "play",
+      "sourceStatus": "queued",
+      "sourceRequired": true,
       "sourceType": "audio",
       "sourceUrl": null,
-      "posterUrl": null
+      "posterUrl": null,
+      "reportingKey": "spmvp_release_audio",
+      "fallbackFormType": "fan",
+      "queuedCta": "Join for release access"
     },
     {
       "id": "visual-world",
@@ -26,9 +32,14 @@
       "status": "Visual chapter routing is ready. Public video source attaches here when approved.",
       "access": "public-preview",
       "primaryAction": "watch",
+      "sourceStatus": "queued",
+      "sourceRequired": true,
       "sourceType": "video",
       "sourceUrl": null,
-      "posterUrl": null
+      "posterUrl": null,
+      "reportingKey": "spmvp_visual_world",
+      "fallbackFormType": "fan",
+      "queuedCta": "Join for visual access"
     },
     {
       "id": "lux-radio",
@@ -40,9 +51,14 @@
       "status": "Radio mode is queued for scheduled programming, DJ notes, and future live rooms.",
       "access": "waitlist",
       "primaryAction": "radio",
+      "sourceStatus": "queued",
+      "sourceRequired": true,
       "sourceType": "stream",
       "sourceUrl": null,
-      "posterUrl": null
+      "posterUrl": null,
+      "reportingKey": "lux_radio_stream",
+      "fallbackFormType": "fan",
+      "queuedCta": "Join for radio access"
     }
   ]
 }

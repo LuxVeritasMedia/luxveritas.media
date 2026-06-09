@@ -104,6 +104,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 
 ## P7 - Media MVP
 - [x] Add Lux Player MVP to Music and SPMVP with listen/watch/radio actions.
+- [x] Add versioned media manifest contract for release, visual, and radio slots.
 - [x] Record media intent events locally for reporting bridge readiness.
 - [x] Relay consented media and CTA events server-side to Firestore.
 - [x] Add public media manifest for release, visual, and radio player entries.

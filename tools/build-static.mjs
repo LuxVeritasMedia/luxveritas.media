@@ -204,7 +204,7 @@ function mediaPlayerShell(context = "music") {
         </div>
       </div>
       <div class="media-queue" role="list" aria-label="Media queue">
-        ${items.map((item, index) => `<button class="media-item${index === 0 ? " active" : ""}" type="button" data-media-item data-media-id="${item.id}" data-kind="${item.kind}" data-title="${item.title}" data-status="${item.status}" data-action="${item.primaryAction}" data-access="${item.access}" data-source-type="${item.sourceType}" data-source-url="${item.sourceUrl || ""}" data-poster-url="${item.posterUrl || ""}" role="listitem">
+        ${items.map((item, index) => `<button class="media-item${index === 0 ? " active" : ""}" type="button" data-media-item data-media-id="${item.id}" data-kind="${item.kind}" data-title="${item.title}" data-status="${item.status}" data-action="${item.primaryAction}" data-access="${item.access}" data-source-status="${item.sourceStatus || "queued"}" data-source-required="${String(Boolean(item.sourceRequired))}" data-source-type="${item.sourceType}" data-source-url="${item.sourceUrl || ""}" data-poster-url="${item.posterUrl || ""}" data-reporting-key="${item.reportingKey || item.id}" data-fallback-form-type="${item.fallbackFormType || "fan"}" role="listitem">
           <span>${item.label}</span><strong>${item.title}</strong><small>${item.summary}</small>
         </button>`).join("")}
       </div>

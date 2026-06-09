@@ -91,6 +91,11 @@ for (const marker of ["showMediaFollowup", "media_followup_offered"]) {
     issues.push(`app.js: missing media follow-up marker ${marker}`);
   }
 }
+for (const marker of ["source_status", "source_ready", "source_required", "reporting_key", "data-source-status", "data-reporting-key"]) {
+  if (!appJs.includes(marker)) {
+    issues.push(`app.js: missing media reporting marker ${marker}`);
+  }
+}
 for (const marker of ["launchChecklistPath", "renderLaunchReadinessReport", "evaluateLaunchGate", "launchGateStatusLabel"]) {
   if (!appJs.includes(marker)) {
     issues.push(`app.js: missing launch readiness marker ${marker}`);
@@ -155,6 +160,11 @@ for (const file of files) {
     for (const action of ["play", "watch", "radio"]) {
       if (!html.includes(`data-media-action="${action}"`)) {
         issues.push(`${rel}: missing media action "${action}"`);
+      }
+    }
+    for (const marker of ["data-source-status", "data-source-required", "data-reporting-key", "data-fallback-form-type"]) {
+      if (!html.includes(marker)) {
+        issues.push(`${rel}: missing media contract marker ${marker}`);
       }
     }
   }
