@@ -62,7 +62,8 @@ const mockReport = {
     integrationWebhook: "needs_setup",
     integrationTarget: "unconfigured",
     integrationTargetConfigured: false,
-    missing: ["RESEND_API_KEY", "FORM_INTEGRATION_URL", "FORM_INTEGRATION_TARGET"]
+    operatorTokenConfigured: false,
+    missing: ["RESEND_API_KEY", "FORM_INTEGRATION_URL", "FORM_INTEGRATION_TARGET", "REPORT_OPERATOR_TOKEN_SHA256"]
   },
   summary: {
     funnel: [
@@ -277,7 +278,7 @@ async function operatorReportFlow(page, baseUrl) {
   if (!/0 of 3 source-ready/.test(mediaSummary)) {
     issues.push(`/portal/reporting.html: expected media readiness summary, found "${mediaSummary}"`);
   }
-  if (!/0 of 6 launch gates ready/.test(launchSummaryBeforeLoad)) {
+  if (!/0 of 7 launch gates ready/.test(launchSummaryBeforeLoad)) {
     issues.push(`/portal/reporting.html: expected launch readiness summary, found "${launchSummaryBeforeLoad}"`);
   }
   for (const label of ["SPMVP", "Visual World", "Lux Radio"]) {
@@ -383,7 +384,7 @@ async function operatorReportFlow(page, baseUrl) {
   if (!/Server captures/.test(funnelSummary) || !/Media actions/.test(funnelSummary)) {
     issues.push(`/portal/reporting.html: pilot funnel missing capture/media values`);
   }
-  if (!/0 of 6 launch gates ready/.test(launchSummary) || !/Inbox notification provider is not active/i.test(launchReadiness)) {
+  if (!/0 of 7 launch gates ready/.test(launchSummary) || !/Inbox notification provider is not active/i.test(launchReadiness)) {
     issues.push(`/portal/reporting.html: launch gates did not render blocker state (summary="${launchSummary}", list="${launchReadiness.replace(/\s+/g, " ")}")`);
   }
 

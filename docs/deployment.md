@@ -140,7 +140,7 @@ After inbox delivery is configured, open `/portal/reporting.html`, load private 
 For pilot reporting access, use a private operator token hash. Generate a strong token outside the repo, keep the raw token in the private operator password manager, and configure only its SHA-256 hash on the `reportactivity` service:
 
 ```bash
-printf "%s" "paste-private-operator-token-here" | shasum -a 256
+LUX_REPORT_TOKEN="paste-private-operator-token-here" node tools/generate-report-operator-token.mjs
 gcloud run services update reportactivity \
   --region us-central1 \
   --project lux-veritas-media \

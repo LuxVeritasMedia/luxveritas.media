@@ -32,6 +32,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add protected activity report API for approved operator review.
 - [x] Add protected operator summaries for lead paths, roles, events, pages, and clicked destinations.
 - [x] Add hashed operator-token access path for private pilot reporting.
+- [x] Add local helper for generating the private reporting operator-token hash.
 - [x] Add stable CTA IDs and protected CTA signal summaries for real button/link reporting.
 - [x] Add protected pilot funnel reporting for capture and engagement health.
 - [x] Add protected form-delivery readiness reporting for stored-vs-inbox status.
@@ -44,10 +45,12 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add versioned replay-safe private integration payload contract.
 - [x] Add direct QA coverage for the private integration payload contract.
 - [x] Add protected private handoff target metadata for launch-gate reporting.
+- [x] Add operator reporting token status to launch-gate reporting.
 - [x] Add screened intake routing fields for Phase 6 reporting and future server-side handoff.
 - [x] Add public terms version IDs to capture, reporting, and private handoff payloads.
 - [ ] Configure and verify email provider runtime secret `RESEND_API_KEY` plus approved sender domain for inbox notification after Firestore capture.
 - [ ] Configure approved private integration endpoint secret after CRM/Google workflow target is chosen.
+- [ ] Configure `REPORT_OPERATOR_TOKEN_SHA256` on `reportactivity` for private pilot reporting access.
 
 ## P2 - Content Model
 - [x] Split Codex into Outer / Inner / Sanctum.

@@ -27,6 +27,14 @@
       "requiredForPublicLaunch": true
     },
     {
+      "id": "operator_reporting",
+      "label": "Operator Reporting",
+      "category": "pilot",
+      "status": "dynamic",
+      "nextAction": "Configure the private operator report token hash for pilot reporting access.",
+      "requiredForPublicLaunch": true
+    },
+    {
       "id": "privacy_review",
       "label": "Privacy Review",
       "category": "legal",

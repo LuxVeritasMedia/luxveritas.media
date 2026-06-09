@@ -678,6 +678,15 @@ function evaluateLaunchGate(gate, manifest, report) {
     };
   }
 
+  if (gate.id === "operator_reporting") {
+    const ready = delivery.operatorTokenConfigured === true;
+    return {
+      ...gate,
+      status: ready ? "ready" : "blocked",
+      detail: ready ? "Private report token is configured." : gate.nextAction
+    };
+  }
+
   return {
     ...gate,
     detail: gate.nextAction || "Review before launch."

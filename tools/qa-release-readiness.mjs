@@ -89,7 +89,7 @@ add(mediaManifest.schemaVersion === "luxveritas.media_manifest.v1", "Media manif
 add(publicTerms.schemaVersion === "luxveritas.public_terms.v1", "Public terms version manifest is current.");
 add(Boolean(publicTerms.version && publicTerms.privacyVersion && publicTerms.termsVersion && publicTerms.submissionTermsVersion), "Public terms manifest contains active legal version IDs.");
 add(launchGates.length >= 6, "Launch readiness checklist contains required launch gates.");
-for (const gateId of ["media_sources", "inbox_notifications", "private_handoff", "privacy_review", "terms_review", "www_redirect"]) {
+for (const gateId of ["media_sources", "inbox_notifications", "private_handoff", "operator_reporting", "privacy_review", "terms_review", "www_redirect"]) {
   add(launchGateIds.has(gateId), `Launch readiness checklist includes ${gateId}.`);
 }
 add(sourceTypes.has("audio"), "Media manifest includes an audio release path.");
@@ -106,6 +106,7 @@ add(!hasUncheckedAny(todo, [
   "inbox notification"
 ]), "Inbox notification provider configured.");
 add(!hasUnchecked(todo, "Configure approved private integration endpoint"), "Private integration endpoint configured.");
+add(!hasUnchecked(todo, "REPORT_OPERATOR_TOKEN_SHA256"), "Operator report token configured.");
 add(!hasUnchecked(todo, "Legal review: Privacy"), "Privacy page legal review complete.");
 add(!hasUnchecked(todo, "Legal review: Terms"), "Terms page legal review complete.");
 add(!hasUnchecked(todo, "Attach approved release audio, video, and radio sources"), "Approved release audio, video, and radio sources attached.");

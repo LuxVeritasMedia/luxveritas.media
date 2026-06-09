@@ -147,6 +147,9 @@ try {
     if (!report.summary?.submissions || !report.summary?.events) {
       issues.push("/api/report: approved response is missing activity summaries");
     }
+    if (!["operator_token", "google_oauth", "approved"].includes(report.authMode)) {
+      issues.push(`/api/report: approved response has unexpected authMode ${report.authMode || "none"}`);
+    }
   } else if (reportToken) {
     issues.push(`/api/report: approved token expected HTTP 200, received ${response.status}`);
   } else if (response.status === 403 && /Forbidden/i.test(text)) {

@@ -113,6 +113,10 @@ function integrationTarget() {
   return normalizeIntegrationTarget(process.env.FORM_INTEGRATION_TARGET);
 }
 
+function operatorTokenConfigured() {
+  return /^[a-f0-9]{64}$/i.test(text(process.env.REPORT_OPERATOR_TOKEN_SHA256, 80));
+}
+
 const accessPathMap = {
   Member: { access_path: "member", portal_role_target: "member" },
   Artist: { access_path: "artist", portal_role_target: "artist" },
@@ -510,11 +514,13 @@ function deliveryReadiness() {
     integrationConfigured: hasIntegration,
     integrationTarget: target,
     integrationTargetConfigured: target !== "unconfigured",
+    operatorTokenConfigured: operatorTokenConfigured(),
     toEmail: to,
     missing: [
       hasEmailProvider ? null : "RESEND_API_KEY",
       hasIntegration ? null : "FORM_INTEGRATION_URL",
       target !== "unconfigured" ? null : "FORM_INTEGRATION_TARGET",
+      operatorTokenConfigured() ? null : "REPORT_OPERATOR_TOKEN_SHA256",
       from ? null : "FORM_FROM_EMAIL",
       to ? null : "FORM_TO_EMAIL"
     ].filter(Boolean)
