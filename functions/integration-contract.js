@@ -43,6 +43,12 @@ export function buildIntegrationPayload(payload, id, options = {}) {
       email: Boolean(payload.consent_email),
       sms: Boolean(payload.consent_sms)
     },
+    legal: {
+      publicTermsVersion: payload.public_terms_version || "",
+      privacyVersion: payload.privacy_version || "",
+      termsVersion: payload.terms_version || "",
+      submissionTermsVersion: payload.submission_terms_version || ""
+    },
     submission: {
       id,
       receiptId,

@@ -199,7 +199,7 @@ async function openFlow(page, baseUrl, flow) {
     issues.push(`${flow.path}: mocked submit endpoint did not receive a payload`);
     return;
   }
-  for (const field of ["client_submission_id", "name", "email", "role_path", "inquiry_type", "message", "source_page"]) {
+  for (const field of ["client_submission_id", "name", "email", "role_path", "inquiry_type", "message", "source_page", "public_terms_version", "privacy_version", "terms_version", "submission_terms_version"]) {
     if (!payload[field]) issues.push(`${flow.path}: submitted payload missing ${field}`);
   }
   if (payload.role_path !== flow.role) issues.push(`${flow.path}: payload role_path mismatch`);

@@ -11,6 +11,7 @@ const requiredFiles = [
   "sitemap.xml",
   "data/lux-launch-readiness.json",
   "data/lux-media-manifest.json",
+  "data/lux-public-terms.json",
   "assets/luxveritas-threshold.png"
 ];
 const expectedNav = ["Home", "Music", "Film", "Events", "Codex", "About", "Join"];
@@ -147,6 +148,12 @@ for (const file of htmlFiles) {
       if (!html.includes(`data-media-action="${action}"`)) issues.push(`${rel}: missing media action ${action}`);
     }
   }
+
+  if (rel === "index.html") {
+    for (const field of ["public_terms_version", "privacy_version", "terms_version", "submission_terms_version"]) {
+      if (!html.includes(`name="${field}"`)) issues.push(`index.html: missing hidden legal field ${field}`);
+    }
+  }
 }
 
 const appJs = await readFile(join(root, "app.js"), "utf8");
@@ -155,8 +162,10 @@ for (const pattern of bannedTerms) {
 }
 
 const mediaManifestRaw = await readFile(join(root, "data/lux-media-manifest.json"), "utf8");
+const publicTermsRaw = await readFile(join(root, "data/lux-public-terms.json"), "utf8");
 for (const pattern of bannedTerms) {
   if (pattern.test(mediaManifestRaw)) issues.push(`data/lux-media-manifest.json: banned public term matched ${pattern}`);
+  if (pattern.test(publicTermsRaw)) issues.push(`data/lux-public-terms.json: banned public term matched ${pattern}`);
 }
 
 try {
@@ -191,6 +200,18 @@ try {
   }
 } catch (error) {
   issues.push(`data/lux-media-manifest.json: invalid JSON (${error.message})`);
+}
+
+try {
+  const publicTerms = JSON.parse(publicTermsRaw);
+  for (const field of ["schemaVersion", "version", "privacyVersion", "termsVersion", "submissionTermsVersion", "notice"]) {
+    if (!publicTerms[field]) issues.push(`data/lux-public-terms.json: missing ${field}`);
+  }
+  if (publicTerms.schemaVersion !== "luxveritas.public_terms.v1") {
+    issues.push("data/lux-public-terms.json: schemaVersion mismatch");
+  }
+} catch (error) {
+  issues.push(`data/lux-public-terms.json: invalid JSON (${error.message})`);
 }
 
 if (issues.length) {

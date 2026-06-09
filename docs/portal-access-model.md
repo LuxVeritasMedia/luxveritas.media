@@ -61,6 +61,10 @@ Every public form request should carry:
 - `tag`
 - `source`
 - `source_page`
+- `public_terms_version`
+- `privacy_version`
+- `terms_version`
+- `submission_terms_version`
 - `consent_email`
 - `consent_sms`
 - `timestamp`

@@ -23,6 +23,10 @@ const payloadFields = [
   "routing_queue",
   "routing_priority",
   "routing_next_action",
+  "public_terms_version",
+  "privacy_version",
+  "terms_version",
+  "submission_terms_version",
   "consent_email",
   "consent_sms"
 ];

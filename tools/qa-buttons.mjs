@@ -76,6 +76,11 @@ if (!appJs.includes("renderPrivateSummary")) {
 if (!appJs.includes("renderPrivateDelivery")) {
   issues.push("app.js: missing private delivery readiness rendering");
 }
+for (const marker of ["public_terms_version", "privacy_version", "terms_version", "submission_terms_version"]) {
+  if (!appJs.includes(marker)) {
+    issues.push(`app.js: missing legal version marker ${marker}`);
+  }
+}
 for (const marker of ["privateReportCache", "exportPrivateReport", "exportLocalReportCsv", "rowsToCsv"]) {
   if (!appJs.includes(marker)) {
     issues.push(`app.js: missing report export marker ${marker}`);
@@ -193,6 +198,14 @@ for (const file of files) {
     for (const summary of ["forms", "roles", "routing", "integrations", "events", "ctas", "destinations"]) {
       if (!html.includes(`data-private-summary="${summary}"`)) {
         issues.push(`${rel}: missing private summary "${summary}"`);
+      }
+    }
+  }
+
+  if (rel === "index.html") {
+    for (const marker of ["form-terms", "public_terms_version", "privacy_version", "terms_version", "submission_terms_version"]) {
+      if (!html.includes(marker)) {
+        issues.push(`${rel}: missing form legal marker ${marker}`);
       }
     }
   }

@@ -3,6 +3,7 @@ import { dirname, join } from "node:path";
 
 const assetVersion = "20260609-media-followup";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
+const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 
 const nav = [
   ["Home", "/index.html"],
@@ -143,6 +144,11 @@ function formDialog() {
     <label><span>Message</span><textarea name="message" rows="5" required></textarea></label>
     <label class="check-row"><input type="checkbox" name="consent_email" value="yes" /> <span>Email follow-up is allowed.</span></label>
     <label class="check-row"><input type="checkbox" name="consent_sms" value="yes" /> <span>SMS follow-up is allowed if a phone number is supplied.</span></label>
+    <p class="form-terms">${publicTerms.notice} <a href="/legal/privacy.html">Privacy</a> · <a href="/legal/terms.html">Terms</a></p>
+    <input type="hidden" name="public_terms_version" value="${publicTerms.version}" />
+    <input type="hidden" name="privacy_version" value="${publicTerms.privacyVersion}" />
+    <input type="hidden" name="terms_version" value="${publicTerms.termsVersion}" />
+    <input type="hidden" name="submission_terms_version" value="${publicTerms.submissionTermsVersion}" />
     <input class="honeypot" name="company_url" tabindex="-1" autocomplete="off" />
     <button class="button button-primary" type="submit" data-submit-form>Send to Lux Veritas</button>
   </form>

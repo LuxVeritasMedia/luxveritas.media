@@ -64,15 +64,17 @@ async function resolveHost(hostname) {
   }
 }
 
-const [todo, manifestRaw, checklistRaw, workflow] = await Promise.all([
+const [todo, manifestRaw, checklistRaw, publicTermsRaw, workflow] = await Promise.all([
   readFile("TODO.md", "utf8"),
   readFile("data/lux-media-manifest.json", "utf8"),
   readFile("data/lux-launch-readiness.json", "utf8"),
+  readFile("data/lux-public-terms.json", "utf8"),
   readFile(".github/workflows/firebase-hosting-live.yml", "utf8")
 ]);
 
 const mediaManifest = JSON.parse(manifestRaw);
 const launchChecklist = JSON.parse(checklistRaw);
+const publicTerms = JSON.parse(publicTermsRaw);
 const mediaItems = Array.isArray(mediaManifest.items) ? mediaManifest.items : [];
 const launchGates = Array.isArray(launchChecklist.gates) ? launchChecklist.gates : [];
 const launchGateIds = new Set(launchGates.map((gate) => gate.id));
@@ -84,6 +86,8 @@ const sourceTypes = new Set(mediaItems.map((item) => item.sourceType));
 
 add(mediaItems.length > 0, "Media manifest contains release items.");
 add(mediaManifest.schemaVersion === "luxveritas.media_manifest.v1", "Media manifest schema version is current.");
+add(publicTerms.schemaVersion === "luxveritas.public_terms.v1", "Public terms version manifest is current.");
+add(Boolean(publicTerms.version && publicTerms.privacyVersion && publicTerms.termsVersion && publicTerms.submissionTermsVersion), "Public terms manifest contains active legal version IDs.");
 add(launchGates.length >= 6, "Launch readiness checklist contains required launch gates.");
 for (const gateId of ["media_sources", "inbox_notifications", "private_handoff", "privacy_review", "terms_review", "www_redirect"]) {
   add(launchGateIds.has(gateId), `Launch readiness checklist includes ${gateId}.`);

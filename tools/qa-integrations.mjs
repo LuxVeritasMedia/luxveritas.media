@@ -27,6 +27,10 @@ for (const marker of [
   "pendingIntegrations",
   "routing_queue",
   "routing_next_action",
+  "public_terms_version",
+  "privacy_version",
+  "terms_version",
+  "submission_terms_version",
   "buildPilotFunnel",
   "https:\\/\\/"
 ]) {
@@ -44,6 +48,11 @@ for (const marker of [
   "idempotencyKey",
   "replaySafe",
   "routing: {",
+  "legal: {",
+  "publicTermsVersion",
+  "privacyVersion",
+  "termsVersion",
+  "submissionTermsVersion",
   "X-Lux-Event",
   "X-Lux-Idempotency-Key"
 ]) {
