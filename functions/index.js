@@ -30,6 +30,15 @@ const pendingDeliveryStatuses = [
   "email_relay_error",
   "relay_error"
 ];
+const pendingIntegrationStatuses = [
+  "integration_not_configured",
+  "integration_url_invalid",
+  "integration_timeout",
+  "integration_request_failed",
+  "integration_error",
+  "integration_relay_error",
+  "relay_error"
+];
 
 function getDb() {
   if (!admin.apps.length) admin.initializeApp();
@@ -477,6 +486,11 @@ async function pendingNotificationCount(collection) {
   return result.data().count || 0;
 }
 
+async function pendingIntegrationCount(collection) {
+  const result = await collection.where("integrationStatus", "in", pendingIntegrationStatuses).count().get();
+  return result.data().count || 0;
+}
+
 function subjectFor(payload) {
   const type = payload.inquiry_type || payload.formType || "Website Inquiry";
   const receipt = payload.client_submission_id ? ` [${payload.client_submission_id}]` : "";
@@ -727,6 +741,62 @@ async function replayPendingInbox(req, res, auth) {
   }
 }
 
+async function replayPendingIntegration(req, res, auth) {
+  const readiness = deliveryReadiness();
+  if (!readiness.integrationConfigured) {
+    json(res, 202, {
+      ok: true,
+      replayed: 0,
+      skipped: true,
+      reason: "integration_not_configured",
+      delivery: readiness
+    });
+    return;
+  }
+
+  const limit = Math.max(1, Math.min(Number(req.body?.limit) || 20, 50));
+  const db = getDb();
+  const submissions = db.collection("form_submissions");
+
+  try {
+    const pendingSnapshot = await submissions
+      .where("integrationStatus", "in", pendingIntegrationStatuses)
+      .limit(limit)
+      .get();
+
+    const results = [];
+    for (const snapshot of pendingSnapshot.docs) {
+      const payload = cleanReplayDoc(snapshot);
+      const integration = await sendIntegration(payload, snapshot.id);
+      await updateDocSafe(snapshot.ref, {
+        integrationStatus: integration.delivered ? "sent" : integration.reason,
+        integration,
+        integrationReplayedBy: auth.email,
+        integrationReplayedAt: admin.firestore.FieldValue.serverTimestamp(),
+        integrationDeliveredAt: integration.delivered ? admin.firestore.FieldValue.serverTimestamp() : null
+      }, snapshot.id, "replay_integration");
+      results.push({
+        id: snapshot.id,
+        receiptId: payload.client_submission_id || snapshot.id,
+        integrationStatus: integration.delivered ? "sent" : integration.reason
+      });
+    }
+
+    json(res, 200, {
+      ok: true,
+      replayed: results.filter((item) => item.integrationStatus === "sent").length,
+      checked: results.length,
+      results
+    });
+  } catch (error) {
+    logger.error("Pending integration replay failed", {
+      errorCode: error?.code || null,
+      errorMessage: error?.message || String(error)
+    });
+    json(res, 500, { ok: false, error: "integration_replay_unavailable" });
+  }
+}
+
 export const submitForm = onRequest(
   {
     region: "us-central1",
@@ -889,7 +959,8 @@ export const reportActivity = onRequest(
       return;
     }
 
-    const isReplay = req.method === "POST" && req.body?.action === "replay_pending";
+    const replayAction = text(req.body?.action, 80);
+    const isReplay = req.method === "POST" && ["replay_pending", "replay_integration"].includes(replayAction);
     const namespace = isReplay ? "replay" : "report";
     const maxRequests = isReplay ? maxReplayPerWindow : maxReportsPerWindow;
     if (isRateLimited(req, maxRequests, namespace)) {
@@ -908,6 +979,10 @@ export const reportActivity = onRequest(
         json(res, 400, { ok: false, error: "unknown_report_action" });
         return;
       }
+      if (replayAction === "replay_integration") {
+        await replayPendingIntegration(req, res, auth);
+        return;
+      }
       await replayPendingInbox(req, res, auth);
       return;
     }
@@ -917,10 +992,11 @@ export const reportActivity = onRequest(
     const events = db.collection("site_events");
 
     try {
-      const [submissionCount, eventCount, pendingNotifications, latestSubmissions, latestEvents, summarySubmissions, summaryEvents] = await Promise.all([
+      const [submissionCount, eventCount, pendingNotifications, pendingIntegrations, latestSubmissions, latestEvents, summarySubmissions, summaryEvents] = await Promise.all([
         collectionCount(submissions),
         collectionCount(events),
         pendingNotificationCount(submissions),
+        pendingIntegrationCount(submissions),
         submissions.orderBy("createdAt", "desc").limit(20).get(),
         events.orderBy("createdAt", "desc").limit(20).get(),
         submissions.orderBy("createdAt", "desc").limit(200).get(),
@@ -934,7 +1010,8 @@ export const reportActivity = onRequest(
         counts: {
           submissions: submissionCount,
           events: eventCount,
-          pendingNotifications
+          pendingNotifications,
+          pendingIntegrations
         },
         latest: {
           submissions: latestSubmissions.docs.map(cleanDoc),

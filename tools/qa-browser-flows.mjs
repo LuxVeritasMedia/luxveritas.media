@@ -15,7 +15,9 @@ const mockReport = {
   viewer: "info@luxveritas.media",
   counts: {
     submissions: 42,
-    events: 128
+    events: 128,
+    pendingNotifications: 7,
+    pendingIntegrations: 11
   },
   latest: {
     submissions: [
@@ -297,6 +299,7 @@ async function operatorReportFlow(page, baseUrl) {
 
   const submissionCount = await page.locator('[data-private-count="submissions"]').innerText();
   const eventCount = await page.locator('[data-private-count="events"]').innerText();
+  const pendingHandoffCount = await page.locator('[data-private-count="pendingIntegrations"]').innerText();
   const deliveryStatus = await page.locator('[data-private-delivery="status"]').innerText();
   const deliveryDetail = await page.locator('[data-private-delivery="detail"]').innerText();
   const formsSummary = await page.locator('[data-private-summary="forms"]').innerText();
@@ -313,6 +316,7 @@ async function operatorReportFlow(page, baseUrl) {
 
   if (submissionCount !== "42") issues.push(`/portal/reporting.html: expected 42 submissions, found ${submissionCount}`);
   if (eventCount !== "128") issues.push(`/portal/reporting.html: expected 128 events, found ${eventCount}`);
+  if (pendingHandoffCount !== "11") issues.push(`/portal/reporting.html: expected 11 pending integrations, found ${pendingHandoffCount}`);
   if (deliveryStatus !== "Setup") issues.push(`/portal/reporting.html: expected delivery setup status, found ${deliveryStatus}`);
   if (!/RESEND_API_KEY/.test(deliveryDetail) || !/FORM_INTEGRATION_URL/.test(deliveryDetail)) {
     issues.push(`/portal/reporting.html: missing delivery setup detail`);
@@ -364,6 +368,12 @@ async function operatorReportFlow(page, baseUrl) {
   if (!request || request.authorization !== "Bearer qa-operator-token") {
     issues.push(`/portal/reporting.html: private report did not send bearer token`);
   }
+
+  await page.click('[data-report-action="replay-integration"]');
+  await page.waitForFunction(() => {
+    const status = document.querySelector("[data-private-report-status]");
+    return status && /Private handoff is not configured yet|Handoff replay checked/i.test(status.textContent || "");
+  }, null, { timeout: 5000 });
 }
 
 const { server, baseUrl } = await startServer();
@@ -403,9 +413,25 @@ try {
   });
 
   await page.route("**/api/report", async (route) => {
+    const postData = route.request().postData();
     reportRequests.push({
-      authorization: route.request().headers().authorization || ""
+      authorization: route.request().headers().authorization || "",
+      body: postData ? JSON.parse(postData) : null
     });
+    if (postData && JSON.parse(postData).action === "replay_integration") {
+      await route.fulfill({
+        status: 202,
+        contentType: "application/json",
+        body: JSON.stringify({
+          ok: true,
+          replayed: 0,
+          checked: 0,
+          skipped: true,
+          reason: "integration_not_configured"
+        })
+      });
+      return;
+    }
     await route.fulfill({
       status: 200,
       contentType: "application/json",

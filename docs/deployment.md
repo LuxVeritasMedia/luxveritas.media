@@ -65,6 +65,14 @@ The notification replay action:
 - is intended for post-provider setup recovery after `RESEND_API_KEY` and the approved sender domain are live
 - does not expose provider secrets or delivery internals to public pages
 
+The private handoff replay action:
+
+- requires the same approved operator bearer token as the private report
+- posts to `/api/report` with `action: "replay_integration"`
+- retries stored submissions whose private handoff did not send
+- is intended for post-integration setup recovery after the approved private workflow target is configured
+- does not expose workflow URLs or protected hosting settings to public pages
+
 Cloud Firestore is enabled for `lux-veritas-media`, with the default Firestore Native database in `nam5`.
 
 This Google Workspace organization blocks public `allUsers` IAM bindings, so the public form relay uses Cloud Run's Invoker IAM check disabled setting on the generated `submitform` service. The Functions workflow validates Functions code on relevant `functions/**`, `firebase.json`, or workflow-file pushes. Actual Functions deployment is intentionally manual through `workflow_dispatch` until the GitHub deploy service account has the same proven permissions as the local Firebase CLI path. The manual deploy job reapplies the Cloud Run setting after function deploys:
@@ -126,6 +134,8 @@ These fields let the private report and future server-side integration separate 
 After inbox delivery is configured, open `/portal/reporting.html`, load private activity with an approved operator token, and use `Replay Pending Inbox` to retry stored submissions that were captured while email was offline. The replay endpoint only sends records whose `deliveryStatus` indicates a pending or failed inbox notification.
 
 Optional server-side integration fanout can forward validated, stored form submissions to an approved private tool such as a CRM, Google workflow, or automation router. Keep this server-side only. Do not place integration URLs in public markup or client JavaScript.
+
+After the private integration target is configured, use `Replay Pending Handoff` on `/portal/reporting.html` to retry stored submissions whose `integrationStatus` indicates a pending or failed private handoff.
 
 ```bash
 gcloud secrets create FORM_INTEGRATION_URL --project lux-veritas-media --replication-policy automatic

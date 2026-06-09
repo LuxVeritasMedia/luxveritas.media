@@ -15,9 +15,13 @@ for (const marker of [
   "byIntegrationStatus",
   "integrationWebhook",
   "replayPendingInbox",
+  "replayPendingIntegration",
   "replay_pending",
+  "replay_integration",
   "pendingNotificationCount",
+  "pendingIntegrationCount",
   "pendingNotifications",
+  "pendingIntegrations",
   "routing_queue",
   "routing_next_action",
   "routing: {",
@@ -30,7 +34,9 @@ for (const marker of [
 for (const marker of [
   "data-private-summary=\"integrations\"",
   "data-report-action=\"replay-private\"",
+  "data-report-action=\"replay-integration\"",
   "data-private-count=\"pendingNotifications\"",
+  "data-private-count=\"pendingIntegrations\"",
   "data-private-funnel",
   "data-launch-readiness-summary",
   "data-private-summary=\"routing\"",
@@ -50,7 +56,8 @@ for (const marker of [
   "renderPrivateSummary(panel, \"ctas\"",
   "renderPrivateSummary(panel, \"integrations\"",
   "renderPrivateFunnel",
-  "replayPendingNotifications"
+  "replayPendingNotifications",
+  "replayPendingIntegration"
 ]) {
   if (!appJs.includes(marker)) issues.push(`app.js: missing private integration rendering marker ${marker}`);
 }
@@ -59,6 +66,7 @@ for (const marker of [
   "FORM_INTEGRATION_URL",
   "FORM_INTEGRATION_SIGNING_SECRET",
   "replay_pending",
+  "replay_integration",
   "Screened Intake Routing",
   "server-side integration"
 ]) {

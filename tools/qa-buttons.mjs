@@ -81,6 +81,11 @@ for (const marker of ["privateReportCache", "exportPrivateReport", "exportLocalR
     issues.push(`app.js: missing report export marker ${marker}`);
   }
 }
+for (const marker of ["replayPendingIntegration", "replay_integration", "replay-integration"]) {
+  if (!appJs.includes(marker)) {
+    issues.push(`app.js: missing private handoff replay marker ${marker}`);
+  }
+}
 for (const marker of ["showMediaFollowup", "media_followup_offered"]) {
   if (!appJs.includes(marker)) {
     issues.push(`app.js: missing media follow-up marker ${marker}`);
@@ -164,10 +169,13 @@ for (const file of files) {
     if (!html.includes("data-private-funnel")) {
       issues.push(`${rel}: missing private pilot funnel report`);
     }
+    if (!html.includes('data-private-count="pendingIntegrations"')) {
+      issues.push(`${rel}: missing pending handoff count`);
+    }
     if (!html.includes("data-launch-readiness-summary") || !html.includes("data-launch-readiness-list")) {
       issues.push(`${rel}: missing launch gates report`);
     }
-    for (const action of ["export-private-json", "export-private-csv", "export-csv"]) {
+    for (const action of ["replay-integration", "export-private-json", "export-private-csv", "export-csv"]) {
       if (!html.includes(`data-report-action="${action}"`)) {
         issues.push(`${rel}: missing report export action "${action}"`);
       }

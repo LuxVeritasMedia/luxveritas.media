@@ -991,6 +991,37 @@ async function replayPendingNotifications() {
   }
 }
 
+async function replayPendingIntegration() {
+  const token = document.querySelector("[data-report-token]")?.value.trim();
+  if (!token) {
+    setPrivateReportStatus("Enter an approved operator token first.");
+    return;
+  }
+
+  setPrivateReportStatus("Checking pending private handoff...");
+  try {
+    const response = await fetch(reportEndpoint, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ action: "replay_integration", limit: 20 })
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result.ok) throw new Error(result.error || "handoff_replay_unavailable");
+    if (result.skipped) {
+      setPrivateReportStatus("Private handoff is not configured yet. Stored submissions remain ready for replay.");
+      return;
+    }
+    setPrivateReportStatus(`Handoff replay checked ${result.checked || 0} pending record${result.checked === 1 ? "" : "s"} and sent ${result.replayed || 0}.`);
+    await loadPrivateReport();
+  } catch {
+    setPrivateReportStatus("Pending handoff replay is unavailable for this token.");
+  }
+}
+
 function exportLocalReport() {
   const report = localReportData();
   downloadTextFile(
@@ -1057,6 +1088,10 @@ function handleReportAction(action) {
   }
   if (action === "replay-private") {
     replayPendingNotifications();
+    return;
+  }
+  if (action === "replay-integration") {
+    replayPendingIntegration();
     return;
   }
   if (action === "export") {
