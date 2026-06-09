@@ -150,29 +150,14 @@ Set `FORM_INTEGRATION_TARGET` to a short protected workflow profile label, such 
 After the private integration target and target profile are configured, use `Replay Pending Handoff` on `/portal/reporting.html` to retry stored submissions whose `integrationStatus` indicates a pending or failed private handoff.
 
 ```bash
-gcloud secrets create FORM_INTEGRATION_URL --project lux-veritas-media --replication-policy automatic
-gcloud secrets versions add FORM_INTEGRATION_URL --project lux-veritas-media --data-file=-
-gcloud secrets create FORM_INTEGRATION_SIGNING_SECRET --project lux-veritas-media --replication-policy automatic
-gcloud secrets versions add FORM_INTEGRATION_SIGNING_SECRET --project lux-veritas-media --data-file=-
-gcloud run services update submitform \
-  --region us-central1 \
-  --project lux-veritas-media \
-  --set-secrets FORM_INTEGRATION_URL=FORM_INTEGRATION_URL:latest,FORM_INTEGRATION_SIGNING_SECRET=FORM_INTEGRATION_SIGNING_SECRET:latest
-gcloud run services update submitform \
-  --region us-central1 \
-  --project lux-veritas-media \
-  --set-env-vars FORM_INTEGRATION_TARGET=private_workflow
-gcloud run services update reportactivity \
-  --region us-central1 \
-  --project lux-veritas-media \
-  --set-secrets FORM_INTEGRATION_URL=FORM_INTEGRATION_URL:latest,FORM_INTEGRATION_SIGNING_SECRET=FORM_INTEGRATION_SIGNING_SECRET:latest
-gcloud run services update reportactivity \
-  --region us-central1 \
-  --project lux-veritas-media \
-  --set-env-vars FORM_INTEGRATION_TARGET=private_workflow
+LUX_FORM_INTEGRATION_URL="https://..." \
+LUX_FORM_INTEGRATION_SIGNING_SECRET="approved-shared-secret" \
+LUX_FORM_INTEGRATION_TARGET="private_workflow" \
+node tools/setup-private-integration-secret.mjs
+firebase deploy --only functions:submitForm,functions:reportActivity --project lux-veritas-media --non-interactive --force
 ```
 
-`FORM_INTEGRATION_URL` must be HTTPS. `FORM_INTEGRATION_SIGNING_SECRET` is optional but recommended; when present, the function sends an `X-Lux-Signature` HMAC header with each submission payload.
+For an offline pilot deployment before the real endpoint exists, keep `FORM_INTEGRATION_URL` and `FORM_INTEGRATION_SIGNING_SECRET` set to `not_configured`, and keep `FORM_INTEGRATION_TARGET` set to `unconfigured`. `FORM_INTEGRATION_URL` must be HTTPS before the handoff is treated as active. `FORM_INTEGRATION_SIGNING_SECRET` is optional but recommended; when present, the function sends an `X-Lux-Signature` HMAC header with each submission payload.
 
 ## Private Integration Contract
 

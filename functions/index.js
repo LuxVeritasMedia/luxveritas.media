@@ -10,6 +10,9 @@ import {
 } from "./integration-contract.js";
 
 const resendApiKey = defineSecret("RESEND_API_KEY");
+const formIntegrationUrl = defineSecret("FORM_INTEGRATION_URL");
+const formIntegrationSigningSecret = defineSecret("FORM_INTEGRATION_SIGNING_SECRET");
+const formIntegrationTarget = defineSecret("FORM_INTEGRATION_TARGET");
 const reportOperatorTokenHash = defineSecret("REPORT_OPERATOR_TOKEN_SHA256");
 const defaultToEmail = "info@luxveritas.media";
 const defaultFromEmail = "Lux Veritas <forms@luxveritas.media>";
@@ -106,11 +109,13 @@ function emailProviderKey() {
 }
 
 function integrationUrl() {
-  return process.env.FORM_INTEGRATION_URL || "";
+  const value = process.env.FORM_INTEGRATION_URL || "";
+  return /^https:\/\//i.test(value) ? value : "";
 }
 
 function integrationSigningSecret() {
-  return process.env.FORM_INTEGRATION_SIGNING_SECRET || "";
+  const value = process.env.FORM_INTEGRATION_SIGNING_SECRET || "";
+  return value && value !== "not_configured" ? value : "";
 }
 
 function integrationTarget() {
@@ -836,7 +841,7 @@ export const submitForm = onRequest(
     region: "us-central1",
     cors: false,
     maxInstances: 10,
-    secrets: [resendApiKey]
+    secrets: [resendApiKey, formIntegrationUrl, formIntegrationSigningSecret, formIntegrationTarget]
   },
   async (req, res) => {
     setCors(req, res);
@@ -980,7 +985,7 @@ export const reportActivity = onRequest(
     region: "us-central1",
     cors: false,
     maxInstances: 5,
-    secrets: [reportOperatorTokenHash, resendApiKey]
+    secrets: [reportOperatorTokenHash, resendApiKey, formIntegrationUrl, formIntegrationSigningSecret, formIntegrationTarget]
   },
   async (req, res) => {
     setCors(req, res);
