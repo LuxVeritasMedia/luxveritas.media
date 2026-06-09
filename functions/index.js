@@ -9,6 +9,7 @@ import {
   normalizeIntegrationTarget
 } from "./integration-contract.js";
 
+const resendApiKey = defineSecret("RESEND_API_KEY");
 const reportOperatorTokenHash = defineSecret("REPORT_OPERATOR_TOKEN_SHA256");
 const defaultToEmail = "info@luxveritas.media";
 const defaultFromEmail = "Lux Veritas <forms@luxveritas.media>";
@@ -100,7 +101,8 @@ function text(value, max = 2000) {
 }
 
 function emailProviderKey() {
-  return process.env.RESEND_API_KEY || "";
+  const value = process.env.RESEND_API_KEY || "";
+  return /^re_/i.test(value) ? value : "";
 }
 
 function integrationUrl() {
@@ -833,7 +835,8 @@ export const submitForm = onRequest(
   {
     region: "us-central1",
     cors: false,
-    maxInstances: 10
+    maxInstances: 10,
+    secrets: [resendApiKey]
   },
   async (req, res) => {
     setCors(req, res);
@@ -977,7 +980,7 @@ export const reportActivity = onRequest(
     region: "us-central1",
     cors: false,
     maxInstances: 5,
-    secrets: [reportOperatorTokenHash]
+    secrets: [reportOperatorTokenHash, resendApiKey]
   },
   async (req, res) => {
     setCors(req, res);

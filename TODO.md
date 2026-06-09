@@ -17,6 +17,8 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Rewrite Events as request-access invitation layer.
 - [x] Add static email handoff to `info@luxveritas.media` for public forms.
 - [x] Add Firebase server-side form relay with validation, honeypot, rate limiting, and email fallback.
+- [x] Mount inbox provider API key through Firebase Functions Secret Manager.
+- [x] Add local helper for safely setting the inbox provider secret.
 - [x] Add submit timeouts and validation-error handling so form submits resolve without freezing.
 - [x] Parallelize server-side email and integration relay attempts so slow providers do not freeze public submits.
 - [x] Add client-side receipt IDs for form submissions and local report exports.
