@@ -340,6 +340,22 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
   aspect-ratio: 16 / 9;
   background: #020403;
 }
+.media-followup {
+  margin-top: 1rem;
+  display: grid;
+  gap: .9rem;
+  border: 1px solid rgba(200,168,106,.24);
+  background: rgba(200,168,106,.08);
+  padding: 16px;
+}
+.media-followup span {
+  color: rgba(243,238,228,.74);
+  font-size: .94rem;
+  line-height: 1.55;
+}
+.media-followup[hidden] {
+  display: none;
+}
 .media-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.4rem; }
 .media-queue {
   display: grid;

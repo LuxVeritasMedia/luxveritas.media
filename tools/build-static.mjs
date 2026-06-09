@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260609-form-intents";
+const assetVersion = "20260609-media-followup";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 
 const nav = [
@@ -192,6 +192,10 @@ function mediaPlayerShell(context = "music") {
         <div class="media-source-shell" data-media-source-shell hidden>
           <audio controls preload="none" data-media-audio hidden></audio>
           <video controls playsinline preload="metadata" data-media-video hidden></video>
+        </div>
+        <div class="media-followup" data-media-followup hidden>
+          <span data-media-followup-copy>Join for first access when this source opens.</span>
+          <button class="button button-primary" type="button" data-open-form="fan" data-media-followup-action>Join for access</button>
         </div>
         <div class="media-actions">
           <button class="button button-primary" type="button" data-media-action="play">Play Signal</button>

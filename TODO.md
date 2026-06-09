@@ -81,4 +81,5 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Relay consented media and CTA events server-side to Firestore.
 - [x] Add public media manifest for release, visual, and radio player entries.
 - [x] Add source-ready audio/video/stream playback shell for approved media URLs.
+- [x] Add media follow-up conversion path when approved audio/video/radio sources are not yet live.
 - [ ] Attach approved release audio, video, and radio sources.

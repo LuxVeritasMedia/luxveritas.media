@@ -68,6 +68,11 @@ for (const marker of ['trackInteraction("form_open"', 'trackInteraction("link_cl
 if (!appJs.includes("renderPrivateSummary")) {
   issues.push("app.js: missing private report summary rendering");
 }
+for (const marker of ["showMediaFollowup", "media_followup_offered"]) {
+  if (!appJs.includes(marker)) {
+    issues.push(`app.js: missing media follow-up marker ${marker}`);
+  }
+}
 for (const marker of [
   'rolePath: "Member"',
   'inquiryType: "Membership"',
@@ -115,6 +120,9 @@ for (const file of files) {
   if (["music.html", "spmvp.html"].includes(rel)) {
     if (!html.includes("data-media-player")) {
       issues.push(`${rel}: missing media player`);
+    }
+    if (!html.includes("data-media-followup")) {
+      issues.push(`${rel}: missing media follow-up conversion module`);
     }
     for (const action of ["play", "watch", "radio"]) {
       if (!html.includes(`data-media-action="${action}"`)) {

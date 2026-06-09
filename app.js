@@ -372,6 +372,42 @@ function resetMediaSources(player) {
     video.load();
   }
   if (shell) shell.hidden = true;
+  hideMediaFollowup(player);
+}
+
+function hideMediaFollowup(player) {
+  const followup = player?.querySelector("[data-media-followup]");
+  if (followup) followup.hidden = true;
+}
+
+function showMediaFollowup(player, action, title) {
+  const followup = player?.querySelector("[data-media-followup]");
+  const copy = player?.querySelector("[data-media-followup-copy]");
+  const button = player?.querySelector("[data-media-followup-action]");
+  if (!followup || !button) return;
+
+  const config = {
+    play: {
+      label: "Join for release access",
+      copy: `${title} is queued for approved listening access. Join for first notice when the release source opens.`
+    },
+    watch: {
+      label: "Join for visual access",
+      copy: `${title} is queued for approved visual access. Join for first notice when the visual opens.`
+    },
+    radio: {
+      label: "Join for radio access",
+      copy: "Lux Radio is queued for future programming. Join for first notice when the signal opens."
+    }
+  }[action] || {
+    label: "Join for access",
+    copy: "Join for first access when this source opens."
+  };
+
+  if (copy) copy.textContent = config.copy;
+  button.textContent = config.label;
+  followup.hidden = false;
+  trackEvent("media_followup_offered", { action, title, formType: "fan" });
 }
 
 function setActiveMediaItem(player, item, options = {}) {
@@ -645,7 +681,11 @@ function handleMediaAction(action, player) {
   writeMediaEvent(action, player, activeItem?.dataset || {});
   updateMediaReport(player);
 
-  if (approvedSource) loadApprovedMedia(player, { sourceUrl: approvedSource, sourceType, posterUrl, title });
+  if (approvedSource) {
+    loadApprovedMedia(player, { sourceUrl: approvedSource, sourceType, posterUrl, title });
+  } else {
+    showMediaFollowup(player, action, title);
+  }
 }
 
 function loadApprovedMedia(player, item) {
