@@ -21,7 +21,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add client-side receipt IDs for form submissions and local report exports.
 - [x] Add path-aware form defaults so CTAs return cleaner role and inquiry data.
 - [x] Deploy public site from a clean `dist` artifact instead of the repo root.
-- [x] Split Firebase Functions deploy into a manual workflow until Cloud Run IAM is fixed.
+- [x] Split Firebase Functions deploy into a path-scoped workflow with manual dispatch and Cloud Run access repair.
 - [x] Fix Firebase/Cloud Run public access so `submitForm` can be invoked by Hosting. Org policy blocks `allUsers`; Cloud Run Invoker IAM check is disabled on the `submitform` service instead.
 - [x] Enable Cloud Firestore and create default Firestore Native database in `nam5` for form submission storage.
 - [x] Confirm live valid form submissions return `stored:true` from `/api/submit`.
@@ -79,6 +79,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add structured CTA, nav, link, and report-action tracking for consented engagement reporting.
 - [x] Add post-deploy live smoke QA for production routes, player shell, manifest, noindex, and `/api/submit` status.
 - [x] Add repeatable form-delivery QA for validation, stored capture, and inbox notification readiness.
+- [x] Add workflow QA for hosting and Functions deploy gates.
 
 ## P7 - Media MVP
 - [x] Add Lux Player MVP to Music and SPMVP with listen/watch/radio actions.

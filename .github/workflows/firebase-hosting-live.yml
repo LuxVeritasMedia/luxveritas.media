@@ -44,6 +44,9 @@ jobs:
       - name: QA access model
         run: node tools/qa-access-model.mjs
 
+      - name: QA workflows
+        run: node tools/qa-workflows.mjs
+
       - name: QA mobile layout
         run: node tools/qa-mobile-layout.mjs
 
