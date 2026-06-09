@@ -29,7 +29,9 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add protected activity report API for approved operator review.
 - [x] Add protected operator summaries for lead paths, roles, events, pages, and clicked destinations.
 - [x] Add protected form-delivery readiness reporting for stored-vs-inbox status.
+- [x] Add optional server-side integration fanout for validated form submissions.
 - [ ] Configure email provider runtime secrets for inbox notification after Firestore capture.
+- [ ] Configure approved private integration endpoint secret after CRM/Google workflow target is chosen.
 
 ## P2 - Content Model
 - [x] Split Codex into Outer / Inner / Sanctum.
@@ -80,6 +82,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add post-deploy live smoke QA for production routes, player shell, manifest, noindex, and `/api/submit` status.
 - [x] Add repeatable form-delivery QA for validation, stored capture, and inbox notification readiness.
 - [x] Add workflow QA for hosting and Functions deploy gates.
+- [x] Add integration QA for server-side submission fanout and private reporting readiness.
 
 ## P7 - Media MVP
 - [x] Add Lux Player MVP to Music and SPMVP with listen/watch/radio actions.

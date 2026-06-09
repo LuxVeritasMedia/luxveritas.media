@@ -49,6 +49,9 @@ jobs:
       - name: QA access model
         run: node tools/qa-access-model.mjs
 
+      - name: QA integrations
+        run: node tools/qa-integrations.mjs
+
       - name: QA workflows
         run: node tools/qa-workflows.mjs
 

@@ -11,6 +11,7 @@ for (const marker of [
   "node tools/qa-buttons.mjs",
   "node tools/qa-public-site.mjs",
   "node tools/qa-access-model.mjs",
+  "node tools/qa-integrations.mjs",
   "node tools/qa-mobile-layout.mjs",
   "node tools/qa-live-site.mjs"
 ]) {
@@ -29,6 +30,7 @@ for (const marker of [
   '".github/workflows/firebase-functions-manual.yml"',
   "npm --prefix functions ci",
   "npm --prefix functions run lint",
+  "node tools/qa-integrations.mjs",
   "if: github.event_name == 'workflow_dispatch'",
   "needs: validate-functions",
   "deploy --only functions",

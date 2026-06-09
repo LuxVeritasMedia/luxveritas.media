@@ -420,6 +420,10 @@ function portalReport() {
           <ul class="report-list" data-private-summary="roles"><li>Load private activity to view audience paths.</li></ul>
         </div>
         <div>
+          <p class="kicker">Integrations</p>
+          <ul class="report-list" data-private-summary="integrations"><li>Load private activity to view routing status.</li></ul>
+        </div>
+        <div>
           <p class="kicker">Engagement</p>
           <ul class="report-list" data-private-summary="events"><li>Load private activity to view site actions.</li></ul>
         </div>

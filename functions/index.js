@@ -5,6 +5,8 @@ import { onRequest } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions";
 
 const resendApiKey = defineSecret("RESEND_API_KEY");
+const formIntegrationUrl = defineSecret("FORM_INTEGRATION_URL");
+const formIntegrationSigningSecret = defineSecret("FORM_INTEGRATION_SIGNING_SECRET");
 const defaultToEmail = "info@luxveritas.media";
 const defaultFromEmail = "Lux Veritas <forms@luxveritas.media>";
 const allowedOrigins = new Set([
@@ -20,6 +22,7 @@ const maxRequestsPerWindow = 5;
 const maxEventsPerWindow = 40;
 const maxReportsPerWindow = 20;
 const emailTimeoutMs = 8000;
+const integrationTimeoutMs = 8000;
 const rateBuckets = new Map();
 
 function getDb() {
@@ -68,6 +71,22 @@ function emailProviderKey() {
     return resendApiKey.value() || process.env.RESEND_API_KEY || "";
   } catch {
     return process.env.RESEND_API_KEY || "";
+  }
+}
+
+function integrationUrl() {
+  try {
+    return formIntegrationUrl.value() || process.env.FORM_INTEGRATION_URL || "";
+  } catch {
+    return process.env.FORM_INTEGRATION_URL || "";
+  }
+}
+
+function integrationSigningSecret() {
+  try {
+    return formIntegrationSigningSecret.value() || process.env.FORM_INTEGRATION_SIGNING_SECRET || "";
+  } catch {
+    return process.env.FORM_INTEGRATION_SIGNING_SECRET || "";
   }
 }
 
@@ -200,6 +219,7 @@ function cleanDoc(snapshot) {
     portal_role_target: data.portal_role_target || null,
     inquiry_key: data.inquiry_key || null,
     deliveryStatus: data.deliveryStatus || null,
+    integrationStatus: data.integrationStatus || null,
     client_submission_id: data.client_submission_id || null,
     detail: data.detail || null
   };
@@ -230,6 +250,7 @@ function summarizeActivity(submissionDocs, eventDocs) {
       byAccessPath: topCounts(submissionItems, (item) => item.access_path),
       byPortalRoleTarget: topCounts(submissionItems, (item) => item.portal_role_target),
       byDeliveryStatus: topCounts(submissionItems, (item) => item.deliveryStatus),
+      byIntegrationStatus: topCounts(submissionItems, (item) => item.integrationStatus),
       bySourcePage: topCounts(submissionItems, (item) => item.source_page)
     },
     events: {
@@ -246,17 +267,21 @@ function deliveryReadiness() {
   const to = text(process.env.FORM_TO_EMAIL || defaultToEmail, 240);
   const from = text(process.env.FORM_FROM_EMAIL || defaultFromEmail, 240);
   const hasEmailProvider = Boolean(emailProviderKey());
+  const hasIntegration = Boolean(integrationUrl());
   const ready = Boolean(hasEmailProvider && from && to);
 
   return {
     inboxNotification: ready ? "ready" : "needs_setup",
     storeFirstCapture: "ready",
+    integrationWebhook: hasIntegration ? "ready" : "needs_setup",
     toConfigured: Boolean(to),
     fromConfigured: Boolean(from),
     emailProviderConfigured: hasEmailProvider,
+    integrationConfigured: hasIntegration,
     toEmail: to,
     missing: [
       hasEmailProvider ? null : "RESEND_API_KEY",
+      hasIntegration ? null : "FORM_INTEGRATION_URL",
       from ? null : "FORM_FROM_EMAIL",
       to ? null : "FORM_TO_EMAIL"
     ].filter(Boolean)
@@ -350,11 +375,90 @@ async function sendEmail(payload, id) {
   return { delivered: true, providerId: body.id || null };
 }
 
+function integrationPayload(payload, id) {
+  return {
+    submissionId: id,
+    receiptId: payload.client_submission_id || id,
+    receivedAt: new Date().toISOString(),
+    source: payload.source || "luxveritas.media",
+    sourcePage: payload.source_page || "",
+    formType: payload.formType || "",
+    tag: payload.tag || "",
+    inquiryType: payload.inquiry_type || "",
+    inquiryKey: payload.inquiry_key || "",
+    rolePath: payload.role_path || "",
+    accessPath: payload.access_path || "",
+    portalRoleTarget: payload.portal_role_target || "",
+    contact: {
+      name: payload.name,
+      email: payload.email,
+      phone: payload.phone
+    },
+    consent: {
+      email: Boolean(payload.consent_email),
+      sms: Boolean(payload.consent_sms)
+    },
+    message: payload.message
+  };
+}
+
+async function sendIntegration(payload, id) {
+  const url = integrationUrl();
+  if (!url) {
+    return { delivered: false, reason: "integration_not_configured" };
+  }
+  if (!/^https:\/\//i.test(url)) {
+    return { delivered: false, reason: "integration_url_invalid" };
+  }
+
+  const body = JSON.stringify(integrationPayload(payload, id));
+  const secret = integrationSigningSecret();
+  const headers = {
+    "Content-Type": "application/json",
+    "User-Agent": "LuxVeritas-FormIntegration/1.0"
+  };
+  if (secret) {
+    headers["X-Lux-Signature"] = crypto.createHmac("sha256", secret).update(body).digest("hex");
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), integrationTimeoutMs);
+  let response;
+
+  try {
+    response = await fetch(url, {
+      method: "POST",
+      headers,
+      signal: controller.signal,
+      body
+    });
+  } catch (error) {
+    logger.error("Form integration request failed", {
+      errorName: error?.name || null,
+      errorMessage: error?.message || String(error),
+      id
+    });
+    return {
+      delivered: false,
+      reason: error?.name === "AbortError" ? "integration_timeout" : "integration_request_failed"
+    };
+  } finally {
+    clearTimeout(timeout);
+  }
+
+  if (!response.ok) {
+    logger.error("Form integration failed", { status: response.status, id });
+    return { delivered: false, reason: "integration_error", providerStatus: response.status };
+  }
+
+  return { delivered: true, providerStatus: response.status };
+}
+
 export const submitForm = onRequest(
   {
     region: "us-central1",
     cors: false,
-    secrets: [resendApiKey],
+    secrets: [resendApiKey, formIntegrationUrl, formIntegrationSigningSecret],
     maxInstances: 10
   },
   async (req, res) => {
@@ -405,10 +509,13 @@ export const submitForm = onRequest(
 
     try {
       const delivery = await sendEmail(clean, id);
+      const integration = await sendIntegration(clean, id);
       if (stored) {
         await doc.update({
           deliveryStatus: delivery.delivered ? "sent" : delivery.reason,
           delivery,
+          integrationStatus: integration.delivered ? "sent" : integration.reason,
+          integration,
           deliveredAt: delivery.delivered ? admin.firestore.FieldValue.serverTimestamp() : null
         });
       }
@@ -490,7 +597,7 @@ export const reportActivity = onRequest(
   {
     region: "us-central1",
     cors: false,
-    secrets: [resendApiKey],
+    secrets: [resendApiKey, formIntegrationUrl, formIntegrationSigningSecret],
     maxInstances: 5
   },
   async (req, res) => {

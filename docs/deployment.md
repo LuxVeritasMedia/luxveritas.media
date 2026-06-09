@@ -88,10 +88,21 @@ gcloud run services update submitform \
 
 The browser form now times out after 12 seconds and the email provider call times out after 8 seconds; when inbox delivery is not configured or unavailable, the submission is still recorded when Firestore is available and the visitor sees the visible email-draft fallback.
 
+Optional server-side integration fanout can forward validated, stored form submissions to an approved private tool such as a CRM, Google workflow, or automation router. Keep this server-side only. Do not place integration URLs in public markup or client JavaScript.
+
+```bash
+firebase functions:secrets:set FORM_INTEGRATION_URL --project lux-veritas-media
+firebase functions:secrets:set FORM_INTEGRATION_SIGNING_SECRET --project lux-veritas-media
+firebase deploy --only functions --project lux-veritas-media --non-interactive --force
+```
+
+`FORM_INTEGRATION_URL` must be HTTPS. `FORM_INTEGRATION_SIGNING_SECRET` is optional but recommended; when present, the function sends an `X-Lux-Signature` HMAC header with each submission payload.
+
 Form delivery QA:
 
 ```bash
 node tools/qa-form-delivery.mjs
+node tools/qa-integrations.mjs
 LUX_FORM_WRITE=1 node tools/qa-form-delivery.mjs
 LUX_FORM_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-form-delivery.mjs
 ```

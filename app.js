@@ -688,6 +688,7 @@ function renderPrivateReport(report) {
   renderPrivateDelivery(panel, report.delivery);
   renderPrivateSummary(panel, "forms", report.summary?.submissions?.byFormType);
   renderPrivateSummary(panel, "roles", report.summary?.submissions?.byRolePath);
+  renderPrivateSummary(panel, "integrations", report.summary?.submissions?.byIntegrationStatus);
   renderPrivateSummary(panel, "events", report.summary?.events?.byEvent);
   renderPrivateSummary(panel, "destinations", report.summary?.events?.byDestination || report.summary?.events?.byPage);
 
