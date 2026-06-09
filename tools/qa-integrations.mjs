@@ -79,6 +79,7 @@ for (const marker of [
   "data-private-funnel",
   "data-launch-readiness-summary",
   "data-private-summary=\"routing\"",
+  "data-private-summary=\"delivery\"",
   "data-private-summary=\"ctas\"",
   "Integrations"
 ]) {
@@ -92,6 +93,7 @@ for (const marker of [
   "byCtaLabel",
   "renderLaunchReadinessReport",
   "renderPrivateSummary(panel, \"routing\"",
+  "renderPrivateSummary(panel, \"delivery\"",
   "renderPrivateSummary(panel, \"ctas\"",
   "renderPrivateSummary(panel, \"integrations\"",
   "renderPrivateFunnel",

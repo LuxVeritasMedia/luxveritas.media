@@ -198,7 +198,7 @@ for (const file of files) {
         issues.push(`${rel}: missing report export action "${action}"`);
       }
     }
-    for (const summary of ["forms", "roles", "routing", "integrations", "events", "ctas", "destinations"]) {
+    for (const summary of ["forms", "roles", "routing", "delivery", "integrations", "events", "ctas", "destinations"]) {
       if (!html.includes(`data-private-summary="${summary}"`)) {
         issues.push(`${rel}: missing private summary "${summary}"`);
       }

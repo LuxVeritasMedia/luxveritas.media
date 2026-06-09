@@ -885,6 +885,7 @@ function renderPrivateReport(report) {
   renderPrivateSummary(panel, "forms", report.summary?.submissions?.byFormType);
   renderPrivateSummary(panel, "roles", report.summary?.submissions?.byRolePath);
   renderPrivateSummary(panel, "routing", report.summary?.submissions?.byRoutingQueue);
+  renderPrivateSummary(panel, "delivery", report.summary?.submissions?.byDeliveryStatus);
   renderPrivateSummary(panel, "integrations", report.summary?.submissions?.byIntegrationStatus);
   renderPrivateSummary(panel, "events", report.summary?.events?.byEvent);
   renderPrivateSummary(panel, "ctas", report.summary?.events?.byCtaId || report.summary?.events?.byCtaLabel);

@@ -34,6 +34,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add stable CTA IDs and protected CTA signal summaries for real button/link reporting.
 - [x] Add protected pilot funnel reporting for capture and engagement health.
 - [x] Add protected form-delivery readiness reporting for stored-vs-inbox status.
+- [x] Add protected inbox outcome reporting by delivery status.
 - [x] Add private media-source readiness reporting for audio, video, and radio slots.
 - [x] Add private launch-gates reporting for release, capture, legal, and domain blockers.
 - [x] Add optional server-side integration fanout for validated form submissions.
@@ -99,6 +100,8 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add QA coverage for stable CTA IDs and protected CTA signal reporting.
 - [x] Add post-deploy live smoke QA for production routes, player shell, manifest, noindex, and `/api/submit` status.
 - [x] Add repeatable form-delivery QA for validation, stored capture, and inbox notification readiness.
+- [x] Add live form matrix QA for major public capture paths.
+- [x] Raise pilot form rate limit so the seven-path live matrix can complete without false 429 failures.
 - [x] Add workflow QA for hosting and Functions deploy gates.
 - [x] Add integration QA for server-side submission fanout and private reporting readiness.
 - [x] Add browser-flow QA for real CTA clicks, modal submits, submit reset, and media follow-up routing.

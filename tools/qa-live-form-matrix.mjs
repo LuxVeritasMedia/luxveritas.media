@@ -1,0 +1,158 @@
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+
+const baseUrl = (process.env.LUX_LIVE_URL || "https://luxveritas.media").replace(/\/$/, "");
+const writeEnabled = process.env.LUX_FORM_MATRIX_WRITE === "1";
+const expectEmailSent = process.env.LUX_EXPECT_EMAIL_SENT === "1";
+const strictLiveQa = process.env.LUX_STRICT_LIVE_QA === "1" || writeEnabled;
+const issues = [];
+const warnings = [];
+const execFileAsync = promisify(execFile);
+
+const matrix = [
+  { sourcePage: "/index.html", formType: "request", tag: "general-access", rolePath: "General", inquiryType: "Portal" },
+  { sourcePage: "/membership.html", formType: "fan", tag: "membership-waitlist", rolePath: "Member", inquiryType: "Membership" },
+  { sourcePage: "/submissions.html", formType: "submission", tag: "submission-review", rolePath: "Creator", inquiryType: "Submissions" },
+  { sourcePage: "/events.html", formType: "request", tag: "event-access", rolePath: "General", inquiryType: "Portal" },
+  { sourcePage: "/contact.html", formType: "press", tag: "press-contact", rolePath: "Press", inquiryType: "Press" },
+  { sourcePage: "/investor.html", formType: "investor", tag: "strategic-access", rolePath: "Investor", inquiryType: "Investor" },
+  { sourcePage: "/community.html", formType: "fan", tag: "community-waitlist", rolePath: "Member", inquiryType: "Membership" }
+];
+
+function stamp() {
+  return new Date().toISOString().replace(/[-:.TZ]/g, "").slice(0, 14);
+}
+
+async function postJson(path, payload) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+  try {
+    const response = await fetch(`${baseUrl}${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
+    const text = await response.text();
+    return { response, json: text ? JSON.parse(text) : {} };
+  } catch (error) {
+    if (error?.message === "fetch failed" || error?.name === "TypeError") {
+      return curlJson(path, payload);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function curlJson(path, payload) {
+  const marker = "__HTTP_STATUS__:";
+  const { stdout } = await execFileAsync("curl", [
+    "-sS",
+    "-m",
+    "15",
+    "-X",
+    "POST",
+    "-H",
+    "Content-Type: application/json",
+    "-H",
+    "Accept: application/json",
+    "--data",
+    JSON.stringify(payload),
+    "-w",
+    `\n${marker}%{http_code}`,
+    `${baseUrl}${path}`
+  ], {
+    maxBuffer: 1024 * 1024
+  });
+  const markerIndex = stdout.lastIndexOf(marker);
+  if (markerIndex === -1) throw new Error("curl response missing status marker");
+  const text = stdout.slice(0, markerIndex).trim();
+  const status = Number(stdout.slice(markerIndex + marker.length).trim());
+  return {
+    response: {
+      ok: status >= 200 && status < 300,
+      status
+    },
+    json: text ? JSON.parse(text) : {}
+  };
+}
+
+async function validationCheck() {
+  const { response, json } = await postJson("/api/submit", { name: "Lux Matrix QA" });
+  if (response.status !== 400 && response.status !== 429) {
+    issues.push(`validation check expected HTTP 400 or 429, received ${response.status}`);
+  }
+  if (response.status === 400 && json.error !== "validation_failed") {
+    issues.push(`validation check returned unexpected error: ${json.error || "none"}`);
+  }
+}
+
+async function writeCheck(item, index) {
+  const id = `LV-MATRIX-${stamp()}-${String(index + 1).padStart(2, "0")}`;
+  const payload = {
+    client_submission_id: id,
+    name: `Codex Matrix QA ${index + 1}`,
+    email: process.env.LUX_FORM_EMAIL || "info@luxveritas.media",
+    phone: "",
+    role_path: item.rolePath,
+    inquiry_type: item.inquiryType,
+    message: `QA matrix test for ${item.sourcePage}. Safe to archive.`,
+    formType: item.formType,
+    tag: item.tag,
+    source: "luxveritas.media",
+    source_page: item.sourcePage,
+    consent_email: "yes",
+    consent_sms: "no",
+    company_url: ""
+  };
+
+  const { response, json } = await postJson("/api/submit", payload);
+  if (!response.ok && response.status !== 202) {
+    issues.push(`${item.sourcePage}: expected accepted response, received HTTP ${response.status}`);
+    return;
+  }
+  if (!json.ok || !json.id) {
+    issues.push(`${item.sourcePage}: response did not return ok:true with an id`);
+  }
+  if (!["sent", "stored"].includes(json.delivery)) {
+    issues.push(`${item.sourcePage}: expected delivery sent or stored, received ${json.delivery || "unknown"}`);
+  }
+  if (expectEmailSent && json.delivery !== "sent") {
+    issues.push(`${item.sourcePage}: expected inbox sent, received ${json.delivery || "unknown"} (${json.reason || "no reason"})`);
+  }
+  if (json.delivery === "stored") {
+    warnings.push(`${item.sourcePage}: stored ${id}; inbox not active yet (${json.reason || "stored"}).`);
+  } else {
+    console.log(`${item.sourcePage}: sent ${id}.`);
+  }
+}
+
+try {
+  await validationCheck();
+} catch (error) {
+  const message = `validation check failed: ${error.message}`;
+  if (strictLiveQa) issues.push(message);
+  else warnings.push(`${message}. Live network check skipped in non-strict mode.`);
+}
+
+if (writeEnabled) {
+  for (const [index, item] of matrix.entries()) {
+    await writeCheck(item, index);
+  }
+} else {
+  warnings.push("Skipped live matrix writes. Set LUX_FORM_MATRIX_WRITE=1 to create one QA submission per public capture path.");
+}
+
+if (warnings.length) {
+  console.warn("Live form matrix QA warnings:");
+  for (const warning of warnings) console.warn(`- ${warning}`);
+}
+
+if (issues.length) {
+  console.error(`Live form matrix QA failed with ${issues.length} issue(s):`);
+  for (const issue of issues) console.error(`- ${issue}`);
+  process.exit(1);
+}
+
+console.log(`Live form matrix QA passed for ${baseUrl}.`);
