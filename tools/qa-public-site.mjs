@@ -11,6 +11,7 @@ const requiredFiles = [
   "sitemap.xml",
   "data/lux-launch-readiness.json",
   "data/lux-media-manifest.json",
+  "data/lux-legal-review.json",
   "data/lux-public-terms.json",
   "assets/luxveritas-threshold.png"
 ];
@@ -163,9 +164,11 @@ for (const pattern of bannedTerms) {
 
 const mediaManifestRaw = await readFile(join(root, "data/lux-media-manifest.json"), "utf8");
 const deploymentDoc = await readFile("docs/deployment.md", "utf8");
+const legalReviewRaw = await readFile(join(root, "data/lux-legal-review.json"), "utf8");
 const publicTermsRaw = await readFile(join(root, "data/lux-public-terms.json"), "utf8");
 for (const pattern of bannedTerms) {
   if (pattern.test(mediaManifestRaw)) issues.push(`data/lux-media-manifest.json: banned public term matched ${pattern}`);
+  if (pattern.test(legalReviewRaw)) issues.push(`data/lux-legal-review.json: banned public term matched ${pattern}`);
   if (pattern.test(publicTermsRaw)) issues.push(`data/lux-public-terms.json: banned public term matched ${pattern}`);
 }
 
@@ -201,6 +204,36 @@ try {
   }
 } catch (error) {
   issues.push(`data/lux-media-manifest.json: invalid JSON (${error.message})`);
+}
+
+try {
+  const legalReview = JSON.parse(legalReviewRaw);
+  const items = Array.isArray(legalReview.items) ? legalReview.items : [];
+  const byId = new Map(items.map((item) => [item.id, item]));
+  if (legalReview.schemaVersion !== "luxveritas.legal_review.v1") {
+    issues.push("data/lux-legal-review.json: schemaVersion mismatch");
+  }
+  if (!legalReview.updatedAt) {
+    issues.push("data/lux-legal-review.json: missing updatedAt");
+  }
+  for (const id of ["privacy", "terms"]) {
+    const item = byId.get(id);
+    if (!item) {
+      issues.push(`data/lux-legal-review.json: missing ${id}`);
+      continue;
+    }
+    if (!["needs_review", "approved"].includes(item.status)) {
+      issues.push(`data/lux-legal-review.json: ${id} has invalid status`);
+    }
+    if (!item.route || !item.version) {
+      issues.push(`data/lux-legal-review.json: ${id} missing route or version`);
+    }
+    if (item.status === "approved" && (!item.reviewedAt || !item.reviewedBy)) {
+      issues.push(`data/lux-legal-review.json: ${id} approval missing reviewer metadata`);
+    }
+  }
+} catch (error) {
+  issues.push(`data/lux-legal-review.json: invalid JSON (${error.message})`);
 }
 
 for (const marker of [

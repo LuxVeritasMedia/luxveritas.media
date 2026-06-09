@@ -76,6 +76,22 @@ Use `LUX_MEDIA_DRY_RUN=1` to validate URLs without writing. Source URLs must be 
 
 The public terms manifest uses `luxveritas.public_terms.v1`. Form submissions carry the active public terms, privacy, terms, and submission terms version IDs into Firestore and the private integration payload. These version IDs support capture auditability only; they do not replace final legal review.
 
+The legal review manifest uses `luxveritas.legal_review.v1`. Privacy and Terms remain launch blockers until each item is explicitly marked `approved` with reviewer metadata:
+
+```bash
+LUX_LEGAL_REVIEW_ITEM=privacy \
+LUX_LEGAL_REVIEW_STATUS=approved \
+LUX_LEGAL_REVIEWED_BY="Reviewer Name" \
+node tools/set-legal-review-status.mjs
+
+LUX_LEGAL_REVIEW_ITEM=terms \
+LUX_LEGAL_REVIEW_STATUS=approved \
+LUX_LEGAL_REVIEWED_BY="Reviewer Name" \
+node tools/set-legal-review-status.mjs
+```
+
+Use `LUX_LEGAL_DRY_RUN=1` to validate the command without writing. Do not mark either item approved until counsel or the responsible business reviewer has accepted the public page language.
+
 The notification replay action:
 
 - requires the same approved operator bearer token as the private report

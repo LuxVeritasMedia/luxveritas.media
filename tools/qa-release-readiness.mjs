@@ -20,10 +20,6 @@ function add(condition, message, level = "blocker") {
   }
 }
 
-function hasUnchecked(todo, text) {
-  return todo.split("\n").some((line) => line.includes("- [ ]") && line.includes(text));
-}
-
 function hasUncheckedAny(todo, markers) {
   return todo.split("\n").some((line) => (
     line.includes("- [ ]") && markers.some((marker) => line.includes(marker))
@@ -83,16 +79,25 @@ async function resolveHost(hostname) {
   }
 }
 
-const [todo, manifestRaw, checklistRaw, publicTermsRaw, workflow] = await Promise.all([
+function legalItemApproved(legalReview, id) {
+  const item = Array.isArray(legalReview.items)
+    ? legalReview.items.find((entry) => entry.id === id)
+    : null;
+  return Boolean(item?.status === "approved" && item.reviewedAt && item.reviewedBy);
+}
+
+const [todo, manifestRaw, checklistRaw, legalReviewRaw, publicTermsRaw, workflow] = await Promise.all([
   readFile("TODO.md", "utf8"),
   readFile("data/lux-media-manifest.json", "utf8"),
   readFile("data/lux-launch-readiness.json", "utf8"),
+  readFile("data/lux-legal-review.json", "utf8"),
   readFile("data/lux-public-terms.json", "utf8"),
   readFile(".github/workflows/firebase-hosting-live.yml", "utf8")
 ]);
 
 const mediaManifest = JSON.parse(manifestRaw);
 const launchChecklist = JSON.parse(checklistRaw);
+const legalReview = JSON.parse(legalReviewRaw);
 const publicTerms = JSON.parse(publicTermsRaw);
 const mediaItems = Array.isArray(mediaManifest.items) ? mediaManifest.items : [];
 const launchGates = Array.isArray(launchChecklist.gates) ? launchChecklist.gates : [];
@@ -124,11 +129,12 @@ add(!hasUncheckedAny(todo, [
   "RESEND_API_KEY",
   "inbox notification"
 ]), "Inbox notification provider configured.");
-add(!hasUnchecked(todo, "Configure approved private integration endpoint"), "Private integration endpoint configured.");
-add(!hasUnchecked(todo, "REPORT_OPERATOR_TOKEN_SHA256"), "Operator report token configured.");
-add(!hasUnchecked(todo, "Legal review: Privacy"), "Privacy page legal review complete.");
-add(!hasUnchecked(todo, "Legal review: Terms"), "Terms page legal review complete.");
-add(!hasUnchecked(todo, "Attach approved release audio, video, and radio sources"), "Approved release audio, video, and radio sources attached.");
+add(!hasUncheckedAny(todo, ["Configure approved private integration endpoint"]), "Private integration endpoint configured.");
+add(!hasUncheckedAny(todo, ["REPORT_OPERATOR_TOKEN_SHA256"]), "Operator report token configured.");
+add(legalReview.schemaVersion === "luxveritas.legal_review.v1", "Legal review manifest schema version is current.");
+add(legalItemApproved(legalReview, "privacy"), "Privacy page legal review complete.");
+add(legalItemApproved(legalReview, "terms"), "Terms page legal review complete.");
+add(!hasUncheckedAny(todo, ["Attach approved release audio, video, and radio sources"]), "Approved release audio, video, and radio sources attached.");
 add(workflow.includes("node tools/qa-browser-flows.mjs"), "Browser-flow QA is enforced before Hosting deploy.");
 add(workflow.includes("node tools/qa-live-site.mjs"), "Live-site QA is enforced after Hosting deploy.");
 

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "luxveritas.legal_review.v1",
+  "updatedAt": "2026-06-09T00:00:00.000Z",
+  "items": [
+    {
+      "id": "privacy",
+      "route": "/legal/privacy.html",
+      "status": "needs_review",
+      "reviewedAt": null,
+      "reviewedBy": null,
+      "version": "privacy-draft-2026-06-09",
+      "notes": "Legal-review-safe draft only. Requires counsel or business approval before full public launch."
+    },
+    {
+      "id": "terms",
+      "route": "/legal/terms.html",
+      "status": "needs_review",
+      "reviewedAt": null,
+      "reviewedBy": null,
+      "version": "terms-draft-2026-06-09",
+      "notes": "Legal-review-safe draft only. Requires counsel or business approval before full public launch."
+    }
+  ]
+}
