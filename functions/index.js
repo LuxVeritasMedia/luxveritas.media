@@ -21,8 +21,8 @@ const rateWindowMs = 10 * 60 * 1000;
 const maxRequestsPerWindow = 5;
 const maxEventsPerWindow = 40;
 const maxReportsPerWindow = 20;
-const emailTimeoutMs = 8000;
-const integrationTimeoutMs = 8000;
+const emailTimeoutMs = 6000;
+const integrationTimeoutMs = 6000;
 const rateBuckets = new Map();
 
 function getDb() {
@@ -454,6 +454,28 @@ async function sendIntegration(payload, id) {
   return { delivered: true, providerStatus: response.status };
 }
 
+function settledRelay(result, fallbackReason) {
+  if (result.status === "fulfilled") return result.value;
+  return {
+    delivered: false,
+    reason: fallbackReason,
+    error: text(result.reason?.message || result.reason, 500)
+  };
+}
+
+async function updateDocSafe(doc, data, id, stage) {
+  try {
+    await doc.update(data);
+  } catch (error) {
+    logger.error("Submission status update failed", {
+      id,
+      stage,
+      errorCode: error?.code || null,
+      errorMessage: error?.message || String(error)
+    });
+  }
+}
+
 export const submitForm = onRequest(
   {
     region: "us-central1",
@@ -508,16 +530,21 @@ export const submitForm = onRequest(
     }
 
     try {
-      const delivery = await sendEmail(clean, id);
-      const integration = await sendIntegration(clean, id);
+      const [deliveryResult, integrationResult] = await Promise.allSettled([
+        sendEmail(clean, id),
+        sendIntegration(clean, id)
+      ]);
+      const delivery = settledRelay(deliveryResult, "email_relay_error");
+      const integration = settledRelay(integrationResult, "integration_relay_error");
+
       if (stored) {
-        await doc.update({
+        await updateDocSafe(doc, {
           deliveryStatus: delivery.delivered ? "sent" : delivery.reason,
           delivery,
           integrationStatus: integration.delivered ? "sent" : integration.reason,
           integration,
           deliveredAt: delivery.delivered ? admin.firestore.FieldValue.serverTimestamp() : null
-        });
+        }, id, "relay_complete");
       }
 
       if (delivery.delivered) {
@@ -532,10 +559,10 @@ export const submitForm = onRequest(
         errorMessage: error?.message || String(error)
       });
       if (stored) {
-        await doc.update({
+        await updateDocSafe(doc, {
           deliveryStatus: "relay_error",
           relayError: text(error?.message, 500)
-        });
+        }, id, "relay_error");
       }
       json(res, 202, { ok: true, delivery: stored ? "stored" : "fallback", reason: "relay_error", id, stored });
     }

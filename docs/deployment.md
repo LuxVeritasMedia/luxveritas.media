@@ -86,7 +86,7 @@ gcloud run services update submitform \
   --set-env-vars FORM_TO_EMAIL=info@luxveritas.media,FORM_FROM_EMAIL="Lux Veritas <forms@luxveritas.media>"
 ```
 
-The browser form now times out after 12 seconds and the email provider call times out after 8 seconds; when inbox delivery is not configured or unavailable, the submission is still recorded when Firestore is available and the visitor sees the visible email-draft fallback.
+The browser form times out after 12 seconds, and server-side email/integration relays each time out after 6 seconds. Email and optional integration fanout run in parallel so a slow secondary relay does not hold the browser hostage. When inbox delivery is not configured or unavailable, the submission is still recorded when Firestore is available and the visitor sees a recorded-submission or email-draft fallback instead of a stuck submit state.
 
 Optional server-side integration fanout can forward validated, stored form submissions to an approved private tool such as a CRM, Google workflow, or automation router. Keep this server-side only. Do not place integration URLs in public markup or client JavaScript.
 

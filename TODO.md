@@ -18,6 +18,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add static email handoff to `info@luxveritas.media` for public forms.
 - [x] Add Firebase server-side form relay with validation, honeypot, rate limiting, and email fallback.
 - [x] Add submit timeouts and validation-error handling so form submits resolve without freezing.
+- [x] Parallelize server-side email and integration relay attempts so slow providers do not freeze public submits.
 - [x] Add client-side receipt IDs for form submissions and local report exports.
 - [x] Add path-aware form defaults so CTAs return cleaner role and inquiry data.
 - [x] Deploy public site from a clean `dist` artifact instead of the repo root.
@@ -25,13 +26,14 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Fix Firebase/Cloud Run public access so `submitForm` can be invoked by Hosting. Org policy blocks `allUsers`; Cloud Run Invoker IAM check is disabled on the `submitform` service instead.
 - [x] Enable Cloud Firestore and create default Firestore Native database in `nam5` for form submission storage.
 - [x] Confirm live valid form submissions return `stored:true` from `/api/submit`.
+- [x] Confirm live QA submission is stored when inbox provider is missing: `email_provider_not_configured`.
 - [ ] Configure www.luxveritas.media DNS and Hosting redirect.
 - [x] Add consented site-event relay for CTA, media, portal, and content-view reporting.
 - [x] Add protected activity report API for approved operator review.
 - [x] Add protected operator summaries for lead paths, roles, events, pages, and clicked destinations.
 - [x] Add protected form-delivery readiness reporting for stored-vs-inbox status.
 - [x] Add optional server-side integration fanout for validated form submissions.
-- [ ] Configure email provider runtime secrets for inbox notification after Firestore capture.
+- [ ] Configure and verify email provider runtime secret `RESEND_API_KEY` plus approved sender domain for inbox notification after Firestore capture.
 - [ ] Configure approved private integration endpoint secret after CRM/Google workflow target is chosen.
 
 ## P2 - Content Model

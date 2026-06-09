@@ -936,76 +936,77 @@ async function handleFormSubmit(event) {
   statusBox.textContent = "Sending your request...";
   statusBox.hidden = false;
 
-  const data = Object.fromEntries(new FormData(dialogForm).entries());
-  if (data.company_url) {
+  try {
+    const data = Object.fromEntries(new FormData(dialogForm).entries());
+    if (data.company_url) {
+      statusBox.hidden = true;
+      statusBox.textContent = "";
+      return;
+    }
+
+    const payload = {
+      ...data,
+      client_submission_id: submissionReceiptId(),
+      source: "luxveritas.media",
+      source_page: window.location.pathname,
+      access_path: accessPathMap[data.role_path]?.accessPath || "general",
+      portal_role_target: accessPathMap[data.role_path]?.portalRoleTarget || "visitor",
+      inquiry_key: inquiryKeyMap[data.inquiry_type] || "general",
+      formType: activeFormType,
+      tag: formCopy[activeFormType].tag,
+      timestamp: new Date().toISOString(),
+      delivery_status: "prepared"
+    };
+    const body = submissionBody(payload);
+    const href = mailtoHref(payload);
+
+    saveLocalSubmission(payload);
+    trackEvent("lead", { formType: activeFormType, receipt: payload.client_submission_id });
+
+    let result = null;
+    try {
+      result = await submitToServer(payload);
+      updateLocalSubmission(payload.client_submission_id, {
+        delivery_status: result.delivery || "accepted",
+        provider_submission_id: result.id || null,
+        delivered_at: result.delivery === "sent" ? new Date().toISOString() : null
+      });
+      if (result.delivery === "sent") {
+        showSubmissionSuccess(payload, "Sent. Thank you. Your message has reached Lux Veritas.");
+        return;
+      }
+      if (result.delivery === "stored") {
+        showSubmissionSuccess(payload, "Received. Thank you. Your request is recorded with Lux Veritas.");
+        return;
+      }
+    } catch (error) {
+      if ([400, 429].includes(error?.status)) {
+        showSubmissionError(error);
+        return;
+      }
+      result = {
+        delivery: "email_draft",
+        reason: error?.name === "AbortError" ? "submission_timeout" : "network_error"
+      };
+    }
+
+    const copied = await copySubmissionToClipboard(body);
+    updateLocalSubmission(payload.client_submission_id, {
+      delivery_status: result?.delivery || "email_draft",
+      provider_submission_id: result?.id || null,
+      fallback_at: new Date().toISOString()
+    });
+    showEmailFallback(payload, href, result, copied);
+  } catch (error) {
+    showSubmissionError({
+      message: error?.message || "submission_error",
+      status: null,
+      result: { errors: ["the page could not finish this request"] }
+    });
+  } finally {
     submitButton.disabled = false;
     submitButton.textContent = "Send to Lux Veritas";
-    statusBox.hidden = true;
-    statusBox.textContent = "";
-    return;
   }
-
-  const payload = {
-    ...data,
-    client_submission_id: submissionReceiptId(),
-    source: "luxveritas.media",
-    source_page: window.location.pathname,
-    access_path: accessPathMap[data.role_path]?.accessPath || "general",
-    portal_role_target: accessPathMap[data.role_path]?.portalRoleTarget || "visitor",
-    inquiry_key: inquiryKeyMap[data.inquiry_type] || "general",
-    formType: activeFormType,
-    tag: formCopy[activeFormType].tag,
-    timestamp: new Date().toISOString(),
-    delivery_status: "prepared"
-  };
-  const body = submissionBody(payload);
-  const href = mailtoHref(payload);
-
-  saveLocalSubmission(payload);
-  trackEvent("lead", { formType: activeFormType, receipt: payload.client_submission_id });
-
-  let result = null;
-  try {
-    result = await submitToServer(payload);
-    updateLocalSubmission(payload.client_submission_id, {
-      delivery_status: result.delivery || "accepted",
-      provider_submission_id: result.id || null,
-      delivered_at: result.delivery === "sent" ? new Date().toISOString() : null
-    });
-    if (result.delivery === "sent") {
-      showSubmissionSuccess(payload, "Sent. Thank you. Your message has reached Lux Veritas.");
-      submitButton.disabled = false;
-      submitButton.textContent = "Send to Lux Veritas";
-      return;
-    }
-    if (result.delivery === "stored") {
-      showSubmissionSuccess(payload, "Received. Thank you. Your request is recorded with Lux Veritas.");
-      submitButton.disabled = false;
-      submitButton.textContent = "Send to Lux Veritas";
-      return;
-    }
-  } catch (error) {
-    if ([400, 429].includes(error?.status)) {
-      showSubmissionError(error);
-      submitButton.disabled = false;
-      submitButton.textContent = "Send to Lux Veritas";
-      return;
-    }
-    result = {
-      delivery: "email_draft",
-      reason: error?.name === "AbortError" ? "submission_timeout" : "network_error"
-    };
-  }
-
-  const copied = await copySubmissionToClipboard(body);
-  updateLocalSubmission(payload.client_submission_id, {
-    delivery_status: result?.delivery || "email_draft",
-    provider_submission_id: result?.id || null,
-    fallback_at: new Date().toISOString()
-  });
-  showEmailFallback(payload, href, result, copied);
-  submitButton.disabled = false;
-  submitButton.textContent = "Send to Lux Veritas";
 }
 
 function handlePortalSignin(event) {
