@@ -386,6 +386,91 @@ function portal(path, title, cards = "") {
   });
 }
 
+const portalAccessCards = [
+  {
+    label: "Member",
+    title: "Members",
+    body: "Early access, private drops, listening rooms, presales, community moments, and selected merch.",
+    action: "Join Waitlist",
+    formType: "fan"
+  },
+  {
+    label: "Artist",
+    title: "Artists",
+    body: "Submission review, release consideration, artist-world fit, and future collaboration paths.",
+    action: "Submit for Review",
+    formType: "submission"
+  },
+  {
+    label: "Creator",
+    title: "Creators",
+    body: "Story, visual, Codex, worldbuilding, and participation review for approved collaborators.",
+    action: "Request Creator Access",
+    formType: "creator"
+  },
+  {
+    label: "Press",
+    title: "Press",
+    body: "Institutional contact, selected boilerplate, media requests, and approved kit access.",
+    action: "Send Press Inquiry",
+    formType: "press"
+  },
+  {
+    label: "Partner",
+    title: "Partners",
+    body: "Licensing, venues, studios, brand conversations, distribution, and strategic alignment.",
+    action: "Request Partner Access",
+    formType: "licensing"
+  },
+  {
+    label: "Investor",
+    title: "Strategic Access",
+    body: "Screened investor, studio, and strategic partner access for approved conversations.",
+    action: "Request Investor Access",
+    formType: "investor"
+  }
+];
+
+function portalAccessCard(card) {
+  return `<article data-portal-role="${card.label.toLowerCase()}">
+    <span>${card.label}</span>
+    <h3>${card.title}</h3>
+    <p>${card.body}</p>
+    <button class="button button-quiet" type="button" data-open-form="${card.formType}">${card.action}</button>
+  </article>`;
+}
+
+function portalIndex() {
+  return shell({
+    path: "/portal/index.html",
+    title: "Portal | Lux Veritas",
+    description: "Private access for approved members, collaborators, and selected guests.",
+    noindex: true,
+    body: `${pageHero("Private Access", "Private Access", "This portal is for approved artists, creators, partners, members, and operators.", `<div class="hero-actions"><a class="button button-primary" href="/auth/signin.html">Sign In</a><button class="button button-quiet" data-open-form="request">Request Access</button></div>`)}
+    <section class="section split-band"><div><p class="kicker">Access Model</p><h2>Screened by role. Opened by approval.</h2></div><div><p>Start with the door that matches your relationship to the work. Approved access will open only to the rooms and materials connected to that path.</p></div></section>
+    <section class="section portal-grid" aria-label="Portal access paths">
+      ${portalAccessCards.map(portalAccessCard).join("")}
+      <article data-portal-role="operator">
+        <span>Operator</span>
+        <h3>Pilot Reporting</h3>
+        <p>Approved operators can review protected capture, engagement, readiness, and routing signals.</p>
+        <a class="button button-quiet" href="/portal/reporting.html">Open Reporting</a>
+      </article>
+    </section>
+    <section class="section report-detail">
+      <div>
+        <p class="kicker">Current Entry</p>
+        <h3>Sign in if approved. Request access if not.</h3>
+        <ul class="report-list">
+          <li><strong>1</strong><span>Request the right path</span><small>Member, artist, creator, press, partner, investor, or general access.</small></li>
+          <li><strong>2</strong><span>Review and routing</span><small>Requests are screened before private access opens.</small></li>
+          <li><strong>3</strong><span>Approved room</span><small>The portal should only show what your approved role is allowed to see.</small></li>
+        </ul>
+      </div>
+    </section>`
+  });
+}
+
 function portalReport() {
   return shell({
     path: "/portal/reporting.html",
@@ -567,7 +652,7 @@ const pages = [
   `, "press", true, "Contact")],
   ["/spmvp.html", shell({ path: "/spmvp.html", title: "SPMVP | Lux Veritas", description: "A release room for a new Lux Veritas music drop.", body: `${pageHero("New Drop", "SPMVP", "Start with the drop. Follow the signal. Join for the deeper version.", `<div class="hero-actions"><button class="button button-primary" type="button" data-media-action="play">Listen</button><button class="button button-quiet" type="button" data-media-action="watch">Watch</button><button class="button button-quiet" type="button" data-open-form="fan">Join for early access</button></div>`)}${mediaPlayerShell("spmvp")}<section class="section split-band"><div><p class="kicker">Context</p><h2>Enter through the work.</h2></div><div><p>Listen, watch, and enter the Lux Veritas circle for early access, private drops, and future live rooms.</p></div></section>` })],
   ["/auth/signin.html", signInShell()],
-  ["/portal/index.html", shell({ path: "/portal/index.html", title: "Portal | Lux Veritas", description: "Private access for approved members, collaborators, and selected guests.", noindex: true, body: `${pageHero("Private Access", "Private Access", "This portal is for approved artists, creators, partners, members, and operators.", `<div class="hero-actions"><a class="button button-primary" href="/auth/signin.html">Sign In</a><button class="button button-quiet" data-open-form="request">Request Access</button></div>`)}<section class="section empty-state"><p class="kicker">Screened Entry</p><h2>Access is screened by role and invitation.</h2><p>Use the sign-in page if you already have access, or request access if you are entering through submissions, membership, press, partnerships, licensing, or investor inquiry.</p></section>` })],
+  ["/portal/index.html", portalIndex()],
   ["/portal/library.html", accessShell("/portal/library.html", "Creator", "Private creator materials are available by screened access.", "Creator tools and private materials are not published in the public layer.", "Request Creator Access", "Join", "creator")],
   ["/portal/releases.html", accessShell("/portal/releases.html", "Licensing", "Private release and licensing materials are available by request.", "Licensing conversations and private release materials are screened before access opens.", "Request Licensing Access", "Join", "licensing")],
   ["/portal/reporting.html", portalReport()],

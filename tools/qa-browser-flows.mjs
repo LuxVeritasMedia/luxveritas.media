@@ -213,6 +213,26 @@ async function mediaFlow(page, baseUrl, path) {
   }
 }
 
+async function portalAccessFlow(page, baseUrl) {
+  await page.goto(`${baseUrl}/portal/index.html`, { waitUntil: "domcontentloaded" });
+  const html = await page.content();
+  for (const role of ["member", "artist", "creator", "press", "partner", "investor", "operator"]) {
+    if (!html.includes(`data-portal-role="${role}"`)) {
+      issues.push(`/portal/index.html: missing portal role ${role}`);
+    }
+  }
+  if (!html.includes('name="robots" content="noindex, nofollow"')) {
+    issues.push("/portal/index.html: missing noindex metadata");
+  }
+  await page.click('[data-portal-role="creator"] [data-open-form="creator"]');
+  await page.waitForSelector("[data-dialog][open]", { timeout: 5000 });
+  const role = await page.locator('select[name="role_path"]').inputValue();
+  const inquiry = await page.locator('select[name="inquiry_type"]').inputValue();
+  if (role !== "Creator" || inquiry !== "Portal") {
+    issues.push(`/portal/index.html: creator role card did not open creator access defaults`);
+  }
+}
+
 async function operatorReportFlow(page, baseUrl) {
   await page.goto(`${baseUrl}/portal/reporting.html`, { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => {
@@ -358,6 +378,7 @@ try {
   for (const path of ["/music.html", "/spmvp.html"]) {
     await mediaFlow(page, baseUrl, path);
   }
+  await portalAccessFlow(page, baseUrl);
   await operatorReportFlow(page, baseUrl);
 } catch (error) {
   issues.push(`browser flow failed: ${error.message}`);

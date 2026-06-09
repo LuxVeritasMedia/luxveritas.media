@@ -5,10 +5,12 @@ const appJs = await readFile("app.js", "utf8");
 const functionJs = await readFile("functions/index.js", "utf8");
 const buildScript = await readFile("tools/build-static.mjs", "utf8");
 const doc = await readFile("docs/portal-access-model.md", "utf8");
+const portalHtml = await readFile("portal/index.html", "utf8");
 
 const portalRoles = ["visitor", "member", "artist", "creator", "press", "partner", "investor", "operator", "admin"];
 const publicRoleLabels = ["Member", "Artist", "Creator", "Press", "Partner", "Investor", "Event guest", "General"];
 const publicAccessKeys = ["member", "artist", "creator", "press", "partner", "investor", "event_guest", "general"];
+const portalSurfaceKeys = ["member", "artist", "creator", "press", "partner", "investor", "operator"];
 const inquiryLabels = ["Membership", "Submissions", "Events", "Press", "Partnership", "Licensing", "Investor", "Portal", "General"];
 const inquiryKeys = ["membership", "submissions", "events", "press", "partnership", "licensing", "investor", "portal", "general"];
 const payloadFields = [
@@ -42,6 +44,18 @@ for (const key of publicAccessKeys) {
   if (!appJs.includes(`accessPath: "${key}"`)) issues.push(`app.js: missing access path key ${key}`);
   if (!functionJs.includes(`access_path: "${key}"`)) issues.push(`functions/index.js: missing access path key ${key}`);
   if (!doc.includes(`\`${key}\``)) issues.push(`docs/portal-access-model.md: missing access path key ${key}`);
+}
+
+for (const key of portalSurfaceKeys) {
+  if (!portalHtml.includes(`data-portal-role="${key}"`)) {
+    issues.push(`portal/index.html: portal shell missing role card ${key}`);
+  }
+}
+
+for (const marker of ["portalAccessCards", "portalIndex", "Portal Surface Model"]) {
+  if (!buildScript.includes(marker) && !doc.includes(marker)) {
+    issues.push(`portal access model missing marker ${marker}`);
+  }
 }
 
 for (const label of inquiryLabels) {

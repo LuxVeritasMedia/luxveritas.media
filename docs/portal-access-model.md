@@ -65,6 +65,22 @@ Every public form request should carry:
 - `consent_sms`
 - `timestamp`
 
+## Portal Surface Model
+
+Phase 5 portal pages may show screened entry paths and protected pilot reporting only.
+
+The noindex portal shell may describe these public-facing access doors:
+
+- `member` - first access, private drops, events, community, presales, and selected merch.
+- `artist` - submission review, release consideration, and artist-world fit.
+- `creator` - story, visual, Codex, worldbuilding, and participation review.
+- `press` - institutional contact and approved kit access.
+- `partner` - licensing, venues, studios, brands, distribution, and strategic alignment.
+- `investor` - screened investor, studio, and strategic partner access.
+- `operator` - protected pilot reporting for approved operators only.
+
+The portal shell must not imply that account access, memberships, community rooms, payments, creator tools, partner rooms, or operator permissions are live until auth and role gates are implemented.
+
 ## Bridge Rule
 
 LuxVeritas.media may collect access requests and route approved requests later. It must not import internal LuxFlow app code, private prompts, secrets, dashboards, audit data, finance, rights operations, or unreleased slate material into the public website.

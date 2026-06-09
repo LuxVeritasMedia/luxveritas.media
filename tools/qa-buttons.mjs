@@ -169,6 +169,7 @@ for (const file of files) {
   const routeIntentChecks = {
     "join.html": 'data-open-form="fan"',
     "investor.html": 'data-open-form="investor"',
+    "portal/index.html": 'data-portal-role="member"',
     "portal/library.html": 'data-open-form="creator"',
     "portal/releases.html": 'data-open-form="licensing"',
     "submissions.html": 'data-open-form="submission"',
