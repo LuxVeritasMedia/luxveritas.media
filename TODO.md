@@ -25,6 +25,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Confirm live valid form submissions return `stored:true` from `/api/submit`.
 - [x] Add consented site-event relay for CTA, media, portal, and content-view reporting.
 - [x] Add protected activity report API for approved operator review.
+- [x] Add protected operator summaries for lead paths, roles, events, pages, and clicked destinations.
 - [ ] Configure email provider runtime secrets for inbox notification after Firestore capture.
 
 ## P2 - Content Model

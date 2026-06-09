@@ -47,6 +47,7 @@ The activity report function:
 
 - requires a Google/Firebase bearer token from an approved Lux Veritas account
 - returns protected counts and latest records from `form_submissions` and `site_events`
+- returns operator summaries for lead paths, role demand, event demand, page paths, and clicked destinations
 - is intended for the noindex private portal reporting page only
 
 Cloud Firestore is enabled for `lux-veritas-media`, with the default Firestore Native database in `nam5`.

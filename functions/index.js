@@ -157,6 +157,41 @@ function cleanDoc(snapshot) {
   };
 }
 
+function topCounts(items, pick, limit = 8) {
+  const counts = new Map();
+  for (const item of items) {
+    const raw = pick(item);
+    const value = text(raw, 160);
+    if (!value) continue;
+    counts.set(value, (counts.get(value) || 0) + 1);
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, limit)
+    .map(([label, count]) => ({ label, count }));
+}
+
+function summarizeActivity(submissionDocs, eventDocs) {
+  const submissionItems = submissionDocs.map((snapshot) => snapshot.data() || {});
+  const eventItems = eventDocs.map((snapshot) => snapshot.data() || {});
+  return {
+    submissions: {
+      byFormType: topCounts(submissionItems, (item) => item.formType || "request"),
+      byInquiryType: topCounts(submissionItems, (item) => item.inquiry_type),
+      byRolePath: topCounts(submissionItems, (item) => item.role_path),
+      byDeliveryStatus: topCounts(submissionItems, (item) => item.deliveryStatus),
+      bySourcePage: topCounts(submissionItems, (item) => item.source_page)
+    },
+    events: {
+      byEvent: topCounts(eventItems, (item) => item.event),
+      byPage: topCounts(eventItems, (item) => item.page),
+      bySurface: topCounts(eventItems, (item) => item.detail?.surface),
+      byDestination: topCounts(eventItems, (item) => item.detail?.destination),
+      mediaDemand: topCounts(eventItems.filter((item) => item.event === "media_action"), (item) => item.detail?.action || item.detail?.title)
+    }
+  };
+}
+
 async function collectionCount(collection) {
   const result = await collection.count().get();
   return result.data().count || 0;
@@ -392,11 +427,13 @@ export const reportActivity = onRequest(
     const events = db.collection("site_events");
 
     try {
-      const [submissionCount, eventCount, latestSubmissions, latestEvents] = await Promise.all([
+      const [submissionCount, eventCount, latestSubmissions, latestEvents, summarySubmissions, summaryEvents] = await Promise.all([
         collectionCount(submissions),
         collectionCount(events),
         submissions.orderBy("createdAt", "desc").limit(20).get(),
-        events.orderBy("createdAt", "desc").limit(20).get()
+        events.orderBy("createdAt", "desc").limit(20).get(),
+        submissions.orderBy("createdAt", "desc").limit(200).get(),
+        events.orderBy("createdAt", "desc").limit(300).get()
       ]);
 
       json(res, 200, {
@@ -410,7 +447,8 @@ export const reportActivity = onRequest(
         latest: {
           submissions: latestSubmissions.docs.map(cleanDoc),
           events: latestEvents.docs.map(cleanDoc)
-        }
+        },
+        summary: summarizeActivity(summarySubmissions.docs, summaryEvents.docs)
       });
     } catch (error) {
       logger.error("Activity report failed", {

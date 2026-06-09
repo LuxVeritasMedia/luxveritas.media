@@ -9,7 +9,7 @@ const requiredRoutes = [
   "/submissions.html",
   "/portal/reporting.html"
 ];
-const expectedAssetVersion = "20260608-cta-reporting";
+const expectedAssetVersion = "20260608-report-summaries";
 
 async function fetchWithTimeout(path, options = {}) {
   const controller = new AbortController();
@@ -125,12 +125,22 @@ try {
 }
 
 try {
+  const reportToken = process.env.LUX_REPORT_TOKEN;
   const { response, text } = await fetchWithTimeout("/api/report", {
     method: "GET",
-    headers: { Accept: "application/json" },
+    headers: reportToken
+      ? { Accept: "application/json", Authorization: `Bearer ${reportToken}` }
+      : { Accept: "application/json" },
     readBody: true
   });
-  if (response.status === 403 && /Forbidden/i.test(text)) {
+  if (reportToken && response.ok) {
+    const report = JSON.parse(text);
+    if (!report.summary?.submissions || !report.summary?.events) {
+      issues.push("/api/report: approved response is missing activity summaries");
+    }
+  } else if (reportToken) {
+    issues.push(`/api/report: approved token expected HTTP 200, received ${response.status}`);
+  } else if (response.status === 403 && /Forbidden/i.test(text)) {
     issues.push("/api/report: Cloud Run public access is blocked (HTTP 403).");
   } else if (response.status === 401) {
     // Missing token should reach the function and be rejected there.

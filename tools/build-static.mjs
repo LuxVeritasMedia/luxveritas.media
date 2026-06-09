@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260608-cta-reporting";
+const assetVersion = "20260608-report-summaries";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 
 const nav = [
@@ -404,6 +404,24 @@ function portalReport() {
       <div class="report-grid" aria-label="Private activity totals">
         <article><span>Submissions</span><strong data-private-count="submissions">-</strong><small>Stored public requests</small></article>
         <article><span>Events</span><strong data-private-count="events">-</strong><small>Consented site actions</small></article>
+      </div>
+      <div class="report-detail report-summary">
+        <div>
+          <p class="kicker">Lead Paths</p>
+          <ul class="report-list" data-private-summary="forms"><li>Load private activity to view form demand.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Role Demand</p>
+          <ul class="report-list" data-private-summary="roles"><li>Load private activity to view audience paths.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Engagement</p>
+          <ul class="report-list" data-private-summary="events"><li>Load private activity to view site actions.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Destinations</p>
+          <ul class="report-list" data-private-summary="destinations"><li>Load private activity to view clicked routes.</li></ul>
+        </div>
       </div>
       <div class="report-detail">
         <div>

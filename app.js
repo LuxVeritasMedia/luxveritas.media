@@ -473,6 +473,11 @@ function renderPrivateReport(report) {
     if (target) target.textContent = String(value);
   }
 
+  renderPrivateSummary(panel, "forms", report.summary?.submissions?.byFormType);
+  renderPrivateSummary(panel, "roles", report.summary?.submissions?.byRolePath);
+  renderPrivateSummary(panel, "events", report.summary?.events?.byEvent);
+  renderPrivateSummary(panel, "destinations", report.summary?.events?.byDestination || report.summary?.events?.byPage);
+
   const list = panel.querySelector("[data-private-report-list]");
   if (!list) return;
 
@@ -492,6 +497,18 @@ function renderPrivateReport(report) {
     const time = item.createdAt ? new Date(item.createdAt).toLocaleString() : "Recent";
     return `<li><strong>${escapeHtml(label)}</strong><span>${escapeHtml(detail)}</span><small>${escapeHtml(time)}</small></li>`;
   }).join("");
+}
+
+function renderPrivateSummary(panel, key, items = []) {
+  const list = panel.querySelector(`[data-private-summary="${key}"]`);
+  if (!list) return;
+  if (!items.length) {
+    list.innerHTML = "<li>No records found yet.</li>";
+    return;
+  }
+  list.innerHTML = items.map((item) => (
+    `<li><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.count)} signal${item.count === 1 ? "" : "s"}</span></li>`
+  )).join("");
 }
 
 async function loadPrivateReport() {

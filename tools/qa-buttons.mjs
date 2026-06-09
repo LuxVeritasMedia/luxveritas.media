@@ -65,6 +65,9 @@ for (const marker of ['trackInteraction("form_open"', 'trackInteraction("link_cl
     issues.push(`app.js: missing interaction reporting marker ${marker}`);
   }
 }
+if (!appJs.includes("renderPrivateSummary")) {
+  issues.push("app.js: missing private report summary rendering");
+}
 
 for (const file of files) {
   const rel = relative(root, file);
@@ -103,6 +106,14 @@ for (const file of files) {
     for (const action of ["play", "watch", "radio"]) {
       if (!html.includes(`data-media-action="${action}"`)) {
         issues.push(`${rel}: missing media action "${action}"`);
+      }
+    }
+  }
+
+  if (rel === "portal/reporting.html") {
+    for (const summary of ["forms", "roles", "events", "destinations"]) {
+      if (!html.includes(`data-private-summary="${summary}"`)) {
+        issues.push(`${rel}: missing private summary "${summary}"`);
       }
     }
   }

@@ -10,7 +10,7 @@
     <meta property="og:image" content="../../assets/luxveritas-threshold.png" />
     <title>Activity Report | Lux Veritas Portal</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070909'/%3E%3Cpath d='M18 48V16h6v27h18v5H18Zm21-32h7L34 48h-6l11-32Z' fill='%23c8a86a'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="../../styles.css?v=20260608-cta-reporting" />
+    <link rel="stylesheet" href="../../styles.css?v=20260608-report-summaries" />
   </head>
   <body data-page="/portal/reporting.html">
     <a class="skip-link" href="#main">Skip to content</a>
@@ -49,6 +49,24 @@
       <div class="report-grid" aria-label="Private activity totals">
         <article><span>Submissions</span><strong data-private-count="submissions">-</strong><small>Stored public requests</small></article>
         <article><span>Events</span><strong data-private-count="events">-</strong><small>Consented site actions</small></article>
+      </div>
+      <div class="report-detail report-summary">
+        <div>
+          <p class="kicker">Lead Paths</p>
+          <ul class="report-list" data-private-summary="forms"><li>Load private activity to view form demand.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Role Demand</p>
+          <ul class="report-list" data-private-summary="roles"><li>Load private activity to view audience paths.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Engagement</p>
+          <ul class="report-list" data-private-summary="events"><li>Load private activity to view site actions.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Destinations</p>
+          <ul class="report-list" data-private-summary="destinations"><li>Load private activity to view clicked routes.</li></ul>
+        </div>
       </div>
       <div class="report-detail">
         <div>
@@ -123,6 +141,6 @@
     <button class="button button-primary" type="submit" data-submit-form>Send to Lux Veritas</button>
   </form>
 </dialog>
-    <script src="../../app.js?v=20260608-cta-reporting"></script>
+    <script src="../../app.js?v=20260608-report-summaries"></script>
   </body>
 </html>
