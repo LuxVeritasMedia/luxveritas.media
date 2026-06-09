@@ -59,6 +59,21 @@ The private reporting page also loads `data/lux-launch-readiness.json` and the p
 
 The public media manifest uses `luxveritas.media_manifest.v1`. Each media item carries source status, source-required, source type, reporting key, queued CTA, and fallback form path so listen/watch/radio intent can be reported even before approved media URLs are attached.
 
+Attach approved release media only after the public audio, visual, and radio/stream URLs are cleared for launch:
+
+```bash
+LUX_MEDIA_SPMVP_RELEASE_URL="https://..." \
+LUX_MEDIA_VISUAL_WORLD_URL="https://..." \
+LUX_MEDIA_LUX_RADIO_URL="https://..." \
+node tools/set-approved-media-sources.mjs
+node tools/build-static.mjs
+node tools/prepare-hosting.mjs
+node tools/qa-media-contract.mjs
+node tools/qa-release-readiness.mjs
+```
+
+Use `LUX_MEDIA_DRY_RUN=1` to validate URLs without writing. Source URLs must be HTTPS. Poster URLs may be HTTPS or local `/assets/...` files.
+
 The public terms manifest uses `luxveritas.public_terms.v1`. Form submissions carry the active public terms, privacy, terms, and submission terms version IDs into Firestore and the private integration payload. These version IDs support capture auditability only; they do not replace final legal review.
 
 The notification replay action:

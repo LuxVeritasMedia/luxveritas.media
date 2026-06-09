@@ -162,6 +162,7 @@ for (const pattern of bannedTerms) {
 }
 
 const mediaManifestRaw = await readFile(join(root, "data/lux-media-manifest.json"), "utf8");
+const deploymentDoc = await readFile("docs/deployment.md", "utf8");
 const publicTermsRaw = await readFile(join(root, "data/lux-public-terms.json"), "utf8");
 for (const pattern of bannedTerms) {
   if (pattern.test(mediaManifestRaw)) issues.push(`data/lux-media-manifest.json: banned public term matched ${pattern}`);
@@ -200,6 +201,15 @@ try {
   }
 } catch (error) {
   issues.push(`data/lux-media-manifest.json: invalid JSON (${error.message})`);
+}
+
+for (const marker of [
+  "tools/set-approved-media-sources.mjs",
+  "LUX_MEDIA_SPMVP_RELEASE_URL",
+  "LUX_MEDIA_VISUAL_WORLD_URL",
+  "LUX_MEDIA_LUX_RADIO_URL"
+]) {
+  if (!deploymentDoc.includes(marker)) issues.push(`docs/deployment.md: missing approved media setup marker ${marker}`);
 }
 
 try {

@@ -34,6 +34,10 @@ function validHttps(value) {
   return typeof value === "string" && /^https:\/\//i.test(value);
 }
 
+function validPoster(value) {
+  return !value || validHttps(value) || String(value).startsWith("/assets/");
+}
+
 async function resolveHost(hostname) {
   try {
     const records = await resolve4(hostname);
@@ -95,7 +99,7 @@ const launchGates = Array.isArray(launchChecklist.gates) ? launchChecklist.gates
 const launchGateIds = new Set(launchGates.map((gate) => gate.id));
 const sourceRequiredTypes = new Set(["audio", "video", "stream"]);
 const missingSources = mediaItems.filter((item) => sourceRequiredTypes.has(item.sourceType) && !validHttps(item.sourceUrl));
-const invalidPosters = mediaItems.filter((item) => item.posterUrl && !validHttps(item.posterUrl));
+const invalidPosters = mediaItems.filter((item) => !validPoster(item.posterUrl));
 const missingMediaContract = mediaItems.filter((item) => !item.sourceStatus || !item.reportingKey || item.sourceRequired !== true);
 const sourceTypes = new Set(mediaItems.map((item) => item.sourceType));
 
@@ -112,7 +116,7 @@ add(sourceTypes.has("video"), "Media manifest includes a video/visual path.");
 add(sourceTypes.has("stream"), "Media manifest includes a radio/stream path.");
 add(missingMediaContract.length === 0, `Media manifest includes source-status/reporting contract fields. Missing: ${missingMediaContract.map((item) => item.id).join(", ") || "none"}`);
 add(missingSources.length === 0, `Approved media sources attached for all audio/video/radio items. Missing: ${missingSources.map((item) => item.id).join(", ") || "none"}`);
-add(invalidPosters.length === 0, `Media poster URLs are HTTPS when present. Invalid: ${invalidPosters.map((item) => item.id).join(", ") || "none"}`);
+add(invalidPosters.length === 0, `Media poster URLs are HTTPS or local assets when present. Invalid: ${invalidPosters.map((item) => item.id).join(", ") || "none"}`);
 
 add(!hasUncheckedAny(todo, [
   "Configure email provider runtime secrets",
