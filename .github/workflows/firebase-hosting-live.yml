@@ -59,7 +59,9 @@ jobs:
         run: node tools/qa-mobile-layout.mjs
 
       - name: Install browser QA dependencies
-        run: npm install --no-save playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install chromium
 
       - name: QA browser flows
         run: node tools/qa-browser-flows.mjs

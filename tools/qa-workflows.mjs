@@ -14,6 +14,7 @@ for (const marker of [
   "node tools/qa-integrations.mjs",
   "node tools/qa-mobile-layout.mjs",
   "npm install --no-save playwright",
+  "npx playwright install chromium",
   "node tools/qa-browser-flows.mjs",
   "node tools/qa-live-site.mjs"
 ]) {
