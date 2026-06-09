@@ -11,6 +11,9 @@ for (const marker of [
   "FORM_INTEGRATION_SIGNING_SECRET",
   "sendIntegration",
   "integrationPayload",
+  "integrationContractVersion",
+  "integrationEventType",
+  "integrationIdempotencyKey",
   "integrationStatus",
   "byIntegrationStatus",
   "integrationWebhook",
@@ -25,6 +28,11 @@ for (const marker of [
   "routing_queue",
   "routing_next_action",
   "routing: {",
+  "schemaVersion",
+  "idempotencyKey",
+  "replaySafe",
+  "X-Lux-Event",
+  "X-Lux-Idempotency-Key",
   "buildPilotFunnel",
   "https:\\/\\/"
 ]) {
@@ -65,6 +73,8 @@ for (const marker of [
 for (const marker of [
   "FORM_INTEGRATION_URL",
   "FORM_INTEGRATION_SIGNING_SECRET",
+  "luxveritas.form_submission.v1",
+  "idempotency",
   "replay_pending",
   "replay_integration",
   "Screened Intake Routing",

@@ -154,6 +154,29 @@ gcloud run services update reportactivity \
 
 `FORM_INTEGRATION_URL` must be HTTPS. `FORM_INTEGRATION_SIGNING_SECRET` is optional but recommended; when present, the function sends an `X-Lux-Signature` HMAC header with each submission payload.
 
+## Private Integration Contract
+
+The server-side private handoff sends a versioned, replay-safe JSON payload. Receivers should treat `idempotencyKey` as the stable duplicate-protection key across first delivery and replay attempts.
+
+Current contract:
+
+```text
+schemaVersion: luxveritas.form_submission.v1
+eventType: form.submission.received
+idempotencyKey: luxveritas:form_submission:<submissionId>
+replaySafe: true
+```
+
+The function also sends:
+
+```text
+X-Lux-Event: luxveritas.form_submission.v1
+X-Lux-Idempotency-Key: luxveritas:form_submission:<submissionId>
+X-Lux-Signature: <hmac-sha256 body signature when configured>
+```
+
+Payload fields include submission/receipt IDs, source page, form type, inquiry type/key, role/access path, screened routing, contact, consent, and message. Keep workflow URLs, credentials, and receiver-specific field mapping server-side.
+
 Form delivery QA:
 
 ```bash

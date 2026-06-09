@@ -39,6 +39,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add optional server-side integration fanout for validated form submissions.
 - [x] Add protected pending-inbox replay for stored submissions after email provider setup.
 - [x] Add protected pending-handoff replay for stored submissions after private workflow setup.
+- [x] Add versioned replay-safe private integration payload contract.
 - [x] Add screened intake routing fields for Phase 6 reporting and future server-side handoff.
 - [ ] Configure and verify email provider runtime secret `RESEND_API_KEY` plus approved sender domain for inbox notification after Firestore capture.
 - [ ] Configure approved private integration endpoint secret after CRM/Google workflow target is chosen.

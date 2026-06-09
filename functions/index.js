@@ -20,6 +20,8 @@ const maxReportsPerWindow = 20;
 const maxReplayPerWindow = 8;
 const emailTimeoutMs = 6000;
 const integrationTimeoutMs = 6000;
+const integrationContractVersion = "luxveritas.form_submission.v1";
+const integrationEventType = "form.submission.received";
 const rateBuckets = new Map();
 const pendingDeliveryStatuses = [
   "received",
@@ -91,6 +93,10 @@ function integrationUrl() {
 
 function integrationSigningSecret() {
   return process.env.FORM_INTEGRATION_SIGNING_SECRET || "";
+}
+
+function integrationIdempotencyKey(id) {
+  return `luxveritas:form_submission:${id}`;
 }
 
 const accessPathMap = {
@@ -578,12 +584,19 @@ async function sendEmail(payload, id) {
 }
 
 function integrationPayload(payload, id) {
+  const receiptId = payload.client_submission_id || id;
+  const sourcePage = payload.source_page || "";
+  const receivedAt = new Date().toISOString();
   return {
+    schemaVersion: integrationContractVersion,
+    eventType: integrationEventType,
+    idempotencyKey: integrationIdempotencyKey(id),
+    replaySafe: true,
     submissionId: id,
-    receiptId: payload.client_submission_id || id,
-    receivedAt: new Date().toISOString(),
+    receiptId,
+    receivedAt,
     source: payload.source || "luxveritas.media",
-    sourcePage: payload.source_page || "",
+    sourcePage,
     formType: payload.formType || "",
     tag: payload.tag || "",
     inquiryType: payload.inquiry_type || "",
@@ -607,6 +620,14 @@ function integrationPayload(payload, id) {
       email: Boolean(payload.consent_email),
       sms: Boolean(payload.consent_sms)
     },
+    submission: {
+      id,
+      receiptId,
+      sourcePage,
+      formType: payload.formType || "",
+      tag: payload.tag || "",
+      receivedAt
+    },
     message: payload.message
   };
 }
@@ -622,9 +643,12 @@ async function sendIntegration(payload, id) {
 
   const body = JSON.stringify(integrationPayload(payload, id));
   const secret = integrationSigningSecret();
+  const idempotencyKey = integrationIdempotencyKey(id);
   const headers = {
     "Content-Type": "application/json",
-    "User-Agent": "LuxVeritas-FormIntegration/1.0"
+    "User-Agent": "LuxVeritas-FormIntegration/1.0",
+    "X-Lux-Event": integrationContractVersion,
+    "X-Lux-Idempotency-Key": idempotencyKey
   };
   if (secret) {
     headers["X-Lux-Signature"] = crypto.createHmac("sha256", secret).update(body).digest("hex");
