@@ -58,6 +58,9 @@ jobs:
       - name: QA mobile layout
         run: node tools/qa-mobile-layout.mjs
 
+      - name: QA release readiness
+        run: node tools/qa-release-readiness.mjs
+
       - name: Install browser QA dependencies
         run: |
           npm install --no-save playwright

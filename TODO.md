@@ -25,6 +25,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Fix Firebase/Cloud Run public access so `submitForm` can be invoked by Hosting. Org policy blocks `allUsers`; Cloud Run Invoker IAM check is disabled on the `submitform` service instead.
 - [x] Enable Cloud Firestore and create default Firestore Native database in `nam5` for form submission storage.
 - [x] Confirm live valid form submissions return `stored:true` from `/api/submit`.
+- [ ] Configure www.luxveritas.media DNS and Hosting redirect.
 - [x] Add consented site-event relay for CTA, media, portal, and content-view reporting.
 - [x] Add protected activity report API for approved operator review.
 - [x] Add protected operator summaries for lead paths, roles, events, pages, and clicked destinations.
@@ -84,6 +85,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add workflow QA for hosting and Functions deploy gates.
 - [x] Add integration QA for server-side submission fanout and private reporting readiness.
 - [x] Add browser-flow QA for real CTA clicks, modal submits, submit reset, and media follow-up routing.
+- [x] Add release-readiness QA for launch blockers, media sources, DNS, legal, email, and integration status.
 
 ## P7 - Media MVP
 - [x] Add Lux Player MVP to Music and SPMVP with listen/watch/radio actions.
