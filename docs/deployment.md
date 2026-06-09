@@ -182,6 +182,7 @@ Form delivery QA:
 ```bash
 node tools/qa-form-delivery.mjs
 node tools/qa-integrations.mjs
+node tools/qa-integration-contract.mjs
 node tools/qa-release-readiness.mjs
 /Users/frederickparent/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node tools/qa-browser-flows.mjs
 LUX_FORM_WRITE=1 node tools/qa-form-delivery.mjs

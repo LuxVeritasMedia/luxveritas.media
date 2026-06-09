@@ -37,6 +37,9 @@ jobs:
       - name: QA integrations
         run: node tools/qa-integrations.mjs
 
+      - name: QA integration contract
+        run: node tools/qa-integration-contract.mjs
+
   deploy-functions:
     if: github.event_name == 'workflow_dispatch'
     needs: validate-functions

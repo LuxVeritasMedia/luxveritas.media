@@ -52,6 +52,9 @@ jobs:
       - name: QA integrations
         run: node tools/qa-integrations.mjs
 
+      - name: QA integration contract
+        run: node tools/qa-integration-contract.mjs
+
       - name: QA workflows
         run: node tools/qa-workflows.mjs
 

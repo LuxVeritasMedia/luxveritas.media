@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 
 const issues = [];
 const functionJs = await readFile("functions/index.js", "utf8");
+const contractJs = await readFile("functions/integration-contract.js", "utf8");
 const appJs = await readFile("app.js", "utf8");
 const buildScript = await readFile("tools/build-static.mjs", "utf8");
 const docs = await readFile("docs/deployment.md", "utf8");
@@ -11,9 +12,8 @@ for (const marker of [
   "FORM_INTEGRATION_SIGNING_SECRET",
   "sendIntegration",
   "integrationPayload",
-  "integrationContractVersion",
-  "integrationEventType",
-  "integrationIdempotencyKey",
+  "buildIntegrationPayload",
+  "integrationBaseHeaders",
   "integrationStatus",
   "byIntegrationStatus",
   "integrationWebhook",
@@ -27,16 +27,27 @@ for (const marker of [
   "pendingIntegrations",
   "routing_queue",
   "routing_next_action",
-  "routing: {",
-  "schemaVersion",
-  "idempotencyKey",
-  "replaySafe",
-  "X-Lux-Event",
-  "X-Lux-Idempotency-Key",
   "buildPilotFunnel",
   "https:\\/\\/"
 ]) {
   if (!functionJs.includes(marker)) issues.push(`functions/index.js: missing integration marker ${marker}`);
+}
+
+for (const marker of [
+  "buildIntegrationPayload",
+  "integrationBaseHeaders",
+  "integrationContractVersion",
+  "integrationEventType",
+  "integrationIdempotencyKey",
+  "luxveritas.form_submission.v1",
+  "form.submission.received",
+  "idempotencyKey",
+  "replaySafe",
+  "routing: {",
+  "X-Lux-Event",
+  "X-Lux-Idempotency-Key"
+]) {
+  if (!contractJs.includes(marker)) issues.push(`functions/integration-contract.js: missing contract marker ${marker}`);
 }
 
 for (const marker of [

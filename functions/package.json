@@ -7,7 +7,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "lint": "node --check index.js"
+    "lint": "node --check index.js && node --check integration-contract.js"
   },
   "dependencies": {
     "firebase-admin": "^12.7.0",
