@@ -52,7 +52,7 @@ The activity report function:
 
 Cloud Firestore is enabled for `lux-veritas-media`, with the default Firestore Native database in `nam5`.
 
-This Google Workspace organization blocks public `allUsers` IAM bindings, so the public form relay uses Cloud Run's Invoker IAM check disabled setting on the generated `submitform` service. The Functions workflow runs on relevant `functions/**`, `firebase.json`, or workflow-file pushes, can still be triggered manually, and reapplies that setting after function deploys:
+This Google Workspace organization blocks public `allUsers` IAM bindings, so the public form relay uses Cloud Run's Invoker IAM check disabled setting on the generated `submitform` service. The Functions workflow validates Functions code on relevant `functions/**`, `firebase.json`, or workflow-file pushes. Actual Functions deployment is intentionally manual through `workflow_dispatch` until the GitHub deploy service account has the same proven permissions as the local Firebase CLI path. The manual deploy job reapplies the Cloud Run setting after function deploys:
 
 ```bash
 gcloud run services update submitform --region us-central1 --project lux-veritas-media --no-invoker-iam-check
