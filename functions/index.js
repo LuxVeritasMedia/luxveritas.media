@@ -59,15 +59,45 @@ function text(value, max = 2000) {
   return String(value || "").trim().slice(0, max);
 }
 
+const accessPathMap = {
+  Member: { access_path: "member", portal_role_target: "member" },
+  Artist: { access_path: "artist", portal_role_target: "artist" },
+  Creator: { access_path: "creator", portal_role_target: "creator" },
+  Press: { access_path: "press", portal_role_target: "press" },
+  Partner: { access_path: "partner", portal_role_target: "partner" },
+  Investor: { access_path: "investor", portal_role_target: "investor" },
+  "Event guest": { access_path: "event_guest", portal_role_target: "member" },
+  General: { access_path: "general", portal_role_target: "visitor" }
+};
+
+const inquiryKeyMap = {
+  Membership: "membership",
+  Submissions: "submissions",
+  Events: "events",
+  Press: "press",
+  Partnership: "partnership",
+  Licensing: "licensing",
+  Investor: "investor",
+  Portal: "portal",
+  General: "general"
+};
+
 function validate(payload) {
   const errors = [];
+  const rolePath = text(payload.role_path, 80);
+  const inquiryType = text(payload.inquiry_type, 80);
+  const accessPath = accessPathMap[rolePath] || null;
+  const inquiryKey = inquiryKeyMap[inquiryType] || null;
   const clean = {
     client_submission_id: text(payload.client_submission_id, 80),
     name: text(payload.name, 140),
     email: text(payload.email, 180).toLowerCase(),
     phone: text(payload.phone, 80),
-    role_path: text(payload.role_path, 80),
-    inquiry_type: text(payload.inquiry_type, 80),
+    role_path: rolePath,
+    inquiry_type: inquiryType,
+    access_path: accessPath?.access_path || "",
+    portal_role_target: accessPath?.portal_role_target || "",
+    inquiry_key: inquiryKey || "",
     message: text(payload.message, 5000),
     formType: text(payload.formType, 80),
     tag: text(payload.tag, 120),
@@ -82,7 +112,9 @@ function validate(payload) {
   if (!clean.name) errors.push("name is required");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean.email)) errors.push("valid email is required");
   if (!clean.role_path) errors.push("role path is required");
+  else if (!accessPath) errors.push("recognized role path is required");
   if (!clean.inquiry_type) errors.push("inquiry type is required");
+  else if (!inquiryKey) errors.push("recognized inquiry type is required");
   if (!clean.message) errors.push("message is required");
 
   return { clean, errors };
@@ -152,6 +184,9 @@ function cleanDoc(snapshot) {
     formType: data.formType || null,
     inquiry_type: data.inquiry_type || null,
     role_path: data.role_path || null,
+    access_path: data.access_path || null,
+    portal_role_target: data.portal_role_target || null,
+    inquiry_key: data.inquiry_key || null,
     deliveryStatus: data.deliveryStatus || null,
     client_submission_id: data.client_submission_id || null,
     detail: data.detail || null
@@ -180,6 +215,8 @@ function summarizeActivity(submissionDocs, eventDocs) {
       byFormType: topCounts(submissionItems, (item) => item.formType || "request"),
       byInquiryType: topCounts(submissionItems, (item) => item.inquiry_type),
       byRolePath: topCounts(submissionItems, (item) => item.role_path),
+      byAccessPath: topCounts(submissionItems, (item) => item.access_path),
+      byPortalRoleTarget: topCounts(submissionItems, (item) => item.portal_role_target),
       byDeliveryStatus: topCounts(submissionItems, (item) => item.deliveryStatus),
       bySourcePage: topCounts(submissionItems, (item) => item.source_page)
     },
@@ -235,7 +272,10 @@ function emailText(payload, id) {
     `Email: ${payload.email}`,
     `Phone: ${payload.phone}`,
     `Role path: ${payload.role_path}`,
+    `Access path: ${payload.access_path}`,
+    `Portal role target: ${payload.portal_role_target}`,
     `Inquiry type: ${payload.inquiry_type}`,
+    `Inquiry key: ${payload.inquiry_key}`,
     `Form type: ${payload.formType}`,
     `Source page: ${payload.source_page}`,
     `Email consent: ${payload.consent_email ? "yes" : "no"}`,

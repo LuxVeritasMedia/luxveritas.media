@@ -57,8 +57,9 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 
 ## P5 - Portal Prep
 - [x] Keep Portal and Sign In as private-access shells.
-- [ ] Define approved role model before auth build: visitor, member, artist, creator, press, partner, investor, operator, admin.
-- [ ] Define access request interface before wiring any live services.
+- [x] Define approved role model before auth build: visitor, member, artist, creator, press, partner, investor, operator, admin.
+- [x] Define access request interface before wiring any live services.
+- [x] Add QA gate for public access paths, inquiry keys, and portal-role targets.
 - [ ] Keep LuxOS/LuxFlow bridge deferred until Phase 7.
 
 ## P6 - QA

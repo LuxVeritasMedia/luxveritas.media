@@ -73,6 +73,29 @@ const formCopy = {
   }
 };
 
+const accessPathMap = {
+  Member: { accessPath: "member", portalRoleTarget: "member" },
+  Artist: { accessPath: "artist", portalRoleTarget: "artist" },
+  Creator: { accessPath: "creator", portalRoleTarget: "creator" },
+  Press: { accessPath: "press", portalRoleTarget: "press" },
+  Partner: { accessPath: "partner", portalRoleTarget: "partner" },
+  Investor: { accessPath: "investor", portalRoleTarget: "investor" },
+  "Event guest": { accessPath: "event_guest", portalRoleTarget: "member" },
+  General: { accessPath: "general", portalRoleTarget: "visitor" }
+};
+
+const inquiryKeyMap = {
+  Membership: "membership",
+  Submissions: "submissions",
+  Events: "events",
+  Press: "press",
+  Partnership: "partnership",
+  Licensing: "licensing",
+  Investor: "investor",
+  Portal: "portal",
+  General: "general"
+};
+
 const header = document.querySelector("[data-header]");
 const nav = document.querySelector("[data-nav]");
 const navToggle = document.querySelector("[data-nav-toggle]");
@@ -146,7 +169,10 @@ function submissionBody(payload) {
     `Email: ${payload.email || ""}`,
     `Phone: ${payload.phone || ""}`,
     `Role path: ${payload.role_path || ""}`,
+    `Access path: ${payload.access_path || ""}`,
+    `Portal role target: ${payload.portal_role_target || ""}`,
     `Inquiry type: ${payload.inquiry_type || ""}`,
+    `Inquiry key: ${payload.inquiry_key || ""}`,
     `Form type: ${payload.formType || ""}`,
     `Source page: ${payload.source_page || ""}`,
     `Timestamp: ${payload.timestamp || ""}`,
@@ -780,6 +806,9 @@ async function handleFormSubmit(event) {
     client_submission_id: submissionReceiptId(),
     source: "luxveritas.media",
     source_page: window.location.pathname,
+    access_path: accessPathMap[data.role_path]?.accessPath || "general",
+    portal_role_target: accessPathMap[data.role_path]?.portalRoleTarget || "visitor",
+    inquiry_key: inquiryKeyMap[data.inquiry_type] || "general",
     formType: activeFormType,
     tag: formCopy[activeFormType].tag,
     timestamp: new Date().toISOString(),
