@@ -76,6 +76,11 @@ if (!appJs.includes("renderPrivateSummary")) {
 if (!appJs.includes("renderPrivateDelivery")) {
   issues.push("app.js: missing private delivery readiness rendering");
 }
+for (const marker of ["privateReportCache", "exportPrivateReport", "exportLocalReportCsv", "rowsToCsv"]) {
+  if (!appJs.includes(marker)) {
+    issues.push(`app.js: missing report export marker ${marker}`);
+  }
+}
 for (const marker of ["showMediaFollowup", "media_followup_offered"]) {
   if (!appJs.includes(marker)) {
     issues.push(`app.js: missing media follow-up marker ${marker}`);
@@ -142,6 +147,11 @@ for (const file of files) {
   if (rel === "portal/reporting.html") {
     if (!html.includes('data-private-delivery="status"')) {
       issues.push(`${rel}: missing private delivery readiness tile`);
+    }
+    for (const action of ["export-private-json", "export-private-csv", "export-csv"]) {
+      if (!html.includes(`data-report-action="${action}"`)) {
+        issues.push(`${rel}: missing report export action "${action}"`);
+      }
     }
     for (const summary of ["forms", "roles", "events", "destinations"]) {
       if (!html.includes(`data-private-summary="${summary}"`)) {

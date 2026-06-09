@@ -433,6 +433,10 @@ function portalReport() {
           <p class="kicker">Latest Protected Activity</p>
           <ul class="report-list" data-private-report-list><li>Load private activity to view records.</li></ul>
         </div>
+        <div class="report-actions">
+          <button class="button button-quiet" type="button" data-report-action="export-private-json">Export Private JSON</button>
+          <button class="button button-quiet" type="button" data-report-action="export-private-csv">Export Private CSV</button>
+        </div>
       </div>
       <div class="form-status" data-private-report-status hidden></div>
     </section>
@@ -456,6 +460,7 @@ function portalReport() {
         <div class="report-actions">
           <button class="button button-primary" type="button" data-report-action="refresh">Refresh Report</button>
           <button class="button button-quiet" type="button" data-report-action="export">Export JSON</button>
+          <button class="button button-quiet" type="button" data-report-action="export-csv">Export CSV</button>
           <button class="button button-quiet" type="button" data-report-action="clear">Clear Local Report</button>
         </div>
       </div>

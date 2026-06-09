@@ -111,6 +111,7 @@ const mediaManifestPath = "/data/lux-media-manifest.json";
 const submitTimeoutMs = 12000;
 let activeFormType = "request";
 let mediaManifestPromise = null;
+let privateReportCache = null;
 
 function readJson(key, fallback) {
   try {
@@ -550,6 +551,92 @@ function localReportData() {
   };
 }
 
+function downloadTextFile(filename, text, type) {
+  const blob = new Blob([text], { type });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function csvCell(value) {
+  const textValue = value == null ? "" : String(value);
+  return `"${textValue.replace(/"/g, '""')}"`;
+}
+
+function rowsToCsv(rows) {
+  if (!rows.length) return "";
+  const headers = Object.keys(rows[0]);
+  return [
+    headers.map(csvCell).join(","),
+    ...rows.map((row) => headers.map((header) => csvCell(row[header])).join(","))
+  ].join("\n");
+}
+
+function localReportRows(report) {
+  return [
+    ...report.events.map((item) => ({
+      source: "local",
+      type: item.event || "event",
+      timestamp: item.timestamp || "",
+      page: item.page || "",
+      label: item.detail?.label || item.detail?.surface || "",
+      detail: item.detail?.destination || item.detail?.formType || item.detail?.action || ""
+    })),
+    ...report.media.map((item) => ({
+      source: "local",
+      type: "media",
+      timestamp: item.timestamp || "",
+      page: item.page || "",
+      label: item.title || item.action || "",
+      detail: item.sourceType || item.status || ""
+    })),
+    ...report.submissions.map((item) => ({
+      source: "local",
+      type: "submission",
+      timestamp: item.timestamp || "",
+      page: item.source_page || "",
+      label: item.client_submission_id || item.formType || "",
+      detail: item.delivery_status || item.inquiry_type || item.role_path || ""
+    })),
+    ...report.portal.map((item) => ({
+      source: "local",
+      type: "portal",
+      timestamp: item.timestamp || "",
+      page: item.source_page || "",
+      label: item.email || "",
+      detail: item.status || ""
+    }))
+  ];
+}
+
+function privateReportRows(report) {
+  const submissions = report.latest?.submissions || [];
+  const events = report.latest?.events || [];
+  return [
+    ...submissions.map((item) => ({
+      source: "protected",
+      type: "submission",
+      timestamp: item.createdAt || "",
+      page: item.page || "",
+      label: item.client_submission_id || item.formType || item.inquiry_type || "",
+      detail: item.deliveryStatus || item.role_path || item.access_path || ""
+    })),
+    ...events.map((item) => ({
+      source: "protected",
+      type: item.event || "event",
+      timestamp: item.createdAt || "",
+      page: item.page || "",
+      label: item.detail?.label || item.detail?.surface || item.detail?.action || "",
+      detail: item.detail?.destination || item.detail?.formType || item.detail?.title || ""
+    }))
+  ];
+}
+
 function renderLocalReport() {
   const panel = document.querySelector("[data-local-report]");
   if (!panel) return;
@@ -591,6 +678,7 @@ function setPrivateReportStatus(message) {
 function renderPrivateReport(report) {
   const panel = document.querySelector("[data-private-report]");
   if (!panel) return;
+  privateReportCache = report;
 
   for (const [key, value] of Object.entries(report.counts || {})) {
     const target = panel.querySelector(`[data-private-count="${key}"]`);
@@ -676,16 +764,49 @@ async function loadPrivateReport() {
 
 function exportLocalReport() {
   const report = localReportData();
-  const blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `luxveritas-local-report-${new Date().toISOString().slice(0, 10)}.json`;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
+  downloadTextFile(
+    `luxveritas-local-report-${new Date().toISOString().slice(0, 10)}.json`,
+    JSON.stringify(report, null, 2),
+    "application/json"
+  );
   setReportStatus("Local report exported from this browser.");
+}
+
+function exportLocalReportCsv() {
+  const report = localReportData();
+  const csv = rowsToCsv(localReportRows(report));
+  downloadTextFile(
+    `luxveritas-local-report-${new Date().toISOString().slice(0, 10)}.csv`,
+    csv || "source,type,timestamp,page,label,detail\n",
+    "text/csv"
+  );
+  setReportStatus("Local CSV exported from this browser.");
+}
+
+function exportPrivateReport(format) {
+  if (!privateReportCache) {
+    setPrivateReportStatus("Load private activity before exporting.");
+    return;
+  }
+
+  const date = new Date().toISOString().slice(0, 10);
+  if (format === "csv") {
+    const csv = rowsToCsv(privateReportRows(privateReportCache));
+    downloadTextFile(
+      `luxveritas-private-report-${date}.csv`,
+      csv || "source,type,timestamp,page,label,detail\n",
+      "text/csv"
+    );
+    setPrivateReportStatus("Private CSV exported.");
+    return;
+  }
+
+  downloadTextFile(
+    `luxveritas-private-report-${date}.json`,
+    JSON.stringify(privateReportCache, null, 2),
+    "application/json"
+  );
+  setPrivateReportStatus("Private JSON exported.");
 }
 
 function clearLocalReport() {
@@ -707,6 +828,18 @@ function handleReportAction(action) {
   }
   if (action === "export") {
     exportLocalReport();
+    return;
+  }
+  if (action === "export-csv") {
+    exportLocalReportCsv();
+    return;
+  }
+  if (action === "export-private-json") {
+    exportPrivateReport("json");
+    return;
+  }
+  if (action === "export-private-csv") {
+    exportPrivateReport("csv");
     return;
   }
   if (action === "clear") {

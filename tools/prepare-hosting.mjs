@@ -1,4 +1,4 @@
-import { copyFile, cp, mkdir, rm } from "node:fs/promises";
+import { copyFile, cp, mkdir, rm, stat } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
 const dist = "dist";
@@ -57,5 +57,18 @@ await mkdir(join(dist, "assets"), { recursive: true });
 await cp("assets/luxveritas-threshold.png", join(dist, "assets/luxveritas-threshold.png"));
 await mkdir(join(dist, "data"), { recursive: true });
 await cp("data/lux-media-manifest.json", join(dist, "data/lux-media-manifest.json"));
+
+const requiredNonEmpty = [
+  ...files,
+  "assets/luxveritas-threshold.png",
+  "data/lux-media-manifest.json"
+];
+
+for (const file of requiredNonEmpty) {
+  const info = await stat(join(dist, file));
+  if (info.size === 0) {
+    throw new Error(`Prepared artifact contains an empty file: ${file}`);
+  }
+}
 
 console.log(`Prepared Firebase Hosting artifact with ${files.length + 2} files.`);
