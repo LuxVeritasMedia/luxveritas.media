@@ -86,6 +86,11 @@ for (const marker of ["showMediaFollowup", "media_followup_offered"]) {
     issues.push(`app.js: missing media follow-up marker ${marker}`);
   }
 }
+for (const marker of ["cta_id", "interactionId", "interactionIntent", "slugify"]) {
+  if (!appJs.includes(marker)) {
+    issues.push(`app.js: missing stable CTA reporting marker ${marker}`);
+  }
+}
 for (const marker of [
   'rolePath: "Member"',
   'inquiryType: "Membership"',
@@ -159,7 +164,7 @@ for (const file of files) {
         issues.push(`${rel}: missing report export action "${action}"`);
       }
     }
-    for (const summary of ["forms", "roles", "routing", "integrations", "events", "destinations"]) {
+    for (const summary of ["forms", "roles", "routing", "integrations", "events", "ctas", "destinations"]) {
       if (!html.includes(`data-private-summary="${summary}"`)) {
         issues.push(`${rel}: missing private summary "${summary}"`);
       }

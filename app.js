@@ -358,6 +358,15 @@ function elementLabel(element) {
   return label.replace(/\s+/g, " ").trim().slice(0, 120) || "Unlabeled interaction";
 }
 
+function slugify(value, fallback = "interaction") {
+  const slug = String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 80);
+  return slug || fallback;
+}
+
 function interactionSurface(element) {
   if (!element) return "site";
   if (element.closest(".site-header")) return "header";
@@ -371,10 +380,35 @@ function interactionSurface(element) {
   return element.closest("section")?.querySelector(".kicker")?.textContent?.trim()?.toLowerCase().replace(/\s+/g, "_").slice(0, 80) || "content";
 }
 
+function interactionIntent(element, detail = {}) {
+  if (detail.action) return detail.action;
+  if (detail.formType) return `form_${detail.formType}`;
+  if (detail.destination) return `link_${detail.destination}`;
+  if (element?.dataset.mediaAction) return `media_${element.dataset.mediaAction}`;
+  if (element?.dataset.openForm) return `form_${element.dataset.openForm}`;
+  if (element?.dataset.reportAction) return `report_${element.dataset.reportAction}`;
+  if (element?.dataset.track) return element.dataset.track;
+  const href = element?.getAttribute?.("href");
+  if (href) return `link_${href}`;
+  return "interaction";
+}
+
+function interactionId(type, element, detail = {}) {
+  const surface = interactionSurface(element);
+  const intent = interactionIntent(element, detail);
+  const label = elementLabel(element);
+  return `${slugify(surface, "site")}__${slugify(type, "event")}__${slugify(intent || label, "action")}`;
+}
+
 function trackInteraction(type, element, detail = {}) {
+  const label = elementLabel(element);
+  const surface = interactionSurface(element);
+  const intent = interactionIntent(element, detail);
   trackEvent(type, {
-    label: elementLabel(element),
-    surface: interactionSurface(element),
+    cta_id: interactionId(type, element, detail),
+    label,
+    surface,
+    intent,
     ...detail
   });
 }
@@ -386,6 +420,7 @@ function mediaEvents() {
 function writeMediaEvent(action, player, item = {}) {
   const payload = {
     action,
+    cta_id: `${slugify(player?.dataset.playerContext || document.body.dataset.page || "site", "media")}__media_action__${slugify(action, "action")}`,
     context: player?.dataset.playerContext || document.body.dataset.page || "site",
     media_id: item.mediaId || item.id || null,
     title: item.title || player?.querySelector("[data-media-title]")?.textContent?.trim() || "SPMVP",
@@ -739,6 +774,7 @@ function renderPrivateReport(report) {
   renderPrivateSummary(panel, "routing", report.summary?.submissions?.byRoutingQueue);
   renderPrivateSummary(panel, "integrations", report.summary?.submissions?.byIntegrationStatus);
   renderPrivateSummary(panel, "events", report.summary?.events?.byEvent);
+  renderPrivateSummary(panel, "ctas", report.summary?.events?.byCtaId || report.summary?.events?.byCtaLabel);
   renderPrivateSummary(panel, "destinations", report.summary?.events?.byDestination || report.summary?.events?.byPage);
 
   const list = panel.querySelector("[data-private-report-list]");

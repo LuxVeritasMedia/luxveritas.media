@@ -41,6 +41,7 @@ The site event function:
 
 - accepts only consented analytics events
 - stores CTA, media, portal, and content-view activity in Firestore `site_events`
+- receives stable `cta_id` values for buttons, links, media actions, form opens, and private report actions
 - hashes client network identity before storage
 - leaves browser-local reporting intact as a fallback
 
@@ -50,6 +51,7 @@ The activity report function:
 - returns protected counts and latest records from `form_submissions` and `site_events`
 - returns operator summaries for lead paths, role demand, event demand, page paths, and clicked destinations
 - returns screened routing summaries for intake queues and follow-up priority
+- returns CTA signal summaries so button, link, and media intent can be reviewed by stable action ID
 - reports pending inbox notification backlog for stored submissions
 - is intended for the noindex private portal reporting page only
 

@@ -44,6 +44,7 @@ const mockReport = {
         event: "media_action",
         page: "/music.html",
         detail: {
+          cta_id: "media__media_action__play",
           action: "play",
           title: "SPMVP",
           surface: "media_player",
@@ -74,6 +75,7 @@ const mockReport = {
     },
     events: {
       byEvent: [{ label: "media_action", count: 64 }],
+      byCtaId: [{ label: "media__media_action__play", count: 42 }],
       byDestination: [{ label: "/spmvp.html", count: 31 }],
       byPage: [{ label: "/music.html", count: 40 }]
     }
@@ -284,6 +286,7 @@ async function operatorReportFlow(page, baseUrl) {
   const routingSummary = await page.locator('[data-private-summary="routing"]').innerText();
   const integrationsSummary = await page.locator('[data-private-summary="integrations"]').innerText();
   const eventsSummary = await page.locator('[data-private-summary="events"]').innerText();
+  const ctasSummary = await page.locator('[data-private-summary="ctas"]').innerText();
   const destinationsSummary = await page.locator('[data-private-summary="destinations"]').innerText();
   const funnelSummary = await page.locator("[data-private-funnel]").innerText();
   const latest = await page.locator("[data-private-report-list]").innerText();
@@ -300,6 +303,7 @@ async function operatorReportFlow(page, baseUrl) {
     ["routing", routingSummary],
     ["integrations", integrationsSummary],
     ["events", eventsSummary],
+    ["ctas", ctasSummary],
     ["destinations", destinationsSummary],
     ["funnel", funnelSummary],
     ["latest", latest]
@@ -313,6 +317,9 @@ async function operatorReportFlow(page, baseUrl) {
   }
   if (!/Membership Waitlist/.test(routingSummary)) {
     issues.push(`/portal/reporting.html: screened routing summary missing mocked queue`);
+  }
+  if (!/media__media_action__play/.test(ctasSummary)) {
+    issues.push(`/portal/reporting.html: CTA signal summary missing mocked CTA ID`);
   }
   if (!/Server captures/.test(funnelSummary) || !/Media actions/.test(funnelSummary)) {
     issues.push(`/portal/reporting.html: pilot funnel missing capture/media values`);

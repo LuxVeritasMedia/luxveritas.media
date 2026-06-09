@@ -432,6 +432,8 @@ function summarizeActivity(submissionDocs, eventDocs) {
     },
     events: {
       byEvent: topCounts(eventItems, (item) => item.event),
+      byCtaId: topCounts(eventItems, (item) => item.detail?.cta_id),
+      byCtaLabel: topCounts(eventItems, (item) => item.detail?.label || item.detail?.title),
       byPage: topCounts(eventItems, (item) => item.page),
       bySurface: topCounts(eventItems, (item) => item.detail?.surface),
       byDestination: topCounts(eventItems, (item) => item.detail?.destination),

@@ -33,6 +33,7 @@ for (const marker of [
   "data-private-count=\"pendingNotifications\"",
   "data-private-funnel",
   "data-private-summary=\"routing\"",
+  "data-private-summary=\"ctas\"",
   "Integrations"
 ]) {
   if (!buildScript.includes(marker)) issues.push(`tools/build-static.mjs: missing private integration summary marker ${marker}`);
@@ -41,7 +42,10 @@ for (const marker of [
 for (const marker of [
   "byIntegrationStatus",
   "byRoutingQueue",
+  "byCtaId",
+  "byCtaLabel",
   "renderPrivateSummary(panel, \"routing\"",
+  "renderPrivateSummary(panel, \"ctas\"",
   "renderPrivateSummary(panel, \"integrations\"",
   "renderPrivateFunnel",
   "replayPendingNotifications"

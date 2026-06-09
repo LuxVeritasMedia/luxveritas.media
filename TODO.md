@@ -31,6 +31,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add consented site-event relay for CTA, media, portal, and content-view reporting.
 - [x] Add protected activity report API for approved operator review.
 - [x] Add protected operator summaries for lead paths, roles, events, pages, and clicked destinations.
+- [x] Add stable CTA IDs and protected CTA signal summaries for real button/link reporting.
 - [x] Add protected pilot funnel reporting for capture and engagement health.
 - [x] Add protected form-delivery readiness reporting for stored-vs-inbox status.
 - [x] Add private media-source readiness reporting for audio, video, and radio slots.
@@ -88,6 +89,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add private noindex local activity report for pilot testing.
 - [x] Add private noindex operator activity report for stored submissions and consented events.
 - [x] Add structured CTA, nav, link, and report-action tracking for consented engagement reporting.
+- [x] Add QA coverage for stable CTA IDs and protected CTA signal reporting.
 - [x] Add post-deploy live smoke QA for production routes, player shell, manifest, noindex, and `/api/submit` status.
 - [x] Add repeatable form-delivery QA for validation, stored capture, and inbox notification readiness.
 - [x] Add workflow QA for hosting and Functions deploy gates.
