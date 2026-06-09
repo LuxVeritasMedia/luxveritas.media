@@ -117,6 +117,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add integration QA for server-side submission fanout and private reporting readiness.
 - [x] Add browser-flow QA for real CTA clicks, modal submits, submit reset, and media follow-up routing.
 - [x] Add release-readiness QA for launch blockers, media sources, DNS, legal, email, and integration status.
+- [x] Add dedicated domain-readiness QA for apex and www DNS/HTTPS.
 - [x] Add deploy-artifact QA for private launch-gates reporting.
 
 ## P7 - Media MVP

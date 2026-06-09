@@ -224,6 +224,7 @@ node tools/qa-media-contract.mjs
 node tools/qa-live-form-matrix.mjs
 node tools/qa-live-event-matrix.mjs
 node tools/qa-release-readiness.mjs
+node tools/qa-domain-readiness.mjs
 /Users/frederickparent/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node tools/qa-browser-flows.mjs
 LUX_FORM_WRITE=1 node tools/qa-form-delivery.mjs
 LUX_FORM_MATRIX_WRITE=1 node tools/qa-live-form-matrix.mjs
@@ -232,7 +233,7 @@ LUX_FORM_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-form-delivery.mjs
 LUX_RELEASE_STRICT=1 node tools/qa-release-readiness.mjs
 ```
 
-The default form-delivery, live form matrix, and live event matrix commands check validation without creating records. `LUX_FORM_WRITE=1` creates one safe QA submission. `LUX_FORM_MATRIX_WRITE=1` creates one safe QA submission for each major public capture path and reports whether each was sent to inbox or stored only. `LUX_EVENT_MATRIX_WRITE=1` creates one safe QA event for each major reporting path: view, form open, link click, media action, accepted lead, rejected lead, and report action. Add `LUX_EXPECT_EMAIL_SENT=1` after email configuration to make the form commands fail unless inbox delivery is active. Browser-flow QA serves the built `dist` locally, mocks form delivery, and verifies real CTA clicks, modal submits, submit reset behavior, and media-player follow-up routing. Release-readiness QA reports launch blockers in normal mode and fails in `LUX_RELEASE_STRICT=1` mode.
+The default form-delivery, live form matrix, and live event matrix commands check validation without creating records. `LUX_FORM_WRITE=1` creates one safe QA submission. `LUX_FORM_MATRIX_WRITE=1` creates one safe QA submission for each major public capture path and reports whether each was sent to inbox or stored only. `LUX_EVENT_MATRIX_WRITE=1` creates one safe QA event for each major reporting path: view, form open, link click, media action, accepted lead, rejected lead, and report action. Add `LUX_EXPECT_EMAIL_SENT=1` after email configuration to make the form commands fail unless inbox delivery is active. Browser-flow QA serves the built `dist` locally, mocks form delivery, and verifies real CTA clicks, modal submits, submit reset behavior, and media-player follow-up routing. Release-readiness QA reports launch blockers in normal mode and fails in `LUX_RELEASE_STRICT=1` mode. Domain-readiness QA reports apex and `www` DNS/HTTPS blockers in normal mode and fails in `LUX_DOMAIN_STRICT=1` mode.
 
 ## Future Production Build
 
@@ -253,7 +254,7 @@ Do not commit:
 
 - Connect GitHub repo to Firebase App Hosting.
 - Configure custom domain `luxveritas.media`.
-- Configure `www.luxveritas.media` in Firebase Hosting and DNS. Current root apex uses Firebase Hosting IP `199.36.158.100`; `www` should either be added as a second Firebase Hosting custom domain or pointed/redirected to the apex through the DNS provider. Verify with `dig +short www.luxveritas.media` and `curl -I https://www.luxveritas.media`.
+- Configure `www.luxveritas.media` in Firebase Hosting and DNS. Current root apex uses Firebase Hosting IP `199.36.158.100`; `www` currently has no public A or CNAME record. Add `www.luxveritas.media` as a second Firebase Hosting custom domain, then add the DNS record Firebase gives for `www`. After SSL is active, redirect `www` to the apex if Firebase offers that option. Verify with `node tools/qa-domain-readiness.mjs`, `dig +short www.luxveritas.media`, and `curl -I https://www.luxveritas.media`.
 - Add SPF/DKIM for sending domain.
 - Create GoHighLevel forms, workflows, tags, and pipelines.
 - Apply Supabase migrations.
