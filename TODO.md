@@ -17,6 +17,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Rewrite Events as request-access invitation layer.
 - [x] Add static email handoff to `info@luxveritas.media` for public forms.
 - [x] Add Firebase server-side form relay with validation, honeypot, rate limiting, and email fallback.
+- [x] Add submit timeouts and validation-error handling so form submits resolve without freezing.
 - [x] Add client-side receipt IDs for form submissions and local report exports.
 - [x] Add path-aware form defaults so CTAs return cleaner role and inquiry data.
 - [x] Deploy public site from a clean `dist` artifact instead of the repo root.
@@ -66,6 +67,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [ ] Check mobile layout.
 - [x] Check primary CTAs in generated source.
 - [x] Check form modal open/action/button behavior locally.
+- [x] Add QA coverage for bounded form-submit behavior.
 - [x] Replace automatic `mailto:` jump with visible email-draft fallback to prevent submit-page freeze.
 - [x] Remove `mailto:` form actions from generated public pages and add QA coverage to prevent regressions.
 - [x] Add deploy-artifact button QA for dead public buttons.

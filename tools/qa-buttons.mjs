@@ -60,6 +60,11 @@ if (!appJs.includes("Received. Thank you. Your request is recorded with Lux Veri
 if (!appJs.includes('const submitEndpoint = "/api/submit";')) {
   issues.push("app.js: missing server-side form endpoint");
 }
+for (const marker of ["submitTimeoutMs", "submission_timeout", "showSubmissionError"]) {
+  if (!appJs.includes(marker)) {
+    issues.push(`app.js: missing bounded form-submit marker ${marker}`);
+  }
+}
 for (const marker of ['trackInteraction("form_open"', 'trackInteraction("link_click"', 'trackInteraction("report_action"']) {
   if (!appJs.includes(marker)) {
     issues.push(`app.js: missing interaction reporting marker ${marker}`);

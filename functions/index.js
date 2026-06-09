@@ -15,6 +15,7 @@ const rateWindowMs = 10 * 60 * 1000;
 const maxRequestsPerWindow = 5;
 const maxEventsPerWindow = 40;
 const maxReportsPerWindow = 20;
+const emailTimeoutMs = 8000;
 const rateBuckets = new Map();
 
 function getDb() {
@@ -233,20 +234,39 @@ async function sendEmail(payload, id) {
     return { delivered: false, reason: "email_provider_not_configured" };
   }
 
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      from,
-      to: [to],
-      reply_to: payload.email,
-      subject: subjectFor(payload),
-      text: emailText(payload, id)
-    })
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), emailTimeoutMs);
+  let response;
+
+  try {
+    response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      signal: controller.signal,
+      body: JSON.stringify({
+        from,
+        to: [to],
+        reply_to: payload.email,
+        subject: subjectFor(payload),
+        text: emailText(payload, id)
+      })
+    });
+  } catch (error) {
+    logger.error("Resend delivery request failed", {
+      errorName: error?.name || null,
+      errorMessage: error?.message || String(error),
+      id
+    });
+    return {
+      delivered: false,
+      reason: error?.name === "AbortError" ? "email_provider_timeout" : "email_provider_request_failed"
+    };
+  } finally {
+    clearTimeout(timeout);
+  }
 
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {

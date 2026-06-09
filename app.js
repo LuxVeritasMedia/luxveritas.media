@@ -85,6 +85,7 @@ const submitEndpoint = "/api/submit";
 const eventEndpoint = "/api/event";
 const reportEndpoint = "/api/report";
 const mediaManifestPath = "/data/lux-media-manifest.json";
+const submitTimeoutMs = 12000;
 let activeFormType = "request";
 let mediaManifestPromise = null;
 
@@ -182,18 +183,24 @@ async function copySubmissionToClipboard(text) {
 }
 
 async function submitToServer(payload) {
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), submitTimeoutMs);
   const response = await fetch(submitEndpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json"
     },
+    signal: controller.signal,
     body: JSON.stringify(payload)
-  });
+  }).finally(() => window.clearTimeout(timeout));
 
   const result = await response.json().catch(() => ({}));
   if (!response.ok && response.status !== 202) {
-    throw new Error(result.error || "submission_failed");
+    const error = new Error(result.error || "submission_failed");
+    error.status = response.status;
+    error.result = result;
+    throw error;
   }
   return result;
 }
@@ -216,6 +223,9 @@ function sendEventToServer(payload) {
 }
 
 function fallbackIntro(result) {
+  if (result?.reason === "submission_timeout") {
+    return "The site could not confirm delivery quickly enough. Send the drafted email below to complete your submission.";
+  }
   return "The direct handoff is not available from this browser right now. Send the drafted email below to complete your submission.";
 }
 
@@ -238,6 +248,18 @@ function showEmailFallback(payload, href, result, copied) {
     receipt: payload.client_submission_id,
     delivery: result?.delivery || "email_draft",
     copied
+  });
+}
+
+function showSubmissionError(error) {
+  const details = Array.isArray(error?.result?.errors) && error.result.errors.length
+    ? ` ${error.result.errors.join("; ")}.`
+    : "";
+  statusBox.textContent = `Please check the form and try again.${details}`;
+  statusBox.hidden = false;
+  trackEvent("lead_rejected", {
+    reason: error?.message || "validation_failed",
+    status: error?.status || null
   });
 }
 
@@ -775,8 +797,17 @@ async function handleFormSubmit(event) {
       submitButton.textContent = "Send to Lux Veritas";
       return;
     }
-  } catch {
-    result = null;
+  } catch (error) {
+    if (error?.status === 400) {
+      showSubmissionError(error);
+      submitButton.disabled = false;
+      submitButton.textContent = "Send to Lux Veritas";
+      return;
+    }
+    result = {
+      delivery: "email_draft",
+      reason: error?.name === "AbortError" ? "submission_timeout" : "network_error"
+    };
   }
 
   const copied = await copySubmissionToClipboard(body);
