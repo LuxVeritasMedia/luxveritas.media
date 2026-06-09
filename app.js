@@ -279,6 +279,16 @@ function showEmailFallback(payload, href, result, copied) {
 }
 
 function showSubmissionError(error) {
+  if (error?.status === 429 || error?.message === "rate_limited") {
+    statusBox.textContent = "Too many attempts from this browser. Please wait a few minutes and try again.";
+    statusBox.hidden = false;
+    trackEvent("lead_rejected", {
+      reason: "rate_limited",
+      status: 429
+    });
+    return;
+  }
+
   const details = Array.isArray(error?.result?.errors) && error.result.errors.length
     ? ` ${error.result.errors.join("; ")}.`
     : "";
@@ -975,7 +985,7 @@ async function handleFormSubmit(event) {
       return;
     }
   } catch (error) {
-    if (error?.status === 400) {
+    if ([400, 429].includes(error?.status)) {
       showSubmissionError(error);
       submitButton.disabled = false;
       submitButton.textContent = "Send to Lux Veritas";
