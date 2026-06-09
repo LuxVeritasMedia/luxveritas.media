@@ -103,11 +103,12 @@ Form delivery QA:
 ```bash
 node tools/qa-form-delivery.mjs
 node tools/qa-integrations.mjs
+/Users/frederickparent/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node tools/qa-browser-flows.mjs
 LUX_FORM_WRITE=1 node tools/qa-form-delivery.mjs
 LUX_FORM_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-form-delivery.mjs
 ```
 
-The default command checks validation without creating a submission. `LUX_FORM_WRITE=1` creates one safe QA submission and reports whether it was sent to inbox or stored only. Add `LUX_EXPECT_EMAIL_SENT=1` after email configuration to make the command fail unless inbox delivery is active.
+The default form-delivery command checks validation without creating a submission. `LUX_FORM_WRITE=1` creates one safe QA submission and reports whether it was sent to inbox or stored only. Add `LUX_EXPECT_EMAIL_SENT=1` after email configuration to make the command fail unless inbox delivery is active. Browser-flow QA serves the built `dist` locally, mocks form delivery, and verifies real CTA clicks, modal submits, submit reset behavior, and media-player follow-up routing.
 
 ## Future Production Build
 

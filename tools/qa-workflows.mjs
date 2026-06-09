@@ -7,12 +7,14 @@ const functions = await readFile(".github/workflows/firebase-functions-manual.ym
 for (const marker of [
   "concurrency:",
   "group: firebase-hosting-live",
-  "timeout-minutes: 15",
+  "timeout-minutes: 20",
   "node tools/qa-buttons.mjs",
   "node tools/qa-public-site.mjs",
   "node tools/qa-access-model.mjs",
   "node tools/qa-integrations.mjs",
   "node tools/qa-mobile-layout.mjs",
+  "npm install --no-save playwright",
+  "node tools/qa-browser-flows.mjs",
   "node tools/qa-live-site.mjs"
 ]) {
   if (!hosting.includes(marker)) issues.push(`firebase-hosting-live.yml: missing ${marker}`);
