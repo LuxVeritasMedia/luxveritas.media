@@ -109,10 +109,12 @@ const eventEndpoint = "/api/event";
 const reportEndpoint = "/api/report";
 const mediaManifestPath = "/data/lux-media-manifest.json";
 const launchChecklistPath = "/data/lux-launch-readiness.json";
+const legalReviewPath = "/data/lux-legal-review.json";
 const submitTimeoutMs = 12000;
 let activeFormType = "request";
 let mediaManifestPromise = null;
 let launchChecklistPromise = null;
+let legalReviewPromise = null;
 let privateReportCache = null;
 
 function readJson(key, fallback) {
@@ -586,6 +588,21 @@ async function loadLaunchChecklist() {
   return launchChecklistPromise;
 }
 
+async function loadLegalReview() {
+  if (!legalReviewPromise) {
+    legalReviewPromise = fetch(legalReviewPath, { headers: { Accept: "application/json" } })
+      .then((response) => {
+        if (!response.ok) throw new Error("legal_review_unavailable");
+        return response.json();
+      })
+      .then((manifest) => {
+        if (!Array.isArray(manifest.items)) throw new Error("legal_review_invalid");
+        return manifest;
+      });
+  }
+  return legalReviewPromise;
+}
+
 function renderMediaPlayer(player, manifest) {
   const queue = player?.querySelector(".media-queue");
   const items = itemsForPlayer(manifest, player);
@@ -652,7 +669,21 @@ function launchGateStatusLabel(status) {
   return "Review";
 }
 
-function evaluateLaunchGate(gate, manifest, report) {
+function legalReviewItem(legalReview, id) {
+  return Array.isArray(legalReview?.items)
+    ? legalReview.items.find((item) => item.id === id)
+    : null;
+}
+
+function legalGateDetail(item) {
+  if (!item) return "Legal review status is unavailable.";
+  if (item.status === "approved") {
+    return `Approved by ${item.reviewedBy || "reviewer"}${item.reviewedAt ? ` on ${new Date(item.reviewedAt).toLocaleDateString()}` : ""}.`;
+  }
+  return item.notes || "Legal review is still required before full public launch.";
+}
+
+function evaluateLaunchGate(gate, manifest, report, legalReview) {
   const items = Array.isArray(manifest?.items) ? manifest.items : [];
   const missingMedia = items.filter((item) => ["audio", "video", "stream"].includes(item.sourceType) && !/^https:\/\//i.test(item.sourceUrl || ""));
   const delivery = report?.delivery || {};
@@ -694,6 +725,17 @@ function evaluateLaunchGate(gate, manifest, report) {
     };
   }
 
+  if (gate.id === "privacy_review" || gate.id === "terms_review") {
+    const legalId = gate.id === "privacy_review" ? "privacy" : "terms";
+    const item = legalReviewItem(legalReview, legalId);
+    const ready = item?.status === "approved" && item.reviewedAt && item.reviewedBy;
+    return {
+      ...gate,
+      status: ready ? "ready" : "blocked",
+      detail: legalGateDetail(item)
+    };
+  }
+
   return {
     ...gate,
     detail: gate.nextAction || "Review before launch."
@@ -706,11 +748,12 @@ async function renderLaunchReadinessReport(report = privateReportCache) {
   if (!summary && !list) return;
 
   try {
-    const [checklist, manifest] = await Promise.all([
+    const [checklist, manifest, legalReview] = await Promise.all([
       loadLaunchChecklist(),
-      loadMediaManifest().catch(() => ({ items: [] }))
+      loadMediaManifest().catch(() => ({ items: [] })),
+      loadLegalReview().catch(() => ({ items: [] }))
     ]);
-    const gates = checklist.gates.map((gate) => evaluateLaunchGate(gate, manifest, report));
+    const gates = checklist.gates.map((gate) => evaluateLaunchGate(gate, manifest, report, legalReview));
     const required = gates.filter((gate) => gate.requiredForPublicLaunch);
     const ready = required.filter((gate) => gate.status === "ready");
     const blocked = required.filter((gate) => gate.status !== "ready");

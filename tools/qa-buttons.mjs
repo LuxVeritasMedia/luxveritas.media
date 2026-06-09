@@ -101,7 +101,7 @@ for (const marker of ["source_status", "source_ready", "source_required", "repor
     issues.push(`app.js: missing media reporting marker ${marker}`);
   }
 }
-for (const marker of ["launchChecklistPath", "renderLaunchReadinessReport", "evaluateLaunchGate", "launchGateStatusLabel"]) {
+for (const marker of ["launchChecklistPath", "legalReviewPath", "loadLegalReview", "renderLaunchReadinessReport", "evaluateLaunchGate", "launchGateStatusLabel"]) {
   if (!appJs.includes(marker)) {
     issues.push(`app.js: missing launch readiness marker ${marker}`);
   }

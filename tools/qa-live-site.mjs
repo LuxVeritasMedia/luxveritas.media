@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+
 const baseUrl = (process.env.LUX_LIVE_URL || "https://luxveritas.media").replace(/\/$/, "");
 const issues = [];
 const warnings = [];
@@ -9,7 +11,12 @@ const requiredRoutes = [
   "/submissions.html",
   "/portal/reporting.html"
 ];
-const expectedAssetVersion = "20260609-media-followup";
+const buildScript = await readFile("tools/build-static.mjs", "utf8");
+const expectedAssetVersion = buildScript.match(/const assetVersion = "([^"]+)"/)?.[1];
+
+if (!expectedAssetVersion) {
+  issues.push("tools/build-static.mjs: missing assetVersion");
+}
 
 async function fetchWithTimeout(path, options = {}) {
   const controller = new AbortController();

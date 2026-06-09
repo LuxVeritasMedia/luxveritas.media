@@ -41,6 +41,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add protected inbox outcome reporting by delivery status.
 - [x] Add private media-source readiness reporting for audio, video, and radio slots.
 - [x] Add private launch-gates reporting for release, capture, legal, and domain blockers.
+- [x] Wire private launch-gates reporting to the legal review manifest.
 - [x] Add optional server-side integration fanout for validated form submissions.
 - [x] Mount private handoff URL, signing secret, and target through Firebase Functions Secret Manager.
 - [x] Add local helper for safely setting private handoff secrets.
