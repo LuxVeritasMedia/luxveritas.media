@@ -1,8 +1,12 @@
 import admin from "firebase-admin";
 import crypto from "node:crypto";
+import { defineSecret } from "firebase-functions/params";
 import { onRequest } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions";
 
+const resendApiKey = defineSecret("RESEND_API_KEY");
+const defaultToEmail = "info@luxveritas.media";
+const defaultFromEmail = "Lux Veritas <forms@luxveritas.media>";
 const allowedOrigins = new Set([
   "https://luxveritas.media",
   "https://www.luxveritas.media",
@@ -57,6 +61,14 @@ function isRateLimited(req, maxRequests = maxRequestsPerWindow, namespace = "def
 
 function text(value, max = 2000) {
   return String(value || "").trim().slice(0, max);
+}
+
+function emailProviderKey() {
+  try {
+    return resendApiKey.value() || process.env.RESEND_API_KEY || "";
+  } catch {
+    return process.env.RESEND_API_KEY || "";
+  }
 }
 
 const accessPathMap = {
@@ -231,9 +243,9 @@ function summarizeActivity(submissionDocs, eventDocs) {
 }
 
 function deliveryReadiness() {
-  const to = text(process.env.FORM_TO_EMAIL || "info@luxveritas.media", 240);
-  const from = text(process.env.FORM_FROM_EMAIL, 240);
-  const hasEmailProvider = Boolean(process.env.RESEND_API_KEY);
+  const to = text(process.env.FORM_TO_EMAIL || defaultToEmail, 240);
+  const from = text(process.env.FORM_FROM_EMAIL || defaultFromEmail, 240);
+  const hasEmailProvider = Boolean(emailProviderKey());
   const ready = Boolean(hasEmailProvider && from && to);
 
   return {
@@ -287,9 +299,9 @@ function emailText(payload, id) {
 }
 
 async function sendEmail(payload, id) {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.FORM_FROM_EMAIL;
-  const to = process.env.FORM_TO_EMAIL || "info@luxveritas.media";
+  const apiKey = emailProviderKey();
+  const from = process.env.FORM_FROM_EMAIL || defaultFromEmail;
+  const to = process.env.FORM_TO_EMAIL || defaultToEmail;
 
   if (!apiKey || !from) {
     return { delivered: false, reason: "email_provider_not_configured" };
@@ -342,6 +354,7 @@ export const submitForm = onRequest(
   {
     region: "us-central1",
     cors: false,
+    secrets: [resendApiKey],
     maxInstances: 10
   },
   async (req, res) => {
@@ -477,6 +490,7 @@ export const reportActivity = onRequest(
   {
     region: "us-central1",
     cors: false,
+    secrets: [resendApiKey],
     maxInstances: 5
   },
   async (req, res) => {
