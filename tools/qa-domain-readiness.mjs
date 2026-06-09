@@ -96,18 +96,18 @@ console.log(`Domain readiness for ${apexHost}`);
 for (const message of passed) console.log(`PASS ${message}`);
 
 if (warnings.length) {
-  console.warn("Domain readiness warnings:");
-  for (const warning of warnings) console.warn(`WARN ${warning}`);
+  console.log("Domain readiness warnings:");
+  for (const warning of warnings) console.log(`WARN ${warning}`);
 }
 
 if (issues.length) {
-  console.warn("Domain readiness blockers:");
-  for (const item of issues) console.warn(`BLOCK ${item}`);
-  console.warn("");
-  console.warn("Expected Firebase Hosting DNS:");
-  console.warn(`- A ${apexHost} ${firebaseHostingIp}`);
-  console.warn(`- Add ${wwwHost} as a Firebase Hosting custom domain, then use the DNS record Firebase gives for www.`);
-  console.warn("- If Firebase offers a redirect option, redirect www to the apex after SSL is active.");
+  console.log("Domain readiness blockers:");
+  for (const item of issues) console.log(`BLOCK ${item}`);
+  console.log("");
+  console.log("Expected Firebase Hosting DNS:");
+  console.log(`- A ${apexHost} ${firebaseHostingIp}`);
+  console.log(`- Add ${wwwHost} as a Firebase Hosting custom domain, then use the DNS record Firebase gives for www.`);
+  console.log("- If Firebase offers a redirect option, redirect www to the apex after SSL is active.");
   if (strict) process.exit(1);
 }
 
