@@ -141,13 +141,12 @@ For pilot reporting access, use a private operator token hash. Generate a strong
 
 ```bash
 LUX_REPORT_TOKEN="paste-private-operator-token-here" node tools/generate-report-operator-token.mjs
-gcloud run services update reportactivity \
-  --region us-central1 \
-  --project lux-veritas-media \
-  --set-env-vars REPORT_OPERATOR_TOKEN_SHA256=<sha256>,REPORT_OPERATOR_EMAIL=operator@luxveritas.media
+printf "%s" "<sha256>" | firebase functions:secrets:set REPORT_OPERATOR_TOKEN_SHA256 --project lux-veritas-media
 ```
 
 The report endpoint still accepts approved Google OAuth bearer tokens for `REPORT_ALLOWED_EMAILS` or `REPORT_ALLOWED_DOMAIN`. The hash token path is for controlled pilot access before full authenticated portal accounts are ready.
+
+For this pilot machine, the raw operator token is stored in macOS Keychain as `Lux Veritas Report Operator Token` for account `info@luxveritas.media`; do not export it into committed files.
 
 Optional server-side integration fanout can forward validated, stored form submissions to an approved private tool such as a CRM, Google workflow, or automation router. Keep this server-side only. Do not place integration URLs in public markup or client JavaScript.
 

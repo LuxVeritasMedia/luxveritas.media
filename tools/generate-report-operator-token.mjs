@@ -28,5 +28,8 @@ if (generated && process.env.LUX_PRINT_OPERATOR_TOKEN === "1") {
 
 console.log(`REPORT_OPERATOR_TOKEN_SHA256=${hash}`);
 console.log("");
-console.log("Cloud Run setup command:");
-console.log(`gcloud run services update reportactivity --region us-central1 --project lux-veritas-media --set-env-vars REPORT_OPERATOR_TOKEN_SHA256=${hash},REPORT_OPERATOR_EMAIL=${email}`);
+console.log("Firebase secret setup command:");
+console.log(`printf "%s" "${hash}" | firebase functions:secrets:set REPORT_OPERATOR_TOKEN_SHA256 --project lux-veritas-media`);
+console.log("");
+console.log("Optional Cloud Run viewer label command:");
+console.log(`gcloud run services update reportactivity --region us-central1 --project lux-veritas-media --set-env-vars REPORT_OPERATOR_EMAIL=${email}`);

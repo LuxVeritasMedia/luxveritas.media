@@ -2,12 +2,14 @@ import admin from "firebase-admin";
 import crypto from "node:crypto";
 import { onRequest } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions";
+import { defineSecret } from "firebase-functions/params";
 import {
   buildIntegrationPayload,
   integrationBaseHeaders,
   normalizeIntegrationTarget
 } from "./integration-contract.js";
 
+const reportOperatorTokenHash = defineSecret("REPORT_OPERATOR_TOKEN_SHA256");
 const defaultToEmail = "info@luxveritas.media";
 const defaultFromEmail = "Lux Veritas <forms@luxveritas.media>";
 const allowedOrigins = new Set([
@@ -113,8 +115,12 @@ function integrationTarget() {
   return normalizeIntegrationTarget(process.env.FORM_INTEGRATION_TARGET);
 }
 
+function operatorTokenHash() {
+  return text(process.env.REPORT_OPERATOR_TOKEN_SHA256, 80).toLowerCase();
+}
+
 function operatorTokenConfigured() {
-  return /^[a-f0-9]{64}$/i.test(text(process.env.REPORT_OPERATOR_TOKEN_SHA256, 80));
+  return /^[a-f0-9]{64}$/i.test(operatorTokenHash());
 }
 
 const accessPathMap = {
@@ -306,8 +312,8 @@ async function authorizeReport(req) {
   const token = header.toLowerCase().startsWith("bearer ") ? header.slice(7).trim() : "";
   if (!token) return { ok: false, status: 401, error: "missing_token" };
 
-  const operatorTokenHash = text(process.env.REPORT_OPERATOR_TOKEN_SHA256, 80).toLowerCase();
-  if (operatorTokenHash && safeEqualHex(sha256(token), operatorTokenHash)) {
+  const tokenHash = operatorTokenHash();
+  if (tokenHash && safeEqualHex(sha256(token), tokenHash)) {
     return {
       ok: true,
       email: text(process.env.REPORT_OPERATOR_EMAIL || "operator@luxveritas.media", 240).toLowerCase(),
@@ -970,7 +976,8 @@ export const reportActivity = onRequest(
   {
     region: "us-central1",
     cors: false,
-    maxInstances: 5
+    maxInstances: 5,
+    secrets: [reportOperatorTokenHash]
   },
   async (req, res) => {
     setCors(req, res);
