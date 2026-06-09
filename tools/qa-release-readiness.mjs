@@ -24,6 +24,12 @@ function hasUnchecked(todo, text) {
   return todo.split("\n").some((line) => line.includes("- [ ]") && line.includes(text));
 }
 
+function hasUncheckedAny(todo, markers) {
+  return todo.split("\n").some((line) => (
+    line.includes("- [ ]") && markers.some((marker) => line.includes(marker))
+  ));
+}
+
 function validHttps(value) {
   return typeof value === "string" && /^https:\/\//i.test(value);
 }
@@ -78,7 +84,12 @@ add(sourceTypes.has("stream"), "Media manifest includes a radio/stream path.");
 add(missingSources.length === 0, `Approved media sources attached for all audio/video/radio items. Missing: ${missingSources.map((item) => item.id).join(", ") || "none"}`);
 add(invalidPosters.length === 0, `Media poster URLs are HTTPS when present. Invalid: ${invalidPosters.map((item) => item.id).join(", ") || "none"}`);
 
-add(!hasUnchecked(todo, "Configure email provider runtime secrets"), "Inbox notification provider configured.");
+add(!hasUncheckedAny(todo, [
+  "Configure email provider runtime secrets",
+  "Configure and verify email provider",
+  "RESEND_API_KEY",
+  "inbox notification"
+]), "Inbox notification provider configured.");
 add(!hasUnchecked(todo, "Configure approved private integration endpoint"), "Private integration endpoint configured.");
 add(!hasUnchecked(todo, "Legal review: Privacy"), "Privacy page legal review complete.");
 add(!hasUnchecked(todo, "Legal review: Terms"), "Terms page legal review complete.");
