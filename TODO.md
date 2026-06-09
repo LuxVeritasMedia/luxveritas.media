@@ -102,6 +102,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add repeatable form-delivery QA for validation, stored capture, and inbox notification readiness.
 - [x] Add live form matrix QA for major public capture paths.
 - [x] Raise pilot form rate limit so the seven-path live matrix can complete without false 429 failures.
+- [x] Add live event matrix QA for CTA, media, lead, and reporting events.
 - [x] Add workflow QA for hosting and Functions deploy gates.
 - [x] Add integration QA for server-side submission fanout and private reporting readiness.
 - [x] Add browser-flow QA for real CTA clicks, modal submits, submit reset, and media follow-up routing.
