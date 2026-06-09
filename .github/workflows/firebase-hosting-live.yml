@@ -41,6 +41,9 @@ jobs:
       - name: QA public site
         run: node tools/qa-public-site.mjs
 
+      - name: QA mobile layout
+        run: node tools/qa-mobile-layout.mjs
+
       - name: Deploy to Firebase Hosting
         run: npx firebase-tools@latest deploy --only hosting --project lux-veritas-media --non-interactive
 
