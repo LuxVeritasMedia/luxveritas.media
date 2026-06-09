@@ -242,6 +242,7 @@ Do not commit:
 
 - Connect GitHub repo to Firebase App Hosting.
 - Configure custom domain `luxveritas.media`.
+- Configure `www.luxveritas.media` in Firebase Hosting and DNS. Current root apex uses Firebase Hosting IP `199.36.158.100`; `www` should either be added as a second Firebase Hosting custom domain or pointed/redirected to the apex through the DNS provider. Verify with `dig +short www.luxveritas.media` and `curl -I https://www.luxveritas.media`.
 - Add SPF/DKIM for sending domain.
 - Create GoHighLevel forms, workflows, tags, and pipelines.
 - Apply Supabase migrations.
