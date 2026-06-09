@@ -73,6 +73,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Check noindex/gating source.
 - [x] Run local build after source edits.
 - [x] Add mobile layout QA gate for viewport metadata, mobile nav, grid collapse, and phone-width CTA stacking.
+- [x] Add accessibility QA gate for landmarks, labels, skip links, duplicate IDs, and alt text.
 - [x] Check primary CTAs in generated source.
 - [x] Check form modal open/action/button behavior locally.
 - [x] Add QA coverage for bounded form-submit behavior.

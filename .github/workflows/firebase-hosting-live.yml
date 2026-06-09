@@ -58,6 +58,9 @@ jobs:
       - name: QA mobile layout
         run: node tools/qa-mobile-layout.mjs
 
+      - name: QA accessibility
+        run: node tools/qa-accessibility.mjs
+
       - name: QA release readiness
         run: node tools/qa-release-readiness.mjs
 

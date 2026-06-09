@@ -88,10 +88,10 @@ function shell({ path, title, description, eyebrow = "Lux Veritas", body, heroCl
         <span class="brand-mark">LV</span>
         <span>Lux Veritas</span>
       </a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" data-nav-toggle>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-nav" data-nav-toggle>
         <span></span><span></span>
       </button>
-      <nav id="primary-nav" class="primary-nav" data-nav>${navLinks}</nav>
+      <nav id="primary-nav" class="primary-nav" aria-label="Primary" data-nav>${navLinks}</nav>
       <button class="header-action" type="button" data-open-form="request">Request Access</button>
     </header>
     <main id="main" class="${heroClass}">
