@@ -160,6 +160,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add public media manifest for release, visual, and radio player entries.
 - [x] Add source-ready audio/video/stream playback shell for approved media URLs.
 - [x] Map Listen, Watch, and Radio actions to the matching audio, video, and stream sources with stable reporting keys.
+- [x] Report audio, video, and radio playback lifecycle events: play, pause, milestones, and ended.
 - [x] Add media follow-up conversion path when approved audio/video/radio sources are not yet live.
 - [x] Show queued vs source-ready media status in the private pilot report.
 - [x] Add approved media source helper for audio, video, and radio URLs.

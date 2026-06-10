@@ -332,11 +332,18 @@ async function portalFallbackFlow(page, baseUrl) {
   submitMode = "stored";
 }
 
+async function clickMediaAction(page, action) {
+  const button = page.locator(`[data-media-player] [data-media-action="${action}"]`).first();
+  await button.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(100);
+  await button.click({ force: true });
+}
+
 async function mediaFlow(page, baseUrl, path) {
   const beforeEventCount = events.length;
   await page.goto(`${baseUrl}${path}`, { waitUntil: "domcontentloaded" });
   await page.evaluate(() => localStorage.setItem("luxveritas_consent", "accepted"));
-  await page.click('[data-media-action="play"]');
+  await clickMediaAction(page, "play");
   await page.waitForFunction(() => {
     const sourceShell = document.querySelector("[data-media-source-shell]");
     const followup = document.querySelector("[data-media-followup]");
@@ -401,7 +408,7 @@ async function mediaActionMappingFlow(page, baseUrl) {
     const beforeEventCount = events.length;
     await page.goto(`${baseUrl}/music.html`, { waitUntil: "domcontentloaded" });
     await page.evaluate(() => localStorage.setItem("luxveritas_consent", "accepted"));
-    await page.click(`[data-media-player] [data-media-action="${expected.action}"]`);
+    await clickMediaAction(page, expected.action);
     await page.waitForFunction(() => {
       const shell = document.querySelector("[data-media-source-shell]");
       return shell && !shell.hidden;
@@ -447,6 +454,74 @@ async function mediaActionMappingFlow(page, baseUrl) {
   }
 }
 
+async function mediaPlaybackReportingFlow(page, baseUrl) {
+  const playbackExpectations = [
+    { action: "play", sourceType: "audio", selector: "[data-media-audio]" },
+    { action: "watch", sourceType: "video", selector: "[data-media-video]" },
+    { action: "radio", sourceType: "stream", selector: "[data-media-audio]" }
+  ];
+
+  for (const expected of playbackExpectations) {
+    const beforeEventCount = events.length;
+    await page.goto(`${baseUrl}/music.html`, { waitUntil: "domcontentloaded" });
+    await page.evaluate(() => localStorage.setItem("luxveritas_consent", "accepted"));
+    await clickMediaAction(page, expected.action);
+    await page.waitForSelector(`${expected.selector}:not([hidden])`, { timeout: 5000 });
+
+    await page.evaluate((selector) => {
+      const element = document.querySelector(selector);
+      if (!element) return;
+      try {
+        Object.defineProperty(element, "duration", { configurable: true, value: 100 });
+      } catch {
+        // Native media duration may be read-only; the event itself still verifies reporting.
+      }
+      element.currentTime = 0;
+      element.dispatchEvent(new Event("play"));
+      element.currentTime = 30;
+      element.dispatchEvent(new Event("timeupdate"));
+      element.dispatchEvent(new Event("pause"));
+      element.currentTime = 100;
+      try {
+        Object.defineProperty(element, "ended", { configurable: true, value: true });
+      } catch {
+        // Native ended state may be read-only; dispatching ended still exercises the listener.
+      }
+      element.dispatchEvent(new Event("ended"));
+    }, expected.selector);
+
+    await waitForCondition(() => (
+      events.slice(beforeEventCount).some((item) => item.event === "media_playback" && item.detail?.action === "ended")
+    ));
+
+    const playbackEvents = events.slice(beforeEventCount).filter((item) => item.event === "media_playback");
+    for (const action of ["play", "pause", "ended"]) {
+      const found = playbackEvents.find((item) => item.detail?.action === action && item.detail?.source_type === expected.sourceType);
+      if (!found) issues.push(`/music.html: ${expected.action} did not report ${expected.sourceType} playback ${action}`);
+    }
+    const milestone = playbackEvents.find((item) => (
+      item.detail?.action === "milestone"
+      && item.detail?.source_type === expected.sourceType
+      && (expected.sourceType === "stream" || item.detail?.milestone === "25%")
+    ));
+    if (!milestone) {
+      issues.push(`/music.html: ${expected.action} did not report ${expected.sourceType} playback milestone`);
+    }
+
+    const localPlayback = await page.evaluate((sourceType) => {
+      const items = JSON.parse(localStorage.getItem("luxveritas_media_events") || "[]");
+      return items.filter((item) => item.event === "media_playback" && item.source_type === sourceType).length;
+    }, expected.sourceType);
+    if (localPlayback < 3) {
+      issues.push(`/music.html: ${expected.action} did not persist local ${expected.sourceType} playback events`);
+    }
+    const reportText = await page.locator("[data-media-report]").innerText();
+    if (!/media signal/i.test(reportText)) {
+      issues.push(`/music.html: ${expected.action} playback did not update media signal report`);
+    }
+  }
+}
+
 async function fanSignalPassFlow(page, baseUrl) {
   await page.goto(`${baseUrl}/music.html`, { waitUntil: "domcontentloaded" });
   await page.evaluate(() => {
@@ -457,9 +532,10 @@ async function fanSignalPassFlow(page, baseUrl) {
     delete document.documentElement.dataset.lastDownloadName;
     delete document.documentElement.dataset.lastDownloadType;
   });
-  await page.click('[data-media-action="play"]');
+  await clickMediaAction(page, "play");
   await page.waitForFunction(() => {
-    return document.querySelector('[data-fan-signal-count="media"]')?.textContent?.trim() === "1";
+    const value = Number(document.querySelector('[data-fan-signal-count="media"]')?.textContent?.trim() || "0");
+    return value >= 1;
   }, null, { timeout: 5000 });
   const signalList = await page.locator("[data-fan-signal-list]").innerText();
   if (!/SPMVP play/i.test(signalList)) {
@@ -908,6 +984,7 @@ try {
     await mediaFlow(page, baseUrl, path);
   }
   await mediaActionMappingFlow(page, baseUrl);
+  await mediaPlaybackReportingFlow(page, baseUrl);
   await fanSignalPassFlow(page, baseUrl);
   await portalAccessFlow(page, baseUrl);
   await operatorReportFlow(page, baseUrl);
@@ -925,4 +1002,4 @@ if (issues.length) {
   process.exit(1);
 }
 
-console.log(`Browser flow QA passed for ${flows.length} form flows, form fallback/rate-limit, portal sign-in/fallback, 2 media flows, media action mapping, signal pass export, interaction reporting, and operator reporting at ${baseUrl}.`);
+console.log(`Browser flow QA passed for ${flows.length} form flows, form fallback/rate-limit, portal sign-in/fallback, 2 media flows, media action/playback mapping, signal pass export, interaction reporting, and operator reporting at ${baseUrl}.`);

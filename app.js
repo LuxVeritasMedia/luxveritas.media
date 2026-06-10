@@ -111,7 +111,7 @@ const mediaManifestPath = "/data/lux-media-manifest.json";
 const launchChecklistPath = "/data/lux-launch-readiness.json";
 const legalReviewPath = "/data/lux-legal-review.json";
 const submitTimeoutMs = 8000;
-const publicBuildVersion = "20260610-media-actions";
+const publicBuildVersion = "20260610-playback-reporting";
 let activeFormType = "request";
 let mediaManifestPromise = null;
 let launchChecklistPromise = null;
@@ -464,6 +464,7 @@ function mediaEvents() {
 
 function writeMediaEvent(action, player, item = {}) {
   const payload = {
+    event: "media_action",
     action,
     cta_id: `${slugify(player?.dataset.playerContext || document.body.dataset.page || "site", "media")}__media_action__${slugify(action, "action")}`,
     context: player?.dataset.playerContext || document.body.dataset.page || "site",
@@ -486,11 +487,90 @@ function writeMediaEvent(action, player, item = {}) {
   return events.length;
 }
 
+function activeMediaItemData(player) {
+  const item = player?.querySelector(".media-item.active");
+  return item?.dataset || {};
+}
+
+function writeMediaPlaybackEvent(phase, player, element, detail = {}) {
+  const item = activeMediaItemData(player);
+  const duration = Number.isFinite(element?.duration) ? element.duration : 0;
+  const currentTime = Number.isFinite(element?.currentTime) ? element.currentTime : 0;
+  const progress = duration > 0 ? Math.round((currentTime / duration) * 100) : 0;
+  const payload = {
+    event: "media_playback",
+    action: phase,
+    cta_id: `${slugify(player?.dataset.playerContext || document.body.dataset.page || "site", "media")}__media_playback__${slugify(phase, "action")}`,
+    context: player?.dataset.playerContext || document.body.dataset.page || "site",
+    media_id: item.mediaId || null,
+    title: item.title || player?.querySelector("[data-media-title]")?.textContent?.trim() || "SPMVP",
+    kind: item.kind || player?.querySelector("[data-media-mode]")?.textContent?.trim()?.toLowerCase() || "signal",
+    access: item.access || null,
+    source_type: item.sourceType || element?.dataset.playbackSourceType || null,
+    source_status: item.sourceStatus || "ready",
+    source_ready: /^https:\/\//i.test(item.sourceUrl || element?.currentSrc || ""),
+    source_required: item.sourceRequired === "true" || item.sourceRequired === true,
+    reporting_key: item.reportingKey || null,
+    source_page: window.location.pathname,
+    current_time: Number(currentTime.toFixed(2)),
+    duration: Number(duration.toFixed(2)),
+    progress_percent: Math.max(0, Math.min(progress, 100)),
+    timestamp: new Date().toISOString(),
+    ...detail
+  };
+  const events = mediaEvents();
+  events.push(payload);
+  writeJson("luxveritas_media_events", events.slice(-150));
+  trackEvent("media_playback", payload);
+  updateMediaReport(player);
+  renderFanSignal();
+  return events.length;
+}
+
+function instrumentMediaElement(player, element, sourceType) {
+  if (!element || element.dataset.playbackInstrumented === "true") return;
+  element.dataset.playbackInstrumented = "true";
+  element.addEventListener("play", () => writeMediaPlaybackEvent("play", player, element));
+  element.addEventListener("pause", () => {
+    if (!element.ended) writeMediaPlaybackEvent("pause", player, element);
+  });
+  element.addEventListener("ended", () => writeMediaPlaybackEvent("ended", player, element, { milestone: "ended" }));
+  element.addEventListener("timeupdate", () => {
+    const duration = Number.isFinite(element.duration) ? element.duration : 0;
+    const seen = new Set(String(element.dataset.playbackMilestones || "").split(",").filter(Boolean));
+    if (duration <= 0) {
+      const currentTime = Number.isFinite(element.currentTime) ? element.currentTime : 0;
+      const timeMilestones = [30, 60, 120].filter((mark) => currentTime >= mark);
+      for (const mark of timeMilestones) {
+        const key = `${mark}s`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        element.dataset.playbackMilestones = [...seen].join(",");
+        writeMediaPlaybackEvent("milestone", player, element, { milestone: key });
+        break;
+      }
+      return;
+    }
+
+    const percent = Math.floor((element.currentTime / duration) * 100);
+    const milestones = [25, 50, 75].filter((mark) => percent >= mark);
+    for (const mark of milestones) {
+      const key = String(mark);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      element.dataset.playbackMilestones = [...seen].join(",");
+      writeMediaPlaybackEvent("milestone", player, element, { milestone: `${mark}%` });
+      break;
+    }
+  });
+  element.dataset.playbackSourceType = sourceType || "";
+}
+
 function updateMediaReport(player) {
   const report = player?.querySelector("[data-media-report]");
   if (!report) return;
   const count = mediaEvents().filter((event) => event.source_page === window.location.pathname).length;
-  report.textContent = `${count} media action${count === 1 ? "" : "s"} recorded from this page.`;
+  report.textContent = `${count} media signal${count === 1 ? "" : "s"} recorded from this page.`;
 }
 
 function setMediaProgress(player, percent) {
@@ -505,6 +585,8 @@ function resetMediaSources(player) {
   if (audio) {
     audio.pause();
     audio.removeAttribute("src");
+    audio.dataset.playbackMilestones = "";
+    audio.dataset.playbackSourceType = "";
     audio.hidden = true;
     audio.load();
   }
@@ -512,6 +594,8 @@ function resetMediaSources(player) {
     video.pause();
     video.removeAttribute("src");
     video.removeAttribute("poster");
+    video.dataset.playbackMilestones = "";
+    video.dataset.playbackSourceType = "";
     video.hidden = true;
     video.load();
   }
@@ -1459,6 +1543,8 @@ function loadApprovedMedia(player, item) {
 
   if (["audio", "stream"].includes(item.sourceType) && audio) {
     audio.src = item.sourceUrl;
+    instrumentMediaElement(player, audio, item.sourceType);
+    audio.dataset.playbackSourceType = item.sourceType || "";
     audio.hidden = false;
     audio.play().catch(() => {
       if (status) status.textContent = `${item.title} is ready. Press play in the audio control to begin.`;
@@ -1469,6 +1555,8 @@ function loadApprovedMedia(player, item) {
   if (item.sourceType === "video" && video) {
     video.src = item.sourceUrl;
     if (item.posterUrl) video.poster = item.posterUrl;
+    instrumentMediaElement(player, video, item.sourceType);
+    video.dataset.playbackSourceType = item.sourceType || "";
     video.hidden = false;
     video.play().catch(() => {
       if (status) status.textContent = `${item.title} is ready. Press play in the video control to begin.`;

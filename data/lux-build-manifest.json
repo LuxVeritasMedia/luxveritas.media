@@ -1,11 +1,11 @@
 {
   "schemaVersion": "luxveritas.build_manifest.v1",
-  "version": "20260610-media-actions",
-  "assetVersion": "20260610-media-actions",
+  "version": "20260610-playback-reporting",
+  "assetVersion": "20260610-playback-reporting",
   "mediaManifestVersion": "2026-06-10-mvp-media-preview",
   "publicTermsVersion": "2026-06-09-public-capture",
   "routeCount": 37,
   "publicRouteCount": 20,
-  "appScript": "app.js?v=20260610-media-actions",
-  "stylesheet": "styles.css?v=20260610-media-actions"
+  "appScript": "app.js?v=20260610-playback-reporting",
+  "stylesheet": "styles.css?v=20260610-playback-reporting"
 }

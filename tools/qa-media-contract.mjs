@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 
 const issues = [];
 const manifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
+const appJs = await readFile("app.js", "utf8");
 const allowedSourceStatuses = new Set(["queued", "ready", "external"]);
 const allowedSourceTypes = new Set(["audio", "video", "stream", "external"]);
 const requiredKinds = new Set(["release", "visual", "radio"]);
@@ -40,6 +41,17 @@ for (const item of items) {
   if (!/^[a-z0-9_]+$/.test(item.reportingKey || "")) {
     issues.push(`${label}: reportingKey must be stable snake_case`);
   }
+}
+
+for (const marker of [
+  "function writeMediaPlaybackEvent(",
+  "function instrumentMediaElement(",
+  "media_playback",
+  "playbackMilestones",
+  "progress_percent",
+  "milestone"
+]) {
+  if (!appJs.includes(marker)) issues.push(`app.js missing media playback marker ${marker}`);
 }
 
 if (issues.length) {
