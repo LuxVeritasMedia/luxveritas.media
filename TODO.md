@@ -131,6 +131,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add provider-readiness QA for offline sentinel and invalid secret-value classes without printing secrets.
 - [x] Add deploy-artifact QA for private launch-gates reporting.
 - [x] Add public build manifest for asset, media, and legal-version diagnostics.
+- [x] Add pilot-readiness QA aggregator for local gates plus optional browser/live release checks.
 
 ## P7 - Media MVP
 - [x] Add Lux Player MVP to Music and SPMVP with listen/watch/radio actions.
