@@ -1470,7 +1470,7 @@ function mountConsentBanner() {
     if (!button) return;
     setStoredValue("luxveritas_consent", button.dataset.consent);
     banner.remove();
-    trackEvent("consent_update", { value: button.dataset.consent });
+    trackInteraction("consent_update", button, { value: button.dataset.consent });
   });
 }
 
@@ -1489,7 +1489,10 @@ navToggle?.addEventListener("click", () => {
 });
 
 document.querySelectorAll("[data-close-dialog]").forEach((button) => {
-  button.addEventListener("click", () => dialog?.close());
+  button.addEventListener("click", () => {
+    trackInteraction("dialog_close", button, { dialog: "capture" });
+    dialog?.close();
+  });
 });
 
 document.addEventListener("click", (event) => {
@@ -1504,6 +1507,12 @@ document.addEventListener("click", (event) => {
   const item = event.target.closest("[data-media-item]");
   if (!item) return;
   event.preventDefault();
+  trackInteraction("media_select", item, {
+    media_id: item.dataset.mediaId || null,
+    title: item.dataset.title || null,
+    source_status: item.dataset.sourceStatus || null,
+    reporting_key: item.dataset.reportingKey || null
+  });
   setActiveMediaItem(item.closest("[data-media-player]"), item);
 });
 

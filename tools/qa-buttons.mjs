@@ -70,6 +70,11 @@ for (const marker of ['trackInteraction("form_open"', 'trackInteraction("link_cl
     issues.push(`app.js: missing interaction reporting marker ${marker}`);
   }
 }
+for (const marker of ['trackInteraction("media_select"', 'trackInteraction("dialog_close"', 'trackInteraction("consent_update"']) {
+  if (!appJs.includes(marker)) {
+    issues.push(`app.js: missing button reporting marker ${marker}`);
+  }
+}
 if (!appJs.includes("renderPrivateSummary")) {
   issues.push("app.js: missing private report summary rendering");
 }
