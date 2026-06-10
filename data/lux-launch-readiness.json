@@ -28,11 +28,11 @@
       "id": "private_handoff",
       "label": "Private Handoff",
       "category": "capture",
-      "status": "blocked",
-      "nextAction": "Choose the approved private workflow target and configure protected hosting settings.",
+      "status": "dynamic",
+      "nextAction": "Signed Firebase private handoff is active. Choose an external CRM or Google workflow target only after the private workflow is approved.",
       "owner": "Operations operator",
       "blockerType": "private_workflow",
-      "verification": "Run provider readiness, integration QA, and pending handoff replay after target setup.",
+      "verification": "Run provider readiness, integration QA, and pending handoff replay after any target change.",
       "requiredForPublicLaunch": true
     },
     {

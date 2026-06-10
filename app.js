@@ -822,12 +822,16 @@ function downloadTextFile(filename, text, type) {
   const blob = new Blob([text], { type });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
+  document.documentElement.dataset.lastDownloadName = filename;
+  document.documentElement.dataset.lastDownloadType = type;
   link.href = url;
   link.download = filename;
   document.body.appendChild(link);
   link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
+  window.setTimeout(() => {
+    link.remove();
+    URL.revokeObjectURL(url);
+  }, 1000);
 }
 
 function csvCell(value) {

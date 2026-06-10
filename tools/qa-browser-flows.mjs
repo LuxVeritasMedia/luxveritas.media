@@ -420,11 +420,13 @@ async function operatorReportFlow(page, baseUrl) {
     ["export-private-json", "luxveritas-private-report-"],
     ["export-private-csv", "luxveritas-private-report-"]
   ]) {
-    const downloadPromise = page.waitForEvent("download", { timeout: 5000 });
     await page.click(`[data-report-action="${action}"]`);
-    const download = await downloadPromise;
-    if (!download.suggestedFilename().startsWith(expectedName)) {
-      issues.push(`/portal/reporting.html: ${action} suggested unexpected filename ${download.suggestedFilename()}`);
+    await page.waitForFunction((name) => {
+      return document.documentElement.dataset.lastDownloadName?.startsWith(name);
+    }, expectedName, { timeout: 5000 });
+    const filename = await page.evaluate(() => document.documentElement.dataset.lastDownloadName || "");
+    if (!filename.startsWith(expectedName)) {
+      issues.push(`/portal/reporting.html: ${action} suggested unexpected filename ${filename || "none"}`);
     }
   }
 
@@ -433,7 +435,10 @@ async function operatorReportFlow(page, baseUrl) {
     issues.push(`/portal/reporting.html: private report did not send bearer token`);
   }
 
-  await page.click('[data-report-action="replay-integration"]');
+  const replayIntegrationButton = page.locator('[data-report-action="replay-integration"]');
+  await replayIntegrationButton.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(250);
+  await replayIntegrationButton.click();
   await page.waitForFunction(() => {
     const status = document.querySelector("[data-private-report-status]");
     return status && /Private handoff is not configured yet|Handoff replay checked/i.test(status.textContent || "");
@@ -512,7 +517,7 @@ try {
   await portalAccessFlow(page, baseUrl);
   await operatorReportFlow(page, baseUrl);
 } catch (error) {
-  issues.push(`browser flow failed: ${error.message}`);
+  issues.push(`browser flow failed: ${error.stack || error.message}`);
 } finally {
   if (context) await context.close();
   if (browser) await browser.close();
