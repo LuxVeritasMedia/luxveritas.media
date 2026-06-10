@@ -133,6 +133,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Accept Firebase-provided A or CNAME records for `www` release-readiness checks.
 - [x] Add provider-readiness QA for secret metadata and live inbox/handoff status.
 - [x] Add provider-readiness QA for offline sentinel and invalid secret-value classes without printing secrets.
+- [x] Report expired Firebase CLI auth distinctly from missing provider secrets.
 - [x] Add deploy-artifact QA for private launch-gates reporting.
 - [x] Add public build manifest for asset, media, and legal-version diagnostics.
 - [x] Add pilot-readiness QA aggregator for local gates plus optional browser/live release checks.

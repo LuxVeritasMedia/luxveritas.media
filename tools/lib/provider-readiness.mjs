@@ -21,6 +21,17 @@ async function runFirebase(args) {
   return execFileAsync("npx", ["firebase-tools@latest", ...args], { maxBuffer: 1024 * 1024 });
 }
 
+function firebaseAuthErrorDetail(error) {
+  const message = `${error?.message || ""}\n${error?.stdout || ""}\n${error?.stderr || ""}`;
+  if (/credentials are no longer valid|firebase login --reauth|Authentication Error/i.test(message)) {
+    return "Firebase credentials expired; run firebase login --reauth";
+  }
+  if (/not currently authenticated|must be authenticated|login:ci/i.test(message)) {
+    return "Firebase CLI is not authenticated";
+  }
+  return "";
+}
+
 export async function providerSecretMetadata(name, project) {
   try {
     const { stdout } = await runFirebase([
@@ -29,8 +40,19 @@ export async function providerSecretMetadata(name, project) {
       "--project",
       project,
       "--json"
-    ], { maxBuffer: 1024 * 1024 });
-    const body = JSON.parse(stdout);
+    ]);
+    let body;
+    try {
+      body = JSON.parse(stdout);
+    } catch {
+      const detail = stdout.trim().split("\n").find(Boolean) || "Firebase CLI returned non-JSON output";
+      const authDetail = firebaseAuthErrorDetail({ message: detail, stdout });
+      return {
+        ok: false,
+        status: authDetail ? "auth_unavailable" : "unavailable",
+        error: authDetail || detail
+      };
+    }
     const item = body.result?.secrets?.[0];
     return {
       ok: body.status === "success" && item?.state === "ENABLED",
@@ -39,9 +61,11 @@ export async function providerSecretMetadata(name, project) {
       state: item?.state || "missing"
     };
   } catch (error) {
+    const authDetail = firebaseAuthErrorDetail(error);
     return {
       ok: false,
-      error: error?.message || String(error)
+      status: authDetail ? "auth_unavailable" : "unavailable",
+      error: authDetail || error?.message || String(error)
     };
   }
 }
@@ -67,9 +91,11 @@ export async function providerSecretValue(name, project) {
       value: stdout.trim()
     };
   } catch (error) {
+    const authDetail = firebaseAuthErrorDetail(error);
     return {
       ok: false,
-      error: error?.message || String(error)
+      status: authDetail ? "auth_unavailable" : "unavailable",
+      error: authDetail || error?.message || String(error)
     };
   }
 }
@@ -119,7 +145,7 @@ export async function providerSecretValueStatusEntries(project, secrets = requir
       name,
       secret.ok
         ? providerSecretValueStatus(name, secret.value)
-        : { ok: false, status: "unavailable", detail: secret.error || "could not access value" }
+        : { ok: false, status: secret.status || "unavailable", detail: secret.error || "could not access value" }
     ]);
   }
   return entries;

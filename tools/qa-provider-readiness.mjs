@@ -12,6 +12,7 @@ const strict = process.env.LUX_PROVIDER_STRICT === "1";
 const issues = [];
 const warnings = [];
 const passed = [];
+let authUnavailable = false;
 
 function pass(message) {
   passed.push(message);
@@ -37,6 +38,7 @@ for (const name of requiredProviderSecrets) {
   if (item.ok) {
     pass(`${name} secret metadata exists (version ${item.versionId}, ${item.state}).`);
   } else {
+    if (item.status === "auth_unavailable") authUnavailable = true;
     issue(`${name} secret metadata missing or unavailable${item.error ? ` (${item.error})` : ""}.`);
   }
 
@@ -44,6 +46,7 @@ for (const name of requiredProviderSecrets) {
   if (status?.ok) {
     pass(`${name} secret value is active (${status.detail}).`);
   } else {
+    if (status?.status === "auth_unavailable") authUnavailable = true;
     issue(`${name} secret value is not active${status?.detail ? ` (${status.detail})` : ""}.`);
   }
 }
@@ -87,9 +90,14 @@ if (issues.length) {
   for (const item of issues) console.log(`BLOCK ${item}`);
   console.log("");
   console.log("Next setup commands:");
-  console.log("- LUX_RESEND_API_KEY='re_...' node tools/setup-inbox-provider-secret.mjs");
-  console.log("- LUX_FORM_INTEGRATION_URL='https://...' LUX_FORM_INTEGRATION_TARGET='private_workflow' node tools/setup-private-integration-secret.mjs");
-  console.log("- firebase deploy --only functions:submitForm,functions:reportActivity --project lux-veritas-media --non-interactive --force");
+  if (authUnavailable) {
+    console.log("- firebase login --reauth");
+    console.log("- node tools/qa-provider-readiness.mjs");
+  } else {
+    console.log("- LUX_RESEND_API_KEY='re_...' node tools/setup-inbox-provider-secret.mjs");
+    console.log("- LUX_FORM_INTEGRATION_URL='https://...' LUX_FORM_INTEGRATION_TARGET='private_workflow' node tools/setup-private-integration-secret.mjs");
+    console.log("- firebase deploy --only functions:submitForm,functions:reportActivity --project lux-veritas-media --non-interactive --force");
+  }
   if (strict) process.exit(1);
 }
 
