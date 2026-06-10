@@ -1,7 +1,9 @@
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
+import {
+  liveProviderDeliveryReadiness,
+  providerSecretMetadataEntries,
+  requiredProviderSecrets
+} from "./lib/provider-readiness.mjs";
 
-const execFileAsync = promisify(execFile);
 const project = process.env.LUX_FIREBASE_PROJECT || "lux-veritas-media";
 const baseUrl = (process.env.LUX_LIVE_URL || "https://luxveritas.media").replace(/\/$/, "");
 const reportToken = process.env.LUX_REPORT_TOKEN || "";
@@ -9,14 +11,6 @@ const strict = process.env.LUX_PROVIDER_STRICT === "1";
 const issues = [];
 const warnings = [];
 const passed = [];
-
-const requiredSecrets = [
-  "RESEND_API_KEY",
-  "FORM_INTEGRATION_URL",
-  "FORM_INTEGRATION_SIGNING_SECRET",
-  "FORM_INTEGRATION_TARGET",
-  "REPORT_OPERATOR_TOKEN_SHA256"
-];
 
 function pass(message) {
   passed.push(message);
@@ -30,75 +24,12 @@ function warn(message) {
   warnings.push(message);
 }
 
-async function secretMetadata(name) {
-  try {
-    const { stdout } = await execFileAsync("firebase", [
-      "functions:secrets:get",
-      name,
-      "--project",
-      project,
-      "--json"
-    ], { maxBuffer: 1024 * 1024 });
-    const body = JSON.parse(stdout);
-    const item = body.result?.secrets?.[0];
-    return {
-      ok: body.status === "success" && item?.state === "ENABLED",
-      versionId: item?.versionId || "",
-      createTime: item?.createTime || "",
-      state: item?.state || "missing"
-    };
-  } catch (error) {
-    return {
-      ok: false,
-      error: error?.message || String(error)
-    };
-  }
-}
-
-async function secretMetadataEntries() {
-  const entries = [];
-  for (const name of requiredSecrets) {
-    entries.push([name, await secretMetadata(name)]);
-  }
-  return entries;
-}
-
-async function liveDeliveryReadiness() {
-  if (!reportToken) {
-    warn("Set LUX_REPORT_TOKEN to check live provider readiness from /api/report.");
-    return null;
-  }
-
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
-  try {
-    const response = await fetch(`${baseUrl}/api/report`, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${reportToken}`
-      },
-      signal: controller.signal
-    });
-    const body = await response.json().catch(() => ({}));
-    if (!response.ok || !body.ok) {
-      issue(`/api/report readiness check failed with HTTP ${response.status} (${body.error || "unknown"}).`);
-      return null;
-    }
-    return body.delivery || {};
-  } catch (error) {
-    issue(`/api/report readiness check failed (${error?.message || String(error)}).`);
-    return null;
-  } finally {
-    clearTimeout(timeout);
-  }
-}
-
 console.log(`Provider readiness for project ${project}`);
 
-const metadataEntries = await secretMetadataEntries();
+const metadataEntries = await providerSecretMetadataEntries(project);
 const metadata = Object.fromEntries(metadataEntries);
 
-for (const name of requiredSecrets) {
+for (const name of requiredProviderSecrets) {
   const item = metadata[name];
   if (item.ok) {
     pass(`${name} secret metadata exists (version ${item.versionId}, ${item.state}).`);
@@ -107,7 +38,11 @@ for (const name of requiredSecrets) {
   }
 }
 
-const delivery = await liveDeliveryReadiness();
+const readiness = await liveProviderDeliveryReadiness({ baseUrl, reportToken });
+if (readiness.warning) warn(readiness.warning);
+if (readiness.error) issue(readiness.error);
+
+const delivery = readiness.delivery;
 if (delivery) {
   if (delivery.emailProviderConfigured) {
     pass("Live inbox provider value is active.");
