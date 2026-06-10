@@ -161,6 +161,7 @@ add(legalItemApproved(legalReview, "terms"), "Terms page legal review complete."
 add(!hasUncheckedAny(todo, ["Attach approved release audio, video, and radio sources"]), "Approved release audio, video, and radio sources attached.");
 add(workflow.includes("node tools/qa-browser-flows.mjs"), "Browser-flow QA is enforced before Hosting deploy.");
 add(workflow.includes("node tools/qa-live-site.mjs"), "Live-site QA is enforced after Hosting deploy.");
+add(workflow.includes("LUX_BROWSER_BASE_URL=https://luxveritas.media node tools/qa-browser-flows.mjs"), "Live browser-flow QA is enforced after Hosting deploy.");
 
 const [rootDns, wwwDns] = await Promise.all([
   resolveHost("luxveritas.media"),

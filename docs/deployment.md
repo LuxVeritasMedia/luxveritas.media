@@ -241,6 +241,7 @@ node tools/qa-release-readiness.mjs
 node tools/qa-domain-readiness.mjs
 node tools/qa-provider-readiness.mjs
 /Users/frederickparent/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node tools/qa-browser-flows.mjs
+LUX_BROWSER_BASE_URL=https://luxveritas.media node tools/qa-browser-flows.mjs
 LUX_FORM_WRITE=1 node tools/qa-form-delivery.mjs
 LUX_FORM_MATRIX_WRITE=1 node tools/qa-live-form-matrix.mjs
 LUX_EVENT_MATRIX_WRITE=1 node tools/qa-live-event-matrix.mjs

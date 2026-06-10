@@ -3,6 +3,7 @@ import { access, readFile, stat } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
 
 const root = "dist";
+const externalBaseUrl = (process.env.LUX_BROWSER_BASE_URL || "").replace(/\/$/, "");
 const bundledPlaywrightPath = "/Users/frederickparent/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs";
 const issues = [];
 const submissions = [];
@@ -184,6 +185,23 @@ async function loadPlaywright() {
   } catch {
     return import("playwright");
   }
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function launchBrowserWithRetry(chromium, attempts = 3) {
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      return await chromium.launch({ headless: true });
+    } catch (error) {
+      lastError = error;
+      if (attempt < attempts) await sleep(500 * attempt);
+    }
+  }
+  throw lastError;
 }
 
 async function openFlow(page, baseUrl, flow) {
@@ -495,13 +513,14 @@ async function operatorReportFlow(page, baseUrl) {
   }, null, { timeout: 5000 });
 }
 
-const { server, baseUrl } = await startServer();
+const localServer = externalBaseUrl ? { server: null, baseUrl: externalBaseUrl } : await startServer();
+const { server, baseUrl } = localServer;
 let browser;
 let context;
 
 try {
   const { chromium } = await loadPlaywright();
-  browser = await chromium.launch({ headless: true });
+  browser = await launchBrowserWithRetry(chromium);
   context = await browser.newContext({ acceptDownloads: true });
   const page = await context.newPage();
 
@@ -584,7 +603,7 @@ try {
 } finally {
   if (context) await context.close();
   if (browser) await browser.close();
-  await new Promise((resolve) => server.close(resolve));
+  if (server) await new Promise((resolve) => server.close(resolve));
 }
 
 if (issues.length) {
@@ -593,4 +612,4 @@ if (issues.length) {
   process.exit(1);
 }
 
-console.log(`Browser flow QA passed for ${flows.length} form flows, 2 media flows, and operator reporting.`);
+console.log(`Browser flow QA passed for ${flows.length} form flows, 2 media flows, and operator reporting at ${baseUrl}.`);
