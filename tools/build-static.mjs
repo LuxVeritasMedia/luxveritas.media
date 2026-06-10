@@ -50,14 +50,14 @@ const codexEntries = [
   ["Outer", "Rooms Before Reach", "The work is built as an atmosphere first, then released to the public with care."],
 ];
 
-function asset(path) {
-  const depth = path.split("/").length - 1;
-  return `${"../".repeat(depth)}assets/luxveritas-threshold.png`;
-}
-
 function pagePath(path) {
   const depth = path.split("/").length - 1;
   return `${"../".repeat(depth)}`;
+}
+
+function publicUrl(path) {
+  const clean = path.replace(/\/index\.html$/, "/");
+  return `https://luxveritas.media${clean}`;
 }
 
 function link(current, href, label) {
@@ -68,6 +68,8 @@ function link(current, href, label) {
 function shell({ path, title, description, eyebrow = "Lux Veritas", body, heroClass = "", noindex = false }) {
   const root = pagePath(path);
   const navLinks = nav.map(([label, href]) => link(path, href, label)).join("");
+  const canonical = publicUrl(path);
+  const socialImage = "https://luxveritas.media/assets/luxveritas-threshold.png";
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -75,9 +77,16 @@ function shell({ path, title, description, eyebrow = "Lux Veritas", body, heroCl
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="${description}" />
     ${noindex ? '<meta name="robots" content="noindex, nofollow" />' : ""}
+    <link rel="canonical" href="${canonical}" />
     <meta property="og:title" content="${title}" />
     <meta property="og:description" content="${description}" />
-    <meta property="og:image" content="${asset(path)}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="${canonical}" />
+    <meta property="og:image" content="${socialImage}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${title}" />
+    <meta name="twitter:description" content="${description}" />
+    <meta name="twitter:image" content="${socialImage}" />
     <title>${title}</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070909'/%3E%3Cpath d='M18 48V16h6v27h18v5H18Zm21-32h7L34 48h-6l11-32Z' fill='%23c8a86a'/%3E%3C/svg%3E" />
     <link rel="stylesheet" href="${root}styles.css?v=${assetVersion}" />

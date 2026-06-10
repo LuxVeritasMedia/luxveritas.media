@@ -108,6 +108,20 @@ function htmlTarget(fromFile, href) {
   return normalize(join(dirname(relative(root, fromFile)), clean));
 }
 
+function metaContent(html, name) {
+  const nameMatch = html.match(new RegExp(`<meta\\b(?=[^>]*(?:name|property)=["']${name}["'])[^>]*content=["']([^"']+)["'][^>]*>`, "i"));
+  if (nameMatch) return nameMatch[1];
+  const contentFirst = html.match(new RegExp(`<meta\\b(?=[^>]*content=["']([^"']+)["'])(?=[^>]*(?:name|property)=["']${name}["'])[^>]*>`, "i"));
+  return contentFirst?.[1] || "";
+}
+
+function canonicalFor(rel) {
+  const clean = rel === "index.html"
+    ? "/"
+    : `/${rel.replace(/\/index\.html$/, "/")}`;
+  return `https://luxveritas.media${clean}`;
+}
+
 for (const file of requiredFiles) {
   try {
     await access(join(root, file));
@@ -148,6 +162,26 @@ for (const file of htmlFiles) {
 
   if (noindexRoutes.includes(rel) && !html.includes('name="robots" content="noindex, nofollow"')) {
     issues.push(`${rel}: expected noindex metadata`);
+  }
+
+  const canonical = html.match(/<link\b[^>]*rel=["']canonical["'][^>]*href=["']([^"']+)["'][^>]*>/i)?.[1] || "";
+  if (canonical !== canonicalFor(rel)) {
+    issues.push(`${rel}: canonical URL mismatch (${canonical || "missing"})`);
+  }
+  for (const property of ["og:title", "og:description", "og:type", "og:url", "og:image"]) {
+    if (!metaContent(html, property)) issues.push(`${rel}: missing ${property}`);
+  }
+  for (const name of ["twitter:card", "twitter:title", "twitter:description", "twitter:image"]) {
+    if (!metaContent(html, name)) issues.push(`${rel}: missing ${name}`);
+  }
+  if (metaContent(html, "og:url") !== canonical) {
+    issues.push(`${rel}: og:url does not match canonical`);
+  }
+  for (const imageField of ["og:image", "twitter:image"]) {
+    const image = metaContent(html, imageField);
+    if (image && !/^https:\/\/luxveritas\.media\/assets\//.test(image)) {
+      issues.push(`${rel}: ${imageField} is not an absolute Lux Veritas asset URL`);
+    }
   }
 
   if (expectedAssetVersion) {

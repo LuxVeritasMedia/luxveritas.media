@@ -109,6 +109,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Remove `mailto:` form actions from generated public pages and add QA coverage to prevent regressions.
 - [x] Add deploy-artifact button QA for dead public buttons.
 - [x] Add public-site QA for internal links, nav/footer, noindex routes, banned terms, and media requirements.
+- [x] Add public-site QA for canonical, Open Graph, and Twitter share metadata.
 - [x] Add private noindex local activity report for pilot testing.
 - [x] Add private noindex operator activity report for stored submissions and consented events.
 - [x] Add structured CTA, nav, link, and report-action tracking for consented engagement reporting.
