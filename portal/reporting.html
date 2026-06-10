@@ -49,6 +49,7 @@
       <div class="report-grid" aria-label="Private activity totals">
         <article><span>Submissions</span><strong data-private-count="submissions">-</strong><small>Stored public requests</small></article>
         <article><span>Events</span><strong data-private-count="events">-</strong><small>Consented site actions</small></article>
+        <article><span>Accepted Handoffs</span><strong data-private-count="privateHandoffs">-</strong><small>Signed bridge receipts</small></article>
         <article><span>Pending Inbox</span><strong data-private-count="pendingNotifications">-</strong><small>Stored records awaiting email</small></article>
         <article><span>Pending Handoff</span><strong data-private-count="pendingIntegrations">-</strong><small>Stored records awaiting private routing</small></article>
         <article><span>Inbox</span><strong data-private-delivery="status">-</strong><small data-private-delivery="detail">Load private activity</small></article>
@@ -96,6 +97,10 @@
         <div>
           <p class="kicker">Integrations</p>
           <ul class="report-list" data-private-summary="integrations"><li>Load private activity to view routing status.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Handoff Records</p>
+          <ul class="report-list" data-private-summary="handoffs"><li>Load private activity to view accepted handoffs.</li></ul>
         </div>
         <div>
           <p class="kicker">Engagement</p>

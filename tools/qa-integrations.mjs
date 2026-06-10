@@ -43,6 +43,9 @@ for (const marker of [
   "pendingIntegrationCount",
   "pendingNotifications",
   "pendingIntegrations",
+  "privateHandoffs",
+  "cleanHandoffDoc",
+  "summarizeHandoffs",
   "routing_queue",
   "routing_next_action",
   "public_terms_version",
@@ -90,6 +93,7 @@ for (const marker of [
   "data-report-action=\"replay-integration\"",
   "data-private-count=\"pendingNotifications\"",
   "data-private-count=\"pendingIntegrations\"",
+  "data-private-count=\"privateHandoffs\"",
   "data-private-delivery=\"target\"",
   "data-private-delivery=\"targetDetail\"",
   "data-private-auth=\"mode\"",
@@ -98,6 +102,7 @@ for (const marker of [
   "data-launch-readiness-summary",
   "data-private-summary=\"routing\"",
   "data-private-summary=\"delivery\"",
+  "data-private-summary=\"handoffs\"",
   "data-private-summary=\"ctas\"",
   "Integrations"
 ]) {
@@ -114,6 +119,7 @@ for (const marker of [
   "renderPrivateSummary(panel, \"delivery\"",
   "renderPrivateSummary(panel, \"ctas\"",
   "renderPrivateSummary(panel, \"integrations\"",
+  "renderPrivateSummary(panel, \"handoffs\"",
   "renderPrivateFunnel",
   "integrationTargetConfigured",
   "operatorTokenConfigured",

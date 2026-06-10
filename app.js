@@ -969,6 +969,7 @@ function renderPrivateReport(report) {
   renderPrivateSummary(panel, "routing", report.summary?.submissions?.byRoutingQueue);
   renderPrivateSummary(panel, "delivery", report.summary?.submissions?.byDeliveryStatus);
   renderPrivateSummary(panel, "integrations", report.summary?.submissions?.byIntegrationStatus);
+  renderPrivateSummary(panel, "handoffs", report.summary?.handoffs?.byTarget || report.summary?.handoffs?.byRoutingQueue);
   renderPrivateSummary(panel, "events", report.summary?.events?.byEvent);
   renderPrivateSummary(panel, "ctas", report.summary?.events?.byCtaId || report.summary?.events?.byCtaLabel);
   renderPrivateSummary(panel, "destinations", report.summary?.events?.byDestination || report.summary?.events?.byPage);
@@ -978,8 +979,9 @@ function renderPrivateReport(report) {
 
   const items = [
     ...(report.latest?.submissions || []).map((item) => ({ ...item, type: "submission" })),
-    ...(report.latest?.events || []).map((item) => ({ ...item, type: "event" }))
-  ].sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || ""))).slice(0, 12);
+    ...(report.latest?.events || []).map((item) => ({ ...item, type: "event" })),
+    ...(report.latest?.handoffs || []).map((item) => ({ ...item, type: "handoff" }))
+  ].sort((a, b) => String(b.updatedAt || b.createdAt || "").localeCompare(String(a.updatedAt || a.createdAt || ""))).slice(0, 12);
 
   if (!items.length) {
     list.innerHTML = "<li>No protected activity found yet.</li>";
@@ -987,9 +989,9 @@ function renderPrivateReport(report) {
   }
 
   list.innerHTML = items.map((item) => {
-    const label = item.client_submission_id || item.event || item.type || "activity";
-    const detail = item.routing_label || item.routing_queue || item.detail?.destination || item.detail?.formType || item.detail?.surface || item.formType || item.inquiry_type || item.page || item.role_path || "Lux Veritas";
-    const time = item.createdAt ? new Date(item.createdAt).toLocaleString() : "Recent";
+    const label = item.receiptId || item.client_submission_id || item.event || item.type || "activity";
+    const detail = item.integrationTarget || item.routing_label || item.routing_queue || item.detail?.destination || item.detail?.formType || item.detail?.surface || item.formType || item.inquiry_type || item.page || item.sourcePage || item.role_path || "Lux Veritas";
+    const time = item.updatedAt || item.createdAt ? new Date(item.updatedAt || item.createdAt).toLocaleString() : "Recent";
     return `<li><strong>${escapeHtml(label)}</strong><span>${escapeHtml(detail)}</span><small>${escapeHtml(time)}</small></li>`;
   }).join("");
 }

@@ -182,6 +182,8 @@ After the private integration target and target profile are configured, use `Rep
 
 The MVP includes a signed internal Firebase receiver, `receivePrivateHandoff`, for a real private intake queue before GoHighLevel or Google Suite automation is selected. It requires `X-Lux-Signature`, validates `luxveritas.form_submission.v1`, and stores accepted payloads in the protected `private_handoffs` collection. This is a server-side bridge only; public pages still post only to `/api/submit`.
 
+The private operator report includes accepted handoff counts, recent handoff receipts, and handoff summaries by target, event type, source page, and routing queue. Pending handoffs still come from submission records whose `integrationStatus` has not reached `sent`; accepted handoffs come from the protected `private_handoffs` collection.
+
 ```bash
 LUX_FORM_INTEGRATION_URL="https://..." \
 LUX_FORM_INTEGRATION_SIGNING_SECRET="approved-shared-secret" \

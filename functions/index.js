@@ -382,6 +382,26 @@ function cleanDoc(snapshot) {
   };
 }
 
+function cleanHandoffDoc(snapshot) {
+  const data = snapshot.data() || {};
+  const createdAt = data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : null;
+  const updatedAt = data.updatedAt?.toDate ? data.updatedAt.toDate().toISOString() : null;
+  return {
+    id: snapshot.id,
+    createdAt,
+    updatedAt,
+    eventType: data.eventType || null,
+    integrationTarget: data.integrationTarget || null,
+    submissionId: data.submissionId || null,
+    receiptId: data.receiptId || null,
+    source: data.source || null,
+    sourcePage: data.sourcePage || null,
+    routing_queue: data.routing?.queue || null,
+    routing_label: data.routing?.label || null,
+    contact_email: data.contact?.email || null
+  };
+}
+
 function cleanReplayDoc(snapshot) {
   const data = snapshot.data() || {};
   const routing = deriveRouting(data);
@@ -510,6 +530,16 @@ function summarizeActivity(submissionDocs, eventDocs) {
       byDestination: topCounts(eventItems, (item) => item.detail?.destination),
       mediaDemand: topCounts(eventItems.filter((item) => item.event === "media_action"), (item) => item.detail?.action || item.detail?.title)
     }
+  };
+}
+
+function summarizeHandoffs(handoffDocs) {
+  const handoffItems = handoffDocs.map((snapshot) => snapshot.data() || {});
+  return {
+    byTarget: topCounts(handoffItems, (item) => item.integrationTarget),
+    byEventType: topCounts(handoffItems, (item) => item.eventType),
+    bySourcePage: topCounts(handoffItems, (item) => item.sourcePage),
+    byRoutingQueue: topCounts(handoffItems, (item) => item.routing?.label || item.routing?.queue)
   };
 }
 
@@ -1138,17 +1168,21 @@ export const reportActivity = onRequest(
     const db = getDb();
     const submissions = db.collection("form_submissions");
     const events = db.collection("site_events");
+    const handoffs = db.collection("private_handoffs");
 
     try {
-      const [submissionCount, eventCount, pendingNotifications, pendingIntegrations, latestSubmissions, latestEvents, summarySubmissions, summaryEvents] = await Promise.all([
+      const [submissionCount, eventCount, handoffCount, pendingNotifications, pendingIntegrations, latestSubmissions, latestEvents, latestHandoffs, summarySubmissions, summaryEvents, summaryHandoffs] = await Promise.all([
         collectionCount(submissions),
         collectionCount(events),
+        collectionCount(handoffs),
         pendingNotificationCount(submissions),
         pendingIntegrationCount(submissions),
         submissions.orderBy("createdAt", "desc").limit(20).get(),
         events.orderBy("createdAt", "desc").limit(20).get(),
+        handoffs.orderBy("updatedAt", "desc").limit(20).get(),
         submissions.orderBy("createdAt", "desc").limit(200).get(),
-        events.orderBy("createdAt", "desc").limit(300).get()
+        events.orderBy("createdAt", "desc").limit(300).get(),
+        handoffs.orderBy("updatedAt", "desc").limit(200).get()
       ]);
 
       json(res, 200, {
@@ -1159,15 +1193,20 @@ export const reportActivity = onRequest(
         counts: {
           submissions: submissionCount,
           events: eventCount,
+          privateHandoffs: handoffCount,
           pendingNotifications,
           pendingIntegrations
         },
         latest: {
           submissions: latestSubmissions.docs.map(cleanDoc),
-          events: latestEvents.docs.map(cleanDoc)
+          events: latestEvents.docs.map(cleanDoc),
+          handoffs: latestHandoffs.docs.map(cleanHandoffDoc)
         },
         delivery: deliveryReadiness(),
-        summary: summarizeActivity(summarySubmissions.docs, summaryEvents.docs)
+        summary: {
+          ...summarizeActivity(summarySubmissions.docs, summaryEvents.docs),
+          handoffs: summarizeHandoffs(summaryHandoffs.docs)
+        }
       });
     } catch (error) {
       logger.error("Activity report failed", {

@@ -17,6 +17,7 @@ const mockReport = {
   counts: {
     submissions: 42,
     events: 128,
+    privateHandoffs: 9,
     pendingNotifications: 7,
     pendingIntegrations: 11
   },
@@ -54,6 +55,22 @@ const mockReport = {
           destination: "/spmvp.html"
         }
       }
+    ],
+    handoffs: [
+      {
+        id: "handoff_qa_1",
+        createdAt: "2026-06-09T00:02:00.000Z",
+        updatedAt: "2026-06-09T00:03:00.000Z",
+        eventType: "form.submission.received",
+        integrationTarget: "firebase_handoff",
+        submissionId: "sub_qa_1",
+        receiptId: "LV-QA-HANDOFF",
+        source: "luxveritas.media",
+        sourcePage: "/membership.html",
+        routing_queue: "membership_waitlist",
+        routing_label: "Membership Waitlist",
+        contact_email: "qa@luxveritas.media"
+      }
     ]
   },
   delivery: {
@@ -79,6 +96,12 @@ const mockReport = {
       byRoutingPriority: [{ label: "standard", count: 24 }],
       byDeliveryStatus: [{ label: "stored", count: 35 }, { label: "email_provider_not_configured", count: 7 }],
       byIntegrationStatus: [{ label: "integration_not_configured", count: 42 }]
+    },
+    handoffs: {
+      byTarget: [{ label: "firebase_handoff", count: 9 }],
+      byEventType: [{ label: "form.submission.received", count: 9 }],
+      bySourcePage: [{ label: "/membership.html", count: 6 }],
+      byRoutingQueue: [{ label: "Membership Waitlist", count: 6 }]
     },
     events: {
       byEvent: [{ label: "media_action", count: 64 }],
@@ -345,6 +368,7 @@ async function operatorReportFlow(page, baseUrl) {
 
   const submissionCount = await page.locator('[data-private-count="submissions"]').innerText();
   const eventCount = await page.locator('[data-private-count="events"]').innerText();
+  const privateHandoffCount = await page.locator('[data-private-count="privateHandoffs"]').innerText();
   const pendingHandoffCount = await page.locator('[data-private-count="pendingIntegrations"]').innerText();
   const deliveryStatus = await page.locator('[data-private-delivery="status"]').innerText();
   const deliveryDetail = await page.locator('[data-private-delivery="detail"]').innerText();
@@ -357,6 +381,7 @@ async function operatorReportFlow(page, baseUrl) {
   const routingSummary = await page.locator('[data-private-summary="routing"]').innerText();
   const deliverySummary = await page.locator('[data-private-summary="delivery"]').innerText();
   const integrationsSummary = await page.locator('[data-private-summary="integrations"]').innerText();
+  const handoffsSummary = await page.locator('[data-private-summary="handoffs"]').innerText();
   const eventsSummary = await page.locator('[data-private-summary="events"]').innerText();
   const ctasSummary = await page.locator('[data-private-summary="ctas"]').innerText();
   const destinationsSummary = await page.locator('[data-private-summary="destinations"]').innerText();
@@ -367,6 +392,7 @@ async function operatorReportFlow(page, baseUrl) {
 
   if (submissionCount !== "42") issues.push(`/portal/reporting.html: expected 42 submissions, found ${submissionCount}`);
   if (eventCount !== "128") issues.push(`/portal/reporting.html: expected 128 events, found ${eventCount}`);
+  if (privateHandoffCount !== "9") issues.push(`/portal/reporting.html: expected 9 accepted handoffs, found ${privateHandoffCount}`);
   if (pendingHandoffCount !== "11") issues.push(`/portal/reporting.html: expected 11 pending integrations, found ${pendingHandoffCount}`);
   if (deliveryStatus !== "Setup") issues.push(`/portal/reporting.html: expected delivery setup status, found ${deliveryStatus}`);
   if (!/RESEND_API_KEY/.test(deliveryDetail) || !/FORM_INTEGRATION_URL/.test(deliveryDetail) || !/FORM_INTEGRATION_TARGET/.test(deliveryDetail)) {
@@ -387,6 +413,7 @@ async function operatorReportFlow(page, baseUrl) {
     ["routing", routingSummary],
     ["delivery", deliverySummary],
     ["integrations", integrationsSummary],
+    ["handoffs", handoffsSummary],
     ["events", eventsSummary],
     ["ctas", ctasSummary],
     ["destinations", destinationsSummary],
@@ -405,6 +432,9 @@ async function operatorReportFlow(page, baseUrl) {
   }
   if (!/email_provider_not_configured/.test(deliverySummary)) {
     issues.push(`/portal/reporting.html: inbox outcomes summary missing mocked delivery status`);
+  }
+  if (!/firebase_handoff/.test(handoffsSummary) || !/LV-QA-HANDOFF/.test(latest)) {
+    issues.push(`/portal/reporting.html: accepted handoff records did not render`);
   }
   if (!/media__media_action__play/.test(ctasSummary)) {
     issues.push(`/portal/reporting.html: CTA signal summary missing mocked CTA ID`);
