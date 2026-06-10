@@ -191,6 +191,15 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+async function waitForCondition(condition, timeoutMs = 3000, intervalMs = 50) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (condition()) return true;
+    await sleep(intervalMs);
+  }
+  return condition();
+}
+
 async function launchBrowserWithRetry(chromium, attempts = 3) {
   let lastError;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
@@ -307,6 +316,61 @@ async function mediaFlow(page, baseUrl, path) {
     }
   } else if (mediaEvent.detail?.source_status !== "queued" || mediaEvent.detail?.source_ready !== false) {
     issues.push(`${path}: media event did not report queued source state`);
+  }
+}
+
+async function interactionReportingFlow(page, baseUrl) {
+  await page.goto(`${baseUrl}/index.html`, { waitUntil: "domcontentloaded" });
+  await page.evaluate(() => localStorage.removeItem("luxveritas_consent"));
+  await page.reload({ waitUntil: "domcontentloaded" });
+  const beforeConsentEvents = events.length;
+  await page.waitForSelector('[data-consent="accepted"]', { timeout: 5000 });
+  await page.click('[data-consent="accepted"]');
+  await waitForCondition(() => events.length > beforeConsentEvents);
+  const consentEvent = events.slice(beforeConsentEvents).find((item) => item.event === "consent_update");
+  if (!consentEvent) {
+    issues.push(`/index.html: consent button did not report consent_update`);
+  } else {
+    for (const field of ["cta_id", "label", "surface", "intent", "value"]) {
+      if (consentEvent.detail?.[field] == null) issues.push(`/index.html: consent_update missing ${field}`);
+    }
+    if (consentEvent.detail?.value !== "accepted") {
+      issues.push(`/index.html: consent_update reported unexpected value ${consentEvent.detail?.value || "missing"}`);
+    }
+  }
+
+  const beforeCloseEvents = events.length;
+  await page.click('button[data-open-form="request"]');
+  await page.waitForSelector("[data-dialog][open]", { timeout: 5000 });
+  await page.click("[data-close-dialog]");
+  await waitForCondition(() => events.length > beforeCloseEvents);
+  const closeEvent = events.slice(beforeCloseEvents).find((item) => item.event === "dialog_close");
+  if (!closeEvent) {
+    issues.push(`/index.html: dialog close button did not report dialog_close`);
+  } else {
+    if (!closeEvent.detail?.cta_id || closeEvent.detail?.dialog !== "capture") {
+      issues.push(`/index.html: dialog_close missing stable detail`);
+    }
+  }
+
+  await page.goto(`${baseUrl}/music.html`, { waitUntil: "domcontentloaded" });
+  await page.evaluate(() => localStorage.setItem("luxveritas_consent", "accepted"));
+  await page.reload({ waitUntil: "domcontentloaded" });
+  const mediaItems = page.locator("[data-media-item]");
+  if (await mediaItems.count() < 2) {
+    issues.push(`/music.html: expected at least two media items for selection reporting`);
+    return;
+  }
+  const beforeSelectEvents = events.length;
+  await mediaItems.nth(1).click();
+  await waitForCondition(() => events.length > beforeSelectEvents);
+  const selectEvent = events.slice(beforeSelectEvents).find((item) => item.event === "media_select");
+  if (!selectEvent) {
+    issues.push(`/music.html: media item button did not report media_select`);
+  } else {
+    for (const field of ["cta_id", "media_id", "title", "source_status", "reporting_key"]) {
+      if (selectEvent.detail?.[field] == null) issues.push(`/music.html: media_select missing ${field}`);
+    }
   }
 }
 
@@ -593,6 +657,7 @@ try {
   for (const flow of flows) {
     await openFlow(page, baseUrl, flow);
   }
+  await interactionReportingFlow(page, baseUrl);
   for (const path of ["/music.html", "/spmvp.html"]) {
     await mediaFlow(page, baseUrl, path);
   }
@@ -612,4 +677,4 @@ if (issues.length) {
   process.exit(1);
 }
 
-console.log(`Browser flow QA passed for ${flows.length} form flows, 2 media flows, and operator reporting at ${baseUrl}.`);
+console.log(`Browser flow QA passed for ${flows.length} form flows, 2 media flows, interaction reporting, and operator reporting at ${baseUrl}.`);
