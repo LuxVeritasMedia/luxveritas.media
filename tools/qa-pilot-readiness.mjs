@@ -6,6 +6,12 @@ const strict = process.env.LUX_PILOT_STRICT === "1";
 const includeBrowser = process.env.LUX_PILOT_BROWSER === "1";
 const includeLive = process.env.LUX_PILOT_LIVE === "1";
 const node = process.execPath;
+
+const setupChecks = [
+  ["Build Static", "tools/build-static.mjs"],
+  ["Prepare Hosting", "tools/prepare-hosting.mjs"]
+];
+
 const checks = [
   ["Buttons", "tools/qa-buttons.mjs"],
   ["Public Site", "tools/qa-public-site.mjs"],
@@ -76,8 +82,9 @@ async function runCheck(label, script) {
 console.log("Lux Veritas pilot readiness QA");
 console.log(`Browser-flow coverage: ${includeBrowser ? "enabled" : "disabled"} (set LUX_PILOT_BROWSER=1 to enable)`);
 console.log(`Live readiness coverage: ${includeLive ? "enabled" : "disabled"} (set LUX_PILOT_LIVE=1 to enable)`);
+console.log("Preparing fresh static and hosting artifacts before QA.");
 
-for (const [label, script] of checks) {
+for (const [label, script] of [...setupChecks, ...checks]) {
   await runCheck(label, script);
 }
 

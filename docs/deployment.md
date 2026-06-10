@@ -9,6 +9,14 @@ node tools/build-static.mjs
 python3 -m http.server 4173
 ```
 
+Run the pilot readiness gate before release checks or deploys:
+
+```bash
+node tools/qa-pilot-readiness.mjs
+```
+
+This command rebuilds the static site, prepares the Firebase Hosting artifact, then runs the local public-site, button, access, integration, mobile, accessibility, hosting, and workflow QA gates against the fresh output. Use `LUX_PILOT_BROWSER=1` for browser-flow coverage and `LUX_PILOT_LIVE=1` after deployment credentials and live provider setup are ready.
+
 Firebase Hosting serves the static site and rewrites:
 
 - `/api/submit` to the Firebase Function `submitForm`
