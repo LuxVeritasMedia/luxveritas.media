@@ -67,6 +67,8 @@ The public web app manifest is deployed at `/site.webmanifest` with Lux Veritas 
 
 The public offline fallback is deployed at `/offline.html` and registered through `/service-worker.js`. The service worker only handles same-origin GET requests, skips `/api/` requests, and uses the offline page for failed navigation requests; it is a progressive enhancement, not a replacement for live form, reporting, or media delivery.
 
+Firebase Hosting serves `/service-worker.js` with `Cache-Control: no-cache` so offline-shell updates can activate promptly instead of being held behind normal app-script caching.
+
 Attach approved release media only after the public audio, visual, and radio/stream URLs are cleared for launch:
 
 ```bash

@@ -105,11 +105,21 @@ if (offlineHtml) {
   }
 }
 
-const serviceWorker = await checkRoute("/service-worker.js");
-if (serviceWorker) {
-  for (const marker of ["luxveritas-static-", "/offline.html", "request.mode === \"navigate\"", "/api/"]) {
-    if (!serviceWorker.includes(marker)) issues.push(`/service-worker.js: missing ${marker}`);
+try {
+  const { response, text } = await fetchWithTimeout("/service-worker.js");
+  if (!response.ok) {
+    issues.push(`/service-worker.js: expected HTTP 200, received ${response.status}`);
+  } else {
+    for (const marker of ["luxveritas-static-", "/offline.html", "request.mode === \"navigate\"", "/api/"]) {
+      if (!text.includes(marker)) issues.push(`/service-worker.js: missing ${marker}`);
+    }
+    const cacheControl = response.headers.get("cache-control");
+    if (cacheControl !== "no-cache") {
+      issues.push(`/service-worker.js: expected Cache-Control no-cache, received ${cacheControl || "missing"}`);
+    }
   }
+} catch (error) {
+  issues.push(`/service-worker.js: request failed (${error.message})`);
 }
 
 const reportHtml = await checkRoute("/portal/reporting.html");

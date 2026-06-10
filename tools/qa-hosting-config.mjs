@@ -50,6 +50,11 @@ if (appHeaders.get("Cache-Control") !== "public,max-age=300") {
   issues.push("app asset cache header is missing short cache policy");
 }
 
+const serviceWorkerHeaders = headerMap("/service-worker.js");
+if (serviceWorkerHeaders.get("Cache-Control") !== "no-cache") {
+  issues.push("service worker cache header must be no-cache");
+}
+
 for (const [source, functionId] of [
   ["/api/submit", "submitForm"],
   ["/api/event", "trackSiteEvent"],
