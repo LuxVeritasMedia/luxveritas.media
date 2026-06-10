@@ -751,4 +751,17 @@ Disallow: /brands/
 Disallow: /investor.html
 `);
 
+await writeFile("data/lux-build-manifest.json", `${JSON.stringify({
+  schemaVersion: "luxveritas.build_manifest.v1",
+  version: assetVersion,
+  assetVersion,
+  mediaManifestVersion: mediaManifest.version,
+  publicTermsVersion: publicTerms.version,
+  routeCount: pages.length,
+  publicRouteCount: publicPaths.length,
+  appScript: `app.js?v=${assetVersion}`,
+  stylesheet: `styles.css?v=${assetVersion}`
+}, null, 2)}
+`);
+
 console.log(`Built ${pages.length} pages.`);

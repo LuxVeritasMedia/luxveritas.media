@@ -134,19 +134,23 @@ function legalItemApproved(legalReview, id) {
   return Boolean(item?.status === "approved" && item.reviewedAt && item.reviewedBy);
 }
 
-const [todo, manifestRaw, checklistRaw, legalReviewRaw, publicTermsRaw, workflow] = await Promise.all([
+const [todo, manifestRaw, buildManifestRaw, checklistRaw, legalReviewRaw, publicTermsRaw, buildScript, workflow] = await Promise.all([
   readFile("TODO.md", "utf8"),
   readFile("data/lux-media-manifest.json", "utf8"),
+  readFile("data/lux-build-manifest.json", "utf8"),
   readFile("data/lux-launch-readiness.json", "utf8"),
   readFile("data/lux-legal-review.json", "utf8"),
   readFile("data/lux-public-terms.json", "utf8"),
+  readFile("tools/build-static.mjs", "utf8"),
   readFile(".github/workflows/firebase-hosting-live.yml", "utf8")
 ]);
 
 const mediaManifest = JSON.parse(manifestRaw);
+const buildManifest = JSON.parse(buildManifestRaw);
 const launchChecklist = JSON.parse(checklistRaw);
 const legalReview = JSON.parse(legalReviewRaw);
 const publicTerms = JSON.parse(publicTermsRaw);
+const expectedAssetVersion = buildScript.match(/const assetVersion = "([^"]+)"/)?.[1] || "";
 const mediaItems = Array.isArray(mediaManifest.items) ? mediaManifest.items : [];
 const launchGates = Array.isArray(launchChecklist.gates) ? launchChecklist.gates : [];
 const launchGateIds = new Set(launchGates.map((gate) => gate.id));
@@ -163,6 +167,11 @@ if (providerReadiness.error) warnings.push(providerReadiness.error);
 
 add(mediaItems.length > 0, "Media manifest contains release items.");
 add(mediaManifest.schemaVersion === "luxveritas.media_manifest.v1", "Media manifest schema version is current.");
+add(buildManifest.schemaVersion === "luxveritas.build_manifest.v1", "Build manifest schema version is current.");
+add(Boolean(expectedAssetVersion), "Build script exposes an asset version.");
+add(buildManifest.assetVersion === expectedAssetVersion && buildManifest.version === expectedAssetVersion, "Build manifest asset version matches the generated app version.");
+add(buildManifest.appScript === `app.js?v=${expectedAssetVersion}` && buildManifest.stylesheet === `styles.css?v=${expectedAssetVersion}`, "Build manifest lists current app and stylesheet assets.");
+add(Boolean(buildManifest.mediaManifestVersion && buildManifest.publicTermsVersion), "Build manifest carries media and public terms version pointers.");
 add(publicTerms.schemaVersion === "luxveritas.public_terms.v1", "Public terms version manifest is current.");
 add(Boolean(publicTerms.version && publicTerms.privacyVersion && publicTerms.termsVersion && publicTerms.submissionTermsVersion), "Public terms manifest contains active legal version IDs.");
 add(launchGates.length >= 6, "Launch readiness checklist contains required launch gates.");

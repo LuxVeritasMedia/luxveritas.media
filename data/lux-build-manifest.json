@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "luxveritas.build_manifest.v1",
+  "version": "20260610-release-readiness",
+  "assetVersion": "20260610-release-readiness",
+  "mediaManifestVersion": "2026-06-10-mvp-media-preview",
+  "publicTermsVersion": "2026-06-09-public-capture",
+  "routeCount": 36,
+  "publicRouteCount": 20,
+  "appScript": "app.js?v=20260610-release-readiness",
+  "stylesheet": "styles.css?v=20260610-release-readiness"
+}

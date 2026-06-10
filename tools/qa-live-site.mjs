@@ -91,6 +91,32 @@ if (reportHtml) {
 }
 
 try {
+  const { response, text } = await fetchWithTimeout("/data/lux-build-manifest.json");
+  if (!response.ok) {
+    issues.push(`/data/lux-build-manifest.json: expected HTTP 200, received ${response.status}`);
+  } else {
+    const buildManifest = JSON.parse(text);
+    if (buildManifest.schemaVersion !== "luxveritas.build_manifest.v1") {
+      issues.push("/data/lux-build-manifest.json: schemaVersion mismatch");
+    }
+    if (buildManifest.version !== expectedAssetVersion || buildManifest.assetVersion !== expectedAssetVersion) {
+      issues.push(`/data/lux-build-manifest.json: stale asset version ${buildManifest.assetVersion || buildManifest.version || "missing"}`);
+    }
+    if (buildManifest.appScript !== `app.js?v=${expectedAssetVersion}`) {
+      issues.push("/data/lux-build-manifest.json: appScript does not match current asset version");
+    }
+    if (buildManifest.stylesheet !== `styles.css?v=${expectedAssetVersion}`) {
+      issues.push("/data/lux-build-manifest.json: stylesheet does not match current asset version");
+    }
+    if (!buildManifest.mediaManifestVersion || !buildManifest.publicTermsVersion) {
+      issues.push("/data/lux-build-manifest.json: missing mediaManifestVersion or publicTermsVersion");
+    }
+  }
+} catch (error) {
+  issues.push(`/data/lux-build-manifest.json: invalid response (${error.message})`);
+}
+
+try {
   const { response, text } = await fetchWithTimeout("/data/lux-media-manifest.json");
   if (!response.ok) {
     issues.push(`/data/lux-media-manifest.json: expected HTTP 200, received ${response.status}`);

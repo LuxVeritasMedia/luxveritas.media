@@ -11,6 +11,7 @@ const requiredFiles = [
   "sitemap.xml",
   "data/lux-launch-readiness.json",
   "data/lux-media-manifest.json",
+  "data/lux-build-manifest.json",
   "data/lux-legal-review.json",
   "data/lux-public-terms.json",
   "assets/luxveritas-threshold.png",
@@ -179,15 +180,44 @@ for (const pattern of bannedTerms) {
 }
 
 const mediaManifestRaw = await readFile(join(root, "data/lux-media-manifest.json"), "utf8");
+const buildManifestRaw = await readFile(join(root, "data/lux-build-manifest.json"), "utf8");
 const deploymentDoc = await readFile("docs/deployment.md", "utf8");
 const launchReadinessRaw = await readFile(join(root, "data/lux-launch-readiness.json"), "utf8");
 const legalReviewRaw = await readFile(join(root, "data/lux-legal-review.json"), "utf8");
 const publicTermsRaw = await readFile(join(root, "data/lux-public-terms.json"), "utf8");
 for (const pattern of bannedTerms) {
+  if (pattern.test(buildManifestRaw)) issues.push(`data/lux-build-manifest.json: banned public term matched ${pattern}`);
   if (pattern.test(launchReadinessRaw)) issues.push(`data/lux-launch-readiness.json: banned public term matched ${pattern}`);
   if (pattern.test(mediaManifestRaw)) issues.push(`data/lux-media-manifest.json: banned public term matched ${pattern}`);
   if (pattern.test(legalReviewRaw)) issues.push(`data/lux-legal-review.json: banned public term matched ${pattern}`);
   if (pattern.test(publicTermsRaw)) issues.push(`data/lux-public-terms.json: banned public term matched ${pattern}`);
+}
+
+try {
+  const buildManifest = JSON.parse(buildManifestRaw);
+  if (buildManifest.schemaVersion !== "luxveritas.build_manifest.v1") {
+    issues.push("data/lux-build-manifest.json: missing schemaVersion luxveritas.build_manifest.v1");
+  }
+  if (buildManifest.version !== expectedAssetVersion) {
+    issues.push(`data/lux-build-manifest.json: version ${buildManifest.version || "missing"} does not match ${expectedAssetVersion}`);
+  }
+  if (buildManifest.assetVersion !== expectedAssetVersion) {
+    issues.push(`data/lux-build-manifest.json: assetVersion ${buildManifest.assetVersion || "missing"} does not match ${expectedAssetVersion}`);
+  }
+  if (buildManifest.appScript !== `app.js?v=${expectedAssetVersion}`) {
+    issues.push("data/lux-build-manifest.json: appScript does not match current asset version");
+  }
+  if (buildManifest.stylesheet !== `styles.css?v=${expectedAssetVersion}`) {
+    issues.push("data/lux-build-manifest.json: stylesheet does not match current asset version");
+  }
+  if (buildManifest.routeCount !== htmlFiles.length) {
+    issues.push(`data/lux-build-manifest.json: routeCount ${buildManifest.routeCount} does not match ${htmlFiles.length} generated HTML files`);
+  }
+  if (!buildManifest.publicRouteCount || !buildManifest.mediaManifestVersion || !buildManifest.publicTermsVersion) {
+    issues.push("data/lux-build-manifest.json: missing publicRouteCount, mediaManifestVersion, or publicTermsVersion");
+  }
+} catch (error) {
+  issues.push(`data/lux-build-manifest.json: invalid JSON (${error.message})`);
 }
 
 try {

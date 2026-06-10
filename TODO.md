@@ -127,6 +127,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Accept Firebase-provided A or CNAME records for `www` release-readiness checks.
 - [x] Add provider-readiness QA for secret metadata and live inbox/handoff status.
 - [x] Add deploy-artifact QA for private launch-gates reporting.
+- [x] Add public build manifest for asset, media, and legal-version diagnostics.
 
 ## P7 - Media MVP
 - [x] Add Lux Player MVP to Music and SPMVP with listen/watch/radio actions.
