@@ -888,6 +888,7 @@ function localReportRows(report) {
 function privateReportRows(report) {
   const submissions = report.latest?.submissions || [];
   const events = report.latest?.events || [];
+  const handoffs = report.latest?.handoffs || [];
   return [
     ...submissions.map((item) => ({
       source: "protected",
@@ -904,6 +905,14 @@ function privateReportRows(report) {
       page: item.page || "",
       label: item.detail?.label || item.detail?.surface || item.detail?.action || "",
       detail: item.detail?.destination || item.detail?.formType || item.detail?.title || ""
+    })),
+    ...handoffs.map((item) => ({
+      source: "protected",
+      type: "handoff",
+      timestamp: item.updatedAt || item.createdAt || "",
+      page: item.sourcePage || "",
+      label: item.receiptId || item.submissionId || "",
+      detail: item.integrationTarget || item.routing_label || item.routing_queue || item.eventType || ""
     }))
   ];
 }

@@ -436,6 +436,16 @@ async function operatorReportFlow(page, baseUrl) {
   if (!/firebase_handoff/.test(handoffsSummary) || !/LV-QA-HANDOFF/.test(latest)) {
     issues.push(`/portal/reporting.html: accepted handoff records did not render`);
   }
+  const handoffExportReady = await page.evaluate(() => {
+    return privateReportRows(privateReportCache).some((row) => (
+      row.type === "handoff"
+      && row.label === "LV-QA-HANDOFF"
+      && row.detail === "firebase_handoff"
+    ));
+  });
+  if (!handoffExportReady) {
+    issues.push(`/portal/reporting.html: accepted handoff records were missing from private export rows`);
+  }
   if (!/media__media_action__play/.test(ctasSummary)) {
     issues.push(`/portal/reporting.html: CTA signal summary missing mocked CTA ID`);
   }

@@ -123,6 +123,8 @@ for (const marker of [
   "renderPrivateSummary(panel, \"ctas\"",
   "renderPrivateSummary(panel, \"integrations\"",
   "renderPrivateSummary(panel, \"handoffs\"",
+  "type: \"handoff\"",
+  "privateReportRows",
   "renderPrivateFunnel",
   "integrationTargetConfigured",
   "operatorTokenConfigured",

@@ -52,6 +52,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add direct QA coverage for the private integration payload contract.
 - [x] Add protected private handoff target metadata for launch-gate reporting.
 - [x] Add protected accepted-handoff counts and latest handoff records to operator reporting.
+- [x] Include accepted handoff records in protected operator exports.
 - [x] Add operator reporting token status to launch-gate reporting.
 - [x] Add screened intake routing fields for Phase 6 reporting and future server-side handoff.
 - [x] Add public terms version IDs to capture, reporting, and private handoff payloads.
