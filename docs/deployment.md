@@ -23,6 +23,8 @@ firebase deploy --only hosting,functions
 
 The deploy ignore list excludes source briefs, extraction text, QA screenshots, and generation tooling.
 
+Firebase Hosting applies baseline public headers for static pages and assets: `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `X-Frame-Options`, and `Strict-Transport-Security`. Keep these in `firebase.json` and verify them with `node tools/qa-hosting-config.mjs`; live header verification is part of `node tools/qa-live-site.mjs`.
+
 ## Current Form Relay
 
 The public form posts to `/api/submit`.
@@ -239,6 +241,7 @@ node tools/qa-form-delivery.mjs
 node tools/qa-integrations.mjs
 node tools/qa-integration-contract.mjs
 node tools/qa-media-contract.mjs
+node tools/qa-hosting-config.mjs
 node tools/qa-live-form-matrix.mjs
 node tools/qa-live-event-matrix.mjs
 node tools/qa-release-readiness.mjs

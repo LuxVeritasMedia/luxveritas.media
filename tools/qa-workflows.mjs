@@ -16,6 +16,7 @@ for (const marker of [
   "node tools/qa-media-contract.mjs",
   "node tools/qa-mobile-layout.mjs",
   "node tools/qa-accessibility.mjs",
+  "node tools/qa-hosting-config.mjs",
   "node tools/qa-release-readiness.mjs",
   "node tools/qa-domain-readiness.mjs",
   "node tools/qa-provider-readiness.mjs",

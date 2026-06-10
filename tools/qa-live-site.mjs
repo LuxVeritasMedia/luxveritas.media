@@ -53,6 +53,23 @@ for (const route of requiredRoutes) {
   await checkRoute(route);
 }
 
+try {
+  const { response } = await fetchWithTimeout("/", { method: "GET", readBody: false });
+  const expectedHeaders = new Map([
+    ["x-content-type-options", "nosniff"],
+    ["referrer-policy", "strict-origin-when-cross-origin"],
+    ["permissions-policy", "camera=(), microphone=(), geolocation=(), payment=()"],
+    ["x-frame-options", "SAMEORIGIN"],
+    ["strict-transport-security", "max-age=31536000"]
+  ]);
+  for (const [key, value] of expectedHeaders) {
+    const actual = response.headers.get(key);
+    if (actual !== value) issues.push(`/: header ${key} expected ${value}, received ${actual || "missing"}`);
+  }
+} catch (error) {
+  issues.push(`/: header check failed (${error.message})`);
+}
+
 const musicHtml = await checkRoute("/music.html");
 if (musicHtml) {
   for (const required of [

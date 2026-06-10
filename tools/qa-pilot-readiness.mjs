@@ -15,6 +15,7 @@ const checks = [
   ["Media Contract", "tools/qa-media-contract.mjs"],
   ["Mobile Layout", "tools/qa-mobile-layout.mjs"],
   ["Accessibility", "tools/qa-accessibility.mjs"],
+  ["Hosting Config", "tools/qa-hosting-config.mjs"],
   ["Workflows", "tools/qa-workflows.mjs"],
   includeBrowser ? ["Browser Flows", "tools/qa-browser-flows.mjs"] : null,
   includeLive ? ["Form Delivery", "tools/qa-form-delivery.mjs"] : null,

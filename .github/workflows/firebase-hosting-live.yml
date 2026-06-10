@@ -67,6 +67,9 @@ jobs:
       - name: QA accessibility
         run: node tools/qa-accessibility.mjs
 
+      - name: QA Hosting config
+        run: node tools/qa-hosting-config.mjs
+
       - name: QA release readiness
         run: node tools/qa-release-readiness.mjs
 
