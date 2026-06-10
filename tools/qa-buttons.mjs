@@ -238,7 +238,9 @@ for (const file of files) {
     "portal/library.html": 'data-open-form="creator"',
     "portal/releases.html": 'data-open-form="licensing"',
     "submissions.html": 'data-open-form="submission"',
-    "membership.html": 'data-open-form="fan"'
+    "membership.html": 'data-open-form="fan"',
+    "store.html": 'data-open-form="fan"',
+    "community.html": 'data-open-form="fan"'
   };
   if (routeIntentChecks[rel] && !html.includes(routeIntentChecks[rel])) {
     issues.push(`${rel}: missing ${routeIntentChecks[rel]}`);

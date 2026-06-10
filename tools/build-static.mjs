@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260610-portal-capture";
+const assetVersion = "20260610-fan-circle";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 
@@ -235,6 +235,23 @@ function cta() {
       <button class="button button-quiet" data-open-form="submission">Submissions</button>
     </div>
   </section>`;
+}
+
+function fanConversionPage({ path, title, description, eyebrow, headline, copy, cards, closingTitle, closingCopy, primaryLabel = "Join the list" }) {
+  return shell({
+    path,
+    title: `${title} | Lux Veritas`,
+    description,
+    body: `${pageHero(eyebrow, headline, copy, `<div class="hero-actions"><button class="button button-primary" type="button" data-open-form="fan">${primaryLabel}</button><button class="button button-quiet" type="button" data-open-form="request">Request Access</button></div>`)}
+    <section class="section split-band">
+      <div><p class="kicker">Fan Circle</p><h2>${closingTitle}</h2></div>
+      <div><p>${closingCopy}</p><div class="hero-actions"><button class="button button-primary" type="button" data-open-form="fan">Join for first access</button></div></div>
+    </section>
+    <section class="section"><div class="release-rail">
+      ${cards.map((card) => `<article><span>${card.label}</span><h3>${card.title}</h3><p>${card.copy}</p></article>`).join("")}
+    </div></section>
+    ${cta()}`
+  });
 }
 
 function serviceWorkerScript() {
@@ -735,7 +752,22 @@ const pages = [
   ["/codex-sanctum.html", gated("/codex-sanctum.html", "Sanctum")],
   ["/blackgpt-damon.html", blackgptDamon()],
   ["/about.html", about()],
-  ["/join.html", utility("/join.html", "Join", "Join Lux Veritas through releases, invitations, and selected access.", "<p>Start with the clearest door for you: join the list, request access, or send your work for review. The public layer is where trust begins. The private layer opens in time.</p>", "fan", false, "Join the list")],
+  ["/join.html", fanConversionPage({
+    path: "/join.html",
+    title: "Join",
+    description: "Join Lux Veritas through releases, invitations, and selected access.",
+    eyebrow: "Join",
+    headline: "Enter the circle.",
+    copy: "Start with the clearest door for you: music, private drops, events, submissions, or screened access. The public layer is where trust begins. The private layer opens in time.",
+    closingTitle: "One list. Many doors.",
+    closingCopy: "First access connects you to release signals, listening rooms, selected drops, community moments, and future member paths without forcing the private world open before it is ready.",
+    cards: [
+      { label: "Listen", title: "Release Signals", copy: "Get first notice when new music, visuals, sessions, and radio moments open." },
+      { label: "Gather", title: "Rooms and Events", copy: "Receive invitation paths for listening rooms, salons, screenings, and selected cultural gatherings." },
+      { label: "Collect", title: "Drops and Objects", copy: "Join the waitlist for limited pieces, music-linked objects, and future Lux Veritas commerce." }
+    ],
+    primaryLabel: "Join the list"
+  })],
   ["/contact.html", utility("/contact.html", "Contact", "Use this path for aligned inquiries. The right team will route your message after review.", "<p>Use this path for aligned inquiries. The right team will route your message after review.</p>", "press", false, "Send Inquiry")],
   ["/press.html", utility("/press.html", "Press", "Short institutional boilerplate and screened media contact.", "<p>Lux Veritas is a global media and cultural studio creating music, film, and live experiences built on truth, order, and lineage.</p><p>A fuller press kit, visuals, and selected materials are shared by request.</p>", "press")],
   ["/submissions.html", utility("/submissions.html", "Submissions", "Lux Veritas accepts selected artist, creator, story, music, visual, and partnership submissions through a screened intake process.", "<p>Lux Veritas accepts selected artist, creator, story, music, visual, and partnership submissions through a screened intake process.</p><p>Please do not submit confidential material unless specifically invited. Submitting material does not create an obligation, partnership, employment relationship, or guarantee of review, response, release, or compensation.</p>", "submission", false, "Submit for review")],
@@ -804,11 +836,56 @@ const pages = [
   ["/works/sample.html", placeholder("/works/sample.html", "Work Detail", "This work page is being held until the project is ready for public view.")],
   ["/brands/index.html", placeholder("/brands/index.html", "Brands", "Brand worlds will appear here when they are ready for public view.")],
   ["/brands/sample.html", placeholder("/brands/sample.html", "Brand Detail", "This brand page is being held until the experience is ready.")],
-  ["/store.html", utility("/store.html", "Store", "A drop list for collectible releases and selected objects from the Lux Veritas world.", "<p>The store opens through selected drops. Join the waitlist for first notice on music, objects, and limited pieces as they arrive.</p>", "fan", false, "Join the waitlist")],
+  ["/store.html", fanConversionPage({
+    path: "/store.html",
+    title: "Store",
+    description: "A drop list for collectible releases and selected objects from the Lux Veritas world.",
+    eyebrow: "Store",
+    headline: "Collect the drop.",
+    copy: "The store opens through selected drops: music-linked objects, limited pieces, visual artifacts, and future member-only releases. Join the waitlist before the first public commerce window opens.",
+    closingTitle: "Commerce as memory.",
+    closingCopy: "Lux Veritas drops should feel connected to the work, not detached from it. The public store begins as a waitlist so every object, offer, and fulfillment path can open with care.",
+    cards: [
+      { label: "Music", title: "Release Objects", copy: "Physical and digital pieces connected to approved releases, sessions, and listening-room moments." },
+      { label: "World", title: "Limited Pieces", copy: "Selected garments, prints, books, and objects from the Lux Veritas visual universe." },
+      { label: "Access", title: "Member Windows", copy: "Early notice and selected presale paths for the people already inside the circle." }
+    ],
+    primaryLabel: "Join the waitlist"
+  })],
   ["/insights.html", utility("/insights.html", "Insights", "Selected Outer Codex essays and public writing from Lux Veritas.", "<p>Insights will gather public-facing essays, principles, and reflections from the Outer Codex.</p><p>Private maps, internal playbooks, and unpublished materials are not part of this public archive.</p>", "request", false)],
-  ["/membership.html", utility("/membership.html", "Membership", "Membership begins with first access.", "<p>Join the Lux Veritas circle for early access, private drops, listening rooms, presales, behind-the-scenes releases, deeper Codex/lore, community moments, and exclusive merch.</p><p>Membership begins with first access.</p>", "fan", false, "Join the waitlist")],
+  ["/membership.html", fanConversionPage({
+    path: "/membership.html",
+    title: "Membership",
+    description: "Membership begins with first access.",
+    eyebrow: "Membership",
+    headline: "First access before full membership.",
+    copy: "Join the Lux Veritas circle for early access, private drops, listening rooms, presales, behind-the-scenes releases, deeper Codex and lore, community moments, and exclusive merch.",
+    closingTitle: "Belong before the platform.",
+    closingCopy: "Membership starts with a clean signal: who wants to be closer to the work, what doors they want to enter, and how Lux Veritas can open access without losing trust.",
+    cards: [
+      { label: "Early", title: "Release Access", copy: "Music, visuals, sessions, and selected previews before the widest public push." },
+      { label: "Private", title: "Drops and Rooms", copy: "Waitlist paths for listening rooms, private drops, presales, and member-only invitations." },
+      { label: "Deeper", title: "Codex and Community", copy: "Future access to lore, behind-the-scenes releases, community moments, and creator challenges." }
+    ],
+    primaryLabel: "Join the waitlist"
+  })],
   ["/investor.html", accessShell("/investor.html", "Strategic Access", "Investor, licensing, studio, and strategic partnership materials are available by screened request only.", "Use this page to request access. Public materials are intentionally limited.", "Request investor access", "Join", "investor")],
-  ["/community.html", utility("/community.html", "Community", "Join the list to enter the circle.", "<p>The Lux Veritas community begins with owned fan identity: first access, private drops, member rooms, creator challenges, and live cultural moments.</p><p>Join the list to enter the circle.</p>", "fan", false, "Join the list")],
+  ["/community.html", fanConversionPage({
+    path: "/community.html",
+    title: "Community",
+    description: "Join the list to enter the circle.",
+    eyebrow: "Community",
+    headline: "Owned fan identity starts here.",
+    copy: "The Lux Veritas community begins with first access, private drops, member rooms, creator challenges, and live cultural moments. Join the list to enter the circle.",
+    closingTitle: "A circle, not a feed.",
+    closingCopy: "The community layer is built for people who want to return, support the work, talk about the art, and move through the world with more signal than noise.",
+    cards: [
+      { label: "Identity", title: "First Access", copy: "A clean fan path for release notices, selected invitations, and future account access." },
+      { label: "Rooms", title: "Member Moments", copy: "Listening rooms, salons, challenges, and private windows when the timing is right." },
+      { label: "Support", title: "Art and Goods", copy: "A direct path to support the music, films, events, stories, drops, and objects." }
+    ],
+    primaryLabel: "Join the list"
+  })],
 ];
 
 await Promise.all(
