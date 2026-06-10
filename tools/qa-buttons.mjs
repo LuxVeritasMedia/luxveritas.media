@@ -65,6 +65,11 @@ for (const marker of ["submitTimeoutMs", "submission_timeout", "showSubmissionEr
     issues.push(`app.js: missing bounded form-submit marker ${marker}`);
   }
 }
+for (const marker of ["portalSigninPayload", 'formType: "portal_signin"', "Portal access request recorded", "portal_signin_capture"]) {
+  if (!appJs.includes(marker)) {
+    issues.push(`app.js: missing portal sign-in capture marker ${marker}`);
+  }
+}
 for (const marker of ['trackInteraction("form_open"', 'trackInteraction("link_click"', 'trackInteraction("report_action"']) {
   if (!appJs.includes(marker)) {
     issues.push(`app.js: missing interaction reporting marker ${marker}`);

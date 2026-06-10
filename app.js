@@ -149,6 +149,16 @@ function setStoredValue(key, value) {
   }
 }
 
+function formLegalPayload() {
+  const value = (name) => dialogForm?.elements?.[name]?.value || "";
+  return {
+    public_terms_version: value("public_terms_version"),
+    privacy_version: value("privacy_version"),
+    terms_version: value("terms_version"),
+    submission_terms_version: value("submission_terms_version")
+  };
+}
+
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (char) => ({
     "&": "&amp;",
@@ -1428,30 +1438,117 @@ async function handleFormSubmit(event) {
   }
 }
 
-function handlePortalSignin(event) {
+function portalSigninPayload(email) {
+  return {
+    name: "Portal visitor",
+    email,
+    phone: "",
+    role_path: "General",
+    inquiry_type: "Portal",
+    access_path: "general",
+    portal_role_target: "visitor",
+    inquiry_key: "portal",
+    message: "Private portal sign-in/access check submitted from the sign-in shell.",
+    formType: "portal_signin",
+    tag: "portal-signin",
+    source: "luxveritas.media",
+    source_page: window.location.pathname,
+    timestamp: new Date().toISOString(),
+    client_submission_id: submissionReceiptId(),
+    consent_email: false,
+    consent_sms: false,
+    company_url: "",
+    delivery_status: "prepared",
+    ...formLegalPayload()
+  };
+}
+
+function setPortalSigninStatus(status, html) {
+  if (!status) return;
+  status.innerHTML = html;
+  status.hidden = false;
+}
+
+async function handlePortalSignin(event) {
   event.preventDefault();
   if (!portalSigninForm?.reportValidity()) return;
 
   const email = portalSigninForm.email.value.trim().toLowerCase();
   const status = portalSigninForm.querySelector("[data-portal-status]");
+  const submitButton = portalSigninForm.querySelector("[data-portal-signin]");
+  const defaultLabel = submitButton?.textContent || "Continue";
+  if (submitButton?.disabled) return;
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.setAttribute("aria-busy", "true");
+    submitButton.textContent = "Checking...";
+  }
   const attempts = readJson("luxveritas_portal_attempts", []);
-  const payload = {
+  const attempt = {
     email,
     source_page: window.location.pathname,
     timestamp: new Date().toISOString(),
     status: "screened_access_required"
   };
+  const payload = portalSigninPayload(email);
 
-  attempts.push(payload);
+  attempts.push(attempt);
   writeJson("luxveritas_portal_attempts", attempts.slice(-50));
-  trackEvent("portal_signin_attempt", { status: payload.status });
+  saveLocalSubmission(payload);
+  trackEvent("portal_signin_attempt", {
+    status: attempt.status,
+    receipt: payload.client_submission_id
+  });
 
   const dialogEmail = dialogForm?.querySelector('[name="email"]');
   if (dialogEmail && !dialogEmail.value) dialogEmail.value = email;
 
-  if (status) {
-    status.innerHTML = `Portal access is screened. If this email is already approved, account access will open during the private portal phase. Otherwise, use <button class="inline-link" type="button" data-open-form="request">Request Access</button>.`;
-    status.hidden = false;
+  setPortalSigninStatus(status, "Checking screened access...");
+
+  try {
+    const result = await submitToServer(payload);
+    updateLocalSubmission(payload.client_submission_id, {
+      delivery_status: result.delivery || "accepted",
+      provider_submission_id: result.id || null,
+      delivered_at: result.delivery === "sent" ? new Date().toISOString() : null
+    });
+    trackEvent("portal_signin_capture", {
+      delivery: result.delivery || "accepted",
+      receipt: payload.client_submission_id
+    });
+    setPortalSigninStatus(
+      status,
+      `Portal access request recorded.<br /><span class="receipt-code">Receipt ${escapeHtml(payload.client_submission_id)}</span><br />If this email is already approved, account access will open during the private portal phase.`
+    );
+  } catch (error) {
+    if (error?.status === 429 || error?.message === "rate_limited") {
+      setPortalSigninStatus(status, "Too many attempts from this browser. Please wait a few minutes and try again.");
+      trackEvent("portal_signin_rejected", { reason: "rate_limited", status: 429 });
+      return;
+    }
+
+    const body = submissionBody(payload);
+    const href = mailtoHref(payload);
+    const copied = await copySubmissionToClipboard(body);
+    updateLocalSubmission(payload.client_submission_id, {
+      delivery_status: error?.name === "AbortError" ? "submission_timeout" : "email_draft",
+      fallback_at: new Date().toISOString()
+    });
+    trackEvent("portal_signin_fallback", {
+      reason: error?.name === "AbortError" ? "submission_timeout" : "network_error",
+      copied,
+      receipt: payload.client_submission_id
+    });
+    setPortalSigninStatus(
+      status,
+      `Portal access is screened. The site could not confirm the access request from this browser.${copied ? " A copy has been placed on your clipboard." : ""}<br /><span class="receipt-code">Receipt ${escapeHtml(payload.client_submission_id)}</span><br /><a class="button button-primary" href="${escapeHtml(href)}">Open email draft</a> <button class="inline-link" type="button" data-open-form="request">Request Access</button>.`
+    );
+  } finally {
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.removeAttribute("aria-busy");
+      submitButton.textContent = defaultLabel;
+    }
   }
 }
 

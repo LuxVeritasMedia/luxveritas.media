@@ -374,6 +374,58 @@ async function interactionReportingFlow(page, baseUrl) {
   }
 }
 
+async function portalSigninFlow(page, baseUrl) {
+  const beforeSubmitCount = submissions.length;
+  const beforeEventCount = events.length;
+  await page.goto(`${baseUrl}/auth/signin.html`, { waitUntil: "domcontentloaded" });
+  await page.evaluate(() => localStorage.setItem("luxveritas_consent", "accepted"));
+  await page.fill('[data-portal-signin-form] input[name="email"]', "portal-qa@luxveritas.media");
+  await page.click("[data-portal-signin]");
+  await page.waitForFunction(() => {
+    const status = document.querySelector("[data-portal-status]");
+    return status && !status.hidden && /Portal access request recorded/i.test(status.textContent || "");
+  }, null, { timeout: 6000 });
+
+  const statusText = await page.locator("[data-portal-status]").innerText();
+  if (!/Receipt LV-/.test(statusText)) {
+    issues.push(`/auth/signin.html: portal sign-in status did not include a receipt`);
+  }
+
+  await page.waitForFunction(() => {
+    const button = document.querySelector("[data-portal-signin]");
+    return button && !button.disabled && button.textContent.trim().toLowerCase() === "continue";
+  }, null, { timeout: 3000 }).catch(() => {});
+  const buttonText = await page.locator("[data-portal-signin]").innerText();
+  const buttonDisabled = await page.locator("[data-portal-signin]").isDisabled();
+  if (buttonDisabled || buttonText.trim().toLowerCase() !== "continue") {
+    issues.push(`/auth/signin.html: portal sign-in button did not reset after submit (text="${buttonText}", disabled=${buttonDisabled})`);
+  }
+
+  const payload = submissions.at(-1);
+  if (submissions.length !== beforeSubmitCount + 1 || !payload) {
+    issues.push(`/auth/signin.html: portal sign-in did not submit an access payload`);
+    return;
+  }
+  for (const field of ["client_submission_id", "name", "email", "role_path", "inquiry_type", "message", "source_page", "public_terms_version", "privacy_version", "terms_version", "submission_terms_version"]) {
+    if (!payload[field]) issues.push(`/auth/signin.html: portal sign-in payload missing ${field}`);
+  }
+  if (payload.formType !== "portal_signin") issues.push(`/auth/signin.html: portal sign-in payload formType mismatch`);
+  if (payload.role_path !== "General" || payload.inquiry_type !== "Portal") {
+    issues.push(`/auth/signin.html: portal sign-in payload did not route to General / Portal`);
+  }
+  if (payload.email !== "portal-qa@luxveritas.media") {
+    issues.push(`/auth/signin.html: portal sign-in payload email mismatch`);
+  }
+
+  await waitForCondition(() => events.length > beforeEventCount);
+  const captureEvent = events.slice(beforeEventCount).find((item) => item.event === "portal_signin_capture");
+  if (!captureEvent) {
+    issues.push(`/auth/signin.html: portal sign-in did not report portal_signin_capture`);
+  } else if (!captureEvent.detail?.receipt || captureEvent.detail?.delivery !== "stored") {
+    issues.push(`/auth/signin.html: portal_signin_capture missing receipt or delivery detail`);
+  }
+}
+
 async function portalAccessFlow(page, baseUrl) {
   await page.goto(`${baseUrl}/portal/index.html`, { waitUntil: "domcontentloaded" });
   const html = await page.content();
@@ -658,6 +710,7 @@ try {
     await openFlow(page, baseUrl, flow);
   }
   await interactionReportingFlow(page, baseUrl);
+  await portalSigninFlow(page, baseUrl);
   for (const path of ["/music.html", "/spmvp.html"]) {
     await mediaFlow(page, baseUrl, path);
   }
@@ -677,4 +730,4 @@ if (issues.length) {
   process.exit(1);
 }
 
-console.log(`Browser flow QA passed for ${flows.length} form flows, 2 media flows, interaction reporting, and operator reporting at ${baseUrl}.`);
+console.log(`Browser flow QA passed for ${flows.length} form flows, portal sign-in, 2 media flows, interaction reporting, and operator reporting at ${baseUrl}.`);
