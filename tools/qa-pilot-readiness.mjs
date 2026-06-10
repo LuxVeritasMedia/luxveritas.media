@@ -21,6 +21,7 @@ const checks = [
   ["Integration Profiles", "tools/qa-integration-profiles.mjs"],
   ["Release Handoff", "tools/qa-release-handoff.mjs"],
   ["Media Contract", "tools/qa-media-contract.mjs"],
+  ["Fan Signal", "tools/qa-fan-signal.mjs"],
   ["Mobile Layout", "tools/qa-mobile-layout.mjs"],
   ["Accessibility", "tools/qa-accessibility.mjs"],
   ["Hosting Config", "tools/qa-hosting-config.mjs"],

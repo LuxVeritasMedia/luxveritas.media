@@ -17,6 +17,7 @@ for (const marker of [
   "node tools/qa-integration-profiles.mjs",
   "node tools/qa-release-handoff.mjs",
   "node tools/qa-media-contract.mjs",
+  "node tools/qa-fan-signal.mjs",
   "node tools/qa-mobile-layout.mjs",
   "node tools/qa-accessibility.mjs",
   "node tools/qa-hosting-config.mjs",

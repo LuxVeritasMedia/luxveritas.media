@@ -1,11 +1,11 @@
 {
   "schemaVersion": "luxveritas.build_manifest.v1",
-  "version": "20260610-form-capture",
-  "assetVersion": "20260610-form-capture",
+  "version": "20260610-circle-signal",
+  "assetVersion": "20260610-circle-signal",
   "mediaManifestVersion": "2026-06-10-mvp-media-preview",
   "publicTermsVersion": "2026-06-09-public-capture",
   "routeCount": 37,
   "publicRouteCount": 20,
-  "appScript": "app.js?v=20260610-form-capture",
-  "stylesheet": "styles.css?v=20260610-form-capture"
+  "appScript": "app.js?v=20260610-circle-signal",
+  "stylesheet": "styles.css?v=20260610-circle-signal"
 }

@@ -401,6 +401,93 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
   font-size: .82rem;
   padding: 14px 18px;
 }
+.fan-signal-section {
+  max-width: var(--wide);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(260px, 420px) 1fr;
+  gap: clamp(28px, 5vw, 72px);
+  align-items: start;
+  border-top: 1px solid rgba(200,168,106,.22);
+  background:
+    linear-gradient(135deg, rgba(6,60,50,.2), rgba(16,19,35,.24) 48%, rgba(6,8,7,0));
+}
+.fan-signal-copy { max-width: 560px; }
+.fan-signal-panel {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: rgba(200,168,106,.24);
+  border: 1px solid rgba(200,168,106,.22);
+}
+.fan-signal-panel article,
+.fan-signal-latest,
+.fan-signal-actions {
+  background:
+    linear-gradient(180deg, rgba(13,90,73,.16), rgba(6,8,7,.94)),
+    #0b0f0e;
+  padding: 24px;
+}
+.fan-signal-tier {
+  grid-column: 1 / -1;
+  min-height: 170px;
+}
+.fan-signal-panel span {
+  display: block;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  font-size: .68rem;
+  margin-bottom: .8rem;
+}
+.fan-signal-panel strong {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 4vw, 4.4rem);
+  font-weight: 400;
+  line-height: .95;
+}
+.fan-signal-panel small {
+  display: block;
+  margin-top: .75rem;
+  color: rgba(243,238,228,.62);
+}
+.fan-signal-latest {
+  grid-column: span 2;
+}
+.fan-signal-latest ul {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--line);
+}
+.fan-signal-latest li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  background: #09100f;
+  padding: 12px 14px;
+  color: rgba(243,238,228,.7);
+}
+.fan-signal-latest li strong {
+  font-family: inherit;
+  font-size: .92rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+.fan-signal-latest li span {
+  margin: 0;
+  color: rgba(243,238,228,.48);
+  text-align: right;
+}
+.fan-signal-actions {
+  display: grid;
+  align-content: start;
+  gap: .75rem;
+}
+.fan-signal-actions .button { width: 100%; }
 .report-panel {
   max-width: var(--wide);
   margin-inline: auto;
@@ -773,8 +860,17 @@ select option { color: var(--ink); }
     justify-content: flex-start;
   }
   .primary-nav.open { display: flex; }
-  .section-grid, .card-grid, .release-rail, .slate, .ops-grid, .portal-grid, .event-grid, .codex-list, .split-band, .cta-band, .site-footer, .consent-banner, .damon-console, .damon-law-grid, .damon-metrics, .damon-graph, .damon-output-stack, .damon-control-grid, .media-player-section, .media-player, .report-grid, .report-detail, .report-list li {
+  .section-grid, .card-grid, .release-rail, .slate, .ops-grid, .portal-grid, .event-grid, .codex-list, .split-band, .cta-band, .site-footer, .consent-banner, .damon-console, .damon-law-grid, .damon-metrics, .damon-graph, .damon-output-stack, .damon-control-grid, .media-player-section, .media-player, .fan-signal-section, .fan-signal-panel, .report-grid, .report-detail, .report-list li {
     grid-template-columns: 1fr;
+  }
+  .fan-signal-tier, .fan-signal-latest {
+    grid-column: auto;
+  }
+  .fan-signal-latest li {
+    grid-template-columns: 1fr;
+  }
+  .fan-signal-latest li span {
+    text-align: left;
   }
   .consent-banner {
     position: static;

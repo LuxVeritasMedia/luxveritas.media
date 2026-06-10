@@ -566,6 +566,7 @@ function setActiveMediaItem(player, item, options = {}) {
   resetMediaSources(player);
   if (options.record !== false) writeMediaEvent("select", player, item.dataset);
   updateMediaReport(player);
+  renderFanSignal();
 }
 
 function mediaItemMarkup(item, index) {
@@ -841,6 +842,69 @@ function localReportData() {
   };
 }
 
+function fanSignalLabel(score) {
+  if (score >= 30) return ["Signal Holder", "You have a strong local path across media, access, and return actions."];
+  if (score >= 16) return ["Circle Path", "Your local signal is building across the Lux Veritas world."];
+  if (score >= 7) return ["Listener", "You have started a real local path through the work."];
+  return ["First Signal", "Start by listening, watching, or joining for first access."];
+}
+
+function fanSignalActivityLabel(item) {
+  if (item.client_submission_id) return item.formType === "portal_signin" ? "Portal access check" : "Access request prepared";
+  if (item.action) return `${item.title || "Media"} ${item.action}`;
+  if (item.status && item.email) return "Portal email checked";
+  if (item.event === "form_open") return `Opened ${item.detail?.formType || "access"} form`;
+  if (item.event === "media_action") return `${item.detail?.title || "Media"} ${item.detail?.action || "action"}`;
+  if (item.event === "link_click") return item.detail?.destination || "Page opened";
+  return item.event || "Signal recorded";
+}
+
+function renderFanSignal() {
+  const panels = [...document.querySelectorAll("[data-fan-signal]")];
+  if (!panels.length) return;
+
+  const report = localReportData();
+  const meaningfulEvents = report.events.filter((item) => (
+    ["form_open", "link_click"].includes(item.event)
+  ));
+  const engagementEvents = report.events.filter((item) => (
+    ["form_open", "lead_accepted", "lead_fallback", "portal_signin_capture", "media_action", "link_click"].includes(item.event)
+  ));
+  const score = (report.media.length * 3)
+    + (report.submissions.length * 5)
+    + (report.portal.length * 4)
+    + engagementEvents.length;
+  const [tier, detail] = fanSignalLabel(score);
+  const latest = [...report.media, ...report.submissions, ...report.portal, ...meaningfulEvents]
+    .filter(Boolean)
+    .sort((a, b) => String(b.timestamp || "").localeCompare(String(a.timestamp || "")))
+    .slice(0, 4);
+
+  for (const panel of panels) {
+    const tierNode = panel.querySelector("[data-fan-signal-tier]");
+    const detailNode = panel.querySelector("[data-fan-signal-detail]");
+    if (tierNode) tierNode.textContent = tier;
+    if (detailNode) detailNode.textContent = detail;
+
+    for (const key of ["media", "submissions", "portal"]) {
+      const node = panel.querySelector(`[data-fan-signal-count="${key}"]`);
+      if (node) node.textContent = String(report.counts[key] || 0);
+    }
+
+    const list = panel.querySelector("[data-fan-signal-list]");
+    if (!list) continue;
+    if (!latest.length) {
+      list.innerHTML = "<li>Your first signal will appear here.</li>";
+      continue;
+    }
+    list.innerHTML = latest.map((item) => {
+      const label = fanSignalActivityLabel(item);
+      const time = item.timestamp ? new Date(item.timestamp).toLocaleDateString() : "Recent";
+      return `<li><strong>${escapeHtml(label)}</strong><span>${escapeHtml(time)}</span></li>`;
+    }).join("");
+  }
+}
+
 function downloadTextFile(filename, text, type) {
   const blob = new Blob([text], { type });
   const url = URL.createObjectURL(blob);
@@ -962,6 +1026,7 @@ function renderLocalReport() {
     const time = item.timestamp ? new Date(item.timestamp).toLocaleString() : "Recent";
     return `<li><strong>${escapeHtml(label)}</strong><span>${escapeHtml(detail)}</span><small>${escapeHtml(time)}</small></li>`;
   }).join("");
+  renderFanSignal();
 }
 
 function setReportStatus(message) {
@@ -1324,6 +1389,7 @@ function handleMediaAction(action, player) {
   setMediaProgress(player, action === "play" ? 48 : action === "watch" ? 66 : 82);
   writeMediaEvent(action, player, activeItem?.dataset || {});
   updateMediaReport(player);
+  renderFanSignal();
 
   if (sourceReady) {
     loadApprovedMedia(player, { sourceUrl: approvedSource, sourceType, posterUrl, title });
@@ -1413,10 +1479,12 @@ async function handleFormSubmit(event) {
       });
       if (result.delivery === "sent") {
         showSubmissionSuccess(payload, "Sent. Thank you. Your message has reached Lux Veritas.");
+        renderFanSignal();
         return;
       }
       if (result.delivery === "stored") {
         showSubmissionSuccess(payload, storedSubmissionMessage(result));
+        renderFanSignal();
         return;
       }
     } catch (error) {
@@ -1437,6 +1505,7 @@ async function handleFormSubmit(event) {
       fallback_at: new Date().toISOString()
     });
     showEmailFallback(payload, href, result, copied);
+    renderFanSignal();
   } catch (error) {
     showSubmissionError({
       message: error?.message || "submission_error",
@@ -1532,6 +1601,7 @@ async function handlePortalSignin(event) {
       status,
       `Portal access request recorded.<br /><span class="receipt-code">Receipt ${escapeHtml(payload.client_submission_id)}</span><br />If this email is already approved, account access will open during the private portal phase.`
     );
+    renderFanSignal();
   } catch (error) {
     if (error?.status === 429 || error?.message === "rate_limited") {
       setPortalSigninStatus(status, "Too many attempts from this browser. Please wait a few minutes and try again.");
@@ -1555,6 +1625,7 @@ async function handlePortalSignin(event) {
       status,
       `Portal access is screened. The site could not confirm the access request from this browser.${copied ? " A copy has been placed on your clipboard." : ""}<br /><span class="receipt-code">Receipt ${escapeHtml(payload.client_submission_id)}</span><br /><a class="button button-primary" href="${escapeHtml(href)}">Open email draft</a> <button class="inline-link" type="button" data-open-form="request">Request Access</button>.`
     );
+    renderFanSignal();
   } finally {
     stopSubmitProgress(progressTimer);
     if (submitButton) {
@@ -1611,6 +1682,7 @@ document.addEventListener("click", (event) => {
   event.preventDefault();
   trackInteraction("form_open", button, { formType: button.dataset.openForm || "request" });
   openForm(button.dataset.openForm);
+  renderFanSignal();
 });
 
 document.addEventListener("click", (event) => {
@@ -1673,6 +1745,7 @@ if ("serviceWorker" in navigator) {
 renderMediaReadinessReport();
 renderLaunchReadinessReport();
 renderLocalReport();
+renderFanSignal();
 
 document.querySelectorAll(".section, .vertical-card, .release-rail article, .slate div, .event-card, .codex-card, .ops-grid article, .portal-grid article, .media-player").forEach((el) => {
   el.setAttribute("data-reveal", "");

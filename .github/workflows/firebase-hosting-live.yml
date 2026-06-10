@@ -64,6 +64,9 @@ jobs:
       - name: QA media contract
         run: node tools/qa-media-contract.mjs
 
+      - name: QA fan signal
+        run: node tools/qa-fan-signal.mjs
+
       - name: QA workflows
         run: node tools/qa-workflows.mjs
 

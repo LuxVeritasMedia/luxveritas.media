@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260610-form-capture";
+const assetVersion = "20260610-circle-signal";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 
@@ -247,11 +247,40 @@ function fanConversionPage({ path, title, description, eyebrow, headline, copy, 
       <div><p class="kicker">Fan Circle</p><h2>${closingTitle}</h2></div>
       <div><p>${closingCopy}</p><div class="hero-actions"><button class="button button-primary" type="button" data-open-form="fan">Join for first access</button></div></div>
     </section>
+    ${fanSignalSection()}
     <section class="section"><div class="release-rail">
       ${cards.map((card) => `<article><span>${card.label}</span><h3>${card.title}</h3><p>${card.copy}</p></article>`).join("")}
     </div></section>
     ${cta()}`
   });
+}
+
+function fanSignalSection() {
+  return `<section class="section fan-signal-section" data-fan-signal>
+    <div class="fan-signal-copy">
+      <p class="kicker">Circle Signal</p>
+      <h2>Your path remembers the signal.</h2>
+      <p>Listening, watching, joining, and requesting access create a private signal on this device. Account identity comes later; for now, this gives fans a visible sense of return without exposing private systems.</p>
+    </div>
+    <div class="fan-signal-panel" aria-label="Your Lux Veritas signal">
+      <article class="fan-signal-tier">
+        <span>Current Signal</span>
+        <strong data-fan-signal-tier>First Signal</strong>
+        <small data-fan-signal-detail>Start by listening, watching, or joining for first access.</small>
+      </article>
+      <article><span>Media</span><strong data-fan-signal-count="media">0</strong><small>Listen, watch, and radio actions</small></article>
+      <article><span>Access</span><strong data-fan-signal-count="submissions">0</strong><small>Requests prepared from this browser</small></article>
+      <article><span>Portal</span><strong data-fan-signal-count="portal">0</strong><small>Private access checks</small></article>
+      <div class="fan-signal-latest">
+        <span>Latest path</span>
+        <ul data-fan-signal-list><li>Your first signal will appear here.</li></ul>
+      </div>
+      <div class="fan-signal-actions">
+        <button class="button button-primary" type="button" data-open-form="fan">Join for first access</button>
+        <a class="button button-quiet" href="/music.html">Play the signal</a>
+      </div>
+    </div>
+  </section>`;
 }
 
 function serviceWorkerScript() {
@@ -370,6 +399,7 @@ function home() {
       }).join("")}
     </div></section>
     <section class="section split-band"><div><p class="kicker">Journey</p><h2>Listen to the signal.<br />Watch the world open.<br />Join the circle.</h2></div><div><p>Attend the room.</p><p>Collect the drop.</p><p>Create from the source.</p><div class="hero-actions"><button class="button button-primary" data-open-form="request">Enter Lux Veritas</button><button class="button button-quiet" data-open-form="fan">Join for first access</button></div></div></section>
+    ${fanSignalSection()}
     ${cta()}`
   });
 }
@@ -382,7 +412,7 @@ function music() {
     body: `${pageHero("Music", "Sound as signal.", "Lux Veritas releases music as the first doorway into a larger world: songs, visuals, live rooms, stories, and fan participation moving together.\n\nEvery release is intentional, protected, and built to last.", `<div class="hero-actions"><a class="button button-primary" href="/spmvp.html">Listen</a><button class="button button-quiet" type="button" data-open-form="fan">Watch</button><button class="button button-quiet" type="button" data-open-form="fan">Join for early access</button></div>`)}
     ${mediaPlayerShell("music")}
     <section class="section"><div class="release-rail">${releaseCards.map(([title, type, body]) => `<article><span>${type}</span><h3>${title}</h3><p>${body}</p></article>`).join("")}</div></section>
-    <section class="section split-band"><div><p class="kicker">Current Motion</p><h2>Music that arrives with atmosphere.</h2></div><div class="checklist"><p>Follow the latest release rooms, filmed sessions, and live appearances. If the work meets you, the next door is easy: listen, watch, join.</p><div class="hero-actions"><a class="button button-primary" href="/spmvp.html">Listen</a><button class="button button-quiet" data-open-form="fan">Join for early access</button></div></div></section>${cta()}`
+    <section class="section split-band"><div><p class="kicker">Current Motion</p><h2>Music that arrives with atmosphere.</h2></div><div class="checklist"><p>Follow the latest release rooms, filmed sessions, and live appearances. If the work meets you, the next door is easy: listen, watch, join.</p><div class="hero-actions"><a class="button button-primary" href="/spmvp.html">Listen</a><button class="button button-quiet" data-open-form="fan">Join for early access</button></div></div></section>${fanSignalSection()}${cta()}`
   });
 }
 

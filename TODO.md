@@ -16,6 +16,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Rewrite Music and SPMVP as listen/watch/join pages.
 - [x] Rewrite Events as request-access invitation layer.
 - [x] Upgrade Join, Store, Membership, and Community into richer fan conversion pages.
+- [x] Add local Circle Signal panel so fan-facing pages return live on-device engagement values.
 - [x] Add static email handoff to `info@luxveritas.media` for public forms.
 - [x] Add Firebase server-side form relay with validation, honeypot, rate limiting, and email fallback.
 - [x] Mount inbox provider API key through Firebase Functions Secret Manager.
@@ -132,6 +133,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add live browser-flow QA mode for production pages with mocked submit/report endpoints.
 - [x] Add browser-flow QA for consent, dialog close, and media selection reporting.
 - [x] Add browser/live matrix coverage for Join and Store fan capture paths.
+- [x] Add QA coverage for the fan-facing Circle Signal panel and live-value selectors.
 - [x] Add asset-version QA so live pages cannot serve stale app/CSS URLs after app changes.
 - [x] Bump public asset version after portal sign-in capture behavior changed.
 - [x] Add release-readiness QA for launch blockers, media sources, DNS, legal, email, and integration status.
