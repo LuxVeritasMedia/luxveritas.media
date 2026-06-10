@@ -118,6 +118,9 @@ for (const file of requiredFiles) {
 const allFiles = await walk(root);
 const htmlFiles = allFiles.filter((file) => file.endsWith(".html"));
 const relFiles = new Set(allFiles.map((file) => normalize(relative(root, file))));
+const buildScript = await readFile("tools/build-static.mjs", "utf8");
+const expectedAssetVersion = buildScript.match(/const assetVersion = "([^"]+)"/)?.[1] || "";
+if (!expectedAssetVersion) issues.push("tools/build-static.mjs: missing assetVersion");
 
 for (const file of htmlFiles) {
   const rel = normalize(relative(root, file));
@@ -144,6 +147,15 @@ for (const file of htmlFiles) {
 
   if (noindexRoutes.includes(rel) && !html.includes('name="robots" content="noindex, nofollow"')) {
     issues.push(`${rel}: expected noindex metadata`);
+  }
+
+  if (expectedAssetVersion) {
+    if (!html.includes(`styles.css?v=${expectedAssetVersion}`)) {
+      issues.push(`${rel}: missing current CSS asset version ${expectedAssetVersion}`);
+    }
+    if (!html.includes(`app.js?v=${expectedAssetVersion}`)) {
+      issues.push(`${rel}: missing current app asset version ${expectedAssetVersion}`);
+    }
   }
 
   if (["music.html", "spmvp.html"].includes(rel)) {

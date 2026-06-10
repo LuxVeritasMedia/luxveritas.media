@@ -57,6 +57,7 @@ const musicHtml = await checkRoute("/music.html");
 if (musicHtml) {
   for (const required of [
     `app.js?v=${expectedAssetVersion}`,
+    `styles.css?v=${expectedAssetVersion}`,
     "data-media-player",
     "data-media-source-shell",
     "data-media-action=\"play\"",
@@ -67,6 +68,15 @@ if (musicHtml) {
     "data-source-type=\"stream\""
   ]) {
     if (!musicHtml.includes(required)) issues.push(`/music.html: missing ${required}`);
+  }
+}
+
+if (expectedAssetVersion) {
+  const appJs = await checkRoute(`/app.js?v=${expectedAssetVersion}`);
+  if (appJs) {
+    for (const marker of ["testInboxDelivery", "lastDownloadName", "type: \"handoff\"", "function handleMediaAction"]) {
+      if (!appJs.includes(marker)) issues.push(`/app.js?v=${expectedAssetVersion}: missing ${marker}`);
+    }
   }
 }
 

@@ -121,6 +121,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add integration QA for server-side submission fanout and private reporting readiness.
 - [x] Add browser-flow QA for real CTA clicks, modal submits, submit reset, and media follow-up routing.
 - [x] Add live browser-flow QA mode for production pages with mocked submit/report endpoints.
+- [x] Add asset-version QA so live pages cannot serve stale app/CSS URLs after app changes.
 - [x] Add release-readiness QA for launch blockers, media sources, DNS, legal, email, and integration status.
 - [x] Add dedicated domain-readiness QA for apex and www DNS/HTTPS.
 - [x] Accept Firebase-provided A or CNAME records for `www` release-readiness checks.
