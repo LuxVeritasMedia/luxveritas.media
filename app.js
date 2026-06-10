@@ -111,7 +111,7 @@ const mediaManifestPath = "/data/lux-media-manifest.json";
 const launchChecklistPath = "/data/lux-launch-readiness.json";
 const legalReviewPath = "/data/lux-legal-review.json";
 const submitTimeoutMs = 8000;
-const publicBuildVersion = "20260610-playback-reporting";
+const publicBuildVersion = "20260610-playback-summary";
 let activeFormType = "request";
 let mediaManifestPromise = null;
 let launchChecklistPromise = null;
@@ -1078,7 +1078,7 @@ function localReportRows(report) {
       timestamp: item.timestamp || "",
       page: item.page || "",
       label: item.title || item.action || "",
-      detail: item.sourceType || item.status || ""
+      detail: item.source_type || item.sourceType || item.status || item.milestone || ""
     })),
     ...report.submissions.map((item) => ({
       source: "local",
@@ -1197,6 +1197,9 @@ function renderPrivateReport(report) {
   renderPrivateSummary(panel, "events", report.summary?.events?.byEvent);
   renderPrivateSummary(panel, "ctas", report.summary?.events?.byCtaId || report.summary?.events?.byCtaLabel);
   renderPrivateSummary(panel, "destinations", report.summary?.events?.byDestination || report.summary?.events?.byPage);
+  renderPrivateSummary(panel, "playback", report.summary?.events?.playbackByAction);
+  renderPrivateSummary(panel, "playback-sources", report.summary?.events?.playbackBySourceType || report.summary?.events?.playbackByReportingKey);
+  renderPrivateSummary(panel, "playback-milestones", report.summary?.events?.playbackMilestones);
 
   const list = panel.querySelector("[data-private-report-list]");
   if (!list) return;

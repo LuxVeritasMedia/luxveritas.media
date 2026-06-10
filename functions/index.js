@@ -462,6 +462,8 @@ function buildPilotFunnel(submissionItems, eventItems) {
   const views = countWhere(eventItems, (item) => item.event === "view_content");
   const formOpens = countWhere(eventItems, (item) => item.event === "form_open");
   const mediaActions = countWhere(eventItems, (item) => item.event === "media_action");
+  const playbackEvents = countWhere(eventItems, (item) => item.event === "media_playback");
+  const playbackEnds = countWhere(eventItems, (item) => item.event === "media_playback" && item.detail?.action === "ended");
   const acceptedLeads = countWhere(eventItems, (item) => item.event === "lead_accepted");
   const fallbackLeads = countWhere(eventItems, (item) => item.event === "lead_fallback");
   const rejectedLeads = countWhere(eventItems, (item) => item.event === "lead_rejected");
@@ -497,6 +499,11 @@ function buildPilotFunnel(submissionItems, eventItems) {
       detail: "Listen, watch, radio, and media queue intent"
     },
     {
+      label: "Playback events",
+      value: playbackEvents,
+      detail: `${playbackEnds} ended signal${playbackEnds === 1 ? "" : "s"}`
+    },
+    {
       label: "Member demand",
       value: memberDemand,
       detail: `${creatorDemand} creator path, ${partnerDemand} partner path`
@@ -507,6 +514,7 @@ function buildPilotFunnel(submissionItems, eventItems) {
 function summarizeActivity(submissionDocs, eventDocs) {
   const submissionItems = submissionDocs.map((snapshot) => snapshot.data() || {});
   const eventItems = eventDocs.map((snapshot) => snapshot.data() || {});
+  const playbackItems = eventItems.filter((item) => item.event === "media_playback");
   return {
     funnel: buildPilotFunnel(submissionItems, eventItems),
     submissions: {
@@ -528,7 +536,11 @@ function summarizeActivity(submissionDocs, eventDocs) {
       byPage: topCounts(eventItems, (item) => item.page),
       bySurface: topCounts(eventItems, (item) => item.detail?.surface),
       byDestination: topCounts(eventItems, (item) => item.detail?.destination),
-      mediaDemand: topCounts(eventItems.filter((item) => item.event === "media_action"), (item) => item.detail?.action || item.detail?.title)
+      mediaDemand: topCounts(eventItems.filter((item) => item.event === "media_action"), (item) => item.detail?.action || item.detail?.title),
+      playbackByAction: topCounts(playbackItems, (item) => item.detail?.action),
+      playbackBySourceType: topCounts(playbackItems, (item) => item.detail?.source_type),
+      playbackByReportingKey: topCounts(playbackItems, (item) => item.detail?.reporting_key || item.detail?.title),
+      playbackMilestones: topCounts(playbackItems, (item) => item.detail?.milestone)
     }
   };
 }

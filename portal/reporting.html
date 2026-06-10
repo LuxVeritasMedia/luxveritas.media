@@ -24,7 +24,7 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070909'/%3E%3Cpath d='M18 48V16h6v27h18v5H18Zm21-32h7L34 48h-6l11-32Z' fill='%23c8a86a'/%3E%3C/svg%3E" />
     <link rel="manifest" href="../../site.webmanifest" />
     <link rel="apple-touch-icon" href="../../assets/luxveritas-icon.svg" />
-    <link rel="stylesheet" href="../../styles.css?v=20260610-playback-reporting" />
+    <link rel="stylesheet" href="../../styles.css?v=20260610-playback-summary" />
   </head>
   <body data-page="/portal/reporting.html">
     <a class="skip-link" href="#main">Skip to content</a>
@@ -128,6 +128,18 @@
           <p class="kicker">Destinations</p>
           <ul class="report-list" data-private-summary="destinations"><li>Load private activity to view clicked routes.</li></ul>
         </div>
+        <div>
+          <p class="kicker">Playback</p>
+          <ul class="report-list" data-private-summary="playback"><li>Load private activity to view play, pause, milestone, and ended signals.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Playback Sources</p>
+          <ul class="report-list" data-private-summary="playback-sources"><li>Load private activity to view audio, video, and radio activity.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Playback Milestones</p>
+          <ul class="report-list" data-private-summary="playback-milestones"><li>Load private activity to view retention milestones.</li></ul>
+        </div>
       </div>
       <div class="report-detail">
         <div>
@@ -215,6 +227,6 @@
     <button class="button button-primary" type="submit" data-submit-form data-default-label="Send to Lux Veritas">Send to Lux Veritas</button>
   </form>
 </dialog>
-    <script src="../../app.js?v=20260610-playback-reporting"></script>
+    <script src="../../app.js?v=20260610-playback-summary"></script>
   </body>
 </html>

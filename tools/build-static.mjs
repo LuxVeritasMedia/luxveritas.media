@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260610-playback-reporting";
+const assetVersion = "20260610-playback-summary";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 
@@ -716,6 +716,18 @@ function portalReport() {
         <div>
           <p class="kicker">Destinations</p>
           <ul class="report-list" data-private-summary="destinations"><li>Load private activity to view clicked routes.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Playback</p>
+          <ul class="report-list" data-private-summary="playback"><li>Load private activity to view play, pause, milestone, and ended signals.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Playback Sources</p>
+          <ul class="report-list" data-private-summary="playback-sources"><li>Load private activity to view audio, video, and radio activity.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Playback Milestones</p>
+          <ul class="report-list" data-private-summary="playback-milestones"><li>Load private activity to view retention milestones.</li></ul>
         </div>
       </div>
       <div class="report-detail">

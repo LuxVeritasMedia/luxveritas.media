@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260610-playback-reporting";
+const CACHE_NAME = "luxveritas-static-20260610-playback-summary";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260610-playback-reporting",
-  "/app.js?v=20260610-playback-reporting",
+  "/styles.css?v=20260610-playback-summary",
+  "/app.js?v=20260610-playback-summary",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"

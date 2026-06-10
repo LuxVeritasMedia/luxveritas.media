@@ -56,6 +56,21 @@ const mockReport = {
           surface: "media_player",
           destination: "/spmvp.html"
         }
+      },
+      {
+        id: "evt_qa_2",
+        createdAt: "2026-06-09T00:01:30.000Z",
+        event: "media_playback",
+        page: "/music.html",
+        detail: {
+          cta_id: "music__media_playback__ended",
+          action: "ended",
+          title: "SPMVP",
+          source_type: "audio",
+          reporting_key: "spmvp_release_audio",
+          milestone: "ended",
+          progress_percent: 100
+        }
       }
     ],
     handoffs: [
@@ -89,7 +104,8 @@ const mockReport = {
       { label: "Tracked views", value: 128, detail: "Consented page views in the recent activity sample" },
       { label: "Form opens", value: 42, detail: "33% of tracked views" },
       { label: "Server captures", value: 24, detail: "57% of form opens" },
-      { label: "Media actions", value: 64, detail: "Listen, watch, radio, and media queue intent" }
+      { label: "Media actions", value: 64, detail: "Listen, watch, radio, and media queue intent" },
+      { label: "Playback events", value: 30, detail: "7 ended signals" }
     ],
     submissions: {
       byFormType: [{ label: "fan", count: 18 }],
@@ -109,7 +125,11 @@ const mockReport = {
       byEvent: [{ label: "media_action", count: 64 }],
       byCtaId: [{ label: "media__media_action__play", count: 42 }],
       byDestination: [{ label: "/spmvp.html", count: 31 }],
-      byPage: [{ label: "/music.html", count: 40 }]
+      byPage: [{ label: "/music.html", count: 40 }],
+      playbackByAction: [{ label: "play", count: 18 }, { label: "ended", count: 7 }],
+      playbackBySourceType: [{ label: "audio", count: 14 }, { label: "video", count: 9 }, { label: "stream", count: 5 }],
+      playbackByReportingKey: [{ label: "spmvp_release_audio", count: 14 }],
+      playbackMilestones: [{ label: "25%", count: 8 }, { label: "ended", count: 7 }]
     }
   }
 };
@@ -476,12 +496,24 @@ async function mediaPlaybackReportingFlow(page, baseUrl) {
       } catch {
         // Native media duration may be read-only; the event itself still verifies reporting.
       }
-      element.currentTime = 0;
+      try {
+        Object.defineProperty(element, "currentTime", { configurable: true, value: 0 });
+      } catch {
+        element.currentTime = 0;
+      }
       element.dispatchEvent(new Event("play"));
-      element.currentTime = 30;
+      try {
+        Object.defineProperty(element, "currentTime", { configurable: true, value: 30 });
+      } catch {
+        element.currentTime = 30;
+      }
       element.dispatchEvent(new Event("timeupdate"));
       element.dispatchEvent(new Event("pause"));
-      element.currentTime = 100;
+      try {
+        Object.defineProperty(element, "currentTime", { configurable: true, value: 100 });
+      } catch {
+        element.currentTime = 100;
+      }
       try {
         Object.defineProperty(element, "ended", { configurable: true, value: true });
       } catch {
@@ -763,6 +795,9 @@ async function operatorReportFlow(page, baseUrl) {
   const eventsSummary = await page.locator('[data-private-summary="events"]').innerText();
   const ctasSummary = await page.locator('[data-private-summary="ctas"]').innerText();
   const destinationsSummary = await page.locator('[data-private-summary="destinations"]').innerText();
+  const playbackSummary = await page.locator('[data-private-summary="playback"]').innerText();
+  const playbackSourcesSummary = await page.locator('[data-private-summary="playback-sources"]').innerText();
+  const playbackMilestonesSummary = await page.locator('[data-private-summary="playback-milestones"]').innerText();
   const funnelSummary = await page.locator("[data-private-funnel]").innerText();
   const launchSummary = await page.locator("[data-launch-readiness-summary]").innerText();
   const launchReadiness = await page.locator("[data-launch-readiness-list]").innerText();
@@ -795,6 +830,9 @@ async function operatorReportFlow(page, baseUrl) {
     ["events", eventsSummary],
     ["ctas", ctasSummary],
     ["destinations", destinationsSummary],
+    ["playback", playbackSummary],
+    ["playback-sources", playbackSourcesSummary],
+    ["playback-milestones", playbackMilestonesSummary],
     ["funnel", funnelSummary],
     ["latest", latest]
   ]) {
@@ -802,7 +840,7 @@ async function operatorReportFlow(page, baseUrl) {
       issues.push(`/portal/reporting.html: ${label} report did not render loaded values`);
     }
   }
-  if (!/LV-QA-REPORT/.test(latest) || !/media_action/.test(latest)) {
+  if (!/LV-QA-REPORT/.test(latest) || !/media_action/.test(latest) || !/media_playback/.test(latest)) {
     issues.push(`/portal/reporting.html: latest protected activity missing mocked records`);
   }
   if (!/Membership Waitlist/.test(routingSummary)) {
@@ -824,10 +862,29 @@ async function operatorReportFlow(page, baseUrl) {
   if (!handoffExportReady) {
     issues.push(`/portal/reporting.html: accepted handoff records were missing from private export rows`);
   }
+  const playbackExportReady = await page.evaluate(() => {
+    return privateReportRows(privateReportCache).some((row) => (
+      row.type === "media_playback"
+      && row.label === "ended"
+      && /SPMVP/.test(row.detail)
+    ));
+  });
+  if (!playbackExportReady) {
+    issues.push(`/portal/reporting.html: playback records were missing from private export rows`);
+  }
   if (!/media__media_action__play/.test(ctasSummary)) {
     issues.push(`/portal/reporting.html: CTA signal summary missing mocked CTA ID`);
   }
-  if (!/Server captures/.test(funnelSummary) || !/Media actions/.test(funnelSummary)) {
+  if (!/ended/.test(playbackSummary) || !/play/.test(playbackSummary)) {
+    issues.push(`/portal/reporting.html: playback action summary missing mocked lifecycle values`);
+  }
+  if (!/audio/.test(playbackSourcesSummary) || !/stream/.test(playbackSourcesSummary)) {
+    issues.push(`/portal/reporting.html: playback source summary missing mocked media source values`);
+  }
+  if (!/25%/.test(playbackMilestonesSummary) || !/ended/.test(playbackMilestonesSummary)) {
+    issues.push(`/portal/reporting.html: playback milestone summary missing mocked retention values`);
+  }
+  if (!/Server captures/.test(funnelSummary) || !/Media actions/.test(funnelSummary) || !/Playback events/.test(funnelSummary)) {
     issues.push(`/portal/reporting.html: pilot funnel missing capture/media values`);
   }
   if (!/1 of 7 launch gates ready/.test(launchSummary) || !/Inbox notification provider is not active/i.test(launchReadiness)) {
