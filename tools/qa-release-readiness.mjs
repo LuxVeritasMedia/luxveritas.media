@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { resolve4 } from "node:dns/promises";
+import { resolve4, resolveCname } from "node:dns/promises";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { liveProviderDeliveryReadiness } from "./lib/provider-readiness.mjs";
@@ -75,6 +75,51 @@ async function resolveHost(hostname) {
     const { stdout } = await execFileAsync("dig", ["+short", hostname], { timeout: 10000 });
     return {
       records: stdout.split(/\s+/).map((item) => item.trim()).filter((item) => /^\d+\.\d+\.\d+\.\d+$/.test(item)),
+      verified: true
+    };
+  } catch {
+    return { records: [], verified: false };
+  }
+}
+
+async function resolveCnameHost(hostname) {
+  try {
+    const records = await resolveCname(hostname);
+    if (records.length) return { records, verified: true };
+  } catch {
+    // Fall through to DNS-over-HTTPS. Some local Node resolver paths can be flaky.
+  }
+  try {
+    const response = await fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(hostname)}&type=CNAME`, {
+      headers: { Accept: "application/dns-json" }
+    });
+    const body = await response.json();
+    const records = Array.isArray(body.Answer)
+      ? body.Answer.map((answer) => String(answer.data || "").replace(/\.$/, "")).filter(Boolean)
+      : [];
+    return { records, verified: true };
+  } catch {
+    // Fall through to curl/dig for local runs where Node DNS/fetch is restricted.
+  }
+  try {
+    const { stdout } = await execFileAsync("curl", [
+      "-fsS",
+      "-H",
+      "Accept: application/dns-json",
+      `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(hostname)}&type=CNAME`
+    ], { timeout: 10000 });
+    const body = JSON.parse(stdout);
+    const records = Array.isArray(body.Answer)
+      ? body.Answer.map((answer) => String(answer.data || "").replace(/\.$/, "")).filter(Boolean)
+      : [];
+    return { records, verified: true };
+  } catch {
+    // Fall through to dig for unsandboxed local runs.
+  }
+  try {
+    const { stdout } = await execFileAsync("dig", ["+short", "CNAME", hostname], { timeout: 10000 });
+    return {
+      records: stdout.split(/\s+/).map((item) => item.trim().replace(/\.$/, "")).filter(Boolean),
       verified: true
     };
   } catch {
@@ -163,9 +208,10 @@ add(workflow.includes("node tools/qa-browser-flows.mjs"), "Browser-flow QA is en
 add(workflow.includes("node tools/qa-live-site.mjs"), "Live-site QA is enforced after Hosting deploy.");
 add(workflow.includes("LUX_BROWSER_BASE_URL=https://luxveritas.media node tools/qa-browser-flows.mjs"), "Live browser-flow QA is enforced after Hosting deploy.");
 
-const [rootDns, wwwDns] = await Promise.all([
+const [rootDns, wwwDns, wwwCnameDns] = await Promise.all([
   resolveHost("luxveritas.media"),
-  resolveHost("www.luxveritas.media")
+  resolveHost("www.luxveritas.media"),
+  resolveCnameHost("www.luxveritas.media")
 ]);
 
 if (rootDns.verified) {
@@ -174,8 +220,12 @@ if (rootDns.verified) {
   warnings.push("Root DNS could not be verified from this environment.");
 }
 
-if (wwwDns.verified) {
-  add(wwwDns.records.length > 0, `www.luxveritas.media has DNS records. Found: ${wwwDns.records.join(", ") || "none"}`);
+if (wwwDns.verified || wwwCnameDns.verified) {
+  const found = [
+    wwwDns.records.length ? `A=${wwwDns.records.join(", ")}` : null,
+    wwwCnameDns.records.length ? `CNAME=${wwwCnameDns.records.join(", ")}` : null
+  ].filter(Boolean).join(" ");
+  add(wwwDns.records.length > 0 || wwwCnameDns.records.length > 0, `www.luxveritas.media has DNS records. Found: ${found || "none"}`);
 } else {
   warnings.push("www DNS could not be verified from this environment.");
 }

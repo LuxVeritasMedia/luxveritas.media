@@ -123,6 +123,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add live browser-flow QA mode for production pages with mocked submit/report endpoints.
 - [x] Add release-readiness QA for launch blockers, media sources, DNS, legal, email, and integration status.
 - [x] Add dedicated domain-readiness QA for apex and www DNS/HTTPS.
+- [x] Accept Firebase-provided A or CNAME records for `www` release-readiness checks.
 - [x] Add provider-readiness QA for secret metadata and live inbox/handoff status.
 - [x] Add deploy-artifact QA for private launch-gates reporting.
 

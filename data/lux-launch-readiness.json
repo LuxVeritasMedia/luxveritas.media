@@ -76,7 +76,7 @@
       "nextAction": "Configure www.luxveritas.media DNS and Hosting redirect after the root domain remains stable.",
       "owner": "Domain operator",
       "blockerType": "dns_ssl",
-      "verification": "Run domain-readiness QA after adding the Firebase Hosting www custom domain and DNS record.",
+      "verification": "Run domain-readiness QA after adding the Firebase Hosting www custom domain and required A or CNAME record.",
       "requiredForPublicLaunch": true
     }
   ]
