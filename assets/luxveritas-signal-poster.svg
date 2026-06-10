@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Lux Veritas signal preview</title>
+  <desc id="desc">Obsidian, emerald, and restrained gold preview art for Lux Veritas media playback.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#070909"/>
+      <stop offset="0.54" stop-color="#12181a"/>
+      <stop offset="1" stop-color="#1d2138"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="44%" r="52%">
+      <stop offset="0" stop-color="#c8a86a" stop-opacity="0.28"/>
+      <stop offset="0.58" stop-color="#143c36" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#070909" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <rect width="1280" height="720" fill="url(#glow)"/>
+  <path d="M190 505h900" stroke="#c8a86a" stroke-width="2" stroke-opacity="0.42"/>
+  <path d="M338 500V230h56v224h156v46H338Zm360-270h66L632 500h-58l124-270Z" fill="#d8c391"/>
+  <g fill="#1f8c72" opacity="0.52">
+    <rect x="196" y="318" width="22" height="94" rx="11"/>
+    <rect x="236" y="285" width="22" height="160" rx="11"/>
+    <rect x="276" y="342" width="22" height="84" rx="11"/>
+    <rect x="1010" y="294" width="22" height="152" rx="11"/>
+    <rect x="1050" y="336" width="22" height="92" rx="11"/>
+  </g>
+  <text x="640" y="580" fill="#f2ead7" font-family="Georgia, serif" font-size="42" text-anchor="middle" letter-spacing="4">LUX VERITAS</text>
+  <text x="640" y="626" fill="#c8a86a" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" letter-spacing="5">NOT NOISE. SIGNAL.</text>
+</svg>

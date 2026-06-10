@@ -216,17 +216,41 @@ async function mediaFlow(page, baseUrl, path) {
   await page.goto(`${baseUrl}${path}`, { waitUntil: "domcontentloaded" });
   await page.evaluate(() => localStorage.setItem("luxveritas_consent", "accepted"));
   await page.click('[data-media-action="play"]');
-  await page.waitForSelector("[data-media-followup]:not([hidden])", { timeout: 5000 });
-  const followupText = await page.locator("[data-media-followup]").innerText();
-  if (!/Join for access|source opens|first access/i.test(followupText)) {
-    issues.push(`${path}: media follow-up did not show conversion copy`);
-  }
-  await page.click("[data-media-followup-action]");
-  await page.waitForSelector("[data-dialog][open]", { timeout: 5000 });
-  const role = await page.locator('select[name="role_path"]').inputValue();
-  const inquiry = await page.locator('select[name="inquiry_type"]').inputValue();
-  if (role !== "Member" || inquiry !== "Membership") {
-    issues.push(`${path}: media follow-up did not open membership defaults`);
+  await page.waitForFunction(() => {
+    const sourceShell = document.querySelector("[data-media-source-shell]");
+    const followup = document.querySelector("[data-media-followup]");
+    return (sourceShell && !sourceShell.hidden) || (followup && !followup.hidden);
+  }, null, { timeout: 5000 });
+
+  const mediaState = await page.evaluate(() => {
+    const sourceShell = document.querySelector("[data-media-source-shell]");
+    const followup = document.querySelector("[data-media-followup]");
+    const audio = document.querySelector("[data-media-audio]");
+    const video = document.querySelector("[data-media-video]");
+    return {
+      sourceVisible: Boolean(sourceShell && !sourceShell.hidden),
+      followupVisible: Boolean(followup && !followup.hidden),
+      audioVisible: Boolean(audio && !audio.hidden),
+      videoVisible: Boolean(video && !video.hidden)
+    };
+  });
+
+  if (mediaState.sourceVisible) {
+    if (!mediaState.audioVisible && !mediaState.videoVisible) {
+      issues.push(`${path}: media source shell opened without playable audio or video`);
+    }
+  } else {
+    const followupText = await page.locator("[data-media-followup]").innerText();
+    if (!/Join for access|source opens|first access/i.test(followupText)) {
+      issues.push(`${path}: media follow-up did not show conversion copy`);
+    }
+    await page.click("[data-media-followup-action]");
+    await page.waitForSelector("[data-dialog][open]", { timeout: 5000 });
+    const role = await page.locator('select[name="role_path"]').inputValue();
+    const inquiry = await page.locator('select[name="inquiry_type"]').inputValue();
+    if (role !== "Member" || inquiry !== "Membership") {
+      issues.push(`${path}: media follow-up did not open membership defaults`);
+    }
   }
   const mediaEvent = events.slice(beforeEventCount).find((item) => item.event === "media_action");
   if (!mediaEvent) {
@@ -236,7 +260,11 @@ async function mediaFlow(page, baseUrl, path) {
   for (const field of ["source_status", "source_ready", "source_required", "reporting_key"]) {
     if (mediaEvent.detail?.[field] == null) issues.push(`${path}: media event missing ${field}`);
   }
-  if (mediaEvent.detail?.source_status !== "queued" || mediaEvent.detail?.source_ready !== false) {
+  if (mediaState.sourceVisible) {
+    if (mediaEvent.detail?.source_status !== "ready" || mediaEvent.detail?.source_ready !== true) {
+      issues.push(`${path}: media event did not report ready source state`);
+    }
+  } else if (mediaEvent.detail?.source_status !== "queued" || mediaEvent.detail?.source_ready !== false) {
     issues.push(`${path}: media event did not report queued source state`);
   }
 }
@@ -275,10 +303,10 @@ async function operatorReportFlow(page, baseUrl) {
   const mediaReadiness = await page.locator("[data-media-readiness-list]").innerText();
   const launchSummaryBeforeLoad = await page.locator("[data-launch-readiness-summary]").innerText();
   const launchReadinessBeforeLoad = await page.locator("[data-launch-readiness-list]").innerText();
-  if (!/0 of 3 source-ready/.test(mediaSummary)) {
+  if (!/3 of 3 source-ready/.test(mediaSummary)) {
     issues.push(`/portal/reporting.html: expected media readiness summary, found "${mediaSummary}"`);
   }
-  if (!/0 of 7 launch gates ready/.test(launchSummaryBeforeLoad)) {
+  if (!/1 of 7 launch gates ready/.test(launchSummaryBeforeLoad)) {
     issues.push(`/portal/reporting.html: expected launch readiness summary, found "${launchSummaryBeforeLoad}"`);
   }
   for (const label of ["SPMVP", "Visual World", "Lux Radio"]) {
@@ -384,7 +412,7 @@ async function operatorReportFlow(page, baseUrl) {
   if (!/Server captures/.test(funnelSummary) || !/Media actions/.test(funnelSummary)) {
     issues.push(`/portal/reporting.html: pilot funnel missing capture/media values`);
   }
-  if (!/0 of 7 launch gates ready/.test(launchSummary) || !/Inbox notification provider is not active/i.test(launchReadiness)) {
+  if (!/1 of 7 launch gates ready/.test(launchSummary) || !/Inbox notification provider is not active/i.test(launchReadiness)) {
     issues.push(`/portal/reporting.html: launch gates did not render blocker state (summary="${launchSummary}", list="${launchReadiness.replace(/\s+/g, " ")}")`);
   }
 

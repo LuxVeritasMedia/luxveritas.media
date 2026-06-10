@@ -44,6 +44,13 @@ const files = [
   "works/index.html",
   "works/sample.html"
 ];
+const assetFiles = [
+  "assets/luxveritas-threshold.png",
+  "assets/luxveritas-signal-poster.svg",
+  "assets/luxveritas-spmvp-preview.wav",
+  "assets/luxveritas-radio-preview.wav",
+  "assets/luxveritas-visual-preview.webm"
+];
 
 await rm(dist, { recursive: true, force: true });
 
@@ -54,7 +61,9 @@ for (const file of files) {
 }
 
 await mkdir(join(dist, "assets"), { recursive: true });
-await cp("assets/luxveritas-threshold.png", join(dist, "assets/luxveritas-threshold.png"));
+for (const file of assetFiles) {
+  await cp(file, join(dist, file));
+}
 await mkdir(join(dist, "data"), { recursive: true });
 await cp("data/lux-media-manifest.json", join(dist, "data/lux-media-manifest.json"));
 await cp("data/lux-launch-readiness.json", join(dist, "data/lux-launch-readiness.json"));
@@ -63,7 +72,7 @@ await cp("data/lux-legal-review.json", join(dist, "data/lux-legal-review.json"))
 
 const requiredNonEmpty = [
   ...files,
-  "assets/luxveritas-threshold.png",
+  ...assetFiles,
   "data/lux-media-manifest.json",
   "data/lux-launch-readiness.json",
   "data/lux-public-terms.json",
@@ -77,4 +86,4 @@ for (const file of requiredNonEmpty) {
   }
 }
 
-console.log(`Prepared Firebase Hosting artifact with ${files.length + 5} files.`);
+console.log(`Prepared Firebase Hosting artifact with ${files.length + assetFiles.length + 4} files.`);

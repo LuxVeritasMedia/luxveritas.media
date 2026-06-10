@@ -13,7 +13,11 @@ const requiredFiles = [
   "data/lux-media-manifest.json",
   "data/lux-legal-review.json",
   "data/lux-public-terms.json",
-  "assets/luxveritas-threshold.png"
+  "assets/luxveritas-threshold.png",
+  "assets/luxveritas-signal-poster.svg",
+  "assets/luxveritas-spmvp-preview.wav",
+  "assets/luxveritas-radio-preview.wav",
+  "assets/luxveritas-visual-preview.webm"
 ];
 const expectedNav = ["Home", "Music", "Film", "Events", "Codex", "About", "Join"];
 const expectedFooter = ["Works", "Store", "Membership", "Submissions", "Press", "Contact", "Privacy", "Terms"];
