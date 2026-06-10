@@ -390,6 +390,63 @@ async function mediaFlow(page, baseUrl, path) {
   }
 }
 
+async function mediaActionMappingFlow(page, baseUrl) {
+  const actionExpectations = [
+    { action: "play", sourceType: "audio", reportingKey: "spmvp_release_audio", visible: "audio" },
+    { action: "watch", sourceType: "video", reportingKey: "spmvp_visual_world", visible: "video" },
+    { action: "radio", sourceType: "stream", reportingKey: "lux_radio_stream", visible: "audio" }
+  ];
+
+  for (const expected of actionExpectations) {
+    const beforeEventCount = events.length;
+    await page.goto(`${baseUrl}/music.html`, { waitUntil: "domcontentloaded" });
+    await page.evaluate(() => localStorage.setItem("luxveritas_consent", "accepted"));
+    await page.click(`[data-media-player] [data-media-action="${expected.action}"]`);
+    await page.waitForFunction(() => {
+      const shell = document.querySelector("[data-media-source-shell]");
+      return shell && !shell.hidden;
+    }, null, { timeout: 5000 });
+
+    const state = await page.evaluate(() => {
+      const active = document.querySelector("[data-media-player] [data-media-item].active");
+      const audio = document.querySelector("[data-media-audio]");
+      const video = document.querySelector("[data-media-video]");
+      return {
+        sourceType: active?.dataset.sourceType || "",
+        reportingKey: active?.dataset.reportingKey || "",
+        audioVisible: Boolean(audio && !audio.hidden),
+        videoVisible: Boolean(video && !video.hidden),
+        title: document.querySelector("[data-media-title]")?.textContent || ""
+      };
+    });
+
+    if (state.sourceType !== expected.sourceType) {
+      issues.push(`/music.html: ${expected.action} selected sourceType ${state.sourceType || "missing"}, expected ${expected.sourceType}`);
+    }
+    if (state.reportingKey !== expected.reportingKey) {
+      issues.push(`/music.html: ${expected.action} selected reportingKey ${state.reportingKey || "missing"}, expected ${expected.reportingKey}`);
+    }
+    if (expected.visible === "audio" && !state.audioVisible) {
+      issues.push(`/music.html: ${expected.action} did not reveal audio playback shell`);
+    }
+    if (expected.visible === "video" && !state.videoVisible) {
+      issues.push(`/music.html: ${expected.action} did not reveal video playback shell`);
+    }
+
+    const mediaEvent = events.slice(beforeEventCount).find((item) => item.event === "media_action" && item.detail?.action === expected.action);
+    if (!mediaEvent) {
+      issues.push(`/music.html: ${expected.action} did not report media_action`);
+      continue;
+    }
+    if (mediaEvent.detail?.source_type !== expected.sourceType) {
+      issues.push(`/music.html: ${expected.action} reported source_type ${mediaEvent.detail?.source_type || "missing"}, expected ${expected.sourceType}`);
+    }
+    if (mediaEvent.detail?.reporting_key !== expected.reportingKey) {
+      issues.push(`/music.html: ${expected.action} reported reporting_key ${mediaEvent.detail?.reporting_key || "missing"}, expected ${expected.reportingKey}`);
+    }
+  }
+}
+
 async function fanSignalPassFlow(page, baseUrl) {
   await page.goto(`${baseUrl}/music.html`, { waitUntil: "domcontentloaded" });
   await page.evaluate(() => {
@@ -850,6 +907,7 @@ try {
   for (const path of ["/music.html", "/spmvp.html"]) {
     await mediaFlow(page, baseUrl, path);
   }
+  await mediaActionMappingFlow(page, baseUrl);
   await fanSignalPassFlow(page, baseUrl);
   await portalAccessFlow(page, baseUrl);
   await operatorReportFlow(page, baseUrl);
@@ -867,4 +925,4 @@ if (issues.length) {
   process.exit(1);
 }
 
-console.log(`Browser flow QA passed for ${flows.length} form flows, form fallback/rate-limit, portal sign-in/fallback, 2 media flows, signal pass export, interaction reporting, and operator reporting at ${baseUrl}.`);
+console.log(`Browser flow QA passed for ${flows.length} form flows, form fallback/rate-limit, portal sign-in/fallback, 2 media flows, media action mapping, signal pass export, interaction reporting, and operator reporting at ${baseUrl}.`);

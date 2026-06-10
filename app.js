@@ -111,7 +111,7 @@ const mediaManifestPath = "/data/lux-media-manifest.json";
 const launchChecklistPath = "/data/lux-launch-readiness.json";
 const legalReviewPath = "/data/lux-legal-review.json";
 const submitTimeoutMs = 8000;
-const publicBuildVersion = "20260610-signal-pass";
+const publicBuildVersion = "20260610-media-actions";
 let activeFormType = "request";
 let mediaManifestPromise = null;
 let launchChecklistPromise = null;
@@ -1413,6 +1413,12 @@ function handleMediaAction(action, player) {
   if (!player) {
     openForm(action === "watch" ? "fan" : "request");
     return;
+  }
+
+  const actionItem = [...player.querySelectorAll("[data-media-item]")]
+    .find((item) => item.dataset.action === action || item.dataset.kind === action);
+  if (actionItem && !actionItem.classList.contains("active")) {
+    setActiveMediaItem(player, actionItem, { record: false });
   }
 
   const title = player.querySelector("[data-media-title]")?.textContent?.trim() || "SPMVP";

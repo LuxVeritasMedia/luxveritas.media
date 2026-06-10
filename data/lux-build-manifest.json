@@ -1,11 +1,11 @@
 {
   "schemaVersion": "luxveritas.build_manifest.v1",
-  "version": "20260610-signal-pass",
-  "assetVersion": "20260610-signal-pass",
+  "version": "20260610-media-actions",
+  "assetVersion": "20260610-media-actions",
   "mediaManifestVersion": "2026-06-10-mvp-media-preview",
   "publicTermsVersion": "2026-06-09-public-capture",
   "routeCount": 37,
   "publicRouteCount": 20,
-  "appScript": "app.js?v=20260610-signal-pass",
-  "stylesheet": "styles.css?v=20260610-signal-pass"
+  "appScript": "app.js?v=20260610-media-actions",
+  "stylesheet": "styles.css?v=20260610-media-actions"
 }

@@ -9,7 +9,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Live apex: `https://luxveritas.media`
 - Firebase project: `lux-veritas-media`
 - GitHub repo: `LuxVeritasMedia/luxveritas.media`
-- Current live asset version: `20260610-signal-pass`
+- Current live asset version: `20260610-media-actions`
 - Current phase: Phase 4 of 10, capture/legal/readiness
 - Next major phase: Phase 5, authenticated portal shell
 
@@ -23,6 +23,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Browser-flow QA covers stored capture, email-draft fallback, rate-limit recovery, portal fallback, and submit-button reset.
 - Portal sign-in is a screened access capture, not a real account login yet.
 - Lux Player MVP has audio, visual, and radio slots with approved preview sources.
+- Listen, Watch, and Radio player actions select the matching source and return stable reporting keys.
 - CTA, media, consented interaction, and form reporting paths have QA coverage.
 - Private operator reporting exists behind approved access.
 
