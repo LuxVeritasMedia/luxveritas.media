@@ -237,6 +237,54 @@ function cta() {
   </section>`;
 }
 
+function serviceWorkerScript() {
+  const cacheName = `luxveritas-static-${assetVersion}`;
+  const precache = [
+    "/offline.html",
+    `/styles.css?v=${assetVersion}`,
+    `/app.js?v=${assetVersion}`,
+    "/site.webmanifest",
+    "/assets/luxveritas-icon.svg",
+    "/assets/luxveritas-threshold.png"
+  ];
+  return `const CACHE_NAME = ${JSON.stringify(cacheName)};
+const PRECACHE_URLS = ${JSON.stringify(precache, null, 2)};
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(PRECACHE_URLS))
+      .then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys()
+      .then((keys) => Promise.all(keys
+        .filter((key) => key.startsWith("luxveritas-static-") && key !== CACHE_NAME)
+        .map((key) => caches.delete(key))))
+      .then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener("fetch", (event) => {
+  const request = event.request;
+  if (request.method !== "GET") return;
+
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin || url.pathname.startsWith("/api/")) return;
+
+  if (request.mode === "navigate") {
+    event.respondWith(fetch(request).catch(() => caches.match("/offline.html")));
+    return;
+  }
+
+  event.respondWith(caches.match(request).then((cached) => cached || fetch(request)));
+});
+`;
+}
+
 function mediaPlayerShell(context = "music") {
   const compact = context === "spmvp";
   const items = mediaManifest.items.filter((item) => item.contexts.includes(context));
@@ -742,6 +790,8 @@ const pages = [
     <h2>Contact</h2>
     <p>For questions about these terms, use the contact path available on this site.</p>
   `, "press", true, "Contact")],
+  ["/offline.html", shell({ path: "/offline.html", title: "Offline | Lux Veritas", description: "A Lux Veritas offline fallback for the public portal.", noindex: true, body: `${pageHero("Offline", "Signal Paused.", "The Lux Veritas portal could not reach the network. Reconnect and return to continue listening, watching, joining, and requesting access.", `<div class="hero-actions"><a class="button button-primary" href="/index.html">Return Home</a><a class="button button-quiet" href="/music.html">Music</a></div>`)}
+    <section class="section empty-state"><p class="kicker">Saved Shell</p><h2>The door is still here.</h2><p>This fallback keeps the public entrance present while your connection returns. Forms, private reports, and fresh media actions need the live network.</p></section>` })],
   ["/spmvp.html", shell({ path: "/spmvp.html", title: "SPMVP | Lux Veritas", description: "A release room for a new Lux Veritas music drop.", body: `${pageHero("New Drop", "SPMVP", "Start with the drop. Follow the signal. Join for the deeper version.", `<div class="hero-actions"><button class="button button-primary" type="button" data-media-action="play">Listen</button><button class="button button-quiet" type="button" data-media-action="watch">Watch</button><button class="button button-quiet" type="button" data-open-form="fan">Join for early access</button></div>`)}${mediaPlayerShell("spmvp")}<section class="section split-band"><div><p class="kicker">Context</p><h2>Enter through the work.</h2></div><div><p>Listen, watch, and enter the Lux Veritas circle for early access, private drops, and future live rooms.</p></div></section>` })],
   ["/auth/signin.html", signInShell()],
   ["/portal/index.html", portalIndex()],
@@ -828,6 +878,8 @@ await writeFile("site.webmanifest", `${JSON.stringify({
   categories: ["music", "entertainment", "lifestyle"]
 }, null, 2)}
 `);
+
+await writeFile("service-worker.js", serviceWorkerScript());
 
 await writeFile("data/lux-build-manifest.json", `${JSON.stringify({
   schemaVersion: "luxveritas.build_manifest.v1",

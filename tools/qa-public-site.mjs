@@ -6,6 +6,8 @@ const issues = [];
 const requiredFiles = [
   "index.html",
   "app.js",
+  "offline.html",
+  "service-worker.js",
   "styles.css",
   "robots.txt",
   "site.webmanifest",
@@ -39,7 +41,8 @@ const noindexRoutes = [
   "brands/sample.html",
   "investor.html",
   "legal/privacy.html",
-  "legal/terms.html"
+  "legal/terms.html",
+  "offline.html"
 ];
 const bannedTerms = [
   /route-ready/i,
@@ -254,6 +257,17 @@ for (const file of htmlFiles) {
 const appJs = await readFile(join(root, "app.js"), "utf8");
 for (const pattern of bannedTerms) {
   if (pattern.test(appJs)) issues.push(`app.js: banned public term matched ${pattern}`);
+}
+for (const marker of ['"serviceWorker" in navigator', 'navigator.serviceWorker.register("/service-worker.js")']) {
+  if (!appJs.includes(marker)) issues.push(`app.js: missing service worker registration marker ${marker}`);
+}
+
+const serviceWorkerRaw = await readFile(join(root, "service-worker.js"), "utf8");
+for (const pattern of bannedTerms) {
+  if (pattern.test(serviceWorkerRaw)) issues.push(`service-worker.js: banned public term matched ${pattern}`);
+}
+for (const marker of ["luxveritas-static-", "/offline.html", "/site.webmanifest", "/assets/luxveritas-icon.svg", "request.mode === \"navigate\"", "/api/"]) {
+  if (!serviceWorkerRaw.includes(marker)) issues.push(`service-worker.js: missing offline marker ${marker}`);
 }
 
 const mediaManifestRaw = await readFile(join(root, "data/lux-media-manifest.json"), "utf8");

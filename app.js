@@ -1552,6 +1552,14 @@ document.addEventListener("click", (event) => {
 dialogForm?.addEventListener("submit", handleFormSubmit);
 portalSigninForm?.addEventListener("submit", handlePortalSignin);
 hydrateMediaPlayers();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/service-worker.js").catch(() => {
+      // Offline support is progressive enhancement only.
+    });
+  });
+}
 renderMediaReadinessReport();
 renderLaunchReadinessReport();
 renderLocalReport();

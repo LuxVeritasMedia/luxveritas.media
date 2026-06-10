@@ -9,6 +9,7 @@ const requiredRoutes = [
   "/spmvp.html",
   "/membership.html",
   "/submissions.html",
+  "/offline.html",
   "/portal/reporting.html"
 ];
 const buildScript = await readFile("tools/build-static.mjs", "utf8");
@@ -91,9 +92,23 @@ if (musicHtml) {
 if (expectedAssetVersion) {
   const appJs = await checkRoute(`/app.js?v=${expectedAssetVersion}`);
   if (appJs) {
-    for (const marker of ["testInboxDelivery", "lastDownloadName", "type: \"handoff\"", "function handleMediaAction"]) {
+    for (const marker of ["testInboxDelivery", "lastDownloadName", "type: \"handoff\"", "function handleMediaAction", 'navigator.serviceWorker.register("/service-worker.js")']) {
       if (!appJs.includes(marker)) issues.push(`/app.js?v=${expectedAssetVersion}: missing ${marker}`);
     }
+  }
+}
+
+const offlineHtml = await checkRoute("/offline.html");
+if (offlineHtml) {
+  for (const marker of ["Signal Paused.", "name=\"robots\" content=\"noindex, nofollow\"", "Return Home"]) {
+    if (!offlineHtml.includes(marker)) issues.push(`/offline.html: missing ${marker}`);
+  }
+}
+
+const serviceWorker = await checkRoute("/service-worker.js");
+if (serviceWorker) {
+  for (const marker of ["luxveritas-static-", "/offline.html", "request.mode === \"navigate\"", "/api/"]) {
+    if (!serviceWorker.includes(marker)) issues.push(`/service-worker.js: missing ${marker}`);
   }
 }
 

@@ -65,6 +65,8 @@ The public build manifest uses `luxveritas.build_manifest.v1` and is deployed at
 
 The public web app manifest is deployed at `/site.webmanifest` with Lux Veritas app naming, theme color, standalone display mode, and the `/assets/luxveritas-icon.svg` icon. Public-site QA validates page-level manifest links and install metadata; live-site QA validates the deployed manifest.
 
+The public offline fallback is deployed at `/offline.html` and registered through `/service-worker.js`. The service worker only handles same-origin GET requests, skips `/api/` requests, and uses the offline page for failed navigation requests; it is a progressive enhancement, not a replacement for live form, reporting, or media delivery.
+
 Attach approved release media only after the public audio, visual, and radio/stream URLs are cleared for launch:
 
 ```bash
