@@ -129,6 +129,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add browser-flow QA for real CTA clicks, modal submits, submit reset, and media follow-up routing.
 - [x] Add live browser-flow QA mode for production pages with mocked submit/report endpoints.
 - [x] Add browser-flow QA for consent, dialog close, and media selection reporting.
+- [x] Add browser/live matrix coverage for Join and Store fan capture paths.
 - [x] Add asset-version QA so live pages cannot serve stale app/CSS URLs after app changes.
 - [x] Bump public asset version after portal sign-in capture behavior changed.
 - [x] Add release-readiness QA for launch blockers, media sources, DNS, legal, email, and integration status.

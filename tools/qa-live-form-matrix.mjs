@@ -11,13 +11,15 @@ const warnings = [];
 const execFileAsync = promisify(execFile);
 
 const matrix = [
-  { sourcePage: "/index.html", formType: "request", tag: "general-access", rolePath: "General", inquiryType: "Portal" },
+  { sourcePage: "/index.html", formType: "request", tag: "request-access", rolePath: "General", inquiryType: "Portal" },
+  { sourcePage: "/join.html", formType: "fan", tag: "membership-waitlist", rolePath: "Member", inquiryType: "Membership" },
   { sourcePage: "/membership.html", formType: "fan", tag: "membership-waitlist", rolePath: "Member", inquiryType: "Membership" },
-  { sourcePage: "/submissions.html", formType: "submission", tag: "submission-review", rolePath: "Creator", inquiryType: "Submissions" },
-  { sourcePage: "/events.html", formType: "request", tag: "event-access", rolePath: "General", inquiryType: "Portal" },
-  { sourcePage: "/contact.html", formType: "press", tag: "press-contact", rolePath: "Press", inquiryType: "Press" },
-  { sourcePage: "/investor.html", formType: "investor", tag: "strategic-access", rolePath: "Investor", inquiryType: "Investor" },
-  { sourcePage: "/community.html", formType: "fan", tag: "community-waitlist", rolePath: "Member", inquiryType: "Membership" }
+  { sourcePage: "/store.html", formType: "fan", tag: "membership-waitlist", rolePath: "Member", inquiryType: "Membership" },
+  { sourcePage: "/community.html", formType: "fan", tag: "membership-waitlist", rolePath: "Member", inquiryType: "Membership" },
+  { sourcePage: "/submissions.html", formType: "submission", tag: "submission", rolePath: "Creator", inquiryType: "Submissions" },
+  { sourcePage: "/events.html", formType: "request", tag: "request-access", rolePath: "General", inquiryType: "Portal" },
+  { sourcePage: "/contact.html", formType: "press", tag: "press", rolePath: "Press", inquiryType: "Press" },
+  { sourcePage: "/investor.html", formType: "investor", tag: "investor-access", rolePath: "Investor", inquiryType: "Investor" }
 ];
 
 function stamp() {

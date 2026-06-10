@@ -124,8 +124,10 @@ const mimeTypes = {
 
 const flows = [
   { path: "/index.html", trigger: 'button[data-open-form="request"]', role: "General", inquiry: "Portal" },
+  { path: "/join.html", trigger: 'button[data-open-form="fan"]', role: "Member", inquiry: "Membership" },
   { path: "/submissions.html", trigger: 'button[data-open-form="submission"]', role: "Creator", inquiry: "Submissions" },
   { path: "/membership.html", trigger: 'button[data-open-form="fan"]', role: "Member", inquiry: "Membership" },
+  { path: "/store.html", trigger: 'button[data-open-form="fan"]', role: "Member", inquiry: "Membership" },
   { path: "/community.html", trigger: 'button[data-open-form="fan"]', role: "Member", inquiry: "Membership" },
   { path: "/investor.html", trigger: 'button[data-open-form="investor"]', role: "Investor", inquiry: "Investor" },
   { path: "/events.html", trigger: 'button[data-open-form="request"]', role: "General", inquiry: "Portal" },
