@@ -571,6 +571,7 @@ function portalReport() {
           <ul class="report-list" data-private-report-list><li>Load private activity to view records.</li></ul>
         </div>
         <div class="report-actions">
+          <button class="button button-primary" type="button" data-report-action="test-inbox">Test Inbox</button>
           <button class="button button-primary" type="button" data-report-action="replay-private">Replay Pending Inbox</button>
           <button class="button button-quiet" type="button" data-report-action="replay-integration">Replay Pending Handoff</button>
           <button class="button button-quiet" type="button" data-report-action="export-private-json">Export Private JSON</button>

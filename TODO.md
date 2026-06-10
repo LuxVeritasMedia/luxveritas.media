@@ -46,6 +46,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Mount private handoff URL, signing secret, and target through Firebase Functions Secret Manager.
 - [x] Add local helper for safely setting private handoff secrets.
 - [x] Add protected pending-inbox replay for stored submissions after email provider setup.
+- [x] Add protected inbox-provider test action for approved operators.
 - [x] Add protected pending-handoff replay for stored submissions after private workflow setup.
 - [x] Add versioned replay-safe private integration payload contract.
 - [x] Add direct QA coverage for the private integration payload contract.

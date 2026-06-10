@@ -100,6 +100,14 @@ The notification replay action:
 - is intended for post-provider setup recovery after `RESEND_API_KEY` and the approved sender domain are live
 - does not expose provider secrets or delivery internals to public pages
 
+The inbox test action:
+
+- requires the same approved operator bearer token as the private report
+- posts to `/api/report` with `action: "test_inbox"`
+- sends one controlled provider-test message through the same server-side email path as public submissions
+- returns `email_provider_not_configured` until the approved provider key and sender domain are active
+- should be run before replaying pending inbox records
+
 The private handoff replay action:
 
 - requires the same approved operator bearer token as the private report

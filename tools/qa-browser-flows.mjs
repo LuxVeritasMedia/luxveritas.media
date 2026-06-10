@@ -446,6 +446,16 @@ async function operatorReportFlow(page, baseUrl) {
     issues.push(`/portal/reporting.html: launch gates did not render blocker state (summary="${launchSummary}", list="${launchReadiness.replace(/\s+/g, " ")}")`);
   }
 
+  await page.click('[data-report-action="test-inbox"]');
+  await page.waitForFunction(() => {
+    const status = document.querySelector("[data-private-report-status]");
+    return status && /Inbox provider is not configured yet/i.test(status.textContent || "");
+  }, null, { timeout: 5000 });
+  const inboxTestRequest = reportRequests.at(-1);
+  if (inboxTestRequest?.body?.action !== "test_inbox") {
+    issues.push(`/portal/reporting.html: test inbox did not send protected test_inbox action`);
+  }
+
   for (const [action, expectedName] of [
     ["export-private-json", "luxveritas-private-report-"],
     ["export-private-csv", "luxveritas-private-report-"]
@@ -527,6 +537,19 @@ try {
           checked: 0,
           skipped: true,
           reason: "integration_not_configured"
+        })
+      });
+      return;
+    }
+    if (postData && JSON.parse(postData).action === "test_inbox") {
+      await route.fulfill({
+        status: 202,
+        contentType: "application/json",
+        body: JSON.stringify({
+          ok: true,
+          sent: false,
+          skipped: true,
+          reason: "email_provider_not_configured"
         })
       });
       return;

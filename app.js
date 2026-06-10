@@ -1131,6 +1131,41 @@ async function replayPendingIntegration() {
   }
 }
 
+async function testInboxDelivery() {
+  const token = document.querySelector("[data-report-token]")?.value.trim();
+  if (!token) {
+    setPrivateReportStatus("Enter an approved operator token first.");
+    return;
+  }
+
+  setPrivateReportStatus("Testing inbox delivery...");
+  try {
+    const response = await fetch(reportEndpoint, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ action: "test_inbox" })
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result.ok) throw new Error(result.error || "inbox_test_unavailable");
+    if (result.skipped) {
+      setPrivateReportStatus("Inbox provider is not configured yet. Add the approved provider key before testing live email.");
+      return;
+    }
+    if (result.sent) {
+      setPrivateReportStatus("Inbox test sent. Check the Lux Veritas inbox for the provider test message.");
+      await loadPrivateReport();
+      return;
+    }
+    setPrivateReportStatus(`Inbox test checked but did not send: ${result.reason || "provider error"}.`);
+  } catch {
+    setPrivateReportStatus("Inbox test is unavailable for this token.");
+  }
+}
+
 function exportLocalReport() {
   const report = localReportData();
   downloadTextFile(
@@ -1201,6 +1236,10 @@ function handleReportAction(action) {
   }
   if (action === "replay-integration") {
     replayPendingIntegration();
+    return;
+  }
+  if (action === "test-inbox") {
+    testInboxDelivery();
     return;
   }
   if (action === "export") {

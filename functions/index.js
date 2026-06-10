@@ -870,6 +870,68 @@ async function replayPendingIntegration(req, res, auth) {
   }
 }
 
+async function testInboxDelivery(req, res, auth) {
+  const readiness = deliveryReadiness();
+  if (!readiness.emailProviderConfigured) {
+    json(res, 202, {
+      ok: true,
+      sent: false,
+      skipped: true,
+      reason: "email_provider_not_configured",
+      delivery: readiness
+    });
+    return;
+  }
+
+  const id = `inbox-test-${crypto.randomUUID()}`;
+  const now = new Date().toISOString();
+  const payload = {
+    client_submission_id: text(req.body?.receiptId, 80) || `LV-INBOX-TEST-${now.replace(/[-:.TZ]/g, "").slice(0, 14)}`,
+    name: "Lux Veritas Inbox Test",
+    email: auth.email || defaultToEmail,
+    phone: "",
+    role_path: "General",
+    access_path: "general",
+    portal_role_target: "operator",
+    inquiry_type: "General",
+    inquiry_key: "general",
+    routing_queue: "provider_test",
+    routing_label: "Provider Test",
+    routing_priority: "standard",
+    routing_next_action: "Confirm inbox delivery",
+    routing_sla: "Immediate",
+    formType: "operator-test",
+    tag: "inbox-provider-test",
+    source: "luxveritas.media",
+    source_page: "/portal/reporting.html",
+    public_terms_version: "",
+    privacy_version: "",
+    terms_version: "",
+    submission_terms_version: "",
+    consent_email: true,
+    consent_sms: false,
+    message: `Operator inbox test requested by ${auth.email || "approved operator"} at ${now}.`
+  };
+
+  try {
+    const delivery = await sendEmail(payload, id);
+    json(res, 200, {
+      ok: true,
+      sent: delivery.delivered === true,
+      checked: 1,
+      reason: delivery.delivered ? "sent" : delivery.reason,
+      delivery
+    });
+  } catch (error) {
+    logger.error("Inbox test failed", {
+      errorCode: error?.code || null,
+      errorMessage: error?.message || String(error),
+      id
+    });
+    json(res, 500, { ok: false, error: "inbox_test_unavailable" });
+  }
+}
+
 export const submitForm = onRequest(
   {
     region: "us-central1",
@@ -1138,7 +1200,7 @@ export const reportActivity = onRequest(
     }
 
     const replayAction = text(req.body?.action, 80);
-    const isReplay = req.method === "POST" && ["replay_pending", "replay_integration"].includes(replayAction);
+    const isReplay = req.method === "POST" && ["replay_pending", "replay_integration", "test_inbox"].includes(replayAction);
     const namespace = isReplay ? "replay" : "report";
     const maxRequests = isReplay ? maxReplayPerWindow : maxReportsPerWindow;
     if (isRateLimited(req, maxRequests, namespace)) {
@@ -1159,6 +1221,10 @@ export const reportActivity = onRequest(
       }
       if (replayAction === "replay_integration") {
         await replayPendingIntegration(req, res, auth);
+        return;
+      }
+      if (replayAction === "test_inbox") {
+        await testInboxDelivery(req, res, auth);
         return;
       }
       await replayPendingInbox(req, res, auth);

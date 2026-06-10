@@ -37,8 +37,10 @@ for (const marker of [
   "integrationTargetConfigured",
   "replayPendingInbox",
   "replayPendingIntegration",
+  "testInboxDelivery",
   "replay_pending",
   "replay_integration",
+  "test_inbox",
   "pendingNotificationCount",
   "pendingIntegrationCount",
   "pendingNotifications",
@@ -91,6 +93,7 @@ for (const marker of [
   "data-private-summary=\"integrations\"",
   "data-report-action=\"replay-private\"",
   "data-report-action=\"replay-integration\"",
+  "data-report-action=\"test-inbox\"",
   "data-private-count=\"pendingNotifications\"",
   "data-private-count=\"pendingIntegrations\"",
   "data-private-count=\"privateHandoffs\"",
@@ -126,7 +129,8 @@ for (const marker of [
   "data-private-delivery=\"target\"",
   "data-private-auth=\"mode\"",
   "replayPendingNotifications",
-  "replayPendingIntegration"
+  "replayPendingIntegration",
+  "testInboxDelivery"
 ]) {
   if (!appJs.includes(marker)) issues.push(`app.js: missing private integration rendering marker ${marker}`);
 }
