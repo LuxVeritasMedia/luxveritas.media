@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260610-release-readiness";
+const CACHE_NAME = "luxveritas-static-20260610-portal-capture";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260610-release-readiness",
-  "/app.js?v=20260610-release-readiness",
+  "/styles.css?v=20260610-portal-capture",
+  "/app.js?v=20260610-portal-capture",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"
