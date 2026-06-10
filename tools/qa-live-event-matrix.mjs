@@ -30,9 +30,28 @@ const matrix = [
     detail: {
       action: "play",
       media_id: "spmvp-release",
-      source_status: "queued",
-      source_ready: false,
-      reporting_key: "spmvp-release"
+      source_type: "audio",
+      source_status: "ready",
+      source_ready: true,
+      reporting_key: "spmvp_release_audio"
+    }
+  },
+  {
+    event: "media_playback",
+    page: "/music.html",
+    detail: {
+      action: "milestone",
+      media_id: "spmvp-release",
+      title: "SPMVP",
+      kind: "release",
+      source_type: "audio",
+      source_status: "ready",
+      source_ready: true,
+      reporting_key: "spmvp_release_audio",
+      milestone: "25%",
+      current_time: 30,
+      duration: 100,
+      progress_percent: 30
     }
   },
   {

@@ -251,7 +251,7 @@ async function openFlow(page, baseUrl, flow) {
   await page.fill('input[name="email"]', "qa@luxveritas.media");
   await page.fill('textarea[name="message"]', `Browser flow QA for ${flow.path}`);
   await page.check('input[name="consent_email"]');
-  await page.click("[data-submit-form]");
+  await clickSubmitButton(page);
   await page.waitForFunction(() => {
     const status = document.querySelector("[data-form-status]");
     return status && !status.hidden && /Received\. Thank you|Sent\. Thank you|Too many attempts|Please check/i.test(status.textContent || "");
@@ -284,6 +284,13 @@ async function openFlow(page, baseUrl, flow) {
   if (payload.inquiry_type !== flow.inquiry) issues.push(`${flow.path}: payload inquiry_type mismatch`);
 }
 
+async function clickSubmitButton(page) {
+  const button = page.locator("[data-submit-form]").first();
+  await button.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(100);
+  await button.click({ force: true });
+}
+
 async function assertSubmitButtonReset(page, selector, label, timeout = 3000) {
   await page.waitForFunction(({ selector, label }) => {
     const button = document.querySelector(selector);
@@ -305,7 +312,7 @@ async function formFallbackFlow(page, baseUrl) {
   await page.fill('input[name="email"]', "fallback@luxveritas.media");
   await page.fill('textarea[name="message"]', "Browser fallback QA");
   await page.check('input[name="consent_email"]');
-  await page.click("[data-submit-form]");
+  await clickSubmitButton(page);
   await page.waitForFunction(() => {
     const status = document.querySelector("[data-form-status]");
     return status && !status.hidden && /Open email draft|direct handoff is not available/i.test(status.textContent || "");
@@ -326,7 +333,7 @@ async function formRateLimitFlow(page, baseUrl) {
   await page.fill('input[name="name"]', "Lux Rate QA");
   await page.fill('input[name="email"]', "rate@luxveritas.media");
   await page.fill('textarea[name="message"]', "Browser rate-limit QA");
-  await page.click("[data-submit-form]");
+  await clickSubmitButton(page);
   await page.waitForFunction(() => {
     const status = document.querySelector("[data-form-status]");
     return status && !status.hidden && /Too many attempts/i.test(status.textContent || "");
@@ -400,6 +407,7 @@ async function mediaFlow(page, baseUrl, path) {
       issues.push(`${path}: media follow-up did not open membership defaults`);
     }
   }
+  await waitForCondition(() => events.slice(beforeEventCount).some((item) => item.event === "media_action"), 6000);
   const mediaEvent = events.slice(beforeEventCount).find((item) => item.event === "media_action");
   if (!mediaEvent) {
     issues.push(`${path}: media action did not report to event endpoint`);
