@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260610-circle-signal";
+const CACHE_NAME = "luxveritas-static-20260610-signal-pass";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260610-circle-signal",
-  "/app.js?v=20260610-circle-signal",
+  "/styles.css?v=20260610-signal-pass",
+  "/app.js?v=20260610-signal-pass",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"

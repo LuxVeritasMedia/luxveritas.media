@@ -12,6 +12,7 @@ const actionAttributes = [
   "data-track",
   "data-media-action",
   "data-media-item",
+  "data-fan-signal-export",
   "data-portal-signin",
   "data-report-action",
   "data-submit-form"

@@ -321,6 +321,46 @@ async function mediaFlow(page, baseUrl, path) {
   }
 }
 
+async function fanSignalPassFlow(page, baseUrl) {
+  await page.goto(`${baseUrl}/music.html`, { waitUntil: "domcontentloaded" });
+  await page.evaluate(() => {
+    localStorage.removeItem("luxveritas_media_events");
+    localStorage.removeItem("luxveritas_submissions");
+    localStorage.removeItem("luxveritas_portal_attempts");
+    localStorage.setItem("luxveritas_consent", "accepted");
+    delete document.documentElement.dataset.lastDownloadName;
+    delete document.documentElement.dataset.lastDownloadType;
+  });
+  await page.click('[data-media-action="play"]');
+  await page.waitForFunction(() => {
+    return document.querySelector('[data-fan-signal-count="media"]')?.textContent?.trim() === "1";
+  }, null, { timeout: 5000 });
+  const signalList = await page.locator("[data-fan-signal-list]").innerText();
+  if (!/SPMVP play/i.test(signalList)) {
+    issues.push(`/music.html: fan signal list did not capture media play`);
+  }
+
+  await page.click("[data-fan-signal-export]");
+  await page.waitForFunction(() => {
+    return document.documentElement.dataset.lastDownloadName?.startsWith("luxveritas-signal-pass-")
+      && document.documentElement.dataset.lastDownloadType === "application/json";
+  }, null, { timeout: 5000 });
+  const exportState = await page.evaluate(() => ({
+    filename: document.documentElement.dataset.lastDownloadName || "",
+    type: document.documentElement.dataset.lastDownloadType || "",
+    detail: document.querySelector("[data-fan-signal-detail]")?.textContent || ""
+  }));
+  if (!exportState.filename.startsWith("luxveritas-signal-pass-")) {
+    issues.push(`/music.html: signal pass export suggested unexpected filename ${exportState.filename || "none"}`);
+  }
+  if (exportState.type !== "application/json") {
+    issues.push(`/music.html: signal pass export used unexpected type ${exportState.type || "none"}`);
+  }
+  if (!/Signal pass saved/i.test(exportState.detail)) {
+    issues.push(`/music.html: signal pass export did not confirm local receipt`);
+  }
+}
+
 async function interactionReportingFlow(page, baseUrl) {
   await page.goto(`${baseUrl}/index.html`, { waitUntil: "domcontentloaded" });
   await page.evaluate(() => localStorage.removeItem("luxveritas_consent"));
@@ -716,6 +756,7 @@ try {
   for (const path of ["/music.html", "/spmvp.html"]) {
     await mediaFlow(page, baseUrl, path);
   }
+  await fanSignalPassFlow(page, baseUrl);
   await portalAccessFlow(page, baseUrl);
   await operatorReportFlow(page, baseUrl);
 } catch (error) {
@@ -732,4 +773,4 @@ if (issues.length) {
   process.exit(1);
 }
 
-console.log(`Browser flow QA passed for ${flows.length} form flows, portal sign-in, 2 media flows, interaction reporting, and operator reporting at ${baseUrl}.`);
+console.log(`Browser flow QA passed for ${flows.length} form flows, portal sign-in, 2 media flows, signal pass export, interaction reporting, and operator reporting at ${baseUrl}.`);

@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260610-circle-signal";
+const assetVersion = "20260610-signal-pass";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 
@@ -277,6 +277,7 @@ function fanSignalSection() {
       </div>
       <div class="fan-signal-actions">
         <button class="button button-primary" type="button" data-open-form="fan">Join for first access</button>
+        <button class="button button-quiet" type="button" data-fan-signal-export>Save signal pass</button>
         <a class="button button-quiet" href="/music.html">Play the signal</a>
       </div>
     </div>

@@ -111,6 +111,7 @@ const mediaManifestPath = "/data/lux-media-manifest.json";
 const launchChecklistPath = "/data/lux-launch-readiness.json";
 const legalReviewPath = "/data/lux-legal-review.json";
 const submitTimeoutMs = 8000;
+const publicBuildVersion = "20260610-signal-pass";
 let activeFormType = "request";
 let mediaManifestPromise = null;
 let launchChecklistPromise = null;
@@ -241,6 +242,12 @@ async function submitToServer(payload) {
   }).finally(() => window.clearTimeout(timeout));
 
   const result = await response.json().catch(() => ({}));
+  if (result && result.ok === false) {
+    const error = new Error(result.error || "submission_failed");
+    error.status = response.status;
+    error.result = result;
+    throw error;
+  }
   if (!response.ok && response.status !== 202) {
     const error = new Error(result.error || "submission_failed");
     error.status = response.status;
@@ -859,10 +866,7 @@ function fanSignalActivityLabel(item) {
   return item.event || "Signal recorded";
 }
 
-function renderFanSignal() {
-  const panels = [...document.querySelectorAll("[data-fan-signal]")];
-  if (!panels.length) return;
-
+function fanSignalState() {
   const report = localReportData();
   const meaningfulEvents = report.events.filter((item) => (
     ["form_open", "link_click"].includes(item.event)
@@ -880,29 +884,68 @@ function renderFanSignal() {
     .sort((a, b) => String(b.timestamp || "").localeCompare(String(a.timestamp || "")))
     .slice(0, 4);
 
+  return {
+    generatedAt: new Date().toISOString(),
+    source: "luxveritas.media",
+    buildVersion: publicBuildVersion,
+    tier,
+    detail,
+    score,
+    counts: report.counts,
+    latest: latest.map((item) => ({
+      label: fanSignalActivityLabel(item),
+      timestamp: item.timestamp || null,
+      page: item.page || item.source_page || null,
+      type: item.event || item.action || item.formType || item.status || "signal"
+    }))
+  };
+}
+
+function renderFanSignal() {
+  const panels = [...document.querySelectorAll("[data-fan-signal]")];
+  if (!panels.length) return;
+
+  const state = fanSignalState();
+
   for (const panel of panels) {
     const tierNode = panel.querySelector("[data-fan-signal-tier]");
     const detailNode = panel.querySelector("[data-fan-signal-detail]");
-    if (tierNode) tierNode.textContent = tier;
-    if (detailNode) detailNode.textContent = detail;
+    if (tierNode) tierNode.textContent = state.tier;
+    if (detailNode) detailNode.textContent = state.detail;
 
     for (const key of ["media", "submissions", "portal"]) {
       const node = panel.querySelector(`[data-fan-signal-count="${key}"]`);
-      if (node) node.textContent = String(report.counts[key] || 0);
+      if (node) node.textContent = String(state.counts[key] || 0);
     }
 
     const list = panel.querySelector("[data-fan-signal-list]");
     if (!list) continue;
-    if (!latest.length) {
+    if (!state.latest.length) {
       list.innerHTML = "<li>Your first signal will appear here.</li>";
       continue;
     }
-    list.innerHTML = latest.map((item) => {
-      const label = fanSignalActivityLabel(item);
+    list.innerHTML = state.latest.map((item) => {
+      const label = item.label;
       const time = item.timestamp ? new Date(item.timestamp).toLocaleDateString() : "Recent";
       return `<li><strong>${escapeHtml(label)}</strong><span>${escapeHtml(time)}</span></li>`;
     }).join("");
   }
+}
+
+function exportFanSignalPass(button) {
+  const state = fanSignalState();
+  const filename = `luxveritas-signal-pass-${new Date().toISOString().slice(0, 10)}.json`;
+  downloadTextFile(filename, JSON.stringify(state, null, 2), "application/json");
+  trackInteraction("fan_signal_export", button, {
+    tier: state.tier,
+    score: state.score,
+    media: state.counts.media,
+    submissions: state.counts.submissions,
+    portal: state.counts.portal
+  });
+  const panel = button?.closest("[data-fan-signal]");
+  const detail = panel?.querySelector("[data-fan-signal-detail]");
+  if (detail) detail.textContent = "Signal pass saved from this device. Keep it as a local receipt of your path.";
 }
 
 function downloadTextFile(filename, text, type) {
@@ -1588,6 +1631,11 @@ async function handlePortalSignin(event) {
 
   try {
     const result = await submitToServer(payload);
+    if (!["sent", "stored"].includes(result.delivery)) {
+      const error = new Error(result.reason || "submission_fallback");
+      error.result = result;
+      throw error;
+    }
     updateLocalSubmission(payload.client_submission_id, {
       delivery_status: result.delivery || "accepted",
       provider_submission_id: result.id || null,
@@ -1683,6 +1731,13 @@ document.addEventListener("click", (event) => {
   trackInteraction("form_open", button, { formType: button.dataset.openForm || "request" });
   openForm(button.dataset.openForm);
   renderFanSignal();
+});
+
+document.addEventListener("click", (event) => {
+  const exportButton = event.target.closest("[data-fan-signal-export]");
+  if (!exportButton) return;
+  event.preventDefault();
+  exportFanSignalPass(exportButton);
 });
 
 document.addEventListener("click", (event) => {

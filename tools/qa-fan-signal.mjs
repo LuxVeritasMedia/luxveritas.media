@@ -18,6 +18,7 @@ for (const marker of [
   "data-fan-signal-count=\"submissions\"",
   "data-fan-signal-count=\"portal\"",
   "data-fan-signal-list",
+  "data-fan-signal-export",
   "Circle Signal",
   "Your path remembers the signal."
 ]) {
@@ -28,6 +29,11 @@ for (const marker of [
   "function renderFanSignal()",
   "function fanSignalLabel(score)",
   "function fanSignalActivityLabel(item)",
+  "function fanSignalState()",
+  "function exportFanSignalPass(button)",
+  "publicBuildVersion",
+  "fan_signal_export",
+  "luxveritas-signal-pass-",
   "luxveritas_media_events",
   "luxveritas_submissions",
   "luxveritas_portal_attempts",
@@ -48,6 +54,13 @@ for (const marker of [
 
 if (/localStorage\.clear\(\)|eval\(/i.test(appJs)) {
   issue("app.js fan signal implementation contains unsafe or destructive patterns");
+}
+
+const assetVersion = buildScript.match(/const assetVersion = "([^"]+)"/)?.[1] || "";
+if (!assetVersion) {
+  issue("tools/build-static.mjs missing assetVersion");
+} else if (!appJs.includes(`const publicBuildVersion = "${assetVersion}"`)) {
+  issue("app.js publicBuildVersion must match build assetVersion");
 }
 
 if (issues.length) {
