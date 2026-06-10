@@ -19,6 +19,7 @@ const checks = [
   ["Integrations", "tools/qa-integrations.mjs"],
   ["Integration Contract", "tools/qa-integration-contract.mjs"],
   ["Integration Profiles", "tools/qa-integration-profiles.mjs"],
+  ["Release Handoff", "tools/qa-release-handoff.mjs"],
   ["Media Contract", "tools/qa-media-contract.mjs"],
   ["Mobile Layout", "tools/qa-mobile-layout.mjs"],
   ["Accessibility", "tools/qa-accessibility.mjs"],

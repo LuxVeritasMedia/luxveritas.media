@@ -63,6 +63,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Configure signed internal Firebase private handoff endpoint `firebase_handoff`.
 - [ ] Configure and verify email provider runtime secret `RESEND_API_KEY` plus approved sender domain for inbox notification after Firestore capture.
 - [ ] Configure approved external CRM/Google workflow target after the private workflow is chosen.
+- [ ] Reauthenticate Firebase CLI locally before the next provider-secret inspection or Functions deploy.
 - [x] Configure `REPORT_OPERATOR_TOKEN_SHA256` on `reportactivity` for private pilot reporting access.
 
 ## P2 - Content Model
@@ -139,6 +140,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add provider-readiness QA for secret metadata and live inbox/handoff status.
 - [x] Add provider-readiness QA for offline sentinel and invalid secret-value classes without printing secrets.
 - [x] Report expired Firebase CLI auth distinctly from missing provider secrets.
+- [x] Add production release handoff doc and QA for remaining launch blockers.
 - [x] Add deploy-artifact QA for private launch-gates reporting.
 - [x] Add public build manifest for asset, media, and legal-version diagnostics.
 - [x] Add pilot-readiness QA aggregator for local gates plus optional browser/live release checks.
