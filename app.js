@@ -683,6 +683,22 @@ function legalGateDetail(item) {
   return item.notes || "Legal review is still required before full public launch.";
 }
 
+function launchGateActionText(gate) {
+  return [
+    gate.owner ? `Owner: ${gate.owner}` : "",
+    gate.nextAction ? `Next: ${gate.nextAction}` : "",
+    gate.verification ? `Verify: ${gate.verification}` : ""
+  ].filter(Boolean).join(" ");
+}
+
+function launchGateMarkup(gate) {
+  const label = escapeHtml(gate.label);
+  const status = escapeHtml(`${launchGateStatusLabel(gate.status)} / ${gate.blockerType || gate.category || "launch"}`);
+  const detail = escapeHtml(gate.detail || gate.nextAction || "Review before launch.");
+  const action = launchGateActionText(gate);
+  return `<li><strong>${label}</strong><span>${status}</span><small>${detail}${action ? `<br />${escapeHtml(action)}` : ""}</small></li>`;
+}
+
 function evaluateLaunchGate(gate, manifest, report, legalReview) {
   const items = Array.isArray(manifest?.items) ? manifest.items : [];
   const missingMedia = items.filter((item) => ["audio", "video", "stream"].includes(item.sourceType) && !/^https:\/\//i.test(item.sourceUrl || ""));
@@ -762,9 +778,7 @@ async function renderLaunchReadinessReport(report = privateReportCache) {
       summary.textContent = `${ready.length} of ${required.length} launch gates ready`;
     }
     if (list) {
-      list.innerHTML = gates.map((gate) => (
-        `<li><strong>${escapeHtml(gate.label)}</strong><span>${escapeHtml(launchGateStatusLabel(gate.status))}</span><small>${escapeHtml(gate.detail || gate.nextAction || "Review before launch.")}</small></li>`
-      )).join("");
+      list.innerHTML = gates.map(launchGateMarkup).join("");
     }
 
     trackEvent("launch_readiness_view", {

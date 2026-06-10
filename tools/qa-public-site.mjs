@@ -164,9 +164,11 @@ for (const pattern of bannedTerms) {
 
 const mediaManifestRaw = await readFile(join(root, "data/lux-media-manifest.json"), "utf8");
 const deploymentDoc = await readFile("docs/deployment.md", "utf8");
+const launchReadinessRaw = await readFile(join(root, "data/lux-launch-readiness.json"), "utf8");
 const legalReviewRaw = await readFile(join(root, "data/lux-legal-review.json"), "utf8");
 const publicTermsRaw = await readFile(join(root, "data/lux-public-terms.json"), "utf8");
 for (const pattern of bannedTerms) {
+  if (pattern.test(launchReadinessRaw)) issues.push(`data/lux-launch-readiness.json: banned public term matched ${pattern}`);
   if (pattern.test(mediaManifestRaw)) issues.push(`data/lux-media-manifest.json: banned public term matched ${pattern}`);
   if (pattern.test(legalReviewRaw)) issues.push(`data/lux-legal-review.json: banned public term matched ${pattern}`);
   if (pattern.test(publicTermsRaw)) issues.push(`data/lux-public-terms.json: banned public term matched ${pattern}`);
@@ -204,6 +206,27 @@ try {
   }
 } catch (error) {
   issues.push(`data/lux-media-manifest.json: invalid JSON (${error.message})`);
+}
+
+try {
+  const launchReadiness = JSON.parse(launchReadinessRaw);
+  const gates = Array.isArray(launchReadiness.gates) ? launchReadiness.gates : [];
+  if (!launchReadiness.version || !launchReadiness.updatedAt) {
+    issues.push("data/lux-launch-readiness.json: missing version or updatedAt");
+  }
+  if (gates.length < 7) {
+    issues.push("data/lux-launch-readiness.json: missing required launch gates");
+  }
+  for (const gate of gates) {
+    for (const field of ["id", "label", "category", "status", "nextAction", "owner", "blockerType", "verification"]) {
+      if (!gate[field]) issues.push(`data/lux-launch-readiness.json: ${gate.id || "gate"} missing ${field}`);
+    }
+    if (typeof gate.requiredForPublicLaunch !== "boolean") {
+      issues.push(`data/lux-launch-readiness.json: ${gate.id || "gate"} missing requiredForPublicLaunch boolean`);
+    }
+  }
+} catch (error) {
+  issues.push(`data/lux-launch-readiness.json: invalid JSON (${error.message})`);
 }
 
 try {

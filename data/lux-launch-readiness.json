@@ -8,6 +8,9 @@
       "category": "release",
       "status": "dynamic",
       "nextAction": "Attach approved audio, video, and radio source URLs.",
+      "owner": "Release operator",
+      "blockerType": "approved_media",
+      "verification": "Run media source setup, rebuild, then run media and release-readiness QA.",
       "requiredForPublicLaunch": true
     },
     {
@@ -16,6 +19,9 @@
       "category": "capture",
       "status": "dynamic",
       "nextAction": "Configure the approved sender and inbox provider, then replay pending inbox records.",
+      "owner": "Capture operator",
+      "blockerType": "provider_activation",
+      "verification": "Run provider readiness and form delivery QA after inbox setup.",
       "requiredForPublicLaunch": true
     },
     {
@@ -24,6 +30,9 @@
       "category": "capture",
       "status": "blocked",
       "nextAction": "Choose the approved private workflow target and configure protected hosting settings.",
+      "owner": "Operations operator",
+      "blockerType": "private_workflow",
+      "verification": "Run provider readiness, integration QA, and pending handoff replay after target setup.",
       "requiredForPublicLaunch": true
     },
     {
@@ -32,6 +41,9 @@
       "category": "pilot",
       "status": "dynamic",
       "nextAction": "Configure the private operator report token hash for pilot reporting access.",
+      "owner": "Portal operator",
+      "blockerType": "access_control",
+      "verification": "Run provider readiness with an approved operator token.",
       "requiredForPublicLaunch": true
     },
     {
@@ -40,6 +52,9 @@
       "category": "legal",
       "status": "blocked",
       "nextAction": "Complete legal review of the Privacy page before full public launch.",
+      "owner": "Legal/business reviewer",
+      "blockerType": "legal_review",
+      "verification": "Mark Privacy approved in the legal review manifest, then run release-readiness QA.",
       "requiredForPublicLaunch": true
     },
     {
@@ -48,6 +63,9 @@
       "category": "legal",
       "status": "blocked",
       "nextAction": "Complete legal review of the Terms page before full public launch.",
+      "owner": "Legal/business reviewer",
+      "blockerType": "legal_review",
+      "verification": "Mark Terms approved in the legal review manifest, then run release-readiness QA.",
       "requiredForPublicLaunch": true
     },
     {
@@ -56,6 +74,9 @@
       "category": "domain",
       "status": "blocked",
       "nextAction": "Configure www.luxveritas.media DNS and Hosting redirect after the root domain remains stable.",
+      "owner": "Domain operator",
+      "blockerType": "dns_ssl",
+      "verification": "Run domain-readiness QA after adding the Firebase Hosting www custom domain and DNS record.",
       "requiredForPublicLaunch": true
     }
   ]

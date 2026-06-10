@@ -106,6 +106,11 @@ for (const marker of ["launchChecklistPath", "legalReviewPath", "loadLegalReview
     issues.push(`app.js: missing launch readiness marker ${marker}`);
   }
 }
+for (const marker of ["launchGateActionText", "launchGateMarkup"]) {
+  if (!appJs.includes(marker)) {
+    issues.push(`app.js: missing operator launch gate marker ${marker}`);
+  }
+}
 for (const marker of ["cta_id", "interactionId", "interactionIntent", "slugify"]) {
   if (!appJs.includes(marker)) {
     issues.push(`app.js: missing stable CTA reporting marker ${marker}`);

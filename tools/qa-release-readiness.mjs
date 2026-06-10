@@ -124,6 +124,16 @@ add(launchGates.length >= 6, "Launch readiness checklist contains required launc
 for (const gateId of ["media_sources", "inbox_notifications", "private_handoff", "operator_reporting", "privacy_review", "terms_review", "www_redirect"]) {
   add(launchGateIds.has(gateId), `Launch readiness checklist includes ${gateId}.`);
 }
+const missingGateActionFields = launchGates.filter((gate) => (
+  !gate.owner
+  || !gate.blockerType
+  || !gate.verification
+  || !gate.nextAction
+));
+add(
+  missingGateActionFields.length === 0,
+  `Launch readiness gates include operator action fields. Missing: ${missingGateActionFields.map((gate) => gate.id || gate.label || "unknown").join(", ") || "none"}`
+);
 add(sourceTypes.has("audio"), "Media manifest includes an audio release path.");
 add(sourceTypes.has("video"), "Media manifest includes a video/visual path.");
 add(sourceTypes.has("stream"), "Media manifest includes a radio/stream path.");
