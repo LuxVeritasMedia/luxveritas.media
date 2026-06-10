@@ -18,6 +18,7 @@ for (const marker of [
   "node tools/qa-accessibility.mjs",
   "node tools/qa-release-readiness.mjs",
   "node tools/qa-domain-readiness.mjs",
+  "node tools/qa-provider-readiness.mjs",
   "npm install --no-save playwright",
   "npx playwright install chromium",
   "node tools/qa-browser-flows.mjs",

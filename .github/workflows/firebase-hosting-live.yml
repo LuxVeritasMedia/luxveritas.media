@@ -73,6 +73,9 @@ jobs:
       - name: QA domain readiness
         run: node tools/qa-domain-readiness.mjs
 
+      - name: QA provider readiness
+        run: node tools/qa-provider-readiness.mjs
+
       - name: Install browser QA dependencies
         run: |
           npm install --no-save playwright

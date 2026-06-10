@@ -11,9 +11,19 @@ export const requiredProviderSecrets = [
   "REPORT_OPERATOR_TOKEN_SHA256"
 ];
 
+async function runFirebase(args) {
+  try {
+    return await execFileAsync("firebase", args, { maxBuffer: 1024 * 1024 });
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+  }
+
+  return execFileAsync("npx", ["firebase-tools@latest", ...args], { maxBuffer: 1024 * 1024 });
+}
+
 export async function providerSecretMetadata(name, project) {
   try {
-    const { stdout } = await execFileAsync("firebase", [
+    const { stdout } = await runFirebase([
       "functions:secrets:get",
       name,
       "--project",
