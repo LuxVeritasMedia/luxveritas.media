@@ -225,6 +225,7 @@ node tools/qa-live-form-matrix.mjs
 node tools/qa-live-event-matrix.mjs
 node tools/qa-release-readiness.mjs
 node tools/qa-domain-readiness.mjs
+node tools/qa-provider-readiness.mjs
 /Users/frederickparent/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node tools/qa-browser-flows.mjs
 LUX_FORM_WRITE=1 node tools/qa-form-delivery.mjs
 LUX_FORM_MATRIX_WRITE=1 node tools/qa-live-form-matrix.mjs
@@ -233,7 +234,7 @@ LUX_FORM_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-form-delivery.mjs
 LUX_RELEASE_STRICT=1 node tools/qa-release-readiness.mjs
 ```
 
-The default form-delivery, live form matrix, and live event matrix commands check validation without creating records. `LUX_FORM_WRITE=1` creates one safe QA submission. `LUX_FORM_MATRIX_WRITE=1` creates one safe QA submission for each major public capture path and reports whether each was sent to inbox or stored only. `LUX_EVENT_MATRIX_WRITE=1` creates one safe QA event for each major reporting path: view, form open, link click, media action, accepted lead, rejected lead, and report action. Add `LUX_EXPECT_EMAIL_SENT=1` after email configuration to make the form commands fail unless inbox delivery is active. Browser-flow QA serves the built `dist` locally, mocks form delivery, and verifies real CTA clicks, modal submits, submit reset behavior, and media-player follow-up routing. Release-readiness QA reports launch blockers in normal mode and fails in `LUX_RELEASE_STRICT=1` mode. Domain-readiness QA reports apex and `www` DNS/HTTPS blockers in normal mode and fails in `LUX_DOMAIN_STRICT=1` mode.
+The default form-delivery, live form matrix, and live event matrix commands check validation without creating records. `LUX_FORM_WRITE=1` creates one safe QA submission. `LUX_FORM_MATRIX_WRITE=1` creates one safe QA submission for each major public capture path and reports whether each was sent to inbox or stored only. `LUX_EVENT_MATRIX_WRITE=1` creates one safe QA event for each major reporting path: view, form open, link click, media action, accepted lead, rejected lead, and report action. Add `LUX_EXPECT_EMAIL_SENT=1` after email configuration to make the form commands fail unless inbox delivery is active. Browser-flow QA serves the built `dist` locally, mocks form delivery, and verifies real CTA clicks, modal submits, submit reset behavior, and media-player follow-up routing. Release-readiness QA reports launch blockers in normal mode and fails in `LUX_RELEASE_STRICT=1` mode. Domain-readiness QA reports apex and `www` DNS/HTTPS blockers in normal mode and fails in `LUX_DOMAIN_STRICT=1` mode. Provider-readiness QA checks Firebase secret metadata and, when `LUX_REPORT_TOKEN` is supplied, live inbox, private handoff, and operator-token status from `/api/report`; use `LUX_PROVIDER_STRICT=1` when provider blockers must fail the command.
 
 ## Future Production Build
 
