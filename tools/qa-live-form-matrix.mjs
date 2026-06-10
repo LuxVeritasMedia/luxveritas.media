@@ -5,6 +5,7 @@ const baseUrl = (process.env.LUX_LIVE_URL || "https://luxveritas.media").replace
 const writeEnabled = process.env.LUX_FORM_MATRIX_WRITE === "1";
 const expectEmailSent = process.env.LUX_EXPECT_EMAIL_SENT === "1";
 const strictLiveQa = process.env.LUX_STRICT_LIVE_QA === "1" || writeEnabled;
+const maxNetworkAttempts = Math.max(1, Math.min(Number(process.env.LUX_FORM_MATRIX_ATTEMPTS) || 3, 5));
 const issues = [];
 const warnings = [];
 const execFileAsync = promisify(execFile);
@@ -23,7 +24,26 @@ function stamp() {
   return new Date().toISOString().replace(/[-:.TZ]/g, "").slice(0, 14);
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function postJson(path, payload) {
+  let lastError = null;
+  for (let attempt = 1; attempt <= maxNetworkAttempts; attempt += 1) {
+    try {
+      return await postJsonOnce(path, payload);
+    } catch (error) {
+      lastError = error;
+      if (attempt < maxNetworkAttempts) await sleep(500 * attempt);
+    }
+  }
+
+  const message = lastError?.message || String(lastError || "unknown error");
+  throw new Error(`all ${maxNetworkAttempts} network attempt${maxNetworkAttempts === 1 ? "" : "s"} failed: ${message}`);
+}
+
+async function postJsonOnce(path, payload) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15000);
   try {
@@ -51,6 +71,11 @@ async function curlJson(path, payload) {
     "-sS",
     "-m",
     "15",
+    "--connect-timeout",
+    "10",
+    "--retry",
+    "2",
+    "--retry-all-errors",
     "-X",
     "POST",
     "-H",
