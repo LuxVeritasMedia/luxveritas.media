@@ -130,6 +130,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add workflow QA for hosting and Functions deploy gates.
 - [x] Add integration QA for server-side submission fanout and private reporting readiness.
 - [x] Add browser-flow QA for real CTA clicks, modal submits, submit reset, and media follow-up routing.
+- [x] Add browser-flow QA for form fallback, rate-limit recovery, and portal fallback button reset.
 - [x] Add live browser-flow QA mode for production pages with mocked submit/report endpoints.
 - [x] Add browser-flow QA for consent, dialog close, and media selection reporting.
 - [x] Add browser/live matrix coverage for Join and Store fan capture paths.

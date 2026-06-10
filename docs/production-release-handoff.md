@@ -20,6 +20,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Public forms submit to `/api/submit`.
 - Valid live form submissions are stored server-side when the inbox provider is offline.
 - Public submit buttons reset after success, stored capture, timeout, validation failure, or fallback.
+- Browser-flow QA covers stored capture, email-draft fallback, rate-limit recovery, portal fallback, and submit-button reset.
 - Portal sign-in is a screened access capture, not a real account login yet.
 - Lux Player MVP has audio, visual, and radio slots with approved preview sources.
 - CTA, media, consented interaction, and form reporting paths have QA coverage.

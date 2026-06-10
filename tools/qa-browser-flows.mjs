@@ -9,6 +9,7 @@ const issues = [];
 const submissions = [];
 const events = [];
 const reportRequests = [];
+let submitMode = "stored";
 
 const mockReport = {
   ok: true,
@@ -261,6 +262,74 @@ async function openFlow(page, baseUrl, flow) {
   }
   if (payload.role_path !== flow.role) issues.push(`${flow.path}: payload role_path mismatch`);
   if (payload.inquiry_type !== flow.inquiry) issues.push(`${flow.path}: payload inquiry_type mismatch`);
+}
+
+async function assertSubmitButtonReset(page, selector, label, timeout = 3000) {
+  await page.waitForFunction(({ selector, label }) => {
+    const button = document.querySelector(selector);
+    return button && !button.disabled && button.textContent.trim().toLowerCase() === label;
+  }, { selector, label }, { timeout }).catch(() => {});
+  const buttonText = await page.locator(selector).innerText();
+  const buttonDisabled = await page.locator(selector).isDisabled();
+  if (buttonDisabled || buttonText.trim().toLowerCase() !== label) {
+    issues.push(`submit reset failed for ${selector} (text="${buttonText}", disabled=${buttonDisabled})`);
+  }
+}
+
+async function formFallbackFlow(page, baseUrl) {
+  submitMode = "fallback";
+  await page.goto(`${baseUrl}/join.html`, { waitUntil: "domcontentloaded" });
+  await page.click('button[data-open-form="fan"]');
+  await page.waitForSelector("[data-dialog][open]", { timeout: 5000 });
+  await page.fill('input[name="name"]', "Lux Fallback QA");
+  await page.fill('input[name="email"]', "fallback@luxveritas.media");
+  await page.fill('textarea[name="message"]', "Browser fallback QA");
+  await page.check('input[name="consent_email"]');
+  await page.click("[data-submit-form]");
+  await page.waitForFunction(() => {
+    const status = document.querySelector("[data-form-status]");
+    return status && !status.hidden && /Open email draft|direct handoff is not available/i.test(status.textContent || "");
+  }, null, { timeout: 6000 });
+  const statusText = await page.locator("[data-form-status]").innerText();
+  if (!/Open email draft|direct handoff is not available/i.test(statusText)) {
+    issues.push(`/join.html: fallback submit did not expose email-draft recovery`);
+  }
+  await assertSubmitButtonReset(page, "[data-submit-form]", "send to lux veritas");
+  submitMode = "stored";
+}
+
+async function formRateLimitFlow(page, baseUrl) {
+  submitMode = "rate_limited";
+  await page.goto(`${baseUrl}/index.html`, { waitUntil: "domcontentloaded" });
+  await page.click('button[data-open-form="request"]');
+  await page.waitForSelector("[data-dialog][open]", { timeout: 5000 });
+  await page.fill('input[name="name"]', "Lux Rate QA");
+  await page.fill('input[name="email"]', "rate@luxveritas.media");
+  await page.fill('textarea[name="message"]', "Browser rate-limit QA");
+  await page.click("[data-submit-form]");
+  await page.waitForFunction(() => {
+    const status = document.querySelector("[data-form-status]");
+    return status && !status.hidden && /Too many attempts/i.test(status.textContent || "");
+  }, null, { timeout: 6000 });
+  await assertSubmitButtonReset(page, "[data-submit-form]", "send to lux veritas");
+  submitMode = "stored";
+}
+
+async function portalFallbackFlow(page, baseUrl) {
+  submitMode = "fallback";
+  await page.goto(`${baseUrl}/auth/signin.html`, { waitUntil: "domcontentloaded" });
+  await page.fill('[data-portal-signin-form] input[name="email"]', "portal-fallback@luxveritas.media");
+  await page.click("[data-portal-signin]");
+  await page.waitForFunction(() => {
+    const status = document.querySelector("[data-portal-status]");
+    return status && !status.hidden && /Open email draft|could not confirm/i.test(status.textContent || "");
+  }, null, { timeout: 6000 });
+  const statusText = await page.locator("[data-portal-status]").innerText();
+  if (!/Open email draft|could not confirm/i.test(statusText)) {
+    issues.push(`/auth/signin.html: portal fallback did not expose email-draft recovery`);
+  }
+  await assertSubmitButtonReset(page, "[data-portal-signin]", "continue");
+  submitMode = "stored";
 }
 
 async function mediaFlow(page, baseUrl, path) {
@@ -685,6 +754,28 @@ try {
   await page.route("**/api/submit", async (route) => {
     const payload = JSON.parse(route.request().postData() || "{}");
     submissions.push(payload);
+    if (submitMode === "rate_limited") {
+      await route.fulfill({
+        status: 429,
+        contentType: "application/json",
+        body: JSON.stringify({ ok: false, error: "rate_limited" })
+      });
+      return;
+    }
+    if (submitMode === "fallback") {
+      await route.fulfill({
+        status: 202,
+        contentType: "application/json",
+        body: JSON.stringify({
+          ok: true,
+          delivery: "fallback",
+          reason: "qa_mock_fallback",
+          id: payload.client_submission_id || "LV-BROWSER-QA",
+          stored: false
+        })
+      });
+      return;
+    }
     await route.fulfill({
       status: 202,
       contentType: "application/json",
@@ -751,8 +842,11 @@ try {
   for (const flow of flows) {
     await openFlow(page, baseUrl, flow);
   }
+  await formFallbackFlow(page, baseUrl);
+  await formRateLimitFlow(page, baseUrl);
   await interactionReportingFlow(page, baseUrl);
   await portalSigninFlow(page, baseUrl);
+  await portalFallbackFlow(page, baseUrl);
   for (const path of ["/music.html", "/spmvp.html"]) {
     await mediaFlow(page, baseUrl, path);
   }
@@ -773,4 +867,4 @@ if (issues.length) {
   process.exit(1);
 }
 
-console.log(`Browser flow QA passed for ${flows.length} form flows, portal sign-in, 2 media flows, signal pass export, interaction reporting, and operator reporting at ${baseUrl}.`);
+console.log(`Browser flow QA passed for ${flows.length} form flows, form fallback/rate-limit, portal sign-in/fallback, 2 media flows, signal pass export, interaction reporting, and operator reporting at ${baseUrl}.`);
