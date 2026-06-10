@@ -122,6 +122,11 @@ function canonicalFor(rel) {
   return `https://luxveritas.media${clean}`;
 }
 
+function scriptJsonLd(html) {
+  const match = html.match(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/i);
+  return match?.[1]?.trim() || "";
+}
+
 for (const file of requiredFiles) {
   try {
     await access(join(root, file));
@@ -181,6 +186,29 @@ for (const file of htmlFiles) {
     const image = metaContent(html, imageField);
     if (image && !/^https:\/\/luxveritas\.media\/assets\//.test(image)) {
       issues.push(`${rel}: ${imageField} is not an absolute Lux Veritas asset URL`);
+    }
+  }
+  const jsonLdRaw = scriptJsonLd(html);
+  if (!jsonLdRaw) {
+    issues.push(`${rel}: missing JSON-LD structured data`);
+  } else {
+    try {
+      const structuredData = JSON.parse(jsonLdRaw);
+      const graph = Array.isArray(structuredData["@graph"]) ? structuredData["@graph"] : [];
+      const types = new Set(graph.map((item) => item["@type"]));
+      for (const type of ["Organization", "WebSite", "WebPage", "SiteNavigationElement"]) {
+        if (!types.has(type)) issues.push(`${rel}: JSON-LD missing ${type}`);
+      }
+      const page = graph.find((item) => item["@type"] === "WebPage");
+      if (page?.url !== canonical || page?.["@id"] !== `${canonical}#webpage`) {
+        issues.push(`${rel}: JSON-LD WebPage URL does not match canonical`);
+      }
+      const navData = graph.find((item) => item["@type"] === "SiteNavigationElement");
+      if (!Array.isArray(navData?.name) || navData.name.join("|") !== expectedNav.join("|")) {
+        issues.push(`${rel}: JSON-LD navigation labels mismatch`);
+      }
+    } catch (error) {
+      issues.push(`${rel}: invalid JSON-LD (${error.message})`);
     }
   }
 

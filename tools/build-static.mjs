@@ -60,6 +60,47 @@ function publicUrl(path) {
   return `https://luxveritas.media${clean}`;
 }
 
+function jsonLd(path, title, description) {
+  const canonical = publicUrl(path);
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://luxveritas.media/#organization",
+        name: "Lux Veritas",
+        url: "https://luxveritas.media/",
+        logo: "https://luxveritas.media/assets/luxveritas-threshold.png",
+        description: "Lux Veritas is a media and cultural studio creating music, film, events, publishing, community, and commerce experiences."
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://luxveritas.media/#website",
+        name: "Lux Veritas",
+        url: "https://luxveritas.media/",
+        publisher: { "@id": "https://luxveritas.media/#organization" },
+        inLanguage: "en-US"
+      },
+      {
+        "@type": "WebPage",
+        "@id": `${canonical}#webpage`,
+        url: canonical,
+        name: title,
+        description,
+        isPartOf: { "@id": "https://luxveritas.media/#website" },
+        about: { "@id": "https://luxveritas.media/#organization" },
+        inLanguage: "en-US"
+      },
+      {
+        "@type": "SiteNavigationElement",
+        "@id": "https://luxveritas.media/#primary-navigation",
+        name: nav.map(([label]) => label),
+        url: nav.map(([, href]) => publicUrl(href))
+      }
+    ]
+  });
+}
+
 function link(current, href, label) {
   const active = current === href || (current === "/index.html" && href === "/index.html");
   return `<a ${active ? 'class="active"' : ""} href="${href}">${label}</a>`;
@@ -87,6 +128,7 @@ function shell({ path, title, description, eyebrow = "Lux Veritas", body, heroCl
     <meta name="twitter:title" content="${title}" />
     <meta name="twitter:description" content="${description}" />
     <meta name="twitter:image" content="${socialImage}" />
+    <script type="application/ld+json">${jsonLd(path, title, description)}</script>
     <title>${title}</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070909'/%3E%3Cpath d='M18 48V16h6v27h18v5H18Zm21-32h7L34 48h-6l11-32Z' fill='%23c8a86a'/%3E%3C/svg%3E" />
     <link rel="stylesheet" href="${root}styles.css?v=${assetVersion}" />
