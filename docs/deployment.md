@@ -17,6 +17,14 @@ node tools/qa-pilot-readiness.mjs
 
 This command rebuilds the static site, prepares the Firebase Hosting artifact, then runs the local public-site, button, access, integration, mobile, accessibility, hosting, and workflow QA gates against the fresh output. Use `LUX_PILOT_BROWSER=1` for browser-flow coverage and `LUX_PILOT_LIVE=1` after deployment credentials and live provider setup are ready.
 
+Check whether GitHub Actions and Firebase Hosting have actually caught up to the pushed build:
+
+```bash
+node tools/qa-deploy-status.mjs
+```
+
+This compares local `HEAD`, `origin/main`, the latest public GitHub Actions Hosting run, and `/data/lux-build-manifest.json` on `luxveritas.media`. Use it when a local build is green but the live site appears stale.
+
 Firebase Hosting serves the static site and rewrites:
 
 - `/api/submit` to the Firebase Function `submitForm`

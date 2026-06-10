@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 const issues = [];
 const hosting = await readFile(".github/workflows/firebase-hosting-live.yml", "utf8");
 const functions = await readFile(".github/workflows/firebase-functions-manual.yml", "utf8");
+const deployStatus = await readFile("tools/qa-deploy-status.mjs", "utf8");
 
 for (const marker of [
   "concurrency:",
@@ -56,6 +57,15 @@ for (const marker of [
 
 if (functions.includes('invoker: "public"') || functions.includes("invoker: 'public'")) {
   issues.push("firebase-functions-manual.yml: must not re-add public invoker config");
+}
+
+for (const marker of [
+  "lux-build-manifest.json",
+  "actions/workflows",
+  "origin/main",
+  "LUX_DEPLOY_STATUS_STRICT"
+]) {
+  if (!deployStatus.includes(marker)) issues.push(`qa-deploy-status.mjs: missing ${marker}`);
 }
 
 if (issues.length) {

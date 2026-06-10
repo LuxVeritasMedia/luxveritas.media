@@ -140,6 +140,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add public build manifest for asset, media, and legal-version diagnostics.
 - [x] Add pilot-readiness QA aggregator for local gates plus optional browser/live release checks.
 - [x] Make pilot-readiness QA rebuild and prepare the deploy artifact before checks.
+- [x] Add deploy-status QA for GitHub Actions and live build-manifest drift.
 - [x] Add Firebase Hosting security/privacy header QA and live header verification.
 - [x] Add no-cache hosting policy for the service worker.
 
