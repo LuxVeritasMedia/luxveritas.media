@@ -110,7 +110,7 @@ const reportEndpoint = "/api/report";
 const mediaManifestPath = "/data/lux-media-manifest.json";
 const launchChecklistPath = "/data/lux-launch-readiness.json";
 const legalReviewPath = "/data/lux-legal-review.json";
-const submitTimeoutMs = 12000;
+const submitTimeoutMs = 8000;
 let activeFormType = "request";
 let mediaManifestPromise = null;
 let launchChecklistPromise = null;
@@ -289,6 +289,19 @@ function storedSubmissionMessage(result) {
     return "Received. Thank you. Your request is recorded for Lux Veritas review.";
   }
   return "Received. Thank you. Your request is recorded with Lux Veritas.";
+}
+
+function startSubmitProgress(status, copy) {
+  if (!status) return null;
+  status.textContent = copy || "Sending your request...";
+  status.hidden = false;
+  return window.setTimeout(() => {
+    status.textContent = "Still recording your request. This will reset automatically if the live handoff takes too long.";
+  }, 4500);
+}
+
+function stopSubmitProgress(timer) {
+  if (timer) window.clearTimeout(timer);
 }
 
 function showEmailFallback(payload, href, result, copied) {
@@ -1361,8 +1374,7 @@ async function handleFormSubmit(event) {
   submitButton.disabled = true;
   submitButton.setAttribute("aria-busy", "true");
   submitButton.textContent = "Sending...";
-  statusBox.textContent = "Sending your request...";
-  statusBox.hidden = false;
+  const progressTimer = startSubmitProgress(statusBox, "Sending your request...");
 
   try {
     const data = Object.fromEntries(new FormData(dialogForm).entries());
@@ -1432,6 +1444,7 @@ async function handleFormSubmit(event) {
       result: { errors: ["the page could not finish this request"] }
     });
   } finally {
+    stopSubmitProgress(progressTimer);
     submitButton.disabled = false;
     submitButton.removeAttribute("aria-busy");
     submitButton.textContent = defaultLabel;
@@ -1484,6 +1497,7 @@ async function handlePortalSignin(event) {
     submitButton.textContent = "Checking...";
   }
   const attempts = readJson("luxveritas_portal_attempts", []);
+  const progressTimer = startSubmitProgress(status, "Checking screened access...");
   const attempt = {
     email,
     source_page: window.location.pathname,
@@ -1502,8 +1516,6 @@ async function handlePortalSignin(event) {
 
   const dialogEmail = dialogForm?.querySelector('[name="email"]');
   if (dialogEmail && !dialogEmail.value) dialogEmail.value = email;
-
-  setPortalSigninStatus(status, "Checking screened access...");
 
   try {
     const result = await submitToServer(payload);
@@ -1544,6 +1556,7 @@ async function handlePortalSignin(event) {
       `Portal access is screened. The site could not confirm the access request from this browser.${copied ? " A copy has been placed on your clipboard." : ""}<br /><span class="receipt-code">Receipt ${escapeHtml(payload.client_submission_id)}</span><br /><a class="button button-primary" href="${escapeHtml(href)}">Open email draft</a> <button class="inline-link" type="button" data-open-form="request">Request Access</button>.`
     );
   } finally {
+    stopSubmitProgress(progressTimer);
     if (submitButton) {
       submitButton.disabled = false;
       submitButton.removeAttribute("aria-busy");

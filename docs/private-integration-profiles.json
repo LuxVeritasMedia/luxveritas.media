@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "luxveritas.private_integration_profiles.v1",
+  "purpose": "Server-side profile labels for approved private handoff targets. This registry must not contain provider URLs, provider credentials, endpoint paths, or private values.",
+  "profiles": [
+    {
+      "id": "firebase_handoff",
+      "label": "Firebase Private Handoff",
+      "status": "pilot_active",
+      "providerClass": "internal_firebase_receiver",
+      "targetSecretValue": "firebase_handoff",
+      "publicExposure": "none",
+      "requiredSecrets": [
+        "FORM_INTEGRATION_URL",
+        "FORM_INTEGRATION_SIGNING_SECRET",
+        "FORM_INTEGRATION_TARGET"
+      ],
+      "allowedActions": [
+        "receive",
+        "store",
+        "replay"
+      ],
+      "handoffContract": "luxveritas.form_submission.v1",
+      "notes": "Current signed internal receiver for protected intake records before external workflow selection."
+    },
+    {
+      "id": "private_workflow",
+      "label": "Approved Private Workflow",
+      "status": "ready_label",
+      "providerClass": "approved_server_workflow",
+      "targetSecretValue": "private_workflow",
+      "publicExposure": "none",
+      "requiredSecrets": [
+        "FORM_INTEGRATION_URL",
+        "FORM_INTEGRATION_SIGNING_SECRET",
+        "FORM_INTEGRATION_TARGET"
+      ],
+      "allowedActions": [
+        "receive",
+        "route",
+        "replay"
+      ],
+      "handoffContract": "luxveritas.form_submission.v1",
+      "notes": "Generic profile for a selected private workflow after human approval."
+    },
+    {
+      "id": "ghl_crm",
+      "label": "GoHighLevel CRM",
+      "status": "future",
+      "providerClass": "crm_pipeline",
+      "targetSecretValue": "ghl_crm",
+      "publicExposure": "none",
+      "requiredSecrets": [
+        "FORM_INTEGRATION_URL",
+        "FORM_INTEGRATION_SIGNING_SECRET",
+        "FORM_INTEGRATION_TARGET"
+      ],
+      "allowedActions": [
+        "receive",
+        "tag",
+        "route",
+        "replay"
+      ],
+      "handoffContract": "luxveritas.form_submission.v1",
+      "notes": "Future CRM profile for tags, pipelines, and screened follow-up after approved account setup."
+    },
+    {
+      "id": "google_workspace",
+      "label": "Google Workspace Intake",
+      "status": "future",
+      "providerClass": "workspace_automation",
+      "targetSecretValue": "google_workspace",
+      "publicExposure": "none",
+      "requiredSecrets": [
+        "FORM_INTEGRATION_URL",
+        "FORM_INTEGRATION_SIGNING_SECRET",
+        "FORM_INTEGRATION_TARGET"
+      ],
+      "allowedActions": [
+        "receive",
+        "route",
+        "archive",
+        "replay"
+      ],
+      "handoffContract": "luxveritas.form_submission.v1",
+      "notes": "Future workspace profile for approved internal intake routing and archival."
+    },
+    {
+      "id": "codex_ops",
+      "label": "CodexOps Bridge",
+      "status": "future",
+      "providerClass": "build_packet_router",
+      "targetSecretValue": "codex_ops",
+      "publicExposure": "none",
+      "requiredSecrets": [
+        "FORM_INTEGRATION_URL",
+        "FORM_INTEGRATION_SIGNING_SECRET",
+        "FORM_INTEGRATION_TARGET"
+      ],
+      "allowedActions": [
+        "receive",
+        "triage",
+        "route",
+        "replay"
+      ],
+      "handoffContract": "luxveritas.form_submission.v1",
+      "notes": "Future bridge profile for approved build packets and operator-reviewed requests."
+    }
+  ]
+}

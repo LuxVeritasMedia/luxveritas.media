@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260610-fan-circle";
+const CACHE_NAME = "luxveritas-static-20260610-form-capture";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260610-fan-circle",
-  "/app.js?v=20260610-fan-circle",
+  "/styles.css?v=20260610-form-capture",
+  "/app.js?v=20260610-form-capture",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"

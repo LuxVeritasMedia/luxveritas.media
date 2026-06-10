@@ -6,6 +6,7 @@ const contractJs = await readFile("functions/integration-contract.js", "utf8");
 const appJs = await readFile("app.js", "utf8");
 const buildScript = await readFile("tools/build-static.mjs", "utf8");
 const docs = await readFile("docs/deployment.md", "utf8");
+const profileRegistry = await readFile("docs/private-integration-profiles.json", "utf8");
 
 for (const marker of [
   "FORM_INTEGRATION_URL",
@@ -156,6 +157,24 @@ for (const marker of [
   "X-Lux-Signature"
 ]) {
   if (!docs.includes(marker)) issues.push(`docs/deployment.md: missing integration setup marker ${marker}`);
+}
+
+for (const marker of [
+  "luxveritas.private_integration_profiles.v1",
+  "firebase_handoff",
+  "private_workflow",
+  "ghl_crm",
+  "google_workspace",
+  "codex_ops",
+  "luxveritas.form_submission.v1",
+  "FORM_INTEGRATION_TARGET",
+  "publicExposure"
+]) {
+  if (!profileRegistry.includes(marker)) issues.push(`private-integration-profiles.json: missing profile marker ${marker}`);
+}
+
+if (/https?:\/\//i.test(profileRegistry)) {
+  issues.push("private-integration-profiles.json: must not contain provider URLs");
 }
 
 if (/FORM_INTEGRATION_URL\s*=|https:\/\/hooks\.|webhookUrl/i.test(appJs)) {

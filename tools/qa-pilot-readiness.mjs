@@ -18,6 +18,7 @@ const checks = [
   ["Access Model", "tools/qa-access-model.mjs"],
   ["Integrations", "tools/qa-integrations.mjs"],
   ["Integration Contract", "tools/qa-integration-contract.mjs"],
+  ["Integration Profiles", "tools/qa-integration-profiles.mjs"],
   ["Media Contract", "tools/qa-media-contract.mjs"],
   ["Mobile Layout", "tools/qa-mobile-layout.mjs"],
   ["Accessibility", "tools/qa-accessibility.mjs"],

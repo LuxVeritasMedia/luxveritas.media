@@ -55,6 +55,9 @@ jobs:
       - name: QA integration contract
         run: node tools/qa-integration-contract.mjs
 
+      - name: QA integration profiles
+        run: node tools/qa-integration-profiles.mjs
+
       - name: QA media contract
         run: node tools/qa-media-contract.mjs
 

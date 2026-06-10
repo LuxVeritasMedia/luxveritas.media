@@ -53,6 +53,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add protected pending-handoff replay for stored submissions after private workflow setup.
 - [x] Add versioned replay-safe private integration payload contract.
 - [x] Add direct QA coverage for the private integration payload contract.
+- [x] Add no-secret private integration profile registry for Firebase, GHL, Google Workspace, and CodexOps handoffs.
 - [x] Add protected private handoff target metadata for launch-gate reporting.
 - [x] Add protected accepted-handoff counts and latest handoff records to operator reporting.
 - [x] Include accepted handoff records in protected operator exports.
