@@ -6,7 +6,11 @@ import { defineSecret } from "firebase-functions/params";
 import {
   buildIntegrationPayload,
   integrationBaseHeaders,
-  normalizeIntegrationTarget
+  integrationSignature,
+  integrationContractVersion,
+  integrationEventType,
+  normalizeIntegrationTarget,
+  verifyIntegrationSignature
 } from "./integration-contract.js";
 
 const resendApiKey = defineSecret("RESEND_API_KEY");
@@ -666,7 +670,7 @@ async function sendIntegration(payload, id) {
     integrationTarget: integrationTarget()
   });
   if (secret) {
-    headers["X-Lux-Signature"] = crypto.createHmac("sha256", secret).update(body).digest("hex");
+    headers["X-Lux-Signature"] = integrationSignature(body, secret);
   }
 
   const controller = new AbortController();
@@ -976,6 +980,109 @@ export const trackSiteEvent = onRequest(
         errorMessage: error?.message || String(error)
       });
       json(res, 202, { ok: true, delivery: "fallback", reason: "storage_unavailable", id, stored: false });
+    }
+  }
+);
+
+function cleanIntegrationHeaders(req) {
+  return {
+    event: text(req.get("x-lux-event"), 120),
+    idempotencyKey: text(req.get("x-lux-idempotency-key"), 180),
+    target: text(req.get("x-lux-target"), 120),
+    userAgent: text(req.get("user-agent"), 240)
+  };
+}
+
+function validatePrivateHandoff(payload = {}, headers = {}) {
+  const errors = [];
+  const target = integrationTarget();
+  if (!integrationSigningSecret()) errors.push("signing_secret_not_configured");
+  if (target === "unconfigured") errors.push("target_not_configured");
+  if (payload.schemaVersion !== integrationContractVersion) errors.push("schema_version_mismatch");
+  if (payload.eventType !== integrationEventType) errors.push("event_type_mismatch");
+  if (!payload.idempotencyKey || payload.idempotencyKey !== headers.idempotencyKey) errors.push("idempotency_key_mismatch");
+  if (normalizeIntegrationTarget(payload.integrationTarget) !== target) errors.push("target_mismatch");
+  if (!payload.submissionId) errors.push("submission_id_required");
+  if (!payload.contact?.email) errors.push("contact_email_required");
+  return errors;
+}
+
+export const receivePrivateHandoff = onRequest(
+  {
+    region: "us-central1",
+    cors: false,
+    maxInstances: 5,
+    secrets: [formIntegrationSigningSecret, formIntegrationTarget]
+  },
+  async (req, res) => {
+    setCors(req, res);
+
+    if (req.method === "OPTIONS") {
+      res.status(204).send("");
+      return;
+    }
+
+    if (req.method !== "POST") {
+      json(res, 405, { ok: false, error: "method_not_allowed" });
+      return;
+    }
+
+    if (isRateLimited(req, maxRequestsPerWindow, "private-handoff")) {
+      json(res, 429, { ok: false, error: "rate_limited" });
+      return;
+    }
+
+    const secret = integrationSigningSecret();
+    const rawBody = req.rawBody ? Buffer.from(req.rawBody) : Buffer.from(JSON.stringify(req.body || {}));
+    const signature = req.get("x-lux-signature");
+    if (!verifyIntegrationSignature(rawBody, secret, signature)) {
+      json(res, 401, { ok: false, error: "invalid_signature" });
+      return;
+    }
+
+    const headers = cleanIntegrationHeaders(req);
+    const errors = validatePrivateHandoff(req.body || {}, headers);
+    if (errors.length) {
+      json(res, 400, { ok: false, error: "invalid_handoff", errors });
+      return;
+    }
+
+    const handoffId = sha256(req.body.idempotencyKey);
+    const target = integrationTarget();
+    try {
+      await getDb().collection("private_handoffs").doc(handoffId).set({
+        schemaVersion: req.body.schemaVersion,
+        eventType: req.body.eventType,
+        idempotencyKey: req.body.idempotencyKey,
+        integrationTarget: target,
+        submissionId: req.body.submissionId,
+        receiptId: req.body.receiptId || null,
+        source: req.body.source || "luxveritas.media",
+        sourcePage: req.body.sourcePage || null,
+        routing: req.body.routing || null,
+        contact: req.body.contact || null,
+        consent: req.body.consent || null,
+        legal: req.body.legal || null,
+        submission: req.body.submission || null,
+        message: text(req.body.message, 5000),
+        headers,
+        clientHash: clientHash(req),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+
+      json(res, 200, {
+        ok: true,
+        delivery: "stored",
+        id: handoffId,
+        target
+      });
+    } catch (error) {
+      logger.error("Private handoff receiver failed", {
+        errorCode: error?.code || null,
+        errorMessage: error?.message || String(error)
+      });
+      json(res, 500, { ok: false, error: "handoff_store_failed" });
     }
   }
 );

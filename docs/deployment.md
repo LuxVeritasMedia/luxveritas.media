@@ -180,13 +180,17 @@ Set `FORM_INTEGRATION_TARGET` to a short protected workflow profile label, such 
 
 After the private integration target and target profile are configured, use `Replay Pending Handoff` on `/portal/reporting.html` to retry stored submissions whose `integrationStatus` indicates a pending or failed private handoff.
 
+The MVP includes a signed internal Firebase receiver, `receivePrivateHandoff`, for a real private intake queue before GoHighLevel or Google Suite automation is selected. It requires `X-Lux-Signature`, validates `luxveritas.form_submission.v1`, and stores accepted payloads in the protected `private_handoffs` collection. This is a server-side bridge only; public pages still post only to `/api/submit`.
+
 ```bash
 LUX_FORM_INTEGRATION_URL="https://..." \
 LUX_FORM_INTEGRATION_SIGNING_SECRET="approved-shared-secret" \
 LUX_FORM_INTEGRATION_TARGET="private_workflow" \
 node tools/setup-private-integration-secret.mjs
-firebase deploy --only functions:submitForm,functions:reportActivity --project lux-veritas-media --non-interactive --force
+firebase deploy --only functions:submitForm,functions:reportActivity,functions:receivePrivateHandoff --project lux-veritas-media --non-interactive --force
 ```
+
+For the internal Firebase receiver profile, use the deployed HTTPS function URL as `LUX_FORM_INTEGRATION_URL`, set `LUX_FORM_INTEGRATION_TARGET=firebase_handoff`, set a strong private signing secret, redeploy `submitForm`, `reportActivity`, and `receivePrivateHandoff`, then replay pending handoffs from the private report.
 
 For an offline pilot deployment before the real endpoint exists, keep `FORM_INTEGRATION_URL` and `FORM_INTEGRATION_SIGNING_SECRET` set to `not_configured`, and keep `FORM_INTEGRATION_TARGET` set to `unconfigured`. `FORM_INTEGRATION_URL` must be HTTPS before the handoff is treated as active. `FORM_INTEGRATION_SIGNING_SECRET` is optional but recommended; when present, the function sends an `X-Lux-Signature` HMAC header with each submission payload.
 

@@ -46,7 +46,8 @@ for (const marker of [
   "deploy --only functions",
   "submitform --region us-central1 --project lux-veritas-media --no-invoker-iam-check",
   "tracksiteevent --region us-central1 --project lux-veritas-media --no-invoker-iam-check",
-  "reportactivity --region us-central1 --project lux-veritas-media --no-invoker-iam-check"
+  "reportactivity --region us-central1 --project lux-veritas-media --no-invoker-iam-check",
+  "receiveprivatehandoff --region us-central1 --project lux-veritas-media --no-invoker-iam-check"
 ]) {
   if (!functions.includes(marker)) issues.push(`firebase-functions-manual.yml: missing ${marker}`);
 }

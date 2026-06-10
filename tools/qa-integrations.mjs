@@ -21,6 +21,11 @@ for (const marker of [
   "operator_token",
   "safeEqualHex",
   "sendIntegration",
+  "receivePrivateHandoff",
+  "private_handoffs",
+  "validatePrivateHandoff",
+  "verifyIntegrationSignature",
+  "X-Lux-Signature",
   "integrationPayload",
   "buildIntegrationPayload",
   "integrationBaseHeaders",
@@ -58,6 +63,8 @@ for (const marker of [
   "defaultIntegrationTarget",
   "normalizeIntegrationTarget",
   "integrationIdempotencyKey",
+  "integrationSignature",
+  "verifyIntegrationSignature",
   "luxveritas.form_submission.v1",
   "form.submission.received",
   "idempotencyKey",
@@ -131,7 +138,10 @@ for (const marker of [
   "replay_pending",
   "replay_integration",
   "Screened Intake Routing",
-  "server-side integration"
+  "server-side integration",
+  "receivePrivateHandoff",
+  "private_handoffs",
+  "X-Lux-Signature"
 ]) {
   if (!docs.includes(marker)) issues.push(`docs/deployment.md: missing integration setup marker ${marker}`);
 }

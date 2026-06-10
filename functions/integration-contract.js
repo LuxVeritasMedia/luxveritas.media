@@ -1,3 +1,5 @@
+import crypto from "node:crypto";
+
 export const integrationContractVersion = "luxveritas.form_submission.v1";
 export const integrationEventType = "form.submission.received";
 export const defaultIntegrationTarget = "unconfigured";
@@ -85,4 +87,15 @@ export function integrationBaseHeaders(id, options = {}) {
     "X-Lux-Idempotency-Key": integrationIdempotencyKey(id),
     "X-Lux-Target": integrationTarget
   };
+}
+
+export function integrationSignature(body, secret) {
+  return crypto.createHmac("sha256", String(secret || "")).update(body).digest("hex");
+}
+
+export function verifyIntegrationSignature(body, secret, signature) {
+  const provided = String(signature || "").trim().toLowerCase();
+  if (!secret || !/^[a-f0-9]{64}$/.test(provided)) return false;
+  const expected = integrationSignature(body, secret);
+  return crypto.timingSafeEqual(Buffer.from(provided, "hex"), Buffer.from(expected, "hex"));
 }

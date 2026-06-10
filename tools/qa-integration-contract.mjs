@@ -5,7 +5,9 @@ import {
   integrationContractVersion,
   integrationEventType,
   integrationIdempotencyKey,
-  normalizeIntegrationTarget
+  integrationSignature,
+  normalizeIntegrationTarget,
+  verifyIntegrationSignature
 } from "../functions/integration-contract.js";
 
 const issues = [];
@@ -44,6 +46,10 @@ const payload = buildIntegrationPayload(sample, submissionId, { receivedAt, inte
 const headers = integrationBaseHeaders(submissionId, { integrationTarget });
 const defaultHeaders = integrationBaseHeaders(submissionId);
 const expectedIdempotencyKey = `luxveritas:form_submission:${submissionId}`;
+const body = JSON.stringify(payload);
+const signingSecret = "qa-private-handoff-secret";
+const signature = integrationSignature(body, signingSecret);
+const badSignature = `${signature.slice(0, -1)}${signature.endsWith("0") ? "1" : "0"}`;
 
 function expectEqual(actual, expected, label) {
   if (actual !== expected) issues.push(`${label}: expected ${expected}, received ${actual}`);
@@ -81,6 +87,9 @@ expectEqual(headers["X-Lux-Idempotency-Key"], expectedIdempotencyKey, "header id
 expectEqual(headers["X-Lux-Target"], "private_workflow", "header target");
 expectEqual(defaultHeaders["X-Lux-Target"], "unconfigured", "default header target");
 expectEqual(headers["User-Agent"], "LuxVeritas-FormIntegration/1.0", "header user agent");
+expectEqual(/^[a-f0-9]{64}$/.test(signature), true, "signature shape");
+expectEqual(verifyIntegrationSignature(body, signingSecret, signature), true, "signature verification");
+expectEqual(verifyIntegrationSignature(body, signingSecret, badSignature), false, "signature rejection");
 
 if (!payload.message || !payload.formType || !payload.tag) {
   issues.push("payload: missing message, formType, or tag");

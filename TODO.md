@@ -53,8 +53,9 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add operator reporting token status to launch-gate reporting.
 - [x] Add screened intake routing fields for Phase 6 reporting and future server-side handoff.
 - [x] Add public terms version IDs to capture, reporting, and private handoff payloads.
+- [x] Configure signed internal Firebase private handoff endpoint `firebase_handoff`.
 - [ ] Configure and verify email provider runtime secret `RESEND_API_KEY` plus approved sender domain for inbox notification after Firestore capture.
-- [ ] Configure approved private integration endpoint secret after CRM/Google workflow target is chosen.
+- [ ] Configure approved external CRM/Google workflow target after the private workflow is chosen.
 - [x] Configure `REPORT_OPERATOR_TOKEN_SHA256` on `reportactivity` for private pilot reporting access.
 
 ## P2 - Content Model
