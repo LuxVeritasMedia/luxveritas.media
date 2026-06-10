@@ -54,6 +54,77 @@ export async function providerSecretMetadataEntries(project, secrets = requiredP
   return entries;
 }
 
+export async function providerSecretValue(name, project) {
+  try {
+    const { stdout } = await runFirebase([
+      "functions:secrets:access",
+      name,
+      "--project",
+      project
+    ]);
+    return {
+      ok: true,
+      value: stdout.trim()
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error?.message || String(error)
+    };
+  }
+}
+
+export function providerSecretValueStatus(name, value) {
+  const secret = String(value || "").trim();
+  if (!secret) return { ok: false, status: "missing", detail: "empty value" };
+
+  if (name === "RESEND_API_KEY") {
+    if (/^re_/i.test(secret)) return { ok: true, status: "active", detail: "Resend key format" };
+    if (secret === "not_configured") return { ok: false, status: "offline", detail: "offline sentinel" };
+    return { ok: false, status: "invalid", detail: "expected key beginning with re_" };
+  }
+
+  if (name === "FORM_INTEGRATION_URL") {
+    if (/^https:\/\//i.test(secret)) return { ok: true, status: "active", detail: "HTTPS endpoint" };
+    if (secret === "not_configured") return { ok: false, status: "offline", detail: "offline sentinel" };
+    return { ok: false, status: "invalid", detail: "expected HTTPS endpoint" };
+  }
+
+  if (name === "FORM_INTEGRATION_SIGNING_SECRET") {
+    if (secret !== "not_configured") return { ok: true, status: "active", detail: "signing secret set" };
+    return { ok: false, status: "offline", detail: "offline sentinel" };
+  }
+
+  if (name === "FORM_INTEGRATION_TARGET") {
+    if (secret && secret !== "unconfigured" && secret !== "not_configured") {
+      return { ok: true, status: "active", detail: `target ${secret}` };
+    }
+    return { ok: false, status: "offline", detail: "target unconfigured" };
+  }
+
+  if (name === "REPORT_OPERATOR_TOKEN_SHA256") {
+    if (/^[a-f0-9]{64}$/i.test(secret)) return { ok: true, status: "active", detail: "SHA-256 hash" };
+    if (secret === "not_configured") return { ok: false, status: "offline", detail: "offline sentinel" };
+    return { ok: false, status: "invalid", detail: "expected SHA-256 hash" };
+  }
+
+  return { ok: true, status: "present", detail: "value present" };
+}
+
+export async function providerSecretValueStatusEntries(project, secrets = requiredProviderSecrets) {
+  const entries = [];
+  for (const name of secrets) {
+    const secret = await providerSecretValue(name, project);
+    entries.push([
+      name,
+      secret.ok
+        ? providerSecretValueStatus(name, secret.value)
+        : { ok: false, status: "unavailable", detail: secret.error || "could not access value" }
+    ]);
+  }
+  return entries;
+}
+
 export async function liveProviderDeliveryReadiness({ baseUrl, reportToken }) {
   if (!reportToken) {
     return {

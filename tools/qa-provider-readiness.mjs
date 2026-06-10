@@ -1,6 +1,7 @@
 import {
   liveProviderDeliveryReadiness,
   providerSecretMetadataEntries,
+  providerSecretValueStatusEntries,
   requiredProviderSecrets
 } from "./lib/provider-readiness.mjs";
 
@@ -28,6 +29,8 @@ console.log(`Provider readiness for project ${project}`);
 
 const metadataEntries = await providerSecretMetadataEntries(project);
 const metadata = Object.fromEntries(metadataEntries);
+const valueStatusEntries = await providerSecretValueStatusEntries(project);
+const valueStatus = Object.fromEntries(valueStatusEntries);
 
 for (const name of requiredProviderSecrets) {
   const item = metadata[name];
@@ -35,6 +38,13 @@ for (const name of requiredProviderSecrets) {
     pass(`${name} secret metadata exists (version ${item.versionId}, ${item.state}).`);
   } else {
     issue(`${name} secret metadata missing or unavailable${item.error ? ` (${item.error})` : ""}.`);
+  }
+
+  const status = valueStatus[name];
+  if (status?.ok) {
+    pass(`${name} secret value is active (${status.detail}).`);
+  } else {
+    issue(`${name} secret value is not active${status?.detail ? ` (${status.detail})` : ""}.`);
   }
 }
 
