@@ -128,9 +128,15 @@ function shell({ path, title, description, eyebrow = "Lux Veritas", body, heroCl
     <meta name="twitter:title" content="${title}" />
     <meta name="twitter:description" content="${description}" />
     <meta name="twitter:image" content="${socialImage}" />
+    <meta name="theme-color" content="#060807" />
+    <meta name="application-name" content="Lux Veritas" />
+    <meta name="apple-mobile-web-app-title" content="Lux Veritas" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <script type="application/ld+json">${jsonLd(path, title, description)}</script>
     <title>${title}</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070909'/%3E%3Cpath d='M18 48V16h6v27h18v5H18Zm21-32h7L34 48h-6l11-32Z' fill='%23c8a86a'/%3E%3C/svg%3E" />
+    <link rel="manifest" href="${root}site.webmanifest" />
+    <link rel="apple-touch-icon" href="${root}assets/luxveritas-icon.svg" />
     <link rel="stylesheet" href="${root}styles.css?v=${assetVersion}" />
   </head>
   <body data-page="${path}">
@@ -800,6 +806,27 @@ Disallow: /auth/
 Disallow: /portal/
 Disallow: /brands/
 Disallow: /investor.html
+`);
+
+await writeFile("site.webmanifest", `${JSON.stringify({
+  name: "Lux Veritas",
+  short_name: "Lux Veritas",
+  description: "The public Lux Veritas portal for music, film, events, Codex, and first access.",
+  start_url: "/index.html",
+  scope: "/",
+  display: "standalone",
+  background_color: "#060807",
+  theme_color: "#060807",
+  icons: [
+    {
+      src: "/assets/luxveritas-icon.svg",
+      sizes: "512x512",
+      type: "image/svg+xml",
+      purpose: "any maskable"
+    }
+  ],
+  categories: ["music", "entertainment", "lifestyle"]
+}, null, 2)}
 `);
 
 await writeFile("data/lux-build-manifest.json", `${JSON.stringify({

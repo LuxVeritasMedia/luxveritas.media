@@ -63,6 +63,8 @@ The public media manifest uses `luxveritas.media_manifest.v1`. Each media item c
 
 The public build manifest uses `luxveritas.build_manifest.v1` and is deployed at `/data/lux-build-manifest.json`. It records the active asset version, app script URL, stylesheet URL, media manifest version, public terms version, and route counts so live-site diagnostics can confirm production is serving the intended build.
 
+The public web app manifest is deployed at `/site.webmanifest` with Lux Veritas app naming, theme color, standalone display mode, and the `/assets/luxveritas-icon.svg` icon. Public-site QA validates page-level manifest links and install metadata; live-site QA validates the deployed manifest.
+
 Attach approved release media only after the public audio, visual, and radio/stream URLs are cleared for launch:
 
 ```bash

@@ -134,6 +134,29 @@ try {
 }
 
 try {
+  const { response, text } = await fetchWithTimeout("/site.webmanifest");
+  if (!response.ok) {
+    issues.push(`/site.webmanifest: expected HTTP 200, received ${response.status}`);
+  } else {
+    const manifest = JSON.parse(text);
+    if (manifest.name !== "Lux Veritas" || manifest.short_name !== "Lux Veritas") {
+      issues.push("/site.webmanifest: name mismatch");
+    }
+    if (manifest.start_url !== "/index.html" || manifest.display !== "standalone") {
+      issues.push("/site.webmanifest: expected installable start_url/display");
+    }
+    const icon = Array.isArray(manifest.icons)
+      ? manifest.icons.find((item) => item.src === "/assets/luxveritas-icon.svg")
+      : null;
+    if (!icon || icon.type !== "image/svg+xml") {
+      issues.push("/site.webmanifest: missing Lux Veritas SVG icon");
+    }
+  }
+} catch (error) {
+  issues.push(`/site.webmanifest: invalid response (${error.message})`);
+}
+
+try {
   const { response, text } = await fetchWithTimeout("/data/lux-media-manifest.json");
   if (!response.ok) {
     issues.push(`/data/lux-media-manifest.json: expected HTTP 200, received ${response.status}`);

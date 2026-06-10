@@ -8,6 +8,7 @@ const requiredFiles = [
   "app.js",
   "styles.css",
   "robots.txt",
+  "site.webmanifest",
   "sitemap.xml",
   "data/lux-launch-readiness.json",
   "data/lux-media-manifest.json",
@@ -15,6 +16,7 @@ const requiredFiles = [
   "data/lux-legal-review.json",
   "data/lux-public-terms.json",
   "assets/luxveritas-threshold.png",
+  "assets/luxveritas-icon.svg",
   "assets/luxveritas-signal-poster.svg",
   "assets/luxveritas-spmvp-preview.wav",
   "assets/luxveritas-radio-preview.wav",
@@ -127,6 +129,10 @@ function scriptJsonLd(html) {
   return match?.[1]?.trim() || "";
 }
 
+function linkHref(html, rel) {
+  return html.match(new RegExp(`<link\\b(?=[^>]*rel=["']${rel}["'])[^>]*href=["']([^"']+)["'][^>]*>`, "i"))?.[1] || "";
+}
+
 for (const file of requiredFiles) {
   try {
     await access(join(root, file));
@@ -178,6 +184,15 @@ for (const file of htmlFiles) {
   }
   for (const name of ["twitter:card", "twitter:title", "twitter:description", "twitter:image"]) {
     if (!metaContent(html, name)) issues.push(`${rel}: missing ${name}`);
+  }
+  for (const name of ["theme-color", "application-name", "apple-mobile-web-app-title", "apple-mobile-web-app-capable"]) {
+    if (!metaContent(html, name)) issues.push(`${rel}: missing ${name}`);
+  }
+  if (!linkHref(html, "manifest").endsWith("site.webmanifest")) {
+    issues.push(`${rel}: missing web app manifest link`);
+  }
+  if (!linkHref(html, "apple-touch-icon").endsWith("assets/luxveritas-icon.svg")) {
+    issues.push(`${rel}: missing apple touch icon link`);
   }
   if (metaContent(html, "og:url") !== canonical) {
     issues.push(`${rel}: og:url does not match canonical`);
@@ -243,16 +258,38 @@ for (const pattern of bannedTerms) {
 
 const mediaManifestRaw = await readFile(join(root, "data/lux-media-manifest.json"), "utf8");
 const buildManifestRaw = await readFile(join(root, "data/lux-build-manifest.json"), "utf8");
+const webManifestRaw = await readFile(join(root, "site.webmanifest"), "utf8");
 const deploymentDoc = await readFile("docs/deployment.md", "utf8");
 const launchReadinessRaw = await readFile(join(root, "data/lux-launch-readiness.json"), "utf8");
 const legalReviewRaw = await readFile(join(root, "data/lux-legal-review.json"), "utf8");
 const publicTermsRaw = await readFile(join(root, "data/lux-public-terms.json"), "utf8");
 for (const pattern of bannedTerms) {
   if (pattern.test(buildManifestRaw)) issues.push(`data/lux-build-manifest.json: banned public term matched ${pattern}`);
+  if (pattern.test(webManifestRaw)) issues.push(`site.webmanifest: banned public term matched ${pattern}`);
   if (pattern.test(launchReadinessRaw)) issues.push(`data/lux-launch-readiness.json: banned public term matched ${pattern}`);
   if (pattern.test(mediaManifestRaw)) issues.push(`data/lux-media-manifest.json: banned public term matched ${pattern}`);
   if (pattern.test(legalReviewRaw)) issues.push(`data/lux-legal-review.json: banned public term matched ${pattern}`);
   if (pattern.test(publicTermsRaw)) issues.push(`data/lux-public-terms.json: banned public term matched ${pattern}`);
+}
+
+try {
+  const webManifest = JSON.parse(webManifestRaw);
+  if (webManifest.name !== "Lux Veritas" || webManifest.short_name !== "Lux Veritas") {
+    issues.push("site.webmanifest: expected Lux Veritas name and short_name");
+  }
+  if (webManifest.start_url !== "/index.html" || webManifest.scope !== "/" || webManifest.display !== "standalone") {
+    issues.push("site.webmanifest: expected start_url /index.html, scope /, and standalone display");
+  }
+  if (webManifest.theme_color !== "#060807" || webManifest.background_color !== "#060807") {
+    issues.push("site.webmanifest: expected Lux Veritas theme/background color");
+  }
+  const icons = Array.isArray(webManifest.icons) ? webManifest.icons : [];
+  const icon = icons.find((item) => item.src === "/assets/luxveritas-icon.svg");
+  if (!icon || icon.type !== "image/svg+xml" || !String(icon.purpose || "").includes("maskable")) {
+    issues.push("site.webmanifest: expected maskable SVG Lux Veritas icon");
+  }
+} catch (error) {
+  issues.push(`site.webmanifest: invalid JSON (${error.message})`);
 }
 
 try {

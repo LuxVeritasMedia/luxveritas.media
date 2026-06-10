@@ -22,6 +22,7 @@ const files = [
   "music.html",
   "press.html",
   "robots.txt",
+  "site.webmanifest",
   "sitemap.xml",
   "spmvp.html",
   "store.html",
@@ -47,6 +48,7 @@ const files = [
 const assetFiles = [
   "assets/luxveritas-threshold.png",
   "assets/luxveritas-signal-poster.svg",
+  "assets/luxveritas-icon.svg",
   "assets/luxveritas-spmvp-preview.wav",
   "assets/luxveritas-radio-preview.wav",
   "assets/luxveritas-visual-preview.webm"

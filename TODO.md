@@ -111,6 +111,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add public-site QA for internal links, nav/footer, noindex routes, banned terms, and media requirements.
 - [x] Add public-site QA for canonical, Open Graph, and Twitter share metadata.
 - [x] Add public-site QA for Organization, WebSite, WebPage, and navigation JSON-LD.
+- [x] Add public web app manifest, install metadata, and live manifest QA.
 - [x] Add private noindex local activity report for pilot testing.
 - [x] Add private noindex operator activity report for stored submissions and consented events.
 - [x] Add structured CTA, nav, link, and report-action tracking for consented engagement reporting.

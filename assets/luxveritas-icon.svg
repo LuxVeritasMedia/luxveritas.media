@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Lux Veritas</title>
+  <desc id="desc">Lux Veritas monogram on an obsidian field.</desc>
+  <rect width="512" height="512" fill="#060807"/>
+  <rect x="56" y="56" width="400" height="400" fill="none" stroke="#c8a86a" stroke-width="10"/>
+  <path d="M151 346V144h39v169h118v33H151Z" fill="#f3eee4"/>
+  <path d="M315 144h45L276 346h-40l79-202Z" fill="#c8a86a"/>
+  <path d="M210 144h40l41 124-21 51-60-175Z" fill="#0d5a49"/>
+</svg>

@@ -1,0 +1,23 @@
+{
+  "name": "Lux Veritas",
+  "short_name": "Lux Veritas",
+  "description": "The public Lux Veritas portal for music, film, events, Codex, and first access.",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#060807",
+  "theme_color": "#060807",
+  "icons": [
+    {
+      "src": "/assets/luxveritas-icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "music",
+    "entertainment",
+    "lifestyle"
+  ]
+}
