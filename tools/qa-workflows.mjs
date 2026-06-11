@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 const issues = [];
 const hosting = await readFile(".github/workflows/firebase-hosting-live.yml", "utf8");
 const functions = await readFile(".github/workflows/firebase-functions-manual.yml", "utf8");
+const finalAudit = await readFile(".github/workflows/final-release-audit.yml", "utf8");
 const deployStatus = await readFile("tools/qa-deploy-status.mjs", "utf8");
 
 for (const marker of [
@@ -64,6 +65,24 @@ for (const marker of [
 
 if (functions.includes('invoker: "public"') || functions.includes("invoker: 'public'")) {
   issues.push("firebase-functions-manual.yml: must not re-add public invoker config");
+}
+
+for (const marker of [
+  "name: Final Release Audit",
+  "workflow_dispatch:",
+  "group: final-release-audit",
+  "timeout-minutes: 20",
+  "node tools/build-static.mjs",
+  "node tools/prepare-hosting.mjs",
+  "node tools/qa-release-handoff.mjs",
+  "node tools/qa-workflows.mjs",
+  "LUX_FINAL_ALLOW_BLOCKERS=1 LUX_FINAL_SKIP_BROWSER=1 LUX_FINAL_SKIP_LIVE=1 node tools/qa-final-release-gate.mjs"
+]) {
+  if (!finalAudit.includes(marker)) issues.push(`final-release-audit.yml: missing ${marker}`);
+}
+
+if (finalAudit.includes("LUX_FINAL_WRITE_TESTS=1")) {
+  issues.push("final-release-audit.yml: manual audit must not run write tests");
 }
 
 for (const marker of [

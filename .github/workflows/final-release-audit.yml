@@ -1,0 +1,39 @@
+name: Final Release Audit
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: final-release-audit
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build static site
+        run: node tools/build-static.mjs
+
+      - name: Prepare Hosting artifact
+        run: node tools/prepare-hosting.mjs
+
+      - name: QA release handoff
+        run: node tools/qa-release-handoff.mjs
+
+      - name: QA workflows
+        run: node tools/qa-workflows.mjs
+
+      - name: Final release gate audit
+        run: LUX_FINAL_ALLOW_BLOCKERS=1 LUX_FINAL_SKIP_BROWSER=1 LUX_FINAL_SKIP_LIVE=1 node tools/qa-final-release-gate.mjs

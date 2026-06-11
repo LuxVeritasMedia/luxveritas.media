@@ -17,6 +17,14 @@ node tools/qa-pilot-readiness.mjs
 
 This command rebuilds the static site, prepares the Firebase Hosting artifact, then runs the local public-site, button, access, integration, mobile, accessibility, hosting, and workflow QA gates against the fresh output. Use `LUX_PILOT_BROWSER=1` for browser-flow coverage and `LUX_PILOT_LIVE=1` after deployment credentials and live provider setup are ready.
 
+For a GitHub-side launch audit that reports the remaining release blockers without creating live form or event writes, run the manual `Final Release Audit` workflow from GitHub Actions. It rebuilds the static site, prepares the Hosting artifact, validates the handoff/workflow guardrails, and runs:
+
+```bash
+LUX_FINAL_ALLOW_BLOCKERS=1 LUX_FINAL_SKIP_BROWSER=1 LUX_FINAL_SKIP_LIVE=1 node tools/qa-final-release-gate.mjs
+```
+
+This workflow is an audit only. It must not be used as release approval because it skips browser/live coverage and write tests by design. Final approval still requires `LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs` with no blocker override.
+
 Check whether GitHub Actions and Firebase Hosting have actually caught up to the pushed build:
 
 ```bash
