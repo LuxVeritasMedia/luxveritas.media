@@ -102,6 +102,12 @@ jobs:
       - name: QA live site
         run: node tools/qa-live-site.mjs
 
+      - name: QA live form matrix
+        run: node tools/qa-live-form-matrix.mjs
+
+      - name: QA live event matrix
+        run: node tools/qa-live-event-matrix.mjs
+
       - name: QA live product boundary
         run: node tools/qa-live-product-boundary.mjs
 

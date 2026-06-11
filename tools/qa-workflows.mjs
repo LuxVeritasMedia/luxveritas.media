@@ -28,6 +28,8 @@ for (const marker of [
   "npx playwright install chromium",
   "node tools/qa-browser-flows.mjs",
   "node tools/qa-live-site.mjs",
+  "node tools/qa-live-form-matrix.mjs",
+  "node tools/qa-live-event-matrix.mjs",
   "node tools/qa-live-product-boundary.mjs",
   "LUX_BROWSER_BASE_URL=https://luxveritas.media node tools/qa-browser-flows.mjs"
 ]) {

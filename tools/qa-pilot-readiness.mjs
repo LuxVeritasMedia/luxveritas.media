@@ -29,6 +29,8 @@ const checks = [
   ["Workflows", "tools/qa-workflows.mjs"],
   includeBrowser ? ["Browser Flows", "tools/qa-browser-flows.mjs"] : null,
   includeLive ? ["Form Delivery", "tools/qa-form-delivery.mjs"] : null,
+  includeLive ? ["Live Form Matrix", "tools/qa-live-form-matrix.mjs"] : null,
+  includeLive ? ["Live Event Matrix", "tools/qa-live-event-matrix.mjs"] : null,
   includeLive ? ["Live Site", "tools/qa-live-site.mjs"] : null,
   includeLive ? ["Live Product Boundary", "tools/qa-live-product-boundary.mjs"] : null,
   includeLive ? ["Domain Readiness", "tools/qa-domain-readiness.mjs"] : null,
