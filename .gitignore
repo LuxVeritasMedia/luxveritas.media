@@ -44,3 +44,10 @@ source_docs_round2/
 brief_extracts/
 brief_extracts_round2/
 *.zip
+
+# Recovered standalone apps are preserved as app-local repositories.
+breadington-mvp/
+buddington-mvp/
+lowkey-hungry-mvp/
+omelette-tv-guide/
+mic-proof.html
