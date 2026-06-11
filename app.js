@@ -818,6 +818,7 @@ function evaluateLaunchGate(gate, manifest, report, legalReview) {
   const items = Array.isArray(manifest?.items) ? manifest.items : [];
   const missingMedia = items.filter((item) => ["audio", "video", "stream"].includes(item.sourceType) && !/^https:\/\//i.test(item.sourceUrl || ""));
   const delivery = report?.delivery || {};
+  const hasDeliveryReport = Boolean(report?.delivery && Object.keys(delivery).length);
 
   if (gate.id === "media_sources") {
     return {
@@ -830,6 +831,12 @@ function evaluateLaunchGate(gate, manifest, report, legalReview) {
   }
 
   if (gate.id === "inbox_notifications") {
+    if (!hasDeliveryReport) {
+      return {
+        ...gate,
+        detail: gate.nextAction || "Inbox notification provider readiness has not been checked yet."
+      };
+    }
     const ready = delivery.inboxNotification === "ready";
     return {
       ...gate,
@@ -839,6 +846,12 @@ function evaluateLaunchGate(gate, manifest, report, legalReview) {
   }
 
   if (gate.id === "private_handoff") {
+    if (!hasDeliveryReport) {
+      return {
+        ...gate,
+        detail: gate.nextAction || "Private handoff readiness has not been checked yet."
+      };
+    }
     const ready = delivery.integrationWebhook === "ready" && delivery.integrationTargetConfigured === true;
     return {
       ...gate,
@@ -848,6 +861,12 @@ function evaluateLaunchGate(gate, manifest, report, legalReview) {
   }
 
   if (gate.id === "operator_reporting") {
+    if (!hasDeliveryReport) {
+      return {
+        ...gate,
+        detail: gate.nextAction || "Operator reporting readiness has not been checked yet."
+      };
+    }
     const ready = delivery.operatorTokenConfigured === true;
     return {
       ...gate,

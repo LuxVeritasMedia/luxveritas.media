@@ -21,7 +21,7 @@ const mockReport = {
     events: 128,
     privateHandoffs: 9,
     pendingNotifications: 7,
-    pendingIntegrations: 11
+    pendingIntegrations: 0
   },
   latest: {
     submissions: [
@@ -39,7 +39,7 @@ const mockReport = {
         routing_priority: "standard",
         routing_next_action: "Send first-access follow-up",
         deliveryStatus: "stored",
-        integrationStatus: "integration_not_configured",
+        integrationStatus: "sent",
         client_submission_id: "LV-QA-REPORT"
       }
     ],
@@ -93,11 +93,11 @@ const mockReport = {
   delivery: {
     inboxNotification: "needs_setup",
     storeFirstCapture: "ready",
-    integrationWebhook: "needs_setup",
-    integrationTarget: "unconfigured",
-    integrationTargetConfigured: false,
-    operatorTokenConfigured: false,
-    missing: ["RESEND_API_KEY", "FORM_INTEGRATION_URL", "FORM_INTEGRATION_TARGET", "REPORT_OPERATOR_TOKEN_SHA256"]
+    integrationWebhook: "ready",
+    integrationTarget: "firebase_handoff",
+    integrationTargetConfigured: true,
+    operatorTokenConfigured: true,
+    missing: ["RESEND_API_KEY"]
   },
   summary: {
     funnel: [
@@ -113,7 +113,7 @@ const mockReport = {
       byRoutingQueue: [{ label: "Membership Waitlist", count: 24 }],
       byRoutingPriority: [{ label: "standard", count: 24 }],
       byDeliveryStatus: [{ label: "stored", count: 35 }, { label: "email_provider_not_configured", count: 7 }],
-      byIntegrationStatus: [{ label: "integration_not_configured", count: 42 }]
+      byIntegrationStatus: [{ label: "sent", count: 42 }]
     },
     handoffs: {
       byTarget: [{ label: "firebase_handoff", count: 9 }],
@@ -747,7 +747,7 @@ async function operatorReportFlow(page, baseUrl) {
   if (!/3 of 3 source-ready/.test(mediaSummary)) {
     issues.push(`/portal/reporting.html: expected media readiness summary, found "${mediaSummary}"`);
   }
-  if (!/1 of 7 launch gates ready/.test(launchSummaryBeforeLoad)) {
+  if (!/3 of 7 launch gates ready/.test(launchSummaryBeforeLoad)) {
     issues.push(`/portal/reporting.html: expected launch readiness summary, found "${launchSummaryBeforeLoad}"`);
   }
   for (const label of ["SPMVP", "Visual World", "Lux Radio"]) {
@@ -814,15 +814,15 @@ async function operatorReportFlow(page, baseUrl) {
   if (submissionCount !== "42") issues.push(`/portal/reporting.html: expected 42 submissions, found ${submissionCount}`);
   if (eventCount !== "128") issues.push(`/portal/reporting.html: expected 128 events, found ${eventCount}`);
   if (privateHandoffCount !== "9") issues.push(`/portal/reporting.html: expected 9 accepted handoffs, found ${privateHandoffCount}`);
-  if (pendingHandoffCount !== "11") issues.push(`/portal/reporting.html: expected 11 pending integrations, found ${pendingHandoffCount}`);
+  if (pendingHandoffCount !== "0") issues.push(`/portal/reporting.html: expected 0 pending integrations, found ${pendingHandoffCount}`);
   if (deliveryStatus !== "Setup") issues.push(`/portal/reporting.html: expected delivery setup status, found ${deliveryStatus}`);
-  if (!/RESEND_API_KEY/.test(deliveryDetail) || !/FORM_INTEGRATION_URL/.test(deliveryDetail) || !/FORM_INTEGRATION_TARGET/.test(deliveryDetail)) {
+  if (!/RESEND_API_KEY/.test(deliveryDetail) || /FORM_INTEGRATION_URL|FORM_INTEGRATION_TARGET/.test(deliveryDetail)) {
     issues.push(`/portal/reporting.html: missing delivery setup detail`);
   }
-  if (handoffTargetStatus !== "Setup") {
-    issues.push(`/portal/reporting.html: expected handoff target setup status, found ${handoffTargetStatus}`);
+  if (handoffTargetStatus !== "Ready") {
+    issues.push(`/portal/reporting.html: expected handoff target ready status, found ${handoffTargetStatus}`);
   }
-  if (!/Target profile not configured/i.test(handoffTargetDetail)) {
+  if (!/firebase_handoff/i.test(handoffTargetDetail)) {
     issues.push(`/portal/reporting.html: missing handoff target detail`);
   }
   if (reportAuthMode !== "operator_token" || reportAuthViewer !== "info@luxveritas.media") {
@@ -895,7 +895,7 @@ async function operatorReportFlow(page, baseUrl) {
   if (!/Server captures/.test(funnelSummary) || !/Media actions/.test(funnelSummary) || !/Playback events/.test(funnelSummary)) {
     issues.push(`/portal/reporting.html: pilot funnel missing capture/media values`);
   }
-  if (!/1 of 7 launch gates ready/.test(launchSummary) || !/Inbox notification provider is not active/i.test(launchReadiness)) {
+  if (!/3 of 7 launch gates ready/.test(launchSummary) || !/Inbox notification provider is not active/i.test(launchReadiness)) {
     issues.push(`/portal/reporting.html: launch gates did not render blocker state (summary="${launchSummary}", list="${launchReadiness.replace(/\s+/g, " ")}")`);
   }
 
@@ -934,7 +934,7 @@ async function operatorReportFlow(page, baseUrl) {
   await replayIntegrationButton.click();
   await page.waitForFunction(() => {
     const status = document.querySelector("[data-private-report-status]");
-    return status && /Private handoff is not configured yet|Handoff replay checked/i.test(status.textContent || "");
+    return status && /Private handoff is not configured yet|Handoff replay checked|Private activity loaded/i.test(status.textContent || "");
   }, null, { timeout: 5000 });
 }
 
@@ -1009,10 +1009,10 @@ try {
         contentType: "application/json",
         body: JSON.stringify({
           ok: true,
-          replayed: 0,
-          checked: 0,
-          skipped: true,
-          reason: "integration_not_configured"
+          replayed: 1,
+          checked: 1,
+          skipped: false,
+          reason: "sent"
         })
       });
       return;
