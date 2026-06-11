@@ -53,6 +53,7 @@ node tools/qa-provider-readiness.mjs
 node tools/qa-domain-readiness.mjs
 node tools/qa-release-readiness.mjs
 LUX_PILOT_BROWSER=1 LUX_PILOT_LIVE=1 node tools/qa-pilot-readiness.mjs
+node tools/qa-final-release-gate.mjs
 ```
 
 After the approved email provider key exists:
@@ -79,6 +80,7 @@ Do not call the MVP release-ready until all of these are true:
 
 - `node tools/qa-release-readiness.mjs` has no blockers.
 - `LUX_PILOT_BROWSER=1 LUX_PILOT_LIVE=1 node tools/qa-pilot-readiness.mjs` has no blockers in strict review.
+- `node tools/qa-final-release-gate.mjs` passes without `LUX_FINAL_ALLOW_BLOCKERS=1`.
 - `https://luxveritas.media/data/lux-build-manifest.json` matches the expected local asset version.
 - Test submissions send silently to `info@luxveritas.media`.
 - Pending stored submissions can be replayed from private reporting.

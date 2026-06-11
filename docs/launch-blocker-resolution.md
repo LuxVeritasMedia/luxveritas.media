@@ -142,6 +142,7 @@ node tools/qa-pilot-readiness.mjs
 LUX_PILOT_BROWSER=1 node tools/qa-pilot-readiness.mjs
 LUX_PILOT_LIVE=1 LUX_PILOT_STRICT=1 node tools/qa-pilot-readiness.mjs
 node tools/qa-release-readiness.mjs
+node tools/qa-final-release-gate.mjs
 ```
 
 If all checks pass, deploy Hosting and run live verification:

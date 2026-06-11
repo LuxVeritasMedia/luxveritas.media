@@ -27,6 +27,7 @@ for (const marker of [
   "node tools/qa-domain-readiness.mjs",
   "node tools/qa-release-readiness.mjs",
   "LUX_PILOT_BROWSER=1 LUX_PILOT_LIVE=1 node tools/qa-pilot-readiness.mjs",
+  "node tools/qa-final-release-gate.mjs",
   "LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.mjs"
 ]) {
   if (!handoff.includes(marker)) issue(`production-release-handoff.md missing marker: ${marker}`);
@@ -53,7 +54,8 @@ for (const marker of [
   "LUX_RESEND_API_KEY=\"re_...\" node tools/setup-inbox-provider-secret.mjs",
   "LUX_LEGAL_REVIEW_ITEM=privacy",
   "LUX_LEGAL_REVIEW_ITEM=terms",
-  "LUX_PILOT_LIVE=1 LUX_PILOT_STRICT=1 node tools/qa-pilot-readiness.mjs"
+  "LUX_PILOT_LIVE=1 LUX_PILOT_STRICT=1 node tools/qa-pilot-readiness.mjs",
+  "node tools/qa-final-release-gate.mjs"
 ]) {
   if (!blockerResolution.includes(marker)) {
     issue(`docs/launch-blocker-resolution.md missing marker: ${marker}`);
@@ -79,6 +81,7 @@ for (const marker of [
   "Configure www.luxveritas.media DNS and Hosting redirect",
   "Configure and verify email provider runtime secret `RESEND_API_KEY`",
   "Add legal review packet for Privacy and Terms approval",
+  "Add final strict release-gate command for launch-day acceptance",
   "Legal review: Privacy",
   "Legal review: Terms",
   "Configure approved external CRM/Google workflow target"
