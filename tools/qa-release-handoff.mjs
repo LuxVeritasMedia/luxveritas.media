@@ -20,7 +20,7 @@ for (const marker of [
   "forms@luxveritas.media",
   "Privacy page needs legal/business approval",
   "Terms page needs legal/business approval",
-  "External CRM/Google/GHL workflow target",
+  "External CRM/Google workflow target",
   "node tools/qa-provider-readiness.mjs",
   "node tools/qa-domain-readiness.mjs",
   "node tools/qa-release-readiness.mjs",

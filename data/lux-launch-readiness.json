@@ -1,6 +1,6 @@
 {
-  "version": "2026-06-09-launch-gates",
-  "updatedAt": "2026-06-09T00:00:00.000Z",
+  "version": "2026-06-11-launch-gates",
+  "updatedAt": "2026-06-11T00:00:00.000Z",
   "gates": [
     {
       "id": "media_sources",
@@ -40,10 +40,10 @@
       "label": "Operator Reporting",
       "category": "pilot",
       "status": "dynamic",
-      "nextAction": "Configure the private operator report token hash for pilot reporting access.",
+      "nextAction": "Use an approved operator token to review live pilot reporting and provider readiness.",
       "owner": "Portal operator",
       "blockerType": "access_control",
-      "verification": "Run provider readiness with an approved operator token.",
+      "verification": "Run provider readiness with LUX_REPORT_TOKEN to confirm live reporting access.",
       "requiredForPublicLaunch": true
     },
     {

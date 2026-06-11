@@ -1,6 +1,6 @@
 # Lux Veritas Production Release Handoff
 
-Status date: 2026-06-10
+Status date: 2026-06-11
 
 This repo is the public LuxVeritas.media front door. The apex site is live and serving the current build. Do not move LuxFlow OS, private prompts, internal dashboards, finance, rights operations, or unreleased canon into this public repo.
 
@@ -9,7 +9,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Live apex: `https://luxveritas.media`
 - Firebase project: `lux-veritas-media`
 - GitHub repo: `LuxVeritasMedia/luxveritas.media`
-- Current live asset version: `20260610-playback-summary`
+- Current live asset version: `20260611-brand-house-readiness`
 - Current phase: Phase 4 of 10, capture/legal/readiness
 - Next major phase: Phase 5, authenticated portal shell
 
@@ -26,6 +26,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Listen, Watch, and Radio player actions select the matching source and return stable reporting keys.
 - Audio, video, and radio playback lifecycle events return play, pause, milestone, and ended reporting values.
 - Protected operator reporting summarizes playback actions, source types, reporting keys, and retention milestones.
+- Brand-house visual identity is live on Home and About, with responsive QA coverage for the six public house marks.
 - CTA, media, consented interaction, and form reporting paths have QA coverage.
 - Private operator reporting exists behind approved access.
 
@@ -34,12 +35,11 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 These are the known blockers before calling the site public-launch ready.
 
 1. `www.luxveritas.media` DNS and Firebase Hosting redirect are not configured.
-2. Firebase CLI auth on this machine must be refreshed before inspecting or changing function secrets.
-3. `RESEND_API_KEY` must be set to a real approved provider key.
-4. `forms@luxveritas.media` must be verified with the email provider before silent inbox delivery is considered live.
-5. Privacy page needs legal/business approval.
-6. Terms page needs legal/business approval.
-7. External CRM/Google/GHL workflow target must be selected before final private handoff integration.
+2. `RESEND_API_KEY` must be set to a real approved provider key. The current secret value is the offline sentinel.
+3. `forms@luxveritas.media` must be verified with the email provider before silent inbox delivery is considered live.
+4. Privacy page needs legal/business approval.
+5. Terms page needs legal/business approval.
+6. External CRM/Google workflow target may be selected after the private workflow is approved. The signed Firebase private handoff is already active for the MVP intake queue.
 
 ## Required Commands
 
