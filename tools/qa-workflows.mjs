@@ -31,6 +31,7 @@ for (const marker of [
   "node tools/qa-live-form-matrix.mjs",
   "node tools/qa-live-event-matrix.mjs",
   "node tools/qa-live-product-boundary.mjs",
+  "node tools/qa-deploy-status.mjs",
   "LUX_BROWSER_BASE_URL=https://luxveritas.media node tools/qa-browser-flows.mjs"
 ]) {
   if (!hosting.includes(marker)) issues.push(`firebase-hosting-live.yml: missing ${marker}`);

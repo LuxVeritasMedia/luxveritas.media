@@ -111,5 +111,8 @@ jobs:
       - name: QA live product boundary
         run: node tools/qa-live-product-boundary.mjs
 
+      - name: QA deploy status
+        run: node tools/qa-deploy-status.mjs
+
       - name: QA live browser flows
         run: LUX_BROWSER_BASE_URL=https://luxveritas.media node tools/qa-browser-flows.mjs

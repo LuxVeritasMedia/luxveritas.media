@@ -33,6 +33,7 @@ const checks = [
   includeLive ? ["Live Event Matrix", "tools/qa-live-event-matrix.mjs"] : null,
   includeLive ? ["Live Site", "tools/qa-live-site.mjs"] : null,
   includeLive ? ["Live Product Boundary", "tools/qa-live-product-boundary.mjs"] : null,
+  includeLive ? ["Deploy Status", "tools/qa-deploy-status.mjs"] : null,
   includeLive ? ["Domain Readiness", "tools/qa-domain-readiness.mjs"] : null,
   includeLive ? ["Provider Readiness", "tools/qa-provider-readiness.mjs"] : null,
   includeLive ? ["Release Readiness", "tools/qa-release-readiness.mjs"] : null
