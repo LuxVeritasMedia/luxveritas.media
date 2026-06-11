@@ -208,6 +208,7 @@ add(
   missingSources.length > 0 || (mediaGate?.status !== "blocked" && !/Attach approved/i.test(mediaGate?.nextAction || "")),
   "Media launch gate matches approved source readiness."
 );
+const inboxGate = launchGateById.get("inbox_notifications");
 const privateHandoffGate = launchGateById.get("private_handoff");
 const operatorReportingGate = launchGateById.get("operator_reporting");
 
@@ -222,6 +223,10 @@ if (liveDelivery) {
   add(
     liveDelivery.operatorTokenConfigured !== true || operatorReportingGate?.status === "ready",
     "Operator reporting launch gate matches provider readiness."
+  );
+  add(
+    liveDelivery.emailProviderConfigured === true ? inboxGate?.status === "ready" : inboxGate?.status === "blocked",
+    "Inbox notification launch gate matches provider readiness."
   );
 } else {
   const inboxStatus = providerSecretValueStatus.RESEND_API_KEY;
@@ -247,6 +252,10 @@ if (liveDelivery) {
   add(
     operatorTokenStatus?.ok !== true || operatorReportingGate?.status === "ready",
     "Operator reporting launch gate matches provider readiness."
+  );
+  add(
+    inboxStatus?.ok === true ? inboxGate?.status === "ready" : inboxGate?.status === "blocked",
+    "Inbox notification launch gate matches provider readiness."
   );
 }
 add(legalReview.schemaVersion === "luxveritas.legal_review.v1", "Legal review manifest schema version is current.");

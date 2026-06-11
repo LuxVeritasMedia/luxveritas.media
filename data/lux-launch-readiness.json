@@ -17,7 +17,7 @@
       "id": "inbox_notifications",
       "label": "Inbox Notifications",
       "category": "capture",
-      "status": "dynamic",
+      "status": "blocked",
       "nextAction": "Configure the approved sender and inbox provider, then replay pending inbox records.",
       "owner": "Capture operator",
       "blockerType": "provider_activation",
