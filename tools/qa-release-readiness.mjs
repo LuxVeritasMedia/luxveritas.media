@@ -158,6 +158,7 @@ const expectedAssetVersion = buildScript.match(/const assetVersion = "([^"]+)"/)
 const mediaItems = Array.isArray(mediaManifest.items) ? mediaManifest.items : [];
 const launchGates = Array.isArray(launchChecklist.gates) ? launchChecklist.gates : [];
 const launchGateIds = new Set(launchGates.map((gate) => gate.id));
+const launchGateById = new Map(launchGates.map((gate) => [gate.id, gate]));
 const sourceRequiredTypes = new Set(["audio", "video", "stream"]);
 const missingSources = mediaItems.filter((item) => sourceRequiredTypes.has(item.sourceType) && !validHttps(item.sourceUrl));
 const invalidPosters = mediaItems.filter((item) => !validPoster(item.posterUrl));
@@ -202,6 +203,11 @@ add(sourceTypes.has("stream"), "Media manifest includes a radio/stream path.");
 add(missingMediaContract.length === 0, `Media manifest includes source-status/reporting contract fields. Missing: ${missingMediaContract.map((item) => item.id).join(", ") || "none"}`);
 add(missingSources.length === 0, `Approved media sources attached for all audio/video/radio items. Missing: ${missingSources.map((item) => item.id).join(", ") || "none"}`);
 add(invalidPosters.length === 0, `Media poster URLs are HTTPS or local assets when present. Invalid: ${invalidPosters.map((item) => item.id).join(", ") || "none"}`);
+const mediaGate = launchGateById.get("media_sources");
+add(
+  missingSources.length > 0 || (mediaGate?.status !== "blocked" && !/Attach approved/i.test(mediaGate?.nextAction || "")),
+  "Media launch gate matches approved source readiness."
+);
 
 if (liveDelivery) {
   add(liveDelivery.emailProviderConfigured === true, "Inbox notification provider configured.");

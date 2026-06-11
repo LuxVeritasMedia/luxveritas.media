@@ -6,11 +6,11 @@
       "id": "media_sources",
       "label": "Media Sources",
       "category": "release",
-      "status": "dynamic",
-      "nextAction": "Attach approved audio, video, and radio source URLs.",
+      "status": "ready",
+      "nextAction": "Monitor approved preview audio, video, and radio sources during pilot QA.",
       "owner": "Release operator",
       "blockerType": "approved_media",
-      "verification": "Run media source setup, rebuild, then run media and release-readiness QA.",
+      "verification": "Run media contract, browser-flow, live-site, and release-readiness QA after any media source change.",
       "requiredForPublicLaunch": true
     },
     {
