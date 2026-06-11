@@ -156,6 +156,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add final strict release-gate command for launch-day acceptance.
 - [x] Require final release-gate write mode for launch-day approval.
 - [x] Require browser and live coverage in final release-gate approval mode.
+- [x] Add final launch runbook for DNS, inbox, legal, write tests, and gate approval.
 - [x] Add no-cache hosting policy for the service worker.
 
 ## P7 - Media MVP

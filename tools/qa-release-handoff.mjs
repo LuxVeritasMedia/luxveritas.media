@@ -4,6 +4,7 @@ const issues = [];
 const handoff = await readFile("docs/production-release-handoff.md", "utf8");
 const blockerResolution = await readFile("docs/launch-blocker-resolution.md", "utf8");
 const legalReviewPacket = await readFile("docs/legal-review-packet.md", "utf8");
+const finalLaunchRunbook = await readFile("docs/final-launch-runbook.md", "utf8");
 const todo = await readFile("TODO.md", "utf8");
 const buildManifest = JSON.parse(await readFile("data/lux-build-manifest.json", "utf8"));
 
@@ -37,6 +38,9 @@ for (const marker of [
 
 if (!handoff.includes("Use `docs/legal-review-packet.md` for Privacy and Terms review.")) {
   issue("production-release-handoff.md missing legal review packet pointer");
+}
+if (!handoff.includes("Use `docs/final-launch-runbook.md` for the exact final launch sequence.")) {
+  issue("production-release-handoff.md missing final launch runbook pointer");
 }
 
 for (const marker of [
@@ -80,12 +84,29 @@ for (const marker of [
 }
 
 for (const marker of [
+  "Lux Veritas Final Launch Runbook",
+  "node tools/qa-deploy-status.mjs",
+  "node tools/qa-domain-readiness.mjs",
+  "LUX_RESEND_API_KEY=\"re_...\" node tools/setup-inbox-provider-secret.mjs",
+  "LUX_LEGAL_REVIEW_ITEM=privacy",
+  "LUX_LEGAL_REVIEW_ITEM=terms",
+  "LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs",
+  "Do Not Ship If",
+  "Replay pending inbox notifications"
+]) {
+  if (!finalLaunchRunbook.includes(marker)) {
+    issue(`docs/final-launch-runbook.md missing marker: ${marker}`);
+  }
+}
+
+for (const marker of [
   "Configure www.luxveritas.media DNS and Hosting redirect",
   "Configure and verify email provider runtime secret `RESEND_API_KEY`",
   "Add legal review packet for Privacy and Terms approval",
   "Add final strict release-gate command for launch-day acceptance",
   "Require final release-gate write mode for launch-day approval",
   "Require browser and live coverage in final release-gate approval mode",
+  "Add final launch runbook for DNS, inbox, legal, write tests, and gate approval",
   "Legal review: Privacy",
   "Legal review: Terms",
   "Configure approved external CRM/Google workflow target"

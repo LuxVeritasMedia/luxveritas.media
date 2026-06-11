@@ -1,0 +1,79 @@
+# Lux Veritas Final Launch Runbook
+
+Status date: 2026-06-11
+
+Use this only when moving from pilot-ready to public-release ready. Keep secrets out of the repo and terminal history where possible. Do not call the site release-ready until the final gate passes with write tests enabled and without blocker overrides.
+
+## Starting State
+
+- Apex site is live at `https://luxveritas.media`.
+- Current asset version is `20260611-report-gate-readiness`.
+- Media, private handoff, and operator reporting are ready.
+- Remaining blockers are `www` DNS, inbox provider, Privacy approval, and Terms approval.
+
+## Launch Order
+
+1. Confirm the repo and live site are aligned:
+
+```bash
+git status --short --branch
+node tools/qa-deploy-status.mjs
+```
+
+2. Clear `www` DNS and Hosting:
+
+```bash
+node tools/qa-domain-readiness.mjs
+dig +short www.luxveritas.media
+curl -I https://www.luxveritas.media
+```
+
+3. Activate inbox delivery after the sender domain is verified:
+
+```bash
+LUX_RESEND_API_KEY="re_..." node tools/setup-inbox-provider-secret.mjs
+firebase deploy --only functions:submitForm,functions:reportActivity --project lux-veritas-media --non-interactive --force
+node tools/qa-provider-readiness.mjs
+```
+
+4. Approve legal only after review:
+
+```bash
+LUX_LEGAL_REVIEW_ITEM=privacy LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY="Reviewer Name" node tools/set-legal-review-status.mjs
+LUX_LEGAL_REVIEW_ITEM=terms LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY="Reviewer Name" node tools/set-legal-review-status.mjs
+node tools/build-static.mjs
+node tools/prepare-hosting.mjs
+node tools/qa-release-readiness.mjs
+```
+
+5. Commit, push, and wait for Hosting deploy:
+
+```bash
+git status --short --branch
+git add data/lux-legal-review.json legal/privacy.html legal/terms.html data/lux-build-manifest.json service-worker.js
+git commit -m "Approve launch legal review"
+git push origin main
+node tools/qa-deploy-status.mjs
+```
+
+6. Run final release approval with real writes:
+
+```bash
+LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs
+```
+
+## Do Not Ship If
+
+- `LUX_FINAL_ALLOW_BLOCKERS=1` is required for the final gate to pass.
+- `LUX_FINAL_SKIP_BROWSER=1` or `LUX_FINAL_SKIP_LIVE=1` is used for final approval.
+- `LUX_FINAL_WRITE_TESTS=1` has not been run.
+- Live form writes do not send to `info@luxveritas.media`.
+- Privacy or Terms still show `needs_review`.
+- `www.luxveritas.media` does not resolve over HTTPS.
+
+## After The Gate Passes
+
+- Replay pending inbox notifications from `/portal/reporting.html` with an approved operator token.
+- Export the private report JSON/CSV for launch evidence.
+- Record the passing final-gate command output in the private launch folder.
+- Do not paste provider keys, operator tokens, or private report exports into this public repo.
