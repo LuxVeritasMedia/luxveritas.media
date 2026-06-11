@@ -284,6 +284,32 @@ function fanSignalSection() {
   </section>`;
 }
 
+const houseMarks = [
+  ["LVR", "Lux Veritas Records", "Release rooms, artist worlds, sessions, radio signals, and long-form music culture.", "/music.html"],
+  ["LVS", "Lux Veritas Studios", "Cinematic chapters, visual worlds, screenings, and filmed atmosphere.", "/film.html"],
+  ["LVP", "Lux Veritas Publishing", "Outer Codex essays, story language, print signals, and selected written works.", "/codex.html"],
+  ["LVL", "Lux Veritas Live", "Listening rooms, salons, private screenings, and destination cultural gatherings.", "/events.html"],
+  ["LVC", "Lux Circle", "First access, private drops, presales, behind-the-scenes releases, and member paths.", "/membership.html"],
+  ["LVA", "Lux Atelier", "Future drops, editions, merch, objects, and owned commerce for supporters.", "/store.html"]
+];
+
+function brandHouseSection() {
+  return `<section class="section brand-house" data-brand-house>
+    <div class="section-heading">
+      <p class="kicker">House</p>
+      <h2>One house. Many rooms.</h2>
+      <p>The public Lux Veritas world is organized as a living media house: records, studios, publishing, live rooms, community, and future drops moving together without flattening the work.</p>
+    </div>
+    <div class="house-grid" aria-label="Lux Veritas house marks">
+      ${houseMarks.map(([mark, title, body, href]) => `<a class="house-card" href="${href}">
+        <span class="house-mark">${mark}</span>
+        <strong>${title}</strong>
+        <p>${body}</p>
+      </a>`).join("")}
+    </div>
+  </section>`;
+}
+
 function serviceWorkerScript() {
   const cacheName = `luxveritas-static-${assetVersion}`;
   const precache = [
@@ -400,6 +426,7 @@ function home() {
       }).join("")}
     </div></section>
     <section class="section split-band"><div><p class="kicker">Journey</p><h2>Listen to the signal.<br />Watch the world open.<br />Join the circle.</h2></div><div><p>Attend the room.</p><p>Collect the drop.</p><p>Create from the source.</p><div class="hero-actions"><button class="button button-primary" data-open-form="request">Enter Lux Veritas</button><button class="button button-quiet" data-open-form="fan">Join for first access</button></div></div></section>
+    ${brandHouseSection()}
     ${fanSignalSection()}
     ${cta()}`
   });
@@ -488,6 +515,7 @@ function about() {
     title: "About | Lux Veritas",
     description: "Lux Veritas is a global media and cultural studio operating across music, film, and live experiences.",
     body: `${pageHero("About", "Where Truth Has a Home.", "Lux Veritas is a global media and cultural studio operating across music, film, and live experiences. Founded on the belief that culture shapes reality, we create work that endures beyond cycles, platforms, and trends.")}
+    ${brandHouseSection()}
     <section class="section split-band"><div><p class="kicker">Stewardship</p><h2>Protected artists. Patient work. Long memory.</h2></div><div><p>The institution is built to care for artists, stories, and experiences with enough discipline to stay clear as it grows.</p></div></section>${cta()}`
   });
 }

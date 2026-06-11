@@ -245,6 +245,63 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
 .vertical-card span { color: var(--emerald-2); font-size: .8rem; margin-bottom: auto; }
 .vertical-card:hover { background: var(--emerald); color: var(--bone); }
 .vertical-card:hover p, .vertical-card:hover span { color: rgba(243,238,228,.72); }
+.brand-house {
+  max-width: var(--wide);
+  margin-inline: auto;
+  border-top: 1px solid rgba(200,168,106,.22);
+  background:
+    linear-gradient(135deg, rgba(16,19,35,.45), rgba(6,8,7,.92)),
+    linear-gradient(180deg, rgba(13,90,73,.14), transparent);
+}
+.house-grid {
+  max-width: var(--max);
+  margin: 44px auto 0;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1px;
+  background: rgba(200,168,106,.26);
+  border: 1px solid rgba(200,168,106,.2);
+}
+.house-card {
+  min-height: 270px;
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+  background:
+    linear-gradient(180deg, rgba(13,90,73,.15), rgba(6,8,7,.95)),
+    #0b0f0e;
+  padding: clamp(18px, 2vw, 24px);
+}
+.house-card:hover {
+  background:
+    linear-gradient(180deg, rgba(200,168,106,.12), rgba(6,60,50,.34)),
+    #0b0f0e;
+}
+.house-mark {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  aspect-ratio: 1;
+  border: 1px solid rgba(200,168,106,.48);
+  color: var(--gold);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: .88rem;
+  letter-spacing: .1em;
+}
+.house-card strong {
+  display: block;
+  color: var(--bone);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.25rem, 1.8vw, 1.7rem);
+  font-weight: 400;
+  line-height: 1.05;
+}
+.house-card p {
+  margin: 0;
+  color: rgba(243,238,228,.62);
+  font-size: .92rem;
+  line-height: 1.55;
+}
 .ops-preview { background: linear-gradient(180deg, #08100e, var(--indigo)); }
 .ops-grid, .portal-grid, .event-grid, .codex-list {
   display: grid;
@@ -860,7 +917,7 @@ select option { color: var(--ink); }
     justify-content: flex-start;
   }
   .primary-nav.open { display: flex; }
-  .section-grid, .card-grid, .release-rail, .slate, .ops-grid, .portal-grid, .event-grid, .codex-list, .split-band, .cta-band, .site-footer, .consent-banner, .damon-console, .damon-law-grid, .damon-metrics, .damon-graph, .damon-output-stack, .damon-control-grid, .media-player-section, .media-player, .fan-signal-section, .fan-signal-panel, .report-grid, .report-detail, .report-list li {
+  .section-grid, .card-grid, .house-grid, .release-rail, .slate, .ops-grid, .portal-grid, .event-grid, .codex-list, .split-band, .cta-band, .site-footer, .consent-banner, .damon-console, .damon-law-grid, .damon-metrics, .damon-graph, .damon-output-stack, .damon-control-grid, .media-player-section, .media-player, .fan-signal-section, .fan-signal-panel, .report-grid, .report-detail, .report-list li {
     grid-template-columns: 1fr;
   }
   .fan-signal-tier, .fan-signal-latest {
