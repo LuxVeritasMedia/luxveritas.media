@@ -29,6 +29,7 @@ for (const marker of [
   "LUX_PILOT_BROWSER=1 LUX_PILOT_LIVE=1 node tools/qa-pilot-readiness.mjs",
   "node tools/qa-final-release-gate.mjs",
   "LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs",
+  "Do not use `LUX_FINAL_SKIP_BROWSER=1` or `LUX_FINAL_SKIP_LIVE=1` for release approval.",
   "LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.mjs"
 ]) {
   if (!handoff.includes(marker)) issue(`production-release-handoff.md missing marker: ${marker}`);
@@ -84,6 +85,7 @@ for (const marker of [
   "Add legal review packet for Privacy and Terms approval",
   "Add final strict release-gate command for launch-day acceptance",
   "Require final release-gate write mode for launch-day approval",
+  "Require browser and live coverage in final release-gate approval mode",
   "Legal review: Privacy",
   "Legal review: Terms",
   "Configure approved external CRM/Google workflow target"

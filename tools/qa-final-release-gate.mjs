@@ -107,6 +107,14 @@ if (!writeTests) {
   console.log("FAIL Final Write Tests");
 }
 
+if (skipBrowser || skipLive) {
+  failures.push({
+    label: "Final Coverage",
+    output: "Do not set LUX_FINAL_SKIP_BROWSER=1 or LUX_FINAL_SKIP_LIVE=1 for release approval. Browser and live coverage are required for the final gate."
+  });
+  console.log("FAIL Final Coverage");
+}
+
 if (failures.length) {
   console.log("");
   console.log(`Final release gate found ${failures.length} blocking check(s):`);

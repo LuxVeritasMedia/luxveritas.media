@@ -70,6 +70,8 @@ For final release approval after all blockers are cleared, run the gate with wri
 LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs
 ```
 
+Do not use `LUX_FINAL_SKIP_BROWSER=1` or `LUX_FINAL_SKIP_LIVE=1` for release approval. Those flags are only for faster local audits.
+
 After legal approval:
 
 ```bash
@@ -87,6 +89,7 @@ Do not call the MVP release-ready until all of these are true:
 - `node tools/qa-release-readiness.mjs` has no blockers.
 - `LUX_PILOT_BROWSER=1 LUX_PILOT_LIVE=1 node tools/qa-pilot-readiness.mjs` has no blockers in strict review.
 - `LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs` passes without `LUX_FINAL_ALLOW_BLOCKERS=1`.
+- Final release gate runs without `LUX_FINAL_SKIP_BROWSER=1` or `LUX_FINAL_SKIP_LIVE=1`.
 - `https://luxveritas.media/data/lux-build-manifest.json` matches the expected local asset version.
 - Test submissions send silently to `info@luxveritas.media`.
 - Pending stored submissions can be replayed from private reporting.
