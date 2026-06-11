@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 
 const issues = [];
 const handoff = await readFile("docs/production-release-handoff.md", "utf8");
+const blockerResolution = await readFile("docs/launch-blocker-resolution.md", "utf8");
 const todo = await readFile("TODO.md", "utf8");
 const buildManifest = JSON.parse(await readFile("data/lux-build-manifest.json", "utf8"));
 
@@ -28,6 +29,30 @@ for (const marker of [
   "LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.mjs"
 ]) {
   if (!handoff.includes(marker)) issue(`production-release-handoff.md missing marker: ${marker}`);
+}
+
+for (const marker of [
+  "docs/launch-blocker-resolution.md",
+  "www Domain",
+  "Inbox Provider",
+  "Privacy Approval",
+  "Terms Approval"
+]) {
+  if (!handoff.includes(marker) && !blockerResolution.includes(marker)) {
+    issue(`launch blocker documentation missing marker: ${marker}`);
+  }
+}
+
+for (const marker of [
+  "node tools/qa-domain-readiness.mjs",
+  "LUX_RESEND_API_KEY=\"re_...\" node tools/setup-inbox-provider-secret.mjs",
+  "LUX_LEGAL_REVIEW_ITEM=privacy",
+  "LUX_LEGAL_REVIEW_ITEM=terms",
+  "LUX_PILOT_LIVE=1 LUX_PILOT_STRICT=1 node tools/qa-pilot-readiness.mjs"
+]) {
+  if (!blockerResolution.includes(marker)) {
+    issue(`docs/launch-blocker-resolution.md missing marker: ${marker}`);
+  }
 }
 
 for (const marker of [
