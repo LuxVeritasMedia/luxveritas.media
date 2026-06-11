@@ -97,6 +97,13 @@
         ]
       }
     ],
+    "redirects": [
+      {
+        "source": "/blackgpt-damon.html",
+        "destination": "/index.html",
+        "type": 301
+      }
+    ],
     "rewrites": [
       {
         "source": "/api/submit",

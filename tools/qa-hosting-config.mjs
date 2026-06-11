@@ -4,6 +4,7 @@ const issues = [];
 const config = JSON.parse(await readFile("firebase.json", "utf8"));
 const hosting = config.hosting || {};
 const headers = Array.isArray(hosting.headers) ? hosting.headers : [];
+const redirects = Array.isArray(hosting.redirects) ? hosting.redirects : [];
 const rewrites = Array.isArray(hosting.rewrites) ? hosting.rewrites : [];
 const ignores = Array.isArray(hosting.ignore) ? hosting.ignore : [];
 
@@ -64,6 +65,14 @@ for (const [source, functionId] of [
   if (rewrite?.function?.functionId !== functionId || rewrite.function.region !== "us-central1") {
     issues.push(`${source} rewrite expected ${functionId} in us-central1`);
   }
+}
+
+const oldInternalRouteRedirect = redirects.find((item) => item.source === "/blackgpt-damon.html");
+if (
+  oldInternalRouteRedirect?.destination !== "/index.html"
+  || oldInternalRouteRedirect.type !== 301
+) {
+  issues.push("hosting redirects must permanently send the old internal route to /index.html");
 }
 
 const fallback = rewrites.at(-1);
