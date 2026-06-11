@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260611-brand-house-readiness";
+const assetVersion = "20260611-boundary-hardening";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 
@@ -498,9 +498,9 @@ function gated(path, tier) {
   });
 }
 
-function blackgptDamon() {
+function privateSteward() {
   return shell({
-    path: "/blackgpt-damon.html",
+    path: "/private-steward.html",
     title: "Private Steward Layer | Lux Veritas",
     description: "Private Lux Veritas steward layer for approved internal access only.",
     noindex: true,
@@ -821,7 +821,7 @@ const pages = [
   ["/codex.html", codex()],
   ["/codex-inner.html", gated("/codex-inner.html", "Inner")],
   ["/codex-sanctum.html", gated("/codex-sanctum.html", "Sanctum")],
-  ["/blackgpt-damon.html", blackgptDamon()],
+  ["/private-steward.html", privateSteward()],
   ["/about.html", about()],
   ["/join.html", fanConversionPage({
     path: "/join.html",
@@ -999,7 +999,7 @@ Allow: /
 Sitemap: https://luxveritas.media/sitemap.xml
 Disallow: /codex-inner.html
 Disallow: /codex-sanctum.html
-Disallow: /blackgpt-damon.html
+Disallow: /private-steward.html
 Disallow: /auth/
 Disallow: /portal/
 Disallow: /brands/

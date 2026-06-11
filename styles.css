@@ -760,149 +760,10 @@ select option { color: var(--ink); }
 .consent-banner p { margin: 0; font-size: .92rem; }
 .consent-actions { display: flex; flex-wrap: wrap; gap: .6rem; }
 
-.damon-principle, .damon-dashboard { background: #08100e; }
-.damon-law-grid, .damon-metrics {
-  max-width: var(--max);
-  margin: 44px auto 0;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1px;
-  background: var(--line);
-}
-.damon-law-grid article, .damon-metrics article {
-  min-height: 230px;
-  background: #0b0f0e;
-  padding: 26px;
-}
-.damon-law-grid span, .damon-metrics span, .damon-panel > span {
-  display: block;
-  color: var(--gold);
-  text-transform: uppercase;
-  letter-spacing: .14em;
-  font-size: .72rem;
-  margin-bottom: .8rem;
-}
-.damon-law-grid strong {
-  display: block;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.35rem, 2vw, 1.85rem);
-  font-weight: 400;
-  line-height: 1.05;
-}
-.damon-workbench {
-  background:
-    linear-gradient(180deg, rgba(16,19,35,.92), rgba(6,8,7,.98)),
-    radial-gradient(circle at 88% 24%, rgba(200,168,106,.16), transparent 30rem);
-}
-.damon-console {
-  max-width: var(--wide);
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: minmax(300px, 430px) 1fr;
-  gap: 1px;
-  background: var(--line);
-}
-.damon-panel {
-  background: rgba(8,15,14,.96);
-  border: 1px solid rgba(243,238,228,.08);
-  padding: clamp(20px, 3vw, 32px);
-}
-.damon-controls h2 { font-size: clamp(2rem, 4.4vw, 4.2rem); }
-.damon-control-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-.damon-file-button {
-  position: relative;
-  overflow: hidden;
-}
-.damon-file-button input {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  cursor: pointer;
-}
-.damon-check { margin-top: .4rem; }
-.damon-note {
-  margin: 1.2rem 0 0;
-  color: rgba(243,238,228,.58);
-  font-size: .9rem;
-}
-.damon-output-stack {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1px;
-}
-.damon-panel-wide { grid-column: 1 / -1; }
-.damon-output-stack pre {
-  min-height: 230px;
-  max-height: 430px;
-  overflow: auto;
-  white-space: pre-wrap;
-  word-break: break-word;
-  margin: 0;
-  color: rgba(243,238,228,.78);
-  font: .82rem/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-}
-.damon-actions {
-  display: grid;
-  gap: .75rem;
-}
-.damon-action-row {
-  display: grid;
-  grid-template-columns: 42px 1fr;
-  gap: .85rem;
-  align-items: start;
-  border-top: 1px solid var(--line);
-  padding-top: .75rem;
-}
-.damon-action-row span {
-  color: var(--gold);
-  font-size: .78rem;
-}
-.damon-action-row p { margin: 0; font-size: .94rem; }
-.damon-metrics strong {
-  display: block;
-  color: var(--bone);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(2.8rem, 6vw, 5.5rem);
-  font-weight: 400;
-  line-height: .9;
-}
-.damon-graph {
-  max-width: var(--max);
-  margin: 38px auto 0;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1px;
-  background: rgba(200,168,106,.28);
-}
-.damon-graph div {
-  min-height: 150px;
-  display: grid;
-  align-content: center;
-  gap: .45rem;
-  background: #0b0f0e;
-  padding: 24px;
-}
-.damon-graph span {
-  color: var(--gold);
-  text-transform: uppercase;
-  letter-spacing: .14em;
-  font-size: .72rem;
-}
-.damon-graph strong {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.35rem, 2vw, 2rem);
-  font-weight: 400;
-}
-
 @media (max-width: 1050px) {
   .header-action { display: none; }
   .site-header { grid-template-columns: auto 1fr; }
   .house-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .damon-console, .damon-law-grid, .damon-metrics, .damon-graph { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 850px) {
   .nav-toggle { display: block; }
@@ -918,7 +779,7 @@ select option { color: var(--ink); }
     justify-content: flex-start;
   }
   .primary-nav.open { display: flex; }
-  .section-grid, .card-grid, .house-grid, .release-rail, .slate, .ops-grid, .portal-grid, .event-grid, .codex-list, .split-band, .cta-band, .site-footer, .consent-banner, .damon-console, .damon-law-grid, .damon-metrics, .damon-graph, .damon-output-stack, .damon-control-grid, .media-player-section, .media-player, .fan-signal-section, .fan-signal-panel, .report-grid, .report-detail, .report-list li {
+  .section-grid, .card-grid, .house-grid, .release-rail, .slate, .ops-grid, .portal-grid, .event-grid, .codex-list, .split-band, .cta-band, .site-footer, .consent-banner, .media-player-section, .media-player, .fan-signal-section, .fan-signal-panel, .report-grid, .report-detail, .report-list li {
     grid-template-columns: 1fr;
   }
   .fan-signal-tier, .fan-signal-latest {

@@ -5,7 +5,7 @@ const dist = "dist";
 const files = [
   "about.html",
   "app.js",
-  "blackgpt-damon.html",
+  "private-steward.html",
   "codex-inner.html",
   "codex-sanctum.html",
   "codex.html",

@@ -36,7 +36,7 @@ const noindexRoutes = [
   "portal/admin/users.html",
   "codex-inner.html",
   "codex-sanctum.html",
-  "blackgpt-damon.html",
+  "private-steward.html",
   "brands/index.html",
   "brands/sample.html",
   "investor.html",

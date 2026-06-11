@@ -91,7 +91,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add Lux ecosystem master seed.
 - [x] Link master seed into KYS binder index.
 - [ ] Review and upload seed/binder docs to Drive or a private internal repo; do not push them to public GitHub.
-- [ ] Confirm Google Drive upload set excludes secrets, local caches, and internal-only source materials.
+- [x] Confirm Google Drive upload set excludes secrets, local caches, and internal-only source materials.
 
 ## P5 - Portal Prep
 - [x] Keep Portal and Sign In as private-access shells.
@@ -99,7 +99,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Define access request interface before wiring any live services.
 - [x] Define screened intake routing map before wiring live services.
 - [x] Add QA gate for public access paths, inquiry keys, and portal-role targets.
-- [ ] Keep LuxOS/LuxFlow bridge deferred until Phase 7.
+- [x] Keep LuxOS/LuxFlow bridge deferred until Phase 7.
 
 ## P6 - QA
 - [x] Check public nav/footer source.
@@ -118,6 +118,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add public-site QA for Organization, WebSite, WebPage, and navigation JSON-LD.
 - [x] Add public web app manifest, install metadata, and live manifest QA.
 - [x] Add branded offline fallback and conservative service worker QA.
+- [x] Add product-boundary QA so public deploy artifacts do not expose internal LuxFlow/LuxOS material.
 - [x] Add private noindex local activity report for pilot testing.
 - [x] Add private noindex operator activity report for stored submissions and consented events.
 - [x] Add structured CTA, nav, link, and report-action tracking for consented engagement reporting.

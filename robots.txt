@@ -3,7 +3,7 @@ Allow: /
 Sitemap: https://luxveritas.media/sitemap.xml
 Disallow: /codex-inner.html
 Disallow: /codex-sanctum.html
-Disallow: /blackgpt-damon.html
+Disallow: /private-steward.html
 Disallow: /auth/
 Disallow: /portal/
 Disallow: /brands/
