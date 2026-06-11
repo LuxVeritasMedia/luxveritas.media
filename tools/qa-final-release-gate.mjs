@@ -6,6 +6,7 @@ const node = process.execPath;
 const allowBlockers = process.env.LUX_FINAL_ALLOW_BLOCKERS === "1";
 const skipBrowser = process.env.LUX_FINAL_SKIP_BROWSER === "1";
 const skipLive = process.env.LUX_FINAL_SKIP_LIVE === "1";
+const writeTests = process.env.LUX_FINAL_WRITE_TESTS === "1";
 
 const checks = [
   {
@@ -36,8 +37,25 @@ const checks = [
       LUX_PILOT_LIVE: skipLive ? "0" : "1",
       LUX_PILOT_STRICT: "1"
     }
-  }
-];
+  },
+  writeTests ? {
+    label: "Live Form Write Matrix",
+    script: "tools/qa-live-form-matrix.mjs",
+    env: {
+      LUX_FORM_MATRIX_WRITE: "1",
+      LUX_EXPECT_EMAIL_SENT: "1",
+      LUX_STRICT_LIVE_QA: "1"
+    }
+  } : null,
+  writeTests ? {
+    label: "Live Event Write Matrix",
+    script: "tools/qa-live-event-matrix.mjs",
+    env: {
+      LUX_EVENT_MATRIX_WRITE: "1",
+      LUX_STRICT_LIVE_QA: "1"
+    }
+  } : null
+].filter(Boolean);
 
 const failures = [];
 const passed = [];
@@ -74,18 +92,27 @@ async function runCheck(check) {
 console.log("Lux Veritas final release gate");
 console.log(`Browser coverage: ${skipBrowser ? "skipped" : "enabled"}`);
 console.log(`Live coverage: ${skipLive ? "skipped" : "enabled"}`);
+console.log(`Write tests: ${writeTests ? "enabled" : "disabled"}`);
 console.log(`Allow blockers: ${allowBlockers ? "yes" : "no"}`);
 
 for (const check of checks) {
   await runCheck(check);
 }
 
+if (!writeTests) {
+  failures.push({
+    label: "Final Write Tests",
+    output: "Set LUX_FINAL_WRITE_TESTS=1 for release approval. This enables real live form submissions with inbox delivery required and live event reporting writes."
+  });
+  console.log("FAIL Final Write Tests");
+}
+
 if (failures.length) {
-  console.error("");
-  console.error(`Final release gate found ${failures.length} blocking check(s):`);
+  console.log("");
+  console.log(`Final release gate found ${failures.length} blocking check(s):`);
   for (const failure of failures) {
-    console.error(`\n[${failure.label}]`);
-    console.error(failure.output);
+    console.log(`\n[${failure.label}]`);
+    console.log(failure.output);
   }
   if (!allowBlockers) process.exit(1);
 }
