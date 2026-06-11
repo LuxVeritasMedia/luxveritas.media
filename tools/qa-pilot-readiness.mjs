@@ -30,6 +30,7 @@ const checks = [
   includeBrowser ? ["Browser Flows", "tools/qa-browser-flows.mjs"] : null,
   includeLive ? ["Form Delivery", "tools/qa-form-delivery.mjs"] : null,
   includeLive ? ["Live Site", "tools/qa-live-site.mjs"] : null,
+  includeLive ? ["Live Product Boundary", "tools/qa-live-product-boundary.mjs"] : null,
   includeLive ? ["Domain Readiness", "tools/qa-domain-readiness.mjs"] : null,
   includeLive ? ["Provider Readiness", "tools/qa-provider-readiness.mjs"] : null,
   includeLive ? ["Release Readiness", "tools/qa-release-readiness.mjs"] : null
