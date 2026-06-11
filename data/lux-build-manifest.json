@@ -1,11 +1,11 @@
 {
   "schemaVersion": "luxveritas.build_manifest.v1",
-  "version": "20260611-boundary-hardening",
-  "assetVersion": "20260611-boundary-hardening",
+  "version": "20260611-report-gate-readiness",
+  "assetVersion": "20260611-report-gate-readiness",
   "mediaManifestVersion": "2026-06-10-mvp-media-preview",
   "publicTermsVersion": "2026-06-09-public-capture",
   "routeCount": 37,
   "publicRouteCount": 20,
-  "appScript": "app.js?v=20260611-boundary-hardening",
-  "stylesheet": "styles.css?v=20260611-boundary-hardening"
+  "appScript": "app.js?v=20260611-report-gate-readiness",
+  "stylesheet": "styles.css?v=20260611-report-gate-readiness"
 }

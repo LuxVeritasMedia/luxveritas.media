@@ -7,7 +7,7 @@ This packet tracks only the remaining public-release blockers for LuxVeritas.med
 ## Current Evidence
 
 - Apex site: `https://luxveritas.media` returns HTTP 200.
-- Live build version: `20260611-boundary-hardening`.
+- Live build version: `20260611-report-gate-readiness`.
 - Browser-flow pilot QA passes locally with form, media, and reporting paths.
 - Private handoff secret set is active for `firebase_handoff`.
 - Operator reporting token hash is configured.

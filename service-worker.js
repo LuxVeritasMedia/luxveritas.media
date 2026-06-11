@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260611-boundary-hardening";
+const CACHE_NAME = "luxveritas-static-20260611-report-gate-readiness";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260611-boundary-hardening",
-  "/app.js?v=20260611-boundary-hardening",
+  "/styles.css?v=20260611-report-gate-readiness",
+  "/app.js?v=20260611-report-gate-readiness",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"
