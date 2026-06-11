@@ -9,6 +9,7 @@ const requiredMobileSelectors = [
   ".primary-nav.open",
   ".section-grid",
   ".card-grid",
+  ".house-grid",
   ".release-rail",
   ".slate",
   ".ops-grid",

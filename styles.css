@@ -901,6 +901,7 @@ select option { color: var(--ink); }
 @media (max-width: 1050px) {
   .header-action { display: none; }
   .site-header { grid-template-columns: auto 1fr; }
+  .house-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .damon-console, .damon-law-grid, .damon-metrics, .damon-graph { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 850px) {

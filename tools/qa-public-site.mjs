@@ -174,6 +174,17 @@ for (const file of htmlFiles) {
     if (footer.join("|") !== expectedFooter.join("|")) issues.push(`index.html: footer mismatch: ${footer.join(" / ")}`);
   }
 
+  if (["index.html", "about.html"].includes(rel)) {
+    if (!html.includes("data-brand-house")) {
+      issues.push(`${rel}: missing public brand-house section`);
+    }
+    for (const mark of ["LVR", "LVS", "LVP", "LVL", "LVC", "LVA"]) {
+      if (!html.includes(`<span class="house-mark">${mark}</span>`)) {
+        issues.push(`${rel}: missing house mark ${mark}`);
+      }
+    }
+  }
+
   if (noindexRoutes.includes(rel) && !html.includes('name="robots" content="noindex, nofollow"')) {
     issues.push(`${rel}: expected noindex metadata`);
   }
