@@ -208,11 +208,21 @@ add(
   missingSources.length > 0 || (mediaGate?.status !== "blocked" && !/Attach approved/i.test(mediaGate?.nextAction || "")),
   "Media launch gate matches approved source readiness."
 );
+const privateHandoffGate = launchGateById.get("private_handoff");
+const operatorReportingGate = launchGateById.get("operator_reporting");
 
 if (liveDelivery) {
   add(liveDelivery.emailProviderConfigured === true, "Inbox notification provider configured.");
   add(liveDelivery.integrationConfigured === true && liveDelivery.integrationTargetConfigured === true, "Private integration endpoint configured.");
   add(liveDelivery.operatorTokenConfigured === true, "Operator report token configured.");
+  add(
+    liveDelivery.integrationConfigured !== true || privateHandoffGate?.status === "ready",
+    "Private handoff launch gate matches provider readiness."
+  );
+  add(
+    liveDelivery.operatorTokenConfigured !== true || operatorReportingGate?.status === "ready",
+    "Operator reporting launch gate matches provider readiness."
+  );
 } else {
   const inboxStatus = providerSecretValueStatus.RESEND_API_KEY;
   const integrationUrlStatus = providerSecretValueStatus.FORM_INTEGRATION_URL;
@@ -229,6 +239,14 @@ if (liveDelivery) {
   add(
     operatorTokenStatus?.ok === true,
     `Operator report token configured${operatorTokenStatus?.detail ? ` (${operatorTokenStatus.detail})` : ""}.`
+  );
+  add(
+    !(integrationUrlStatus?.ok === true && integrationTargetStatus?.ok === true) || privateHandoffGate?.status === "ready",
+    "Private handoff launch gate matches provider readiness."
+  );
+  add(
+    operatorTokenStatus?.ok !== true || operatorReportingGate?.status === "ready",
+    "Operator reporting launch gate matches provider readiness."
   );
 }
 add(legalReview.schemaVersion === "luxveritas.legal_review.v1", "Legal review manifest schema version is current.");
