@@ -41,7 +41,7 @@ These are the known blockers before calling the site public-launch ready.
 5. Terms page needs legal/business approval.
 6. External CRM/Google workflow target may be selected after the private workflow is approved. The signed Firebase private handoff is already active for the MVP intake queue.
 
-Use `docs/launch-blocker-resolution.md` as the operational closeout packet for the remaining release blockers.
+Use `docs/launch-blocker-resolution.md` as the operational closeout packet for the remaining release blockers. Use `docs/legal-review-packet.md` for Privacy and Terms review.
 
 ## Required Commands
 

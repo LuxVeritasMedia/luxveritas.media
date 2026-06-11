@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 const issues = [];
 const handoff = await readFile("docs/production-release-handoff.md", "utf8");
 const blockerResolution = await readFile("docs/launch-blocker-resolution.md", "utf8");
+const legalReviewPacket = await readFile("docs/legal-review-packet.md", "utf8");
 const todo = await readFile("TODO.md", "utf8");
 const buildManifest = JSON.parse(await readFile("data/lux-build-manifest.json", "utf8"));
 
@@ -31,6 +32,10 @@ for (const marker of [
   if (!handoff.includes(marker)) issue(`production-release-handoff.md missing marker: ${marker}`);
 }
 
+if (!handoff.includes("Use `docs/legal-review-packet.md` for Privacy and Terms review.")) {
+  issue("production-release-handoff.md missing legal review packet pointer");
+}
+
 for (const marker of [
   "docs/launch-blocker-resolution.md",
   "www Domain",
@@ -56,8 +61,24 @@ for (const marker of [
 }
 
 for (const marker of [
+  "/legal/privacy.html",
+  "/legal/terms.html",
+  "data/lux-legal-review.json",
+  "data/lux-public-terms.json",
+  "Privacy Checklist",
+  "Terms Checklist",
+  "LUX_LEGAL_REVIEW_ITEM=privacy",
+  "LUX_LEGAL_REVIEW_ITEM=terms"
+]) {
+  if (!legalReviewPacket.includes(marker)) {
+    issue(`docs/legal-review-packet.md missing marker: ${marker}`);
+  }
+}
+
+for (const marker of [
   "Configure www.luxveritas.media DNS and Hosting redirect",
   "Configure and verify email provider runtime secret `RESEND_API_KEY`",
+  "Add legal review packet for Privacy and Terms approval",
   "Legal review: Privacy",
   "Legal review: Terms",
   "Configure approved external CRM/Google workflow target"

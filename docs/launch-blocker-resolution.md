@@ -7,7 +7,7 @@ This packet tracks only the remaining public-release blockers for LuxVeritas.med
 ## Current Evidence
 
 - Apex site: `https://luxveritas.media` returns HTTP 200.
-- Live build version: `20260611-brand-house-readiness`.
+- Live build version: `20260611-boundary-hardening`.
 - Browser-flow pilot QA passes locally with form, media, and reporting paths.
 - Private handoff secret set is active for `firebase_handoff`.
 - Operator reporting token hash is configured.
@@ -85,7 +85,8 @@ Actions:
 
 1. Review `/legal/privacy.html` against actual data practices.
 2. Confirm capture, analytics, events, purchases, submissions, memberships, creator participation, and contact language is acceptable.
-3. Mark approval only after the responsible legal or business reviewer accepts it:
+3. Use `docs/legal-review-packet.md` as the review checklist.
+4. Mark approval only after the responsible legal or business reviewer accepts it:
 
 ```bash
 LUX_LEGAL_REVIEW_ITEM=privacy LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY="Reviewer Name" node tools/set-legal-review-status.mjs
@@ -111,7 +112,8 @@ Actions:
 
 1. Review `/legal/terms.html` against actual site behavior.
 2. Confirm submission, membership, events, purchases, user content, creator participation, licensing, refunds/cancellations, and contact language is acceptable.
-3. Mark approval only after the responsible legal or business reviewer accepts it:
+3. Use `docs/legal-review-packet.md` as the review checklist.
+4. Mark approval only after the responsible legal or business reviewer accepts it:
 
 ```bash
 LUX_LEGAL_REVIEW_ITEM=terms LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY="Reviewer Name" node tools/set-legal-review-status.mjs
@@ -149,4 +151,3 @@ firebase deploy --only hosting --project lux-veritas-media
 node tools/qa-live-site.mjs
 curl -sS https://luxveritas.media/data/lux-build-manifest.json
 ```
-
