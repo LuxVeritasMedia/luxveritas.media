@@ -93,7 +93,9 @@ for (const marker of [
   "lux-build-manifest.json",
   "actions/workflows",
   "origin/main",
-  "LUX_DEPLOY_STATUS_STRICT"
+  "LUX_DEPLOY_STATUS_STRICT",
+  "LUX_DEPLOY_ACTIVE_MAX_MINUTES",
+  "minutesSince"
 ]) {
   if (!deployStatus.includes(marker)) issues.push(`qa-deploy-status.mjs: missing ${marker}`);
 }

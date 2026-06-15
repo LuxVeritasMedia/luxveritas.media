@@ -7,6 +7,7 @@ const strict = process.env.LUX_DEPLOY_STATUS_STRICT === "1";
 const repo = process.env.LUX_GITHUB_REPO || "LuxVeritasMedia/luxveritas.media";
 const workflow = process.env.LUX_GITHUB_WORKFLOW || "firebase-hosting-live.yml";
 const baseUrl = (process.env.LUX_LIVE_URL || "https://luxveritas.media").replace(/\/$/, "");
+const maxActiveRunAgeMinutes = Number(process.env.LUX_DEPLOY_ACTIVE_MAX_MINUTES || "30");
 const issues = [];
 const warnings = [];
 const passed = [];
@@ -67,6 +68,12 @@ function runSummary(run) {
   return `${run.status}${run.conclusion ? `/${run.conclusion}` : ""} #${run.run_number || "?"} ${String(run.head_sha || "").slice(0, 7)}`;
 }
 
+function minutesSince(value) {
+  const time = Date.parse(value || "");
+  if (!Number.isFinite(time)) return null;
+  return Math.max(0, Math.round((Date.now() - time) / 60000));
+}
+
 console.log("Lux Veritas deploy status");
 
 const [localSha, remoteSha, buildScript] = await Promise.all([
@@ -102,9 +109,16 @@ try {
     }
 
     if (latestRun.status === "completed" && latestRun.conclusion === "success") {
-      pass(`latest hosting workflow completed successfully: ${runUrl}`);
+      const completedAge = minutesSince(latestRun.updated_at || latestRun.run_started_at || latestRun.created_at);
+      pass(`latest hosting workflow completed successfully${completedAge === null ? "" : ` ${completedAge} minute(s) ago`}: ${runUrl}`);
     } else if (latestRun.status === "in_progress" || latestRun.status === "queued") {
-      warn(`latest hosting workflow is still ${latestRun.status}: ${runUrl}`);
+      const activeAge = minutesSince(latestRun.run_started_at || latestRun.created_at);
+      const ageText = activeAge === null ? "unknown age" : `${activeAge} minute(s) old`;
+      if (activeAge !== null && activeAge > maxActiveRunAgeMinutes) {
+        issue(`latest hosting workflow is still ${latestRun.status} after ${ageText} (limit ${maxActiveRunAgeMinutes}): ${runUrl}`);
+      } else {
+        warn(`latest hosting workflow is still ${latestRun.status} (${ageText}): ${runUrl}`);
+      }
     } else {
       issue(`latest hosting workflow is ${latestRun.status}/${latestRun.conclusion || "none"}: ${runUrl}`);
     }

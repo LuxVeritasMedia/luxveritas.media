@@ -33,6 +33,8 @@ node tools/qa-deploy-status.mjs
 
 This compares local `HEAD`, `origin/main`, the latest public GitHub Actions Hosting run, and `/data/lux-build-manifest.json` on `luxveritas.media`. Use it when a local build is green but the live site appears stale.
 
+If the latest Hosting workflow is queued or in progress, the deploy-status check reports its age and treats it as a blocker after 30 minutes. Override the threshold for long manual audits with `LUX_DEPLOY_ACTIVE_MAX_MINUTES=60`.
+
 Before launch-day operations, check the local operator machine:
 
 ```bash
