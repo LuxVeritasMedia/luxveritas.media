@@ -32,6 +32,9 @@ jobs:
       - name: QA release handoff
         run: node tools/qa-release-handoff.mjs
 
+      - name: QA launch blockers
+        run: node tools/qa-launch-blockers.mjs
+
       - name: QA workflows
         run: node tools/qa-workflows.mjs
 
