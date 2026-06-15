@@ -159,6 +159,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add final launch runbook for DNS, inbox, legal, write tests, and gate approval.
 - [x] Add manual GitHub final-release audit workflow for non-writing blocker review.
 - [x] Add launch-blocker sync QA for gate, TODO, handoff, and runbook drift.
+- [x] Add local operator-environment QA for launch machine readiness.
 - [x] Add no-cache hosting policy for the service worker.
 
 ## P7 - Media MVP

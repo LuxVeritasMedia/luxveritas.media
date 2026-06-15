@@ -33,6 +33,14 @@ node tools/qa-deploy-status.mjs
 
 This compares local `HEAD`, `origin/main`, the latest public GitHub Actions Hosting run, and `/data/lux-build-manifest.json` on `luxveritas.media`. Use it when a local build is green but the live site appears stale.
 
+Before launch-day operations, check the local operator machine:
+
+```bash
+node tools/qa-operator-environment.mjs
+```
+
+This no-secret check confirms the repo, Node runtime, Firebase CLI, Firebase login/project visibility, optional GitHub CLI, live asset version pointer, and local preview port. Use `LUX_OPERATOR_ENV_STRICT=1` only when machine setup warnings or blockers should fail the command.
+
 Firebase Hosting serves the static site and rewrites:
 
 - `/api/submit` to the Firebase Function `submitForm`

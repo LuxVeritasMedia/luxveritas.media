@@ -13,9 +13,10 @@ Use this only when moving from pilot-ready to public-release ready. Keep secrets
 
 ## Launch Order
 
-1. Confirm the repo and live site are aligned:
+1. Confirm this operator machine is ready, then confirm the repo and live site are aligned:
 
 ```bash
+node tools/qa-operator-environment.mjs
 git status --short --branch
 node tools/qa-deploy-status.mjs
 ```

@@ -48,6 +48,7 @@ Use `docs/launch-blocker-resolution.md` as the operational closeout packet for t
 Run these before launch review:
 
 ```bash
+node tools/qa-operator-environment.mjs
 firebase login --reauth
 node tools/qa-provider-readiness.mjs
 node tools/qa-domain-readiness.mjs
