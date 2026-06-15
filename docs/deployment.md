@@ -57,6 +57,14 @@ Validate the report contract before relying on it in a launch handoff:
 node tools/qa-mvp-status.mjs
 ```
 
+Run the local MVP preflight when you want one no-secret command for operator environment, deploy status, launch-blocker sync, MVP status, and release-readiness signals:
+
+```bash
+node tools/qa-mvp-preflight.mjs
+```
+
+Use `LUX_MVP_PREFLIGHT_STRICT=1` only when known launch blockers should fail the command.
+
 Firebase Hosting serves the static site and rewrites:
 
 - `/api/submit` to the Firebase Function `submitForm`
