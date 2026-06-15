@@ -41,6 +41,14 @@ node tools/qa-operator-environment.mjs
 
 This no-secret check confirms the repo, Node runtime, Firebase CLI, Firebase login/project visibility, optional GitHub CLI, live asset version pointer, and local preview port. Use `LUX_OPERATOR_ENV_STRICT=1` only when machine setup warnings or blockers should fail the command.
 
+For a no-secret snapshot of the MVP status, live asset version, legal status, media readiness, and active launch blockers:
+
+```bash
+node tools/report-mvp-status.mjs
+```
+
+Use `LUX_MVP_STATUS_JSON=1` when another operator or automation needs structured output. Use `LUX_MVP_STATUS_STRICT=1` only when active public-launch blockers should fail the command.
+
 Firebase Hosting serves the static site and rewrites:
 
 - `/api/submit` to the Firebase Function `submitForm`

@@ -17,6 +17,7 @@ Use this only when moving from pilot-ready to public-release ready. Keep secrets
 
 ```bash
 node tools/qa-operator-environment.mjs
+node tools/report-mvp-status.mjs
 git status --short --branch
 node tools/qa-deploy-status.mjs
 ```

@@ -49,6 +49,7 @@ Run these before launch review:
 
 ```bash
 node tools/qa-operator-environment.mjs
+node tools/report-mvp-status.mjs
 firebase login --reauth
 node tools/qa-provider-readiness.mjs
 node tools/qa-domain-readiness.mjs
