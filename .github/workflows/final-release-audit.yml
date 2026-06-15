@@ -35,6 +35,9 @@ jobs:
       - name: QA launch blockers
         run: node tools/qa-launch-blockers.mjs
 
+      - name: QA MVP status
+        run: node tools/qa-mvp-status.mjs
+
       - name: QA workflows
         run: node tools/qa-workflows.mjs
 

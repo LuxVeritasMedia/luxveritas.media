@@ -49,6 +49,12 @@ node tools/report-mvp-status.mjs
 
 Use `LUX_MVP_STATUS_JSON=1` when another operator or automation needs structured output. Use `LUX_MVP_STATUS_STRICT=1` only when active public-launch blockers should fail the command.
 
+Validate the report contract before relying on it in a launch handoff:
+
+```bash
+node tools/qa-mvp-status.mjs
+```
+
 Firebase Hosting serves the static site and rewrites:
 
 - `/api/submit` to the Firebase Function `submitForm`

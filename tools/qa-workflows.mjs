@@ -18,6 +18,7 @@ for (const marker of [
   "node tools/qa-integration-profiles.mjs",
   "node tools/qa-release-handoff.mjs",
   "node tools/qa-launch-blockers.mjs",
+  "node tools/qa-mvp-status.mjs",
   "node tools/qa-media-contract.mjs",
   "node tools/qa-fan-signal.mjs",
   "node tools/qa-mobile-layout.mjs",
@@ -77,6 +78,7 @@ for (const marker of [
   "node tools/prepare-hosting.mjs",
   "node tools/qa-release-handoff.mjs",
   "node tools/qa-launch-blockers.mjs",
+  "node tools/qa-mvp-status.mjs",
   "node tools/qa-workflows.mjs",
   "LUX_FINAL_ALLOW_BLOCKERS=1 LUX_FINAL_SKIP_BROWSER=1 LUX_FINAL_SKIP_LIVE=1 node tools/qa-final-release-gate.mjs"
 ]) {
