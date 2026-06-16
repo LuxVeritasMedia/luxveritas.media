@@ -75,6 +75,8 @@ LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs
 
 Do not use `LUX_FINAL_SKIP_BROWSER=1` or `LUX_FINAL_SKIP_LIVE=1` for release approval. Those flags are only for faster local audits.
 
+The final release gate includes the no-secret operator-environment, MVP status, and MVP preflight checks before strict release checks. Use those sections as the launch operator's first read on local machine readiness, live asset alignment, and known blocker status.
+
 After legal approval:
 
 ```bash

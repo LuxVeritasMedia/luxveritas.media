@@ -7,6 +7,7 @@ const legalReviewPacket = await readFile("docs/legal-review-packet.md", "utf8");
 const finalLaunchRunbook = await readFile("docs/final-launch-runbook.md", "utf8");
 const todo = await readFile("TODO.md", "utf8");
 const buildManifest = JSON.parse(await readFile("data/lux-build-manifest.json", "utf8"));
+const finalGate = await readFile("tools/qa-final-release-gate.mjs", "utf8");
 
 function issue(message) {
   issues.push(message);
@@ -102,6 +103,25 @@ for (const marker of [
 ]) {
   if (!finalLaunchRunbook.includes(marker)) {
     issue(`docs/final-launch-runbook.md missing marker: ${marker}`);
+  }
+}
+
+for (const marker of [
+  "Operator Environment",
+  "tools/qa-operator-environment.mjs",
+  "MVP Status",
+  "tools/qa-mvp-status.mjs",
+  "MVP Preflight",
+  "tools/qa-mvp-preflight.mjs",
+  "Deploy Status",
+  "Domain Readiness",
+  "Provider Readiness",
+  "Release Readiness",
+  "Full Pilot Readiness",
+  "Final Write Tests"
+]) {
+  if (!finalGate.includes(marker)) {
+    issue(`tools/qa-final-release-gate.mjs missing marker: ${marker}`);
   }
 }
 

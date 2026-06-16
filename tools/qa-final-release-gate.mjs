@@ -10,6 +10,21 @@ const writeTests = process.env.LUX_FINAL_WRITE_TESTS === "1";
 
 const checks = [
   {
+    label: "Operator Environment",
+    script: "tools/qa-operator-environment.mjs",
+    env: {}
+  },
+  {
+    label: "MVP Status",
+    script: "tools/qa-mvp-status.mjs",
+    env: {}
+  },
+  {
+    label: "MVP Preflight",
+    script: "tools/qa-mvp-preflight.mjs",
+    env: { LUX_MVP_PREFLIGHT_STRICT: "1" }
+  },
+  {
     label: "Deploy Status",
     script: "tools/qa-deploy-status.mjs",
     env: { LUX_DEPLOY_STATUS_STRICT: "1" }
@@ -66,7 +81,7 @@ function compactOutput(output) {
     .map((line) => line.trimEnd())
     .filter((line) => (
       line
-      && /^(BLOCK|FAIL|WARN|- |Launch blockers|Release readiness|Provider readiness|Domain readiness|Deploy status|Pilot readiness|Run with|Checks with warnings)/i.test(line)
+      && /^(BLOCK|FAIL|WARN|- |Launch blockers|Release readiness|Provider readiness|Domain readiness|Deploy status|Pilot readiness|Operator environment|MVP status|MVP preflight|Preflight|Run with|Checks with warnings)/i.test(line)
     ))
     .slice(-30)
     .join("\n");
