@@ -10,6 +10,18 @@ Machine-readable closeout tracking lives in `data/lux-launch-closeout.json`. Val
 node tools/qa-launch-closeout.mjs
 ```
 
+After a blocker is actually resolved, update the no-secret closeout tracker with an evidence reference only:
+
+```bash
+LUX_CLOSEOUT_ITEM=www_redirect \
+LUX_CLOSEOUT_STATUS=closed \
+LUX_CLOSEOUT_BY="Reviewer Name" \
+LUX_CLOSEOUT_EVIDENCE="Launch evidence packet 2026-06-16" \
+node tools/set-launch-closeout-status.mjs
+```
+
+Use `LUX_CLOSEOUT_DRY_RUN=1` to validate a closeout update without writing. Do not store credentials, provider keys, private tokens, screenshots with secrets, legal advice, or private report exports in the closeout file.
+
 ## Current Evidence
 
 - Apex site: `https://luxveritas.media` returns HTTP 200.
@@ -42,6 +54,7 @@ Acceptance:
 
 - `node tools/qa-domain-readiness.mjs` reports no blockers.
 - `https://www.luxveritas.media` returns HTTP 200 or an HTTPS redirect to `https://luxveritas.media`.
+- `data/lux-launch-closeout.json` marks `www_redirect` closed with a no-secret evidence reference.
 
 ## Blocker 2 - Inbox Provider
 
@@ -82,6 +95,7 @@ Acceptance:
 - Provider readiness no longer reports the `RESEND_API_KEY` offline sentinel.
 - Live form matrix write test reports inbox delivery.
 - Pending stored submissions can be replayed by an approved operator.
+- `data/lux-launch-closeout.json` marks `inbox_notifications` closed with a no-secret evidence reference.
 
 ## Blocker 3 - Privacy Approval
 
@@ -109,6 +123,7 @@ Acceptance:
 
 - `data/lux-legal-review.json` has Privacy status `approved`, with `reviewedAt` and `reviewedBy`.
 - Release readiness no longer reports Privacy as a blocker.
+- `data/lux-launch-closeout.json` marks `privacy_review` closed with a no-secret evidence reference.
 
 ## Blocker 4 - Terms Approval
 
@@ -136,6 +151,7 @@ Acceptance:
 
 - `data/lux-legal-review.json` has Terms status `approved`, with `reviewedAt` and `reviewedBy`.
 - Release readiness no longer reports Terms as a blocker.
+- `data/lux-launch-closeout.json` marks `terms_review` closed with a no-secret evidence reference.
 
 ## Final Launch Gate
 

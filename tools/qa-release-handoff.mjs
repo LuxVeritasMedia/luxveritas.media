@@ -53,6 +53,7 @@ for (const marker of [
   "docs/launch-blocker-resolution.md",
   "data/lux-launch-closeout.json",
   "node tools/qa-launch-closeout.mjs",
+  "node tools/set-launch-closeout-status.mjs",
   "www Domain",
   "Inbox Provider",
   "Privacy Approval",

@@ -6,6 +6,7 @@ const [closeoutRaw, readinessRaw, docs] = await Promise.all([
   readFile("data/lux-launch-readiness.json", "utf8"),
   readFile("docs/launch-blocker-resolution.md", "utf8")
 ]);
+const setter = await readFile("tools/set-launch-closeout-status.mjs", "utf8");
 
 const closeout = JSON.parse(closeoutRaw);
 const readiness = JSON.parse(readinessRaw);
@@ -64,9 +65,23 @@ for (const marker of [
   "Terms Approval",
   "node tools/qa-domain-readiness.mjs",
   "node tools/qa-provider-readiness.mjs",
-  "node tools/qa-release-readiness.mjs"
+  "node tools/qa-release-readiness.mjs",
+  "node tools/set-launch-closeout-status.mjs",
+  "LUX_CLOSEOUT_ITEM=www_redirect",
+  "LUX_CLOSEOUT_DRY_RUN=1"
 ]) {
   if (!docs.includes(marker)) issue(`launch blocker docs missing marker: ${marker}`);
+}
+
+for (const marker of [
+  "LUX_CLOSEOUT_ITEM",
+  "LUX_CLOSEOUT_STATUS",
+  "LUX_CLOSEOUT_EVIDENCE",
+  "LUX_CLOSEOUT_BY",
+  "LUX_CLOSEOUT_DRY_RUN",
+  "luxveritas.launch_closeout.v1"
+]) {
+  if (!setter.includes(marker)) issue(`set-launch-closeout-status.mjs missing marker: ${marker}`);
 }
 
 const rawCombined = `${closeoutRaw}\n${docs}`;

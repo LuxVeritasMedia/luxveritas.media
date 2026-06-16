@@ -85,6 +85,18 @@ Validate the no-secret closeout tracker for the four remaining public-launch blo
 node tools/qa-launch-closeout.mjs
 ```
 
+When a blocker is resolved, update the no-secret closeout tracker with an evidence reference:
+
+```bash
+LUX_CLOSEOUT_ITEM=www_redirect \
+LUX_CLOSEOUT_STATUS=closed \
+LUX_CLOSEOUT_BY="Reviewer Name" \
+LUX_CLOSEOUT_EVIDENCE="Launch evidence packet 2026-06-16" \
+node tools/set-launch-closeout-status.mjs
+```
+
+Use `LUX_CLOSEOUT_DRY_RUN=1` to validate without writing. Keep credentials, private report tokens, provider keys, screenshots with secrets, and legal advice out of `data/lux-launch-closeout.json`.
+
 Firebase Hosting serves the static site and rewrites:
 
 - `/api/submit` to the Firebase Function `submitForm`
