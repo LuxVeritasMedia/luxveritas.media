@@ -22,6 +22,8 @@ node tools/set-launch-closeout-status.mjs
 
 Use `LUX_CLOSEOUT_DRY_RUN=1` to validate a closeout update without writing. Do not store credentials, provider keys, private tokens, screenshots with secrets, legal advice, or private report exports in the closeout file.
 
+Launch readiness and closeout status must stay in sync: a closeout item cannot be marked closed while its launch gate is still blocked, and a launch gate should not be marked ready while its closeout item remains open.
+
 ## Current Evidence
 
 - Apex site: `https://luxveritas.media` returns HTTP 200.

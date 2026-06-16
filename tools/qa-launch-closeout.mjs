@@ -48,6 +48,13 @@ for (const item of items) {
   if (!Array.isArray(item.commands) || !item.commands.length) {
     issue(`${item.id}: commands must be present`);
   }
+  const gate = gatesById.get(item.gateId);
+  if (gate?.status === "blocked" && item.status === "closed") {
+    issue(`${item.id}: closeout cannot be closed while launch readiness gate is blocked`);
+  }
+  if (gate?.status === "ready" && item.status !== "closed") {
+    issue(`${item.id}: closeout must be closed after launch readiness gate is ready`);
+  }
   if (item.status === "closed") {
     if (!item.closedAt || !item.closedBy || !item.evidenceReference) {
       issue(`${item.id}: closed items require closedAt, closedBy, and evidenceReference`);
@@ -68,7 +75,8 @@ for (const marker of [
   "node tools/qa-release-readiness.mjs",
   "node tools/set-launch-closeout-status.mjs",
   "LUX_CLOSEOUT_ITEM=www_redirect",
-  "LUX_CLOSEOUT_DRY_RUN=1"
+  "LUX_CLOSEOUT_DRY_RUN=1",
+  "Launch readiness and closeout status must stay in sync"
 ]) {
   if (!docs.includes(marker)) issue(`launch blocker docs missing marker: ${marker}`);
 }
