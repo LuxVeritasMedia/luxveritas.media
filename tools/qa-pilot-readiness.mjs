@@ -23,6 +23,7 @@ const checks = [
   ["Legal Review Packet", "tools/qa-legal-review-packet.mjs"],
   ["Launch Blockers", "tools/qa-launch-blockers.mjs"],
   ["MVP Status", "tools/qa-mvp-status.mjs"],
+  ["Launch Evidence", "tools/qa-launch-evidence.mjs"],
   ["Release Handoff", "tools/qa-release-handoff.mjs"],
   ["Media Contract", "tools/qa-media-contract.mjs"],
   ["Fan Signal", "tools/qa-fan-signal.mjs"],

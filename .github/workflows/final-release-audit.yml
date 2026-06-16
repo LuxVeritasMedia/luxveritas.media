@@ -38,6 +38,9 @@ jobs:
       - name: QA MVP status
         run: node tools/qa-mvp-status.mjs
 
+      - name: QA launch evidence
+        run: node tools/qa-launch-evidence.mjs
+
       - name: QA workflows
         run: node tools/qa-workflows.mjs
 
