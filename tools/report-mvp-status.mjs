@@ -79,6 +79,7 @@ function line(label, value) {
 const [
   buildManifestRaw,
   launchRaw,
+  closeoutRaw,
   legalRaw,
   mediaRaw,
   publicTermsRaw,
@@ -91,6 +92,7 @@ const [
 ] = await Promise.all([
   readFile("data/lux-build-manifest.json", "utf8"),
   readFile("data/lux-launch-readiness.json", "utf8"),
+  readFile("data/lux-launch-closeout.json", "utf8"),
   readFile("data/lux-legal-review.json", "utf8"),
   readFile("data/lux-media-manifest.json", "utf8"),
   readFile("data/lux-public-terms.json", "utf8"),
@@ -104,12 +106,20 @@ const [
 
 const buildManifest = JSON.parse(buildManifestRaw);
 const launch = JSON.parse(launchRaw);
+const closeout = JSON.parse(closeoutRaw);
 const legalReview = JSON.parse(legalRaw);
 const mediaManifest = JSON.parse(mediaRaw);
 const publicTerms = JSON.parse(publicTermsRaw);
 const gates = Array.isArray(launch.gates) ? launch.gates : [];
+const closeoutItems = Array.isArray(closeout.items) ? closeout.items : [];
 const readyGates = gates.filter((gate) => gate.status === "ready");
 const blockedGates = gates.filter((gate) => gate.requiredForPublicLaunch === true && gate.status === "blocked");
+const closeoutByStatus = closeoutItems.reduce((counts, item) => {
+  const status = item.status || "unknown";
+  counts[status] = (counts[status] || 0) + 1;
+  return counts;
+}, {});
+const closedCloseoutItems = closeoutItems.filter((item) => item.status === "closed");
 const phaseLine = todo.split("\n").find((item) => item.startsWith("Current phase:")) || "";
 const media = summarizeMedia(mediaManifest);
 const liveVersion = liveManifest.ok
@@ -159,6 +169,20 @@ const report = {
       verification: gate.verification
     }))
   },
+  closeout: {
+    updatedAt: closeout.updatedAt || "",
+    byStatus: closeoutByStatus,
+    items: closeoutItems.map((item) => ({
+      id: item.id,
+      gateId: item.gateId,
+      label: item.label,
+      status: item.status,
+      owner: item.owner,
+      evidenceReference: item.evidenceReference || "",
+      closedAt: item.closedAt || "",
+      closedBy: item.closedBy || ""
+    }))
+  },
   operatorIssues,
   decision: blockedGates.length
     ? "pilot-ready-with-public-launch-blockers"
@@ -180,6 +204,7 @@ if (jsonMode) {
   line("Media", `${media.itemCount} item(s), missing required sources: ${media.missingRequiredSources.length ? media.missingRequiredSources.join(", ") : "none"}`);
   line("Legal", `privacy=${report.legal.privacy.status}, terms=${report.legal.terms.status}`);
   line("Launch gates", `${readyGates.length} ready, ${blockedGates.length} blocked`);
+  line("Closeout", `${closedCloseoutItems.length} closed, ${closeoutItems.length - closedCloseoutItems.length} open or blocked`);
   if (operatorIssues.length) {
     console.log("");
     console.log("Operator attention:");

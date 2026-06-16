@@ -86,6 +86,25 @@ if (report) {
     }
   }
 
+  const closeoutItems = Array.isArray(report.closeout?.items) ? report.closeout.items : [];
+  if (!report.closeout?.updatedAt) issue("closeout updatedAt missing");
+  if (!closeoutItems.length) issue("closeout items missing from MVP status report");
+  const closeoutIds = new Set(closeoutItems.map((item) => item.id));
+  for (const id of requiredBlockedGateIds) {
+    if (!closeoutIds.has(id)) issue(`closeout item ${id} missing from MVP status report`);
+  }
+  for (const item of closeoutItems) {
+    if (!item.label || !item.owner || !item.gateId || !item.status) {
+      issue(`closeout item ${item.id || "unknown"} lacks label, owner, gateId, or status`);
+    }
+    if (item.status === "closed" && (!item.evidenceReference || !item.closedAt || !item.closedBy)) {
+      issue(`closed closeout item ${item.id || "unknown"} lacks evidenceReference, closedAt, or closedBy`);
+    }
+  }
+  if (!report.closeout?.byStatus || typeof report.closeout.byStatus !== "object") {
+    issue("closeout byStatus summary missing");
+  }
+
   const allowedDecisions = new Set([
     "pilot-ready-with-public-launch-blockers",
     "operator-attention-needed-before-final-gate",

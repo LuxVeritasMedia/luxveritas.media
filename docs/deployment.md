@@ -49,7 +49,7 @@ For a no-secret snapshot of the MVP status, live asset version, legal status, me
 node tools/report-mvp-status.mjs
 ```
 
-Use `LUX_MVP_STATUS_JSON=1` when another operator or automation needs structured output. Use `LUX_MVP_STATUS_STRICT=1` only when active public-launch blockers should fail the command.
+The status report also includes the no-secret launch closeout tracker so DNS, inbox, Privacy, and Terms closeout progress appears in the same operator snapshot. Use `LUX_MVP_STATUS_JSON=1` when another operator or automation needs structured output. Use `LUX_MVP_STATUS_STRICT=1` only when active public-launch blockers should fail the command.
 
 Validate the report contract before relying on it in a launch handoff:
 
