@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260611-report-gate-readiness";
+const assetVersion = "20260616-closeout-report";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 
@@ -699,6 +699,13 @@ function portalReport() {
           <p class="kicker">Launch Gates</p>
           <h3 data-launch-readiness-summary>Checking launch gate status...</h3>
           <ul class="report-list" data-launch-readiness-list><li>Checking launch gates.</li></ul>
+        </div>
+      </div>
+      <div class="report-detail">
+        <div>
+          <p class="kicker">Closeout</p>
+          <h3 data-launch-closeout-summary>Checking closeout status...</h3>
+          <ul class="report-list" data-launch-closeout-list><li>Checking launch closeout.</li></ul>
         </div>
       </div>
       <div class="report-detail">

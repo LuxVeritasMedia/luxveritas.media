@@ -149,6 +149,8 @@ The activity report function:
 
 The private reporting page also loads `data/lux-launch-readiness.json`, `data/lux-legal-review.json`, and the public media manifest to render Launch Gates. This gives operators a browser-visible view of remaining public-launch blockers: media sources, inbox notifications, private handoff, legal review, and domain redirect status.
 
+The private reporting page also loads a sanitized public closeout view at `/data/lux-launch-closeout-public.json`. The deploy artifact generates this from `data/lux-launch-closeout.json` without operator commands, required-evidence internals, provider secrets, or private report exports.
+
 The public media manifest uses `luxveritas.media_manifest.v1`. Each media item carries source status, source-required, source type, reporting key, queued CTA, and fallback form path so listen/watch/radio intent can be reported even before approved media URLs are attached.
 
 The public build manifest uses `luxveritas.build_manifest.v1` and is deployed at `/data/lux-build-manifest.json`. It records the active asset version, app script URL, stylesheet URL, media manifest version, public terms version, and route counts so live-site diagnostics can confirm production is serving the intended build.

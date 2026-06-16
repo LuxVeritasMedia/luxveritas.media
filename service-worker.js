@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260611-report-gate-readiness";
+const CACHE_NAME = "luxveritas-static-20260616-closeout-report";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260611-report-gate-readiness",
-  "/app.js?v=20260611-report-gate-readiness",
+  "/styles.css?v=20260616-closeout-report",
+  "/app.js?v=20260616-closeout-report",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"

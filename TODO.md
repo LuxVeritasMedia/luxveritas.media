@@ -59,6 +59,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add protected accepted-handoff counts and latest handoff records to operator reporting.
 - [x] Include accepted handoff records in protected operator exports.
 - [x] Add operator reporting token status to launch-gate reporting.
+- [x] Add sanitized launch closeout status to private operator reporting.
 - [x] Add screened intake routing fields for Phase 6 reporting and future server-side handoff.
 - [x] Add public terms version IDs to capture, reporting, and private handoff payloads.
 - [x] Configure signed internal Firebase private handoff endpoint `firebase_handoff`.
@@ -140,6 +141,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add QA coverage for the fan-facing Circle Signal panel and live-value selectors.
 - [x] Add asset-version QA so live pages cannot serve stale app/CSS URLs after app changes.
 - [x] Bump public asset version after portal sign-in capture behavior changed.
+- [x] Bump public asset version after operator closeout reporting changed.
 - [x] Add release-readiness QA for launch blockers, media sources, DNS, legal, email, and integration status.
 - [x] Add dedicated domain-readiness QA for apex and www DNS/HTTPS.
 - [x] Accept Firebase-provided A or CNAME records for `www` release-readiness checks.

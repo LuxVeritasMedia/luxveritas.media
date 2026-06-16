@@ -109,12 +109,14 @@ const eventEndpoint = "/api/event";
 const reportEndpoint = "/api/report";
 const mediaManifestPath = "/data/lux-media-manifest.json";
 const launchChecklistPath = "/data/lux-launch-readiness.json";
+const launchCloseoutPath = "/data/lux-launch-closeout-public.json";
 const legalReviewPath = "/data/lux-legal-review.json";
 const submitTimeoutMs = 8000;
-const publicBuildVersion = "20260611-report-gate-readiness";
+const publicBuildVersion = "20260616-closeout-report";
 let activeFormType = "request";
 let mediaManifestPromise = null;
 let launchChecklistPromise = null;
+let launchCloseoutPromise = null;
 let legalReviewPromise = null;
 let privateReportCache = null;
 
@@ -703,6 +705,21 @@ async function loadLaunchChecklist() {
   return launchChecklistPromise;
 }
 
+async function loadLaunchCloseout() {
+  if (!launchCloseoutPromise) {
+    launchCloseoutPromise = fetch(launchCloseoutPath, { headers: { Accept: "application/json" } })
+      .then((response) => {
+        if (!response.ok) throw new Error("launch_closeout_unavailable");
+        return response.json();
+      })
+      .then((closeout) => {
+        if (!Array.isArray(closeout.items)) throw new Error("launch_closeout_invalid");
+        return closeout;
+      });
+  }
+  return launchCloseoutPromise;
+}
+
 async function loadLegalReview() {
   if (!legalReviewPromise) {
     legalReviewPromise = fetch(legalReviewPath, { headers: { Accept: "application/json" } })
@@ -923,6 +940,48 @@ async function renderLaunchReadinessReport(report = privateReportCache) {
   } catch {
     if (summary) summary.textContent = "Launch readiness unavailable";
     if (list) list.innerHTML = "<li>Launch readiness could not be loaded.</li>";
+  }
+}
+
+function closeoutStatusLabel(status) {
+  if (status === "closed") return "Closed";
+  if (status === "blocked") return "Blocked";
+  return "Open";
+}
+
+function launchCloseoutMarkup(item) {
+  const label = escapeHtml(item.label || item.id || "Closeout item");
+  const status = escapeHtml(closeoutStatusLabel(item.status));
+  const owner = item.owner ? `Owner: ${item.owner}` : "";
+  const evidence = item.evidenceReference ? `Evidence: ${item.evidenceReference}` : "";
+  const detail = [owner, evidence].filter(Boolean).join(" ");
+  return `<li><strong>${label}</strong><span>${status}</span><small>${escapeHtml(detail || "Evidence required before launch closeout.")}</small></li>`;
+}
+
+async function renderLaunchCloseoutReport() {
+  const summary = document.querySelector("[data-launch-closeout-summary]");
+  const list = document.querySelector("[data-launch-closeout-list]");
+  if (!summary && !list) return;
+
+  try {
+    const closeout = await loadLaunchCloseout();
+    const items = Array.isArray(closeout.items) ? closeout.items : [];
+    const closed = items.filter((item) => item.status === "closed");
+    if (summary) {
+      summary.textContent = `${closed.length} of ${items.length} closeout items closed`;
+    }
+    if (list) {
+      list.innerHTML = items.length
+        ? items.map(launchCloseoutMarkup).join("")
+        : "<li>No launch closeout items found.</li>";
+    }
+    trackEvent("launch_closeout_view", {
+      closed: closed.length,
+      total: items.length
+    });
+  } catch {
+    if (summary) summary.textContent = "Launch closeout unavailable";
+    if (list) list.innerHTML = "<li>Launch closeout could not be loaded.</li>";
   }
 }
 
@@ -1915,6 +1974,7 @@ if ("serviceWorker" in navigator) {
 }
 renderMediaReadinessReport();
 renderLaunchReadinessReport();
+renderLaunchCloseoutReport();
 renderLocalReport();
 renderFanSignal();
 

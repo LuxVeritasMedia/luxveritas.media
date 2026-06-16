@@ -740,15 +740,24 @@ async function operatorReportFlow(page, baseUrl) {
     const summary = document.querySelector("[data-launch-readiness-summary]");
     return summary && /launch gates ready|unavailable/i.test(summary.textContent || "");
   }, null, { timeout: 5000 });
+  await page.waitForFunction(() => {
+    const summary = document.querySelector("[data-launch-closeout-summary]");
+    return summary && /closeout items closed|unavailable/i.test(summary.textContent || "");
+  }, null, { timeout: 5000 });
   const mediaSummary = await page.locator("[data-media-readiness-summary]").innerText();
   const mediaReadiness = await page.locator("[data-media-readiness-list]").innerText();
   const launchSummaryBeforeLoad = await page.locator("[data-launch-readiness-summary]").innerText();
   const launchReadinessBeforeLoad = await page.locator("[data-launch-readiness-list]").innerText();
+  const closeoutSummaryBeforeLoad = await page.locator("[data-launch-closeout-summary]").innerText();
+  const closeoutBeforeLoad = await page.locator("[data-launch-closeout-list]").innerText();
   if (!/3 of 3 source-ready/.test(mediaSummary)) {
     issues.push(`/portal/reporting.html: expected media readiness summary, found "${mediaSummary}"`);
   }
   if (!/3 of 7 launch gates ready/.test(launchSummaryBeforeLoad)) {
     issues.push(`/portal/reporting.html: expected launch readiness summary, found "${launchSummaryBeforeLoad}"`);
+  }
+  if (!/0 of 4 closeout items closed/.test(closeoutSummaryBeforeLoad)) {
+    issues.push(`/portal/reporting.html: expected closeout summary, found "${closeoutSummaryBeforeLoad}"`);
   }
   for (const label of ["SPMVP", "Visual World", "Lux Radio"]) {
     if (!mediaReadiness.includes(label)) {
@@ -758,6 +767,11 @@ async function operatorReportFlow(page, baseUrl) {
   for (const label of ["Media Sources", "Inbox Notifications", "Privacy Review", "WWW Redirect"]) {
     if (!launchReadinessBeforeLoad.includes(label)) {
       issues.push(`/portal/reporting.html: launch readiness missing ${label}`);
+    }
+  }
+  for (const label of ["WWW DNS and Hosting", "Inbox Provider", "Privacy Approval", "Terms Approval"]) {
+    if (!closeoutBeforeLoad.includes(label)) {
+      issues.push(`/portal/reporting.html: launch closeout missing ${label}`);
     }
   }
 
@@ -809,6 +823,8 @@ async function operatorReportFlow(page, baseUrl) {
   const funnelSummary = await page.locator("[data-private-funnel]").innerText();
   const launchSummary = await page.locator("[data-launch-readiness-summary]").innerText();
   const launchReadiness = await page.locator("[data-launch-readiness-list]").innerText();
+  const closeoutSummary = await page.locator("[data-launch-closeout-summary]").innerText();
+  const closeoutReadiness = await page.locator("[data-launch-closeout-list]").innerText();
   const latest = await page.locator("[data-private-report-list]").innerText();
 
   if (submissionCount !== "42") issues.push(`/portal/reporting.html: expected 42 submissions, found ${submissionCount}`);
@@ -897,6 +913,9 @@ async function operatorReportFlow(page, baseUrl) {
   }
   if (!/3 of 7 launch gates ready/.test(launchSummary) || !/Inbox notification provider is not active/i.test(launchReadiness)) {
     issues.push(`/portal/reporting.html: launch gates did not render blocker state (summary="${launchSummary}", list="${launchReadiness.replace(/\s+/g, " ")}")`);
+  }
+  if (!/0 of 4 closeout items closed/.test(closeoutSummary) || !/Inbox Provider/.test(closeoutReadiness)) {
+    issues.push(`/portal/reporting.html: launch closeout did not render state (summary="${closeoutSummary}", list="${closeoutReadiness.replace(/\s+/g, " ")}")`);
   }
 
   await page.click('[data-report-action="test-inbox"]');

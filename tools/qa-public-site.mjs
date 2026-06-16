@@ -13,6 +13,7 @@ const requiredFiles = [
   "site.webmanifest",
   "sitemap.xml",
   "data/lux-launch-readiness.json",
+  "data/lux-launch-closeout-public.json",
   "data/lux-media-manifest.json",
   "data/lux-build-manifest.json",
   "data/lux-legal-review.json",
@@ -286,12 +287,14 @@ const buildManifestRaw = await readFile(join(root, "data/lux-build-manifest.json
 const webManifestRaw = await readFile(join(root, "site.webmanifest"), "utf8");
 const deploymentDoc = await readFile("docs/deployment.md", "utf8");
 const launchReadinessRaw = await readFile(join(root, "data/lux-launch-readiness.json"), "utf8");
+const launchCloseoutRaw = await readFile(join(root, "data/lux-launch-closeout-public.json"), "utf8");
 const legalReviewRaw = await readFile(join(root, "data/lux-legal-review.json"), "utf8");
 const publicTermsRaw = await readFile(join(root, "data/lux-public-terms.json"), "utf8");
 for (const pattern of bannedTerms) {
   if (pattern.test(buildManifestRaw)) issues.push(`data/lux-build-manifest.json: banned public term matched ${pattern}`);
   if (pattern.test(webManifestRaw)) issues.push(`site.webmanifest: banned public term matched ${pattern}`);
   if (pattern.test(launchReadinessRaw)) issues.push(`data/lux-launch-readiness.json: banned public term matched ${pattern}`);
+  if (pattern.test(launchCloseoutRaw)) issues.push(`data/lux-launch-closeout-public.json: banned public term matched ${pattern}`);
   if (pattern.test(mediaManifestRaw)) issues.push(`data/lux-media-manifest.json: banned public term matched ${pattern}`);
   if (pattern.test(legalReviewRaw)) issues.push(`data/lux-legal-review.json: banned public term matched ${pattern}`);
   if (pattern.test(publicTermsRaw)) issues.push(`data/lux-public-terms.json: banned public term matched ${pattern}`);
@@ -397,6 +400,35 @@ try {
   }
 } catch (error) {
   issues.push(`data/lux-launch-readiness.json: invalid JSON (${error.message})`);
+}
+
+try {
+  const launchCloseout = JSON.parse(launchCloseoutRaw);
+  const items = Array.isArray(launchCloseout.items) ? launchCloseout.items : [];
+  if (launchCloseout.schemaVersion !== "luxveritas.launch_closeout_public.v1") {
+    issues.push("data/lux-launch-closeout-public.json: schemaVersion mismatch");
+  }
+  if (!launchCloseout.updatedAt) {
+    issues.push("data/lux-launch-closeout-public.json: missing updatedAt");
+  }
+  for (const id of ["www_redirect", "inbox_notifications", "privacy_review", "terms_review"]) {
+    if (!items.some((item) => item.id === id)) {
+      issues.push(`data/lux-launch-closeout-public.json: missing ${id}`);
+    }
+  }
+  for (const item of items) {
+    for (const field of ["id", "gateId", "label", "status", "owner"]) {
+      if (!item[field]) issues.push(`data/lux-launch-closeout-public.json: ${item.id || "item"} missing ${field}`);
+    }
+    if (!["open", "closed", "blocked"].includes(item.status)) {
+      issues.push(`data/lux-launch-closeout-public.json: ${item.id || "item"} has invalid status`);
+    }
+  }
+  if (/commands|requiredEvidence|RESEND_API_KEY|firebase login|Secret Manager/i.test(launchCloseoutRaw)) {
+    issues.push("data/lux-launch-closeout-public.json: contains operator-only closeout fields");
+  }
+} catch (error) {
+  issues.push(`data/lux-launch-closeout-public.json: invalid JSON (${error.message})`);
 }
 
 try {

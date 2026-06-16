@@ -7,7 +7,7 @@ Use this only when moving from pilot-ready to public-release ready. Keep secrets
 ## Starting State
 
 - Apex site is live at `https://luxveritas.media`.
-- Current asset version is `20260611-report-gate-readiness`.
+- Current asset version is `20260616-closeout-report`.
 - Media, private handoff, and operator reporting are ready.
 - Remaining blockers are `www` DNS, inbox provider, Privacy approval, and Terms approval.
 

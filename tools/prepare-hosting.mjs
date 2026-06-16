@@ -1,4 +1,4 @@
-import { copyFile, cp, mkdir, rm, stat } from "node:fs/promises";
+import { copyFile, cp, mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
 const dist = "dist";
@@ -74,6 +74,24 @@ await cp("data/lux-build-manifest.json", join(dist, "data/lux-build-manifest.jso
 await cp("data/lux-launch-readiness.json", join(dist, "data/lux-launch-readiness.json"));
 await cp("data/lux-public-terms.json", join(dist, "data/lux-public-terms.json"));
 await cp("data/lux-legal-review.json", join(dist, "data/lux-legal-review.json"));
+const closeout = JSON.parse(await readFile("data/lux-launch-closeout.json", "utf8"));
+const publicCloseout = {
+  schemaVersion: "luxveritas.launch_closeout_public.v1",
+  updatedAt: closeout.updatedAt || "",
+  items: Array.isArray(closeout.items)
+    ? closeout.items.map((item) => ({
+      id: item.id,
+      gateId: item.gateId,
+      label: item.label,
+      status: item.status,
+      owner: item.owner,
+      evidenceReference: item.evidenceReference || "",
+      closedAt: item.closedAt || "",
+      closedBy: item.closedBy || ""
+    }))
+    : []
+};
+await writeFile(join(dist, "data/lux-launch-closeout-public.json"), `${JSON.stringify(publicCloseout, null, 2)}\n`);
 
 const requiredNonEmpty = [
   ...files,
@@ -81,6 +99,7 @@ const requiredNonEmpty = [
   "data/lux-build-manifest.json",
   "data/lux-media-manifest.json",
   "data/lux-launch-readiness.json",
+  "data/lux-launch-closeout-public.json",
   "data/lux-public-terms.json",
   "data/lux-legal-review.json"
 ];
@@ -92,4 +111,4 @@ for (const file of requiredNonEmpty) {
   }
 }
 
-console.log(`Prepared Firebase Hosting artifact with ${files.length + assetFiles.length + 5} files.`);
+console.log(`Prepared Firebase Hosting artifact with ${files.length + assetFiles.length + 6} files.`);
