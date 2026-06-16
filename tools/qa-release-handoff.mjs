@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 const issues = [];
 const handoff = await readFile("docs/production-release-handoff.md", "utf8");
 const blockerResolution = await readFile("docs/launch-blocker-resolution.md", "utf8");
+const launchCloseout = await readFile("data/lux-launch-closeout.json", "utf8");
 const legalReviewPacket = await readFile("docs/legal-review-packet.md", "utf8");
 const finalLaunchRunbook = await readFile("docs/final-launch-runbook.md", "utf8");
 const todo = await readFile("TODO.md", "utf8");
@@ -50,6 +51,8 @@ if (!handoff.includes("Use `docs/final-launch-runbook.md` for the exact final la
 
 for (const marker of [
   "docs/launch-blocker-resolution.md",
+  "data/lux-launch-closeout.json",
+  "node tools/qa-launch-closeout.mjs",
   "www Domain",
   "Inbox Provider",
   "Privacy Approval",
@@ -57,6 +60,18 @@ for (const marker of [
 ]) {
   if (!handoff.includes(marker) && !blockerResolution.includes(marker)) {
     issue(`launch blocker documentation missing marker: ${marker}`);
+  }
+}
+
+for (const marker of [
+  "luxveritas.launch_closeout.v1",
+  "www_redirect",
+  "inbox_notifications",
+  "privacy_review",
+  "terms_review"
+]) {
+  if (!launchCloseout.includes(marker)) {
+    issue(`data/lux-launch-closeout.json missing marker: ${marker}`);
   }
 }
 

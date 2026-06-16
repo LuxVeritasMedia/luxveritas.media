@@ -21,6 +21,7 @@ const checks = [
   ["Integration Contract", "tools/qa-integration-contract.mjs"],
   ["Integration Profiles", "tools/qa-integration-profiles.mjs"],
   ["Legal Review Packet", "tools/qa-legal-review-packet.mjs"],
+  ["Launch Closeout", "tools/qa-launch-closeout.mjs"],
   ["Launch Blockers", "tools/qa-launch-blockers.mjs"],
   ["MVP Status", "tools/qa-mvp-status.mjs"],
   ["Launch Evidence", "tools/qa-launch-evidence.mjs"],

@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "luxveritas.launch_closeout.v1",
+  "updatedAt": "2026-06-16T00:00:00.000Z",
+  "purpose": "No-secret public-release closeout tracker. Store evidence references only; do not store credentials, operator tokens, private report exports, provider keys, or legal advice in this file.",
+  "items": [
+    {
+      "id": "www_redirect",
+      "gateId": "www_redirect",
+      "label": "WWW DNS and Hosting",
+      "status": "open",
+      "owner": "Domain operator",
+      "requiredEvidence": [
+        "Firebase Hosting custom domain for www.luxveritas.media is added",
+        "DNS record for www.luxveritas.media exists",
+        "https://www.luxveritas.media returns HTTP 200 or redirects to https://luxveritas.media",
+        "node tools/qa-domain-readiness.mjs reports no blockers"
+      ],
+      "commands": [
+        "node tools/qa-domain-readiness.mjs",
+        "dig +short www.luxveritas.media",
+        "curl -I https://www.luxveritas.media"
+      ],
+      "evidenceReference": "",
+      "closedAt": "",
+      "closedBy": ""
+    },
+    {
+      "id": "inbox_notifications",
+      "gateId": "inbox_notifications",
+      "label": "Inbox Provider",
+      "status": "open",
+      "owner": "Capture operator",
+      "requiredEvidence": [
+        "Approved sender domain is verified with the provider",
+        "RESEND_API_KEY is active in Firebase Secret Manager",
+        "Functions using inbox secrets are redeployed",
+        "Live form matrix write test confirms inbox delivery",
+        "Pending inbox replay is available to an approved operator"
+      ],
+      "commands": [
+        "firebase login --reauth",
+        "node tools/qa-provider-readiness.mjs",
+        "firebase deploy --only functions:submitForm,functions:reportActivity --project lux-veritas-media --non-interactive --force",
+        "LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.mjs"
+      ],
+      "evidenceReference": "",
+      "closedAt": "",
+      "closedBy": ""
+    },
+    {
+      "id": "privacy_review",
+      "gateId": "privacy_review",
+      "label": "Privacy Approval",
+      "status": "open",
+      "owner": "Legal/business reviewer",
+      "requiredEvidence": [
+        "Privacy page reviewed against actual data practices",
+        "data/lux-legal-review.json marks privacy approved",
+        "node tools/qa-public-site.mjs passes",
+        "node tools/qa-release-readiness.mjs no longer reports Privacy as a blocker"
+      ],
+      "commands": [
+        "LUX_LEGAL_REVIEW_ITEM=privacy LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY=\"Reviewer Name\" node tools/set-legal-review-status.mjs",
+        "node tools/qa-public-site.mjs",
+        "node tools/qa-release-readiness.mjs"
+      ],
+      "evidenceReference": "",
+      "closedAt": "",
+      "closedBy": ""
+    },
+    {
+      "id": "terms_review",
+      "gateId": "terms_review",
+      "label": "Terms Approval",
+      "status": "open",
+      "owner": "Legal/business reviewer",
+      "requiredEvidence": [
+        "Terms page reviewed against actual site behavior",
+        "data/lux-legal-review.json marks terms approved",
+        "node tools/qa-public-site.mjs passes",
+        "node tools/qa-release-readiness.mjs no longer reports Terms as a blocker"
+      ],
+      "commands": [
+        "LUX_LEGAL_REVIEW_ITEM=terms LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY=\"Reviewer Name\" node tools/set-legal-review-status.mjs",
+        "node tools/qa-public-site.mjs",
+        "node tools/qa-release-readiness.mjs"
+      ],
+      "evidenceReference": "",
+      "closedAt": "",
+      "closedBy": ""
+    }
+  ]
+}

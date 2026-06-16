@@ -4,6 +4,12 @@ Status date: 2026-06-11
 
 This packet tracks only the remaining public-release blockers for LuxVeritas.media. Keep secrets out of this file. Use Firebase Secret Manager, provider dashboards, and approved operator tokens for private values.
 
+Machine-readable closeout tracking lives in `data/lux-launch-closeout.json`. Validate it with:
+
+```bash
+node tools/qa-launch-closeout.mjs
+```
+
 ## Current Evidence
 
 - Apex site: `https://luxveritas.media` returns HTTP 200.

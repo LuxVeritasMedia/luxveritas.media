@@ -167,6 +167,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add combined no-secret MVP preflight command for release operators.
 - [x] Add no-secret launch evidence export for release handoff.
 - [x] Add launch evidence QA to pilot and workflow guardrails.
+- [x] Add no-secret launch closeout tracker for remaining public-launch blockers.
 - [x] Add no-cache hosting policy for the service worker.
 
 ## P7 - Media MVP

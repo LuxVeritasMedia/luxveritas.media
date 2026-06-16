@@ -79,6 +79,12 @@ Validate the evidence exporter before using it in a handoff:
 node tools/qa-launch-evidence.mjs
 ```
 
+Validate the no-secret closeout tracker for the four remaining public-launch blockers:
+
+```bash
+node tools/qa-launch-closeout.mjs
+```
+
 Firebase Hosting serves the static site and rewrites:
 
 - `/api/submit` to the Firebase Function `submitForm`
