@@ -104,7 +104,7 @@ if (issues.length) {
       console.log("- LUX_RESEND_API_KEY='re_...' node tools/activate-inbox-delivery.mjs");
     }
     if (needsIntegration) {
-      console.log("- LUX_FORM_INTEGRATION_URL='https://...' LUX_FORM_INTEGRATION_SIGNING_SECRET='approved-shared-secret' LUX_FORM_INTEGRATION_TARGET='private_workflow' node tools/setup-private-integration-secret.mjs");
+      console.log("- LUX_FORM_INTEGRATION_URL='https://...' LUX_FORM_INTEGRATION_SIGNING_SECRET='approved-shared-secret' LUX_FORM_INTEGRATION_TARGET='firebase_handoff' node tools/activate-private-integration.mjs");
     }
     if (needsOperatorToken) {
       console.log("- LUX_REPORT_TOKEN='paste-private-operator-token-here' node tools/generate-report-operator-token.mjs");

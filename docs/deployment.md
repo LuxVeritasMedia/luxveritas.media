@@ -321,10 +321,13 @@ The private operator report includes accepted handoff counts, recent handoff rec
 ```bash
 LUX_FORM_INTEGRATION_URL="https://..." \
 LUX_FORM_INTEGRATION_SIGNING_SECRET="approved-shared-secret" \
-LUX_FORM_INTEGRATION_TARGET="private_workflow" \
-node tools/setup-private-integration-secret.mjs
-firebase deploy --only functions:submitForm,functions:reportActivity,functions:receivePrivateHandoff --project lux-veritas-media --non-interactive --force
+LUX_FORM_INTEGRATION_TARGET="firebase_handoff" \
+node tools/activate-private-integration.mjs
 ```
+
+Use `LUX_PRIVATE_INTEGRATION_ACTIVATION_DRY_RUN=1` to validate profile, URL shape, and activation flow without writing secrets or deploying. Future profiles such as `ghl_crm`, `google_workspace`, and `codex_ops` require `LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE=1` after human approval.
+
+The activation helper wraps `tools/setup-private-integration-secret.mjs` so operators use approved profile labels before any secret update or function deploy.
 
 For the internal Firebase receiver profile, use the deployed HTTPS function URL as `LUX_FORM_INTEGRATION_URL`, set `LUX_FORM_INTEGRATION_TARGET=firebase_handoff`, set a strong private signing secret, redeploy `submitForm`, `reportActivity`, and `receivePrivateHandoff`, then replay pending handoffs from the private report.
 

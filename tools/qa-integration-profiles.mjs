@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 
 const issues = [];
 const raw = await readFile("docs/private-integration-profiles.json", "utf8");
+const activation = await readFile("tools/activate-private-integration.mjs", "utf8");
 const registry = JSON.parse(raw);
 const profiles = Array.isArray(registry.profiles) ? registry.profiles : [];
 const requiredIds = [
@@ -63,6 +64,17 @@ for (const profile of profiles) {
     issue(`${profile.id}: allowedActions must include replay`);
   }
   if (!profile.notes) issue(`${profile.id}: missing notes`);
+}
+
+for (const marker of [
+  "docs/private-integration-profiles.json",
+  "LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE",
+  "LUX_PRIVATE_INTEGRATION_ACTIVATION_DRY_RUN",
+  "LUX_FORM_INTEGRATION_TARGET",
+  "tools/setup-private-integration-secret.mjs",
+  "functions:submitForm,functions:reportActivity,functions:receivePrivateHandoff"
+]) {
+  if (!activation.includes(marker)) issue(`activate-private-integration.mjs missing marker ${marker}`);
 }
 
 if (/https?:\/\//i.test(raw)) {

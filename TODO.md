@@ -63,6 +63,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add live QA for sanitized launch closeout endpoint.
 - [x] Add one-command inbox provider activation path for real email delivery.
 - [x] Add www domain closeout helper for DNS/SSL evidence.
+- [x] Add profile-gated private integration activation path for future CRM/Workspace/Codex handoffs.
 - [x] Add screened intake routing fields for Phase 6 reporting and future server-side handoff.
 - [x] Add public terms version IDs to capture, reporting, and private handoff payloads.
 - [x] Configure signed internal Firebase private handoff endpoint `firebase_handoff`.

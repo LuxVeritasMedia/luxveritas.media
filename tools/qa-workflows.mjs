@@ -6,6 +6,7 @@ const functions = await readFile(".github/workflows/firebase-functions-manual.ym
 const finalAudit = await readFile(".github/workflows/final-release-audit.yml", "utf8");
 const deployStatus = await readFile("tools/qa-deploy-status.mjs", "utf8");
 const inboxActivation = await readFile("tools/activate-inbox-delivery.mjs", "utf8");
+const privateIntegrationActivation = await readFile("tools/activate-private-integration.mjs", "utf8");
 const wwwResolver = await readFile("tools/resolve-www-domain.mjs", "utf8");
 const finalLaunchRunbook = await readFile("docs/final-launch-runbook.md", "utf8");
 
@@ -117,6 +118,19 @@ for (const marker of [
   "tools/qa-form-delivery.mjs"
 ]) {
   if (!inboxActivation.includes(marker)) issues.push(`activate-inbox-delivery.mjs: missing ${marker}`);
+}
+
+for (const marker of [
+  "LUX_FORM_INTEGRATION_URL",
+  "LUX_FORM_INTEGRATION_SIGNING_SECRET",
+  "LUX_FORM_INTEGRATION_TARGET",
+  "LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE",
+  "LUX_PRIVATE_INTEGRATION_ACTIVATION_DRY_RUN",
+  "docs/private-integration-profiles.json",
+  "functions:submitForm,functions:reportActivity,functions:receivePrivateHandoff",
+  "tools/qa-provider-readiness.mjs"
+]) {
+  if (!privateIntegrationActivation.includes(marker)) issues.push(`activate-private-integration.mjs: missing ${marker}`);
 }
 
 for (const marker of [

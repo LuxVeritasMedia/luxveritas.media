@@ -144,6 +144,7 @@ for (const marker of [
   "FORM_INTEGRATION_TARGET",
   "REPORT_OPERATOR_TOKEN_SHA256",
   "activate-inbox-delivery",
+  "activate-private-integration",
   "setup-private-integration-secret",
   "luxveritas.form_submission.v1",
   "X-Lux-Target",
