@@ -51,6 +51,7 @@ Run these before launch review:
 node tools/qa-operator-environment.mjs
 node tools/report-mvp-status.mjs
 node tools/qa-mvp-preflight.mjs
+node tools/qa-launch-evidence.mjs
 firebase login --reauth
 node tools/qa-provider-readiness.mjs
 node tools/qa-domain-readiness.mjs

@@ -19,6 +19,7 @@ Use this only when moving from pilot-ready to public-release ready. Keep secrets
 node tools/qa-operator-environment.mjs
 node tools/report-mvp-status.mjs
 node tools/qa-mvp-preflight.mjs
+node tools/qa-launch-evidence.mjs
 git status --short --branch
 node tools/qa-deploy-status.mjs
 ```
@@ -80,5 +81,6 @@ The final gate also runs operator-environment, MVP status, and MVP preflight che
 
 - Replay pending inbox notifications from `/portal/reporting.html` with an approved operator token.
 - Export the private report JSON/CSV for launch evidence.
+- Export the no-secret launch evidence packet with `LUX_EVIDENCE_LIVE=1 LUX_EVIDENCE_OUT=/tmp/lux-launch-evidence.md node tools/export-launch-evidence.mjs`, then move it to the private launch folder.
 - Record the passing final-gate command output in the private launch folder.
 - Do not paste provider keys, operator tokens, or private report exports into this public repo.

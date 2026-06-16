@@ -65,6 +65,20 @@ node tools/qa-mvp-preflight.mjs
 
 Use `LUX_MVP_PREFLIGHT_STRICT=1` only when known launch blockers should fail the command.
 
+Export a no-secret launch evidence packet for the private launch folder:
+
+```bash
+node tools/export-launch-evidence.mjs
+LUX_EVIDENCE_FORMAT=json node tools/export-launch-evidence.mjs
+LUX_EVIDENCE_LIVE=1 LUX_EVIDENCE_OUT=/tmp/lux-launch-evidence.md node tools/export-launch-evidence.mjs
+```
+
+Validate the evidence exporter before using it in a handoff:
+
+```bash
+node tools/qa-launch-evidence.mjs
+```
+
 Firebase Hosting serves the static site and rewrites:
 
 - `/api/submit` to the Firebase Function `submitForm`
