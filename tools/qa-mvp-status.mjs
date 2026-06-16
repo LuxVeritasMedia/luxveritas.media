@@ -54,7 +54,7 @@ if (report) {
   const localVersion = report.build?.localAssetVersion || "";
   if (!localVersion) issue("local asset version missing");
   if (report.build?.liveManifestReadable === true && report.build?.liveAssetVersion !== localVersion) {
-    issue(`live asset ${report.build?.liveAssetVersion || "missing"} does not match local ${localVersion}`);
+    warn(`live asset ${report.build?.liveAssetVersion || "missing"} does not match local ${localVersion}`);
   }
   if (report.build?.liveManifestReadable !== true) {
     warn(`live manifest not readable in this environment: ${report.build?.liveManifestError || "unavailable"}`);
