@@ -131,8 +131,8 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add QA coverage for stable CTA IDs and protected CTA signal reporting.
 - [x] Add post-deploy live smoke QA for production routes, player shell, manifest, noindex, and `/api/submit` status.
 - [x] Add repeatable form-delivery QA for validation, stored capture, and inbox notification readiness.
-- [x] Add live form matrix QA for major public capture paths.
-- [x] Raise pilot form rate limit so the seven-path live matrix can complete without false 429 failures.
+- [x] Add live form matrix QA for every unique public capture intent.
+- [x] Keep the live capture-intent matrix under the submit rate limit to prevent false 429 failures.
 - [x] Add live event matrix QA for CTA, media, lead, and reporting events.
 - [x] Add live event matrix QA for media playback lifecycle events.
 - [x] Add workflow QA for hosting and Functions deploy gates.

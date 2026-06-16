@@ -10,16 +10,31 @@ const issues = [];
 const warnings = [];
 const execFileAsync = promisify(execFile);
 
+// Keep this under the live submit rate limit: one validation request plus one
+// write for each unique capture intent exposed by the current public shell.
 const matrix = [
   { sourcePage: "/index.html", formType: "request", tag: "request-access", rolePath: "General", inquiryType: "Portal" },
-  { sourcePage: "/join.html", formType: "fan", tag: "membership-waitlist", rolePath: "Member", inquiryType: "Membership" },
   { sourcePage: "/membership.html", formType: "fan", tag: "membership-waitlist", rolePath: "Member", inquiryType: "Membership" },
-  { sourcePage: "/store.html", formType: "fan", tag: "membership-waitlist", rolePath: "Member", inquiryType: "Membership" },
-  { sourcePage: "/community.html", formType: "fan", tag: "membership-waitlist", rolePath: "Member", inquiryType: "Membership" },
   { sourcePage: "/submissions.html", formType: "submission", tag: "submission", rolePath: "Creator", inquiryType: "Submissions" },
-  { sourcePage: "/events.html", formType: "request", tag: "request-access", rolePath: "General", inquiryType: "Portal" },
   { sourcePage: "/contact.html", formType: "press", tag: "press", rolePath: "Press", inquiryType: "Press" },
-  { sourcePage: "/investor.html", formType: "investor", tag: "investor-access", rolePath: "Investor", inquiryType: "Investor" }
+  { sourcePage: "/investor.html", formType: "investor", tag: "investor-access", rolePath: "Investor", inquiryType: "Investor" },
+  { sourcePage: "/events/listening-room.html", formType: "event", tag: "event-interest", rolePath: "Event guest", inquiryType: "Events" },
+  { sourcePage: "/codex-inner.html", formType: "codex", tag: "codex-request", rolePath: "Creator", inquiryType: "Portal" },
+  { sourcePage: "/portal/releases.html", formType: "licensing", tag: "licensing-access", rolePath: "Partner", inquiryType: "Licensing" },
+  { sourcePage: "/portal/library.html", formType: "creator", tag: "creator-access", rolePath: "Creator", inquiryType: "Portal" },
+  { sourcePage: "/auth/signin.html", formType: "portal_signin", tag: "portal-signin", rolePath: "General", inquiryType: "Portal" }
+];
+const expectedFormTypes = [
+  "request",
+  "fan",
+  "submission",
+  "press",
+  "investor",
+  "event",
+  "codex",
+  "licensing",
+  "creator",
+  "portal_signin"
 ];
 
 function stamp() {
@@ -124,7 +139,7 @@ async function writeCheck(item, index) {
     phone: "",
     role_path: item.rolePath,
     inquiry_type: item.inquiryType,
-    message: `QA matrix test for ${item.sourcePage}. Safe to archive.`,
+    message: `QA matrix test for ${item.formType} capture from ${item.sourcePage}. Safe to archive.`,
     formType: item.formType,
     tag: item.tag,
     source: "luxveritas.media",
@@ -149,11 +164,31 @@ async function writeCheck(item, index) {
     issues.push(`${item.sourcePage}: expected inbox sent, received ${json.delivery || "unknown"} (${json.reason || "no reason"})`);
   }
   if (json.delivery === "stored") {
-    warnings.push(`${item.sourcePage}: stored ${id}; inbox not active yet (${json.reason || "stored"}).`);
+    warnings.push(`${item.sourcePage} (${item.formType}): stored ${id}; inbox not active yet (${json.reason || "stored"}).`);
   } else {
-    console.log(`${item.sourcePage}: sent ${id}.`);
+    console.log(`${item.sourcePage} (${item.formType}): sent ${id}.`);
   }
 }
+
+function matrixCoverageCheck() {
+  const formTypes = new Set(matrix.map((item) => item.formType));
+  const missing = expectedFormTypes.filter((formType) => !formTypes.has(formType));
+  const duplicates = matrix
+    .map((item) => item.formType)
+    .filter((formType, index, all) => all.indexOf(formType) !== index);
+
+  if (missing.length) {
+    issues.push(`live form matrix missing capture intent(s): ${missing.join(", ")}`);
+  }
+  if (duplicates.length) {
+    issues.push(`live form matrix has duplicate capture intent(s): ${[...new Set(duplicates)].join(", ")}`);
+  }
+  if (matrix.length + 1 > 12) {
+    issues.push(`live form matrix has ${matrix.length} write checks plus validation; keep total under the submit rate limit of 12.`);
+  }
+}
+
+matrixCoverageCheck();
 
 try {
   await validationCheck();
@@ -168,7 +203,7 @@ if (writeEnabled) {
     await writeCheck(item, index);
   }
 } else {
-  warnings.push("Skipped live matrix writes. Set LUX_FORM_MATRIX_WRITE=1 to create one QA submission per public capture path.");
+  warnings.push(`Skipped live matrix writes for ${matrix.length} capture intent(s). Set LUX_FORM_MATRIX_WRITE=1 to create one QA submission per intent.`);
 }
 
 if (warnings.length) {
@@ -182,4 +217,4 @@ if (issues.length) {
   process.exit(1);
 }
 
-console.log(`Live form matrix QA passed for ${baseUrl}.`);
+console.log(`Live form matrix QA passed for ${baseUrl} with ${matrix.length} capture intent(s).`);
