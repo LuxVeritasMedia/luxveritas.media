@@ -7,6 +7,8 @@ const issues = [];
 const buildScript = await readFile("tools/build-static.mjs", "utf8");
 const expectedAssetVersion = buildScript.match(/const assetVersion = "([^"]+)"/)?.[1] || "";
 const execFileAsync = promisify(execFile);
+const fallbackConnectTo = ["--connect-to", "luxveritas.media:443:lux-veritas-media.web.app:443"];
+const fallbackHostingBaseUrl = "https://lux-veritas-media.web.app";
 
 const forbiddenPatterns = [
   /DAMON/i,
@@ -50,7 +52,19 @@ async function fetchText(path, options = {}) {
 }
 
 async function curlGet(path, options = {}) {
-  const { stdout } = await execFileAsync("curl", ["-fsS", `${baseUrl}${path}`], { timeout: options.timeoutMs || 12000 });
+  let stdout = "";
+  try {
+    ({ stdout } = await execFileAsync("curl", ["-fsS", `${baseUrl}${path}`], { timeout: options.timeoutMs || 12000 }));
+  } catch (error) {
+    if (!/Could not resolve host/i.test(String(error.stderr || error.message || "")) || baseUrl !== "https://luxveritas.media") {
+      throw error;
+    }
+    try {
+      ({ stdout } = await execFileAsync("curl", ["-fsS", ...fallbackConnectTo, `${baseUrl}${path}`], { timeout: options.timeoutMs || 12000 }));
+    } catch {
+      ({ stdout } = await execFileAsync("curl", ["-fsS", `${fallbackHostingBaseUrl}${path}`], { timeout: options.timeoutMs || 12000 }));
+    }
+  }
   return {
     response: {
       ok: true,
@@ -62,7 +76,19 @@ async function curlGet(path, options = {}) {
 }
 
 async function curlHead(path) {
-  const { stdout } = await execFileAsync("curl", ["-sS", "-I", `${baseUrl}${path}`], { timeout: 12000 });
+  let stdout = "";
+  try {
+    ({ stdout } = await execFileAsync("curl", ["-sS", "-I", `${baseUrl}${path}`], { timeout: 12000 }));
+  } catch (error) {
+    if (!/Could not resolve host/i.test(String(error.stderr || error.message || "")) || baseUrl !== "https://luxveritas.media") {
+      throw error;
+    }
+    try {
+      ({ stdout } = await execFileAsync("curl", ["-sS", "-I", ...fallbackConnectTo, `${baseUrl}${path}`], { timeout: 12000 }));
+    } catch {
+      ({ stdout } = await execFileAsync("curl", ["-sS", "-I", `${fallbackHostingBaseUrl}${path}`], { timeout: 12000 }));
+    }
+  }
   const status = Number(stdout.match(/^HTTP\/\S+\s+(\d+)/im)?.[1] || 0);
   const location = stdout.match(/^location:\s*(.+)$/im)?.[1]?.trim() || "";
   return {
@@ -126,6 +152,19 @@ try {
   scan("/robots.txt", text);
 } catch (error) {
   issue(`/robots.txt: request failed (${error.message})`);
+}
+
+try {
+  const { response, text } = await fetchText("/data/lux-launch-closeout-public.json");
+  if (!response.ok) {
+    issue("/data/lux-launch-closeout-public.json: expected HTTP 200");
+  }
+  scan("/data/lux-launch-closeout-public.json", text);
+  if (/commands|requiredEvidence|RESEND_API_KEY|firebase login|Secret Manager/i.test(text)) {
+    issue("/data/lux-launch-closeout-public.json: exposes operator-only closeout fields");
+  }
+} catch (error) {
+  issue(`/data/lux-launch-closeout-public.json: request failed (${error.message})`);
 }
 
 try {

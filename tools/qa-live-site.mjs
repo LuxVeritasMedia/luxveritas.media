@@ -127,7 +127,7 @@ if (reportHtml) {
   if (!reportHtml.includes('name="robots" content="noindex, nofollow"')) {
     issues.push("/portal/reporting.html: missing noindex metadata");
   }
-  for (const marker of ["data-media-readiness-summary", "data-media-readiness-list"]) {
+  for (const marker of ["data-media-readiness-summary", "data-media-readiness-list", "data-launch-closeout-summary", "data-launch-closeout-list"]) {
     if (!reportHtml.includes(marker)) issues.push(`/portal/reporting.html: missing ${marker}`);
   }
 }
@@ -199,6 +199,32 @@ try {
   }
 } catch (error) {
   issues.push(`/data/lux-media-manifest.json: invalid response (${error.message})`);
+}
+
+try {
+  const { response, text } = await fetchWithTimeout("/data/lux-launch-closeout-public.json");
+  if (!response.ok) {
+    issues.push(`/data/lux-launch-closeout-public.json: expected HTTP 200, received ${response.status}`);
+  } else {
+    const closeout = JSON.parse(text);
+    const items = Array.isArray(closeout.items) ? closeout.items : [];
+    if (closeout.schemaVersion !== "luxveritas.launch_closeout_public.v1") {
+      issues.push("/data/lux-launch-closeout-public.json: schemaVersion mismatch");
+    }
+    if (!closeout.updatedAt) {
+      issues.push("/data/lux-launch-closeout-public.json: missing updatedAt");
+    }
+    for (const id of ["www_redirect", "inbox_notifications", "privacy_review", "terms_review"]) {
+      if (!items.some((item) => item.id === id)) {
+        issues.push(`/data/lux-launch-closeout-public.json: missing closeout item ${id}`);
+      }
+    }
+    if (/commands|requiredEvidence|RESEND_API_KEY|firebase login|Secret Manager/i.test(text)) {
+      issues.push("/data/lux-launch-closeout-public.json: contains operator-only closeout fields");
+    }
+  }
+} catch (error) {
+  issues.push(`/data/lux-launch-closeout-public.json: invalid response (${error.message})`);
 }
 
 try {
