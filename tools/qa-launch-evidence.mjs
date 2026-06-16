@@ -30,6 +30,7 @@ for (const marker of [
   "Decision:",
   "Asset version:",
   "## Launch Gates",
+  "## Closeout",
   "## Command Summaries",
   "Inbox Notifications",
   "Privacy Review",
@@ -55,6 +56,12 @@ if (evidence) {
   const blocked = Array.isArray(evidence.launchGates?.blocked) ? evidence.launchGates.blocked : [];
   for (const id of ["inbox_notifications", "privacy_review", "terms_review", "www_redirect"]) {
     if (!blocked.some((gate) => gate.id === id)) issue(`evidence missing current blocked gate ${id}`);
+  }
+  const closeoutItems = Array.isArray(evidence.closeout?.items) ? evidence.closeout.items : [];
+  if (!evidence.closeout?.updatedAt) issue("evidence closeout updatedAt missing");
+  if (!evidence.closeout?.byStatus || typeof evidence.closeout.byStatus !== "object") issue("evidence closeout byStatus missing");
+  for (const id of ["inbox_notifications", "privacy_review", "terms_review", "www_redirect"]) {
+    if (!closeoutItems.some((item) => item.id === id)) issue(`evidence missing closeout item ${id}`);
   }
   if (!evidence.commandSummaries?.mvpStatus?.lines?.length) issue("evidence missing MVP status summary lines");
 }

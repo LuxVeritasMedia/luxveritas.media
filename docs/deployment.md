@@ -79,6 +79,8 @@ Validate the evidence exporter before using it in a handoff:
 node tools/qa-launch-evidence.mjs
 ```
 
+Launch evidence includes the no-secret closeout tracker, so final handoffs can compare launch gates against DNS, inbox, Privacy, and Terms closeout status without exposing provider credentials or private legal materials.
+
 Validate the no-secret closeout tracker for the four remaining public-launch blockers:
 
 ```bash

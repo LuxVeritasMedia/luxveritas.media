@@ -48,7 +48,7 @@ function summarizeOutput(output) {
     .map((line) => line.trimEnd())
     .filter((line) => (
       line
-      && /^(PASS|WARN|BLOCK|FAIL|- |Lux Veritas|Decision|Repo|Live|Local asset|Media|Legal|Launch gates|Deploy status checked|MVP preflight checked|Release readiness checked)/i.test(line)
+      && /^(PASS|WARN|BLOCK|FAIL|- |Lux Veritas|Decision|Repo|Live|Local asset|Media|Legal|Launch gates|Closeout|Deploy status checked|MVP preflight checked|Release readiness checked)/i.test(line)
     ))
     .slice(-80);
 }
@@ -56,6 +56,7 @@ function summarizeOutput(output) {
 const [
   buildManifestRaw,
   launchRaw,
+  closeoutRaw,
   legalRaw,
   mediaRaw,
   termsRaw,
@@ -66,6 +67,7 @@ const [
 ] = await Promise.all([
   readFile("data/lux-build-manifest.json", "utf8"),
   readFile("data/lux-launch-readiness.json", "utf8"),
+  readFile("data/lux-launch-closeout.json", "utf8"),
   readFile("data/lux-legal-review.json", "utf8"),
   readFile("data/lux-media-manifest.json", "utf8"),
   readFile("data/lux-public-terms.json", "utf8"),
@@ -77,12 +79,19 @@ const [
 
 const buildManifest = JSON.parse(buildManifestRaw);
 const launch = JSON.parse(launchRaw);
+const closeout = JSON.parse(closeoutRaw);
 const legalReview = JSON.parse(legalRaw);
 const mediaManifest = JSON.parse(mediaRaw);
 const publicTerms = JSON.parse(termsRaw);
 const gates = Array.isArray(launch.gates) ? launch.gates : [];
+const closeoutItems = Array.isArray(closeout.items) ? closeout.items : [];
 const readyGates = gates.filter((gate) => gate.status === "ready");
 const blockedGates = gates.filter((gate) => gate.requiredForPublicLaunch === true && gate.status === "blocked");
+const closeoutByStatus = closeoutItems.reduce((counts, item) => {
+  const status = item.status || "unknown";
+  counts[status] = (counts[status] || 0) + 1;
+  return counts;
+}, {});
 const phase = (todo.split("\n").find((line) => line.startsWith("Current phase:")) || "").replace(/^Current phase:\s*/, "");
 const mediaItems = Array.isArray(mediaManifest.items) ? mediaManifest.items : [];
 const sourceTypes = [...new Set(mediaItems.map((item) => item.sourceType || "unknown"))].sort();
@@ -112,6 +121,20 @@ const evidence = {
       label: gate.label,
       nextAction: gate.nextAction,
       verification: gate.verification
+    }))
+  },
+  closeout: {
+    updatedAt: closeout.updatedAt || "",
+    byStatus: closeoutByStatus,
+    items: closeoutItems.map((item) => ({
+      id: item.id,
+      gateId: item.gateId,
+      label: item.label,
+      status: item.status,
+      owner: item.owner,
+      evidenceReference: item.evidenceReference || "",
+      closedAt: item.closedAt || "",
+      closedBy: item.closedBy || ""
     }))
   },
   commandSummaries: {
@@ -159,6 +182,13 @@ ${evidence.launchGates.ready.map((gate) => `- ${gate.label} (${gate.id})`).join(
 
 Blocked:
 ${evidence.launchGates.blocked.map((gate) => `- ${gate.label} (${gate.id}): ${gate.nextAction}`).join("\n") || "- none"}
+
+## Closeout
+
+Updated: ${evidence.closeout.updatedAt || "unknown"}
+Status: ${Object.entries(evidence.closeout.byStatus).map(([status, count]) => `${status} ${count}`).join(", ") || "none"}
+
+${evidence.closeout.items.map((item) => `- ${item.label} (${item.id}): ${item.status}${item.evidenceReference ? ` - ${item.evidenceReference}` : ""}`).join("\n") || "- none"}
 
 ## Command Summaries
 

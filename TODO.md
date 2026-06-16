@@ -168,6 +168,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add combined no-secret MVP preflight command for release operators.
 - [x] Add no-secret launch evidence export for release handoff.
 - [x] Add launch evidence QA to pilot and workflow guardrails.
+- [x] Include no-secret launch closeout status in launch evidence export.
 - [x] Add no-secret launch closeout tracker for remaining public-launch blockers.
 - [x] Add no-secret launch closeout status helper for DNS, inbox, and legal approvals.
 - [x] Add QA sync between launch readiness gates and closeout status.
