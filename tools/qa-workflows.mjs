@@ -5,6 +5,8 @@ const hosting = await readFile(".github/workflows/firebase-hosting-live.yml", "u
 const functions = await readFile(".github/workflows/firebase-functions-manual.yml", "utf8");
 const finalAudit = await readFile(".github/workflows/final-release-audit.yml", "utf8");
 const deployStatus = await readFile("tools/qa-deploy-status.mjs", "utf8");
+const inboxActivation = await readFile("tools/activate-inbox-delivery.mjs", "utf8");
+const finalLaunchRunbook = await readFile("docs/final-launch-runbook.md", "utf8");
 
 for (const marker of [
   "concurrency:",
@@ -102,6 +104,26 @@ for (const marker of [
   "minutesSince"
 ]) {
   if (!deployStatus.includes(marker)) issues.push(`qa-deploy-status.mjs: missing ${marker}`);
+}
+
+for (const marker of [
+  "LUX_RESEND_API_KEY",
+  "LUX_INBOX_ACTIVATION_DRY_RUN",
+  "LUX_INBOX_ACTIVATION_WRITE_TEST",
+  "tools/setup-inbox-provider-secret.mjs",
+  "functions:submitForm,functions:reportActivity",
+  "tools/qa-provider-readiness.mjs",
+  "tools/qa-form-delivery.mjs"
+]) {
+  if (!inboxActivation.includes(marker)) issues.push(`activate-inbox-delivery.mjs: missing ${marker}`);
+}
+
+for (const marker of [
+  "node tools/activate-inbox-delivery.mjs",
+  "LUX_INBOX_ACTIVATION_WRITE_TEST=1",
+  "ready to receive QA mail"
+]) {
+  if (!finalLaunchRunbook.includes(marker)) issues.push(`final-launch-runbook.md: missing ${marker}`);
 }
 
 if (issues.length) {

@@ -79,7 +79,7 @@ for (const marker of [
 
 for (const marker of [
   "node tools/qa-domain-readiness.mjs",
-  "LUX_RESEND_API_KEY=\"re_...\" node tools/setup-inbox-provider-secret.mjs",
+  "LUX_RESEND_API_KEY=\"re_...\" node tools/activate-inbox-delivery.mjs",
   "LUX_LEGAL_REVIEW_ITEM=privacy",
   "LUX_LEGAL_REVIEW_ITEM=terms",
   "LUX_PILOT_LIVE=1 LUX_PILOT_STRICT=1 node tools/qa-pilot-readiness.mjs",
@@ -113,7 +113,7 @@ for (const marker of [
   "node tools/qa-launch-evidence.mjs",
   "node tools/qa-deploy-status.mjs",
   "node tools/qa-domain-readiness.mjs",
-  "LUX_RESEND_API_KEY=\"re_...\" node tools/setup-inbox-provider-secret.mjs",
+  "LUX_RESEND_API_KEY=\"re_...\" node tools/activate-inbox-delivery.mjs",
   "LUX_LEGAL_REVIEW_ITEM=privacy",
   "LUX_LEGAL_REVIEW_ITEM=terms",
   "LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs",

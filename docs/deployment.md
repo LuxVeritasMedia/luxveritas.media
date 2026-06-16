@@ -256,8 +256,7 @@ The function defaults to `FORM_TO_EMAIL=info@luxveritas.media` and `FORM_FROM_EM
 Recommended setup:
 
 ```bash
-LUX_RESEND_API_KEY="re_..." node tools/setup-inbox-provider-secret.mjs
-firebase deploy --only functions:submitForm,functions:reportActivity --project lux-veritas-media --non-interactive --force
+LUX_RESEND_API_KEY="re_..." node tools/activate-inbox-delivery.mjs
 LUX_FORM_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-form-delivery.mjs
 ```
 

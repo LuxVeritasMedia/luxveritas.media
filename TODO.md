@@ -61,6 +61,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add operator reporting token status to launch-gate reporting.
 - [x] Add sanitized launch closeout status to private operator reporting.
 - [x] Add live QA for sanitized launch closeout endpoint.
+- [x] Add one-command inbox provider activation path for real email delivery.
 - [x] Add screened intake routing fields for Phase 6 reporting and future server-side handoff.
 - [x] Add public terms version IDs to capture, reporting, and private handoff payloads.
 - [x] Configure signed internal Firebase private handoff endpoint `firebase_handoff`.

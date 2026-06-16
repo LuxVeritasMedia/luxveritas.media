@@ -143,7 +143,7 @@ for (const marker of [
   "FORM_INTEGRATION_SIGNING_SECRET",
   "FORM_INTEGRATION_TARGET",
   "REPORT_OPERATOR_TOKEN_SHA256",
-  "setup-inbox-provider-secret",
+  "activate-inbox-delivery",
   "setup-private-integration-secret",
   "luxveritas.form_submission.v1",
   "X-Lux-Target",

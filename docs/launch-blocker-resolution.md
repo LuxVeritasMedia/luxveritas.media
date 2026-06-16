@@ -77,19 +77,19 @@ Goal: public forms store server-side and send silent inbox notifications to the 
 Actions:
 
 1. Verify the approved sender/domain in the email provider.
-2. Set the approved provider key without printing it:
+2. Activate the approved provider key, redeploy the inbox-aware functions, and run provider readiness:
 
 ```bash
-LUX_RESEND_API_KEY="re_..." node tools/setup-inbox-provider-secret.mjs
+LUX_RESEND_API_KEY="re_..." node tools/activate-inbox-delivery.mjs
 ```
 
-3. Redeploy the functions that read the inbox secret:
+3. Run a real write test only when the inbox owner is ready to receive QA mail:
 
 ```bash
-firebase deploy --only functions:submitForm,functions:reportActivity --project lux-veritas-media --non-interactive --force
+LUX_INBOX_ACTIVATION_WRITE_TEST=1 LUX_RESEND_API_KEY="re_..." node tools/activate-inbox-delivery.mjs
 ```
 
-4. Run a real write test only when the inbox owner is ready to receive QA mail:
+4. Confirm the full live form matrix if launch-day write testing is needed:
 
 ```bash
 LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.mjs

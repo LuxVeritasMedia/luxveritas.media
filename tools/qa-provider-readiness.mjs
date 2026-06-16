@@ -101,7 +101,7 @@ if (issues.length) {
     const needsOperatorToken = valueStatus.REPORT_OPERATOR_TOKEN_SHA256?.ok !== true;
 
     if (needsInbox) {
-      console.log("- LUX_RESEND_API_KEY='re_...' node tools/setup-inbox-provider-secret.mjs");
+      console.log("- LUX_RESEND_API_KEY='re_...' node tools/activate-inbox-delivery.mjs");
     }
     if (needsIntegration) {
       console.log("- LUX_FORM_INTEGRATION_URL='https://...' LUX_FORM_INTEGRATION_SIGNING_SECRET='approved-shared-secret' LUX_FORM_INTEGRATION_TARGET='private_workflow' node tools/setup-private-integration-secret.mjs");
@@ -110,7 +110,9 @@ if (issues.length) {
       console.log("- LUX_REPORT_TOKEN='paste-private-operator-token-here' node tools/generate-report-operator-token.mjs");
       console.log("- printf '%s' '<sha256>' | firebase functions:secrets:set REPORT_OPERATOR_TOKEN_SHA256 --project lux-veritas-media");
     }
-    console.log("- firebase deploy --only functions:submitForm,functions:reportActivity --project lux-veritas-media --non-interactive --force");
+    if (!needsInbox) {
+      console.log("- firebase deploy --only functions:submitForm,functions:reportActivity --project lux-veritas-media --non-interactive --force");
+    }
   }
   if (strict) process.exit(1);
 }

@@ -35,10 +35,10 @@ curl -I https://www.luxveritas.media
 3. Activate inbox delivery after the sender domain is verified:
 
 ```bash
-LUX_RESEND_API_KEY="re_..." node tools/setup-inbox-provider-secret.mjs
-firebase deploy --only functions:submitForm,functions:reportActivity --project lux-veritas-media --non-interactive --force
-node tools/qa-provider-readiness.mjs
+LUX_RESEND_API_KEY="re_..." node tools/activate-inbox-delivery.mjs
 ```
+
+Use `LUX_INBOX_ACTIVATION_WRITE_TEST=1` only when the inbox owner is ready to receive QA mail. That mode sends a live form write and requires inbox delivery.
 
 4. Approve legal only after review:
 

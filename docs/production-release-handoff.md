@@ -63,8 +63,7 @@ node tools/qa-final-release-gate.mjs
 After the approved email provider key exists:
 
 ```bash
-LUX_RESEND_API_KEY="re_..." node tools/setup-inbox-provider-secret.mjs
-firebase deploy --only functions:submitForm,functions:reportActivity --project lux-veritas-media --non-interactive --force
+LUX_RESEND_API_KEY="re_..." node tools/activate-inbox-delivery.mjs
 LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.mjs
 ```
 
