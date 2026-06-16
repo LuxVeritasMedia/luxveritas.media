@@ -54,6 +54,7 @@ for (const marker of [
   "data/lux-launch-closeout.json",
   "node tools/qa-launch-closeout.mjs",
   "node tools/set-launch-closeout-status.mjs",
+  "node tools/set-launch-readiness-status.mjs",
   "www Domain",
   "Inbox Provider",
   "Privacy Approval",

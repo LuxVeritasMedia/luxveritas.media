@@ -101,6 +101,18 @@ node tools/set-launch-closeout-status.mjs
 
 Use `LUX_CLOSEOUT_DRY_RUN=1` to validate without writing. Keep credentials, private report tokens, provider keys, screenshots with secrets, and legal advice out of `data/lux-launch-closeout.json`.
 
+Then update the matching launch readiness gate after the verification command passes:
+
+```bash
+LUX_LAUNCH_GATE=www_redirect \
+LUX_LAUNCH_STATUS=ready \
+LUX_LAUNCH_BY="Reviewer Name" \
+LUX_LAUNCH_EVIDENCE="Domain readiness QA 2026-06-16" \
+node tools/set-launch-readiness-status.mjs
+```
+
+Use `LUX_LAUNCH_DRY_RUN=1` to validate without writing. Keep launch readiness, closeout, TODO, handoff, and runbook status synchronized before final QA.
+
 Firebase Hosting serves the static site and rewrites:
 
 - `/api/submit` to the Firebase Function `submitForm`

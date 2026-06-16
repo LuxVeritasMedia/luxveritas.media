@@ -8,6 +8,7 @@ const [launchRaw, todo, handoff, blockerPacket, runbook] = await Promise.all([
   readFile("docs/launch-blocker-resolution.md", "utf8"),
   readFile("docs/final-launch-runbook.md", "utf8")
 ]);
+const setter = await readFile("tools/set-launch-readiness-status.mjs", "utf8");
 
 const launch = JSON.parse(launchRaw);
 const gates = Array.isArray(launch.gates) ? launch.gates : [];
@@ -103,6 +104,17 @@ for (const check of blockerChecks) {
   if (gate.status === "ready" && handoff.includes(check.handoffMarker)) {
     issue(`production-release-handoff.md still describes ${check.id} as an active blocker after it is ready`);
   }
+}
+
+for (const marker of [
+  "LUX_LAUNCH_GATE",
+  "LUX_LAUNCH_STATUS",
+  "LUX_LAUNCH_EVIDENCE",
+  "LUX_LAUNCH_BY",
+  "LUX_LAUNCH_DRY_RUN",
+  "data/lux-launch-readiness.json"
+]) {
+  if (!setter.includes(marker)) issue(`set-launch-readiness-status.mjs missing marker: ${marker}`);
 }
 
 const blockedRequired = gates.filter((gate) => gate.requiredForPublicLaunch === true && gate.status === "blocked");

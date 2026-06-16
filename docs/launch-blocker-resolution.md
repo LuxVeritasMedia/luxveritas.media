@@ -24,6 +24,18 @@ Use `LUX_CLOSEOUT_DRY_RUN=1` to validate a closeout update without writing. Do n
 
 Launch readiness and closeout status must stay in sync: a closeout item cannot be marked closed while its launch gate is still blocked, and a launch gate should not be marked ready while its closeout item remains open.
 
+After verification passes and the closeout item is ready to be reconciled, update the launch readiness gate with a no-secret evidence reference:
+
+```bash
+LUX_LAUNCH_GATE=www_redirect \
+LUX_LAUNCH_STATUS=ready \
+LUX_LAUNCH_BY="Reviewer Name" \
+LUX_LAUNCH_EVIDENCE="Domain readiness QA 2026-06-16" \
+node tools/set-launch-readiness-status.mjs
+```
+
+Use `LUX_LAUNCH_DRY_RUN=1` to validate without writing. A `ready` launch gate also requires synced TODO, handoff, runbook, and closeout updates before final QA will pass.
+
 ## Current Evidence
 
 - Apex site: `https://luxveritas.media` returns HTTP 200.
