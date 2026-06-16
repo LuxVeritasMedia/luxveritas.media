@@ -71,14 +71,28 @@ for (const marker of [
   "Privacy Approval",
   "Terms Approval",
   "node tools/qa-domain-readiness.mjs",
+  "node tools/resolve-www-domain.mjs",
   "node tools/qa-provider-readiness.mjs",
   "node tools/qa-release-readiness.mjs",
   "node tools/set-launch-closeout-status.mjs",
   "LUX_CLOSEOUT_ITEM=www_redirect",
   "LUX_CLOSEOUT_DRY_RUN=1",
+  "LUX_WWW_CLOSEOUT_WRITE=1",
   "Launch readiness and closeout status must stay in sync"
 ]) {
   if (!docs.includes(marker)) issue(`launch blocker docs missing marker: ${marker}`);
+}
+
+const wwwResolver = await readFile("tools/resolve-www-domain.mjs", "utf8");
+for (const marker of [
+  "LUX_WWW_CLOSEOUT_WRITE",
+  "LUX_WWW_CLOSEOUT_BY",
+  "LUX_WWW_CLOSEOUT_EVIDENCE",
+  "data/lux-launch-readiness.json",
+  "data/lux-launch-closeout.json",
+  "www_redirect"
+]) {
+  if (!wwwResolver.includes(marker)) issue(`resolve-www-domain.mjs missing marker: ${marker}`);
 }
 
 for (const marker of [

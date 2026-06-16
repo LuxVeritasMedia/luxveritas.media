@@ -1,4 +1,6 @@
 import { resolve4, resolveCname } from "node:dns/promises";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 
 const baseDomain = process.env.LUX_DOMAIN || "luxveritas.media";
 const apexHost = baseDomain.replace(/^https?:\/\//, "").replace(/\/$/, "");
@@ -8,6 +10,7 @@ const strict = process.env.LUX_DOMAIN_STRICT === "1";
 const issues = [];
 const warnings = [];
 const passed = [];
+const execFileAsync = promisify(execFile);
 
 function pass(message) {
   passed.push(message);
@@ -19,7 +22,13 @@ function issue(message) {
 
 async function aRecords(hostname) {
   try {
-    return await resolve4(hostname);
+    const records = await resolve4(hostname);
+    if (records.length) return records;
+  } catch {
+  }
+  try {
+    const { stdout } = await execFileAsync("dig", ["+short", hostname, "A"], { timeout: 12000 });
+    return stdout.split("\n").map((item) => item.trim()).filter(Boolean);
   } catch {
     return [];
   }
@@ -27,7 +36,13 @@ async function aRecords(hostname) {
 
 async function cnameRecords(hostname) {
   try {
-    return await resolveCname(hostname);
+    const records = await resolveCname(hostname);
+    if (records.length) return records.map((item) => item.replace(/\.$/, ""));
+  } catch {
+  }
+  try {
+    const { stdout } = await execFileAsync("dig", ["+short", hostname, "CNAME"], { timeout: 12000 });
+    return stdout.split("\n").map((item) => item.trim().replace(/\.$/, "")).filter(Boolean);
   } catch {
     return [];
   }
@@ -47,15 +62,30 @@ async function head(url) {
       status: response.status,
       location: response.headers.get("location") || ""
     };
-  } catch (error) {
-    return {
-      ok: false,
-      status: 0,
-      error: error?.message || String(error)
-    };
+  } catch {
+    try {
+      const { stdout } = await execFileAsync("curl", ["-sS", "-I", "--max-time", "12", url], { timeout: 15000 });
+      const status = Number(stdout.match(/^HTTP\/\S+\s+(\d+)/im)?.[1] || 0);
+      const location = stdout.match(/^location:\s*(.+)$/im)?.[1]?.trim() || "";
+      return {
+        ok: responseOk(status),
+        status,
+        location
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        status: 0,
+        error: error?.message || String(error)
+      };
+    }
   } finally {
     clearTimeout(timeout);
   }
+}
+
+function responseOk(status) {
+  return [200, 204, 301, 302, 307, 308].includes(status);
 }
 
 const [apexA, wwwA, wwwCname, apexHttps, wwwHttps] = await Promise.all([

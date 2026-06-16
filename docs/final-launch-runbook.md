@@ -28,6 +28,7 @@ node tools/qa-deploy-status.mjs
 
 ```bash
 node tools/qa-domain-readiness.mjs
+node tools/resolve-www-domain.mjs
 dig +short www.luxveritas.media
 curl -I https://www.luxveritas.media
 ```

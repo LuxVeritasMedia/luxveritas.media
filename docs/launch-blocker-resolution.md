@@ -1,6 +1,6 @@
 # Lux Veritas Launch Blocker Resolution
 
-Status date: 2026-06-11
+Status date: 2026-06-16
 
 This packet tracks only the remaining public-release blockers for LuxVeritas.media. Keep secrets out of this file. Use Firebase Secret Manager, provider dashboards, and approved operator tokens for private values.
 
@@ -39,7 +39,7 @@ Use `LUX_LAUNCH_DRY_RUN=1` to validate without writing. A `ready` launch gate al
 ## Current Evidence
 
 - Apex site: `https://luxveritas.media` returns HTTP 200.
-- Live build version: `20260611-report-gate-readiness`.
+- Live build version: `20260616-closeout-report`.
 - Browser-flow pilot QA passes locally with form, media, and reporting paths.
 - Private handoff secret set is active for `firebase_handoff`.
 - Operator reporting token hash is configured.
@@ -60,8 +60,18 @@ Verify:
 
 ```bash
 node tools/qa-domain-readiness.mjs
+node tools/resolve-www-domain.mjs
 dig +short www.luxveritas.media
 curl -I https://www.luxveritas.media
+```
+
+After DNS and SSL are ready, close the launch gate and closeout tracker together:
+
+```bash
+LUX_WWW_CLOSEOUT_WRITE=1 \
+LUX_WWW_CLOSEOUT_BY="Reviewer Name" \
+LUX_WWW_CLOSEOUT_EVIDENCE="Domain readiness QA 2026-06-16" \
+node tools/resolve-www-domain.mjs
 ```
 
 Acceptance:

@@ -6,6 +6,7 @@ const functions = await readFile(".github/workflows/firebase-functions-manual.ym
 const finalAudit = await readFile(".github/workflows/final-release-audit.yml", "utf8");
 const deployStatus = await readFile("tools/qa-deploy-status.mjs", "utf8");
 const inboxActivation = await readFile("tools/activate-inbox-delivery.mjs", "utf8");
+const wwwResolver = await readFile("tools/resolve-www-domain.mjs", "utf8");
 const finalLaunchRunbook = await readFile("docs/final-launch-runbook.md", "utf8");
 
 for (const marker of [
@@ -119,7 +120,20 @@ for (const marker of [
 }
 
 for (const marker of [
+  "LUX_WWW_CLOSEOUT_WRITE",
+  "LUX_WWW_CLOSEOUT_DRY_RUN",
+  "LUX_WWW_CLOSEOUT_BY",
+  "LUX_WWW_CLOSEOUT_EVIDENCE",
+  "data/lux-launch-readiness.json",
+  "data/lux-launch-closeout.json",
+  "www_redirect"
+]) {
+  if (!wwwResolver.includes(marker)) issues.push(`resolve-www-domain.mjs: missing ${marker}`);
+}
+
+for (const marker of [
   "node tools/activate-inbox-delivery.mjs",
+  "node tools/resolve-www-domain.mjs",
   "LUX_INBOX_ACTIVATION_WRITE_TEST=1",
   "ready to receive QA mail"
 ]) {
