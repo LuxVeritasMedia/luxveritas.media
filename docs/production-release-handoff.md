@@ -18,6 +18,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Public site deploys from GitHub to Firebase Hosting.
 - Apex HTTPS works at `https://luxveritas.media`.
 - Public forms submit to `/api/submit`.
+- Approved sender identity is `forms@luxveritas.media`, with delivery to `info@luxveritas.media` confirmed through live matrix QA.
 - Valid live form submissions are stored server-side and sent silently to the approved inbox when the provider is active.
 - Public submit buttons reset after success, stored capture, timeout, validation failure, or fallback.
 - Browser-flow QA covers stored capture, email-draft fallback, rate-limit recovery, portal fallback, and submit-button reset.
