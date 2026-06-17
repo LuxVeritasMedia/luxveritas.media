@@ -1,6 +1,6 @@
 # Lux Veritas Production Release Handoff
 
-Status date: 2026-06-11
+Status date: 2026-06-17
 
 This repo is the public LuxVeritas.media front door. The apex site is live and serving the current build. Do not move LuxFlow OS, private prompts, internal dashboards, finance, rights operations, or unreleased canon into this public repo.
 
@@ -18,7 +18,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Public site deploys from GitHub to Firebase Hosting.
 - Apex HTTPS works at `https://luxveritas.media`.
 - Public forms submit to `/api/submit`.
-- Valid live form submissions are stored server-side when the inbox provider is offline.
+- Valid live form submissions are stored server-side and sent silently to the approved inbox when the provider is active.
 - Public submit buttons reset after success, stored capture, timeout, validation failure, or fallback.
 - Browser-flow QA covers stored capture, email-draft fallback, rate-limit recovery, portal fallback, and submit-button reset.
 - Portal sign-in is a screened access capture, not a real account login yet.
@@ -35,11 +35,9 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 These are the known blockers before calling the site public-launch ready.
 
 1. `www.luxveritas.media` DNS and Firebase Hosting redirect are not configured.
-2. `RESEND_API_KEY` must be set to a real approved provider key. The current secret value is the offline sentinel.
-3. `forms@luxveritas.media` must be verified with the email provider before silent inbox delivery is considered live.
-4. Privacy page needs legal/business approval.
-5. Terms page needs legal/business approval.
-6. External CRM/Google workflow target may be selected after the private workflow is approved. The signed Firebase private handoff is already active for the MVP intake queue.
+2. Privacy page needs legal/business approval.
+3. Terms page needs legal/business approval.
+4. External CRM/Google workflow target may be selected after the private workflow is approved. The signed Firebase private handoff is already active for the MVP intake queue.
 
 Use `docs/launch-blocker-resolution.md` as the operational closeout packet for the remaining release blockers. Use `docs/legal-review-packet.md` for Privacy and Terms review. Use `docs/final-launch-runbook.md` for the exact final launch sequence.
 
@@ -61,7 +59,7 @@ LUX_PILOT_BROWSER=1 LUX_PILOT_LIVE=1 node tools/qa-pilot-readiness.mjs
 node tools/qa-final-release-gate.mjs
 ```
 
-After the approved email provider key exists:
+Inbox delivery was confirmed on 2026-06-17. Re-run this only if the sender domain, provider secret, or Functions deployment changes:
 
 ```bash
 LUX_RESEND_API_KEY="re_..." node tools/activate-inbox-delivery.mjs

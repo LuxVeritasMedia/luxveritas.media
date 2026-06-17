@@ -1,6 +1,6 @@
 {
   "schemaVersion": "luxveritas.launch_closeout.v1",
-  "updatedAt": "2026-06-16T00:00:00.000Z",
+  "updatedAt": "2026-06-17T09:28:55.743Z",
   "purpose": "No-secret public-release closeout tracker. Store evidence references only; do not store credentials, operator tokens, private report exports, provider keys, or legal advice in this file.",
   "items": [
     {
@@ -28,7 +28,7 @@
       "id": "inbox_notifications",
       "gateId": "inbox_notifications",
       "label": "Inbox Provider",
-      "status": "open",
+      "status": "closed",
       "owner": "Capture operator",
       "requiredEvidence": [
         "Approved sender domain is verified with the provider",
@@ -43,9 +43,9 @@
         "LUX_RESEND_API_KEY=\"re_...\" node tools/activate-inbox-delivery.mjs",
         "LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.mjs"
       ],
-      "evidenceReference": "",
-      "closedAt": "",
-      "closedBy": ""
+      "evidenceReference": "2026-06-17-live-form-matrix-10-capture-intents-email-sent",
+      "closedAt": "2026-06-17T09:28:55.743Z",
+      "closedBy": "Codex"
     },
     {
       "id": "privacy_review",

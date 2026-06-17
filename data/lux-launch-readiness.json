@@ -1,6 +1,6 @@
 {
   "version": "2026-06-11-launch-gates",
-  "updatedAt": "2026-06-11T00:00:00.000Z",
+  "updatedAt": "2026-06-17T09:28:55.564Z",
   "gates": [
     {
       "id": "media_sources",
@@ -17,12 +17,15 @@
       "id": "inbox_notifications",
       "label": "Inbox Notifications",
       "category": "capture",
-      "status": "blocked",
+      "status": "ready",
       "nextAction": "Configure the approved sender and inbox provider, then replay pending inbox records.",
       "owner": "Capture operator",
       "blockerType": "provider_activation",
       "verification": "Run provider readiness and form delivery QA after inbox setup.",
-      "requiredForPublicLaunch": true
+      "requiredForPublicLaunch": true,
+      "statusEvidenceReference": "2026-06-17-live-form-matrix-10-capture-intents-email-sent",
+      "statusUpdatedAt": "2026-06-17T09:28:55.564Z",
+      "statusUpdatedBy": "Codex"
     },
     {
       "id": "private_handoff",

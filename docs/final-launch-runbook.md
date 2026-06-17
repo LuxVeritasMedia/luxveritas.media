@@ -1,6 +1,6 @@
 # Lux Veritas Final Launch Runbook
 
-Status date: 2026-06-11
+Status date: 2026-06-17
 
 Use this only when moving from pilot-ready to public-release ready. Keep secrets out of the repo and terminal history where possible. Do not call the site release-ready until the final gate passes with write tests enabled and without blocker overrides.
 
@@ -8,8 +8,8 @@ Use this only when moving from pilot-ready to public-release ready. Keep secrets
 
 - Apex site is live at `https://luxveritas.media`.
 - Current asset version is `20260616-closeout-report`.
-- Media, private handoff, and operator reporting are ready.
-- Remaining blockers are `www` DNS, inbox provider, Privacy approval, and Terms approval.
+- Media, inbox delivery, private handoff, and operator reporting are ready.
+- Remaining blockers are `www` DNS, Privacy approval, and Terms approval.
 
 ## Launch Order
 
@@ -33,13 +33,19 @@ dig +short www.luxveritas.media
 curl -I https://www.luxveritas.media
 ```
 
-3. Activate inbox delivery after the sender domain is verified:
+3. Reconfirm inbox delivery if the sender domain, Firebase Functions, or provider secret changes:
 
 ```bash
 LUX_RESEND_API_KEY="re_..." node tools/activate-inbox-delivery.mjs
 ```
 
 Use `LUX_INBOX_ACTIVATION_WRITE_TEST=1` only when the inbox owner is ready to receive QA mail. That mode sends a live form write and requires inbox delivery.
+
+Inbox delivery was last confirmed on 2026-06-17 with:
+
+```bash
+LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.mjs
+```
 
 4. Approve legal only after review:
 

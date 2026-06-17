@@ -1,6 +1,6 @@
 # Lux Veritas Launch Blocker Resolution
 
-Status date: 2026-06-16
+Status date: 2026-06-17
 
 This packet tracks only the remaining public-release blockers for LuxVeritas.media. Keep secrets out of this file. Use Firebase Secret Manager, provider dashboards, and approved operator tokens for private values.
 
@@ -43,7 +43,8 @@ Use `LUX_LAUNCH_DRY_RUN=1` to validate without writing. A `ready` launch gate al
 - Browser-flow pilot QA passes locally with form, media, and reporting paths.
 - Private handoff secret set is active for `firebase_handoff`.
 - Operator reporting token hash is configured.
-- Release readiness currently reports four blockers: inbox provider, Privacy approval, Terms approval, and `www` DNS.
+- Release readiness currently reports three blockers: Privacy approval, Terms approval, and `www` DNS.
+- Inbox provider closeout is resolved: 2026-06-17 live form matrix confirmed 10 capture intents with inbox delivery required.
 
 ## Blocker 1 - www Domain
 
@@ -80,9 +81,11 @@ Acceptance:
 - `https://www.luxveritas.media` returns HTTP 200 or an HTTPS redirect to `https://luxveritas.media`.
 - `data/lux-launch-closeout.json` marks `www_redirect` closed with a no-secret evidence reference.
 
-## Blocker 2 - Inbox Provider
+## Closed - Inbox Provider
 
 Goal: public forms store server-side and send silent inbox notifications to the approved Lux Veritas inbox.
+
+Status: closed on 2026-06-17. Keep the steps below as revalidation guidance if the sender domain, provider secret, or Functions deployment changes.
 
 Actions:
 
