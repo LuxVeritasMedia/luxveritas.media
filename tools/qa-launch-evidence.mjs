@@ -54,7 +54,7 @@ if (evidence) {
   if (!evidence.assetVersion) issue("evidence assetVersion missing");
   if (!evidence.media?.itemCount || evidence.media.itemCount < 3) issue("evidence media item count should include MVP audio/video/stream");
   const blocked = Array.isArray(evidence.launchGates?.blocked) ? evidence.launchGates.blocked : [];
-  for (const id of ["inbox_notifications", "privacy_review", "terms_review", "www_redirect"]) {
+  for (const id of ["privacy_review", "terms_review", "www_redirect"]) {
     if (!blocked.some((gate) => gate.id === id)) issue(`evidence missing current blocked gate ${id}`);
   }
   const closeoutItems = Array.isArray(evidence.closeout?.items) ? evidence.closeout.items : [];

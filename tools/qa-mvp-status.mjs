@@ -4,11 +4,14 @@ import { promisify } from "node:util";
 const execFileAsync = promisify(execFile);
 const issues = [];
 const warnings = [];
-const requiredBlockedGateIds = [
-  "inbox_notifications",
+const activeBlockedGateIds = [
   "privacy_review",
   "terms_review",
   "www_redirect"
+];
+const closeoutItemIds = [
+  "inbox_notifications",
+  ...activeBlockedGateIds
 ];
 
 function issue(message) {
@@ -77,7 +80,7 @@ if (report) {
 
   const blocked = Array.isArray(report.launchGates?.blocked) ? report.launchGates.blocked : [];
   const blockedIds = new Set(blocked.map((gate) => gate.id));
-  for (const id of requiredBlockedGateIds) {
+  for (const id of activeBlockedGateIds) {
     if (!blockedIds.has(id)) warn(`expected current public-launch blocker ${id} is not reported as blocked`);
   }
   for (const gate of blocked) {
@@ -90,7 +93,7 @@ if (report) {
   if (!report.closeout?.updatedAt) issue("closeout updatedAt missing");
   if (!closeoutItems.length) issue("closeout items missing from MVP status report");
   const closeoutIds = new Set(closeoutItems.map((item) => item.id));
-  for (const id of requiredBlockedGateIds) {
+  for (const id of closeoutItemIds) {
     if (!closeoutIds.has(id)) issue(`closeout item ${id} missing from MVP status report`);
   }
   for (const item of closeoutItems) {
