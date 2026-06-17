@@ -91,13 +91,13 @@ const mockReport = {
     ]
   },
   delivery: {
-    inboxNotification: "needs_setup",
+    inboxNotification: "ready",
     storeFirstCapture: "ready",
     integrationWebhook: "ready",
     integrationTarget: "firebase_handoff",
     integrationTargetConfigured: true,
     operatorTokenConfigured: true,
-    missing: ["RESEND_API_KEY"]
+    missing: []
   },
   summary: {
     funnel: [
@@ -753,10 +753,10 @@ async function operatorReportFlow(page, baseUrl) {
   if (!/3 of 3 source-ready/.test(mediaSummary)) {
     issues.push(`/portal/reporting.html: expected media readiness summary, found "${mediaSummary}"`);
   }
-  if (!/3 of 7 launch gates ready/.test(launchSummaryBeforeLoad)) {
+  if (!/4 of 7 launch gates ready/.test(launchSummaryBeforeLoad)) {
     issues.push(`/portal/reporting.html: expected launch readiness summary, found "${launchSummaryBeforeLoad}"`);
   }
-  if (!/0 of 4 closeout items closed/.test(closeoutSummaryBeforeLoad)) {
+  if (!/1 of 4 closeout items closed/.test(closeoutSummaryBeforeLoad)) {
     issues.push(`/portal/reporting.html: expected closeout summary, found "${closeoutSummaryBeforeLoad}"`);
   }
   for (const label of ["SPMVP", "Visual World", "Lux Radio"]) {
@@ -795,7 +795,7 @@ async function operatorReportFlow(page, baseUrl) {
   }
   await page.waitForFunction(() => {
     const list = document.querySelector("[data-launch-readiness-list]");
-    return list && /Inbox notification provider is not active/i.test(list.textContent || "");
+    return list && /Inbox Notifications/i.test(list.textContent || "");
   }, null, { timeout: 5000 }).catch(() => {});
 
   const submissionCount = await page.locator('[data-private-count="submissions"]').innerText();
@@ -831,9 +831,9 @@ async function operatorReportFlow(page, baseUrl) {
   if (eventCount !== "128") issues.push(`/portal/reporting.html: expected 128 events, found ${eventCount}`);
   if (privateHandoffCount !== "9") issues.push(`/portal/reporting.html: expected 9 accepted handoffs, found ${privateHandoffCount}`);
   if (pendingHandoffCount !== "0") issues.push(`/portal/reporting.html: expected 0 pending integrations, found ${pendingHandoffCount}`);
-  if (deliveryStatus !== "Setup") issues.push(`/portal/reporting.html: expected delivery setup status, found ${deliveryStatus}`);
-  if (!/RESEND_API_KEY/.test(deliveryDetail) || /FORM_INTEGRATION_URL|FORM_INTEGRATION_TARGET/.test(deliveryDetail)) {
-    issues.push(`/portal/reporting.html: missing delivery setup detail`);
+  if (deliveryStatus !== "Ready") issues.push(`/portal/reporting.html: expected delivery ready status, found ${deliveryStatus}`);
+  if (!/Inbox notifications active/.test(deliveryDetail)) {
+    issues.push(`/portal/reporting.html: missing delivery ready detail`);
   }
   if (handoffTargetStatus !== "Ready") {
     issues.push(`/portal/reporting.html: expected handoff target ready status, found ${handoffTargetStatus}`);
@@ -911,19 +911,23 @@ async function operatorReportFlow(page, baseUrl) {
   if (!/Server captures/.test(funnelSummary) || !/Media actions/.test(funnelSummary) || !/Playback events/.test(funnelSummary)) {
     issues.push(`/portal/reporting.html: pilot funnel missing capture/media values`);
   }
-  if (!/3 of 7 launch gates ready/.test(launchSummary) || !/Inbox notification provider is not active/i.test(launchReadiness)) {
+  if (!/4 of 7 launch gates ready/.test(launchSummary) || !/Inbox Notifications/i.test(launchReadiness)) {
     issues.push(`/portal/reporting.html: launch gates did not render blocker state (summary="${launchSummary}", list="${launchReadiness.replace(/\s+/g, " ")}")`);
   }
-  if (!/0 of 4 closeout items closed/.test(closeoutSummary) || !/Inbox Provider/.test(closeoutReadiness)) {
+  if (!/1 of 4 closeout items closed/.test(closeoutSummary) || !/Inbox Provider\s+Closed/i.test(closeoutReadiness.replace(/\s+/g, " "))) {
     issues.push(`/portal/reporting.html: launch closeout did not render state (summary="${closeoutSummary}", list="${closeoutReadiness.replace(/\s+/g, " ")}")`);
   }
 
+  const reportRequestCountBeforeInboxTest = reportRequests.length;
   await page.click('[data-report-action="test-inbox"]');
-  await page.waitForFunction(() => {
-    const status = document.querySelector("[data-private-report-status]");
-    return status && /Inbox provider is not configured yet/i.test(status.textContent || "");
-  }, null, { timeout: 5000 });
-  const inboxTestRequest = reportRequests.at(-1);
+  let inboxTestRequest = null;
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    inboxTestRequest = reportRequests
+      .slice(reportRequestCountBeforeInboxTest)
+      .find((request) => request?.body?.action === "test_inbox") || null;
+    if (inboxTestRequest) break;
+    await page.waitForTimeout(250);
+  }
   if (inboxTestRequest?.body?.action !== "test_inbox") {
     issues.push(`/portal/reporting.html: test inbox did not send protected test_inbox action`);
   }
@@ -1042,9 +1046,9 @@ try {
         contentType: "application/json",
         body: JSON.stringify({
           ok: true,
-          sent: false,
-          skipped: true,
-          reason: "email_provider_not_configured"
+          sent: true,
+          skipped: false,
+          reason: "sent"
         })
       });
       return;
