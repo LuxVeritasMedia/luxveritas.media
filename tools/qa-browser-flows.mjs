@@ -769,7 +769,7 @@ async function operatorReportFlow(page, baseUrl) {
       issues.push(`/portal/reporting.html: launch readiness missing ${label}`);
     }
   }
-  for (const label of ["WWW DNS and Hosting", "Inbox Provider", "Privacy Approval", "Terms Approval"]) {
+  for (const label of ["WWW Hosting and Certificate", "Inbox Provider", "Privacy Approval", "Terms Approval"]) {
     if (!closeoutBeforeLoad.includes(label)) {
       issues.push(`/portal/reporting.html: launch closeout missing ${label}`);
     }
