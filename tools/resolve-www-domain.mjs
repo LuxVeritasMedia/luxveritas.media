@@ -33,6 +33,31 @@ async function aRecords(hostname) {
     if (records.length) return records;
   } catch {
   }
+  try {
+    const response = await fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(hostname)}&type=A`, {
+      headers: { Accept: "application/dns-json" }
+    });
+    const body = await response.json();
+    const records = Array.isArray(body.Answer)
+      ? body.Answer.map((answer) => answer.data).filter((item) => /^\d+\.\d+\.\d+\.\d+$/.test(item))
+      : [];
+    if (records.length) return records;
+  } catch {
+  }
+  try {
+    const { stdout } = await execFileAsync("curl", [
+      "-fsS",
+      "-H",
+      "Accept: application/dns-json",
+      `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(hostname)}&type=A`
+    ], { timeout: 10000 });
+    const body = JSON.parse(stdout);
+    const records = Array.isArray(body.Answer)
+      ? body.Answer.map((answer) => answer.data).filter((item) => /^\d+\.\d+\.\d+\.\d+$/.test(item))
+      : [];
+    if (records.length) return records;
+  } catch {
+  }
   return digRecords(hostname, "A");
 }
 
@@ -40,6 +65,31 @@ async function cnameRecords(hostname) {
   try {
     const records = await resolveCname(hostname);
     if (records.length) return records.map((item) => item.replace(/\.$/, ""));
+  } catch {
+  }
+  try {
+    const response = await fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(hostname)}&type=CNAME`, {
+      headers: { Accept: "application/dns-json" }
+    });
+    const body = await response.json();
+    const records = Array.isArray(body.Answer)
+      ? body.Answer.map((answer) => String(answer.data || "").replace(/\.$/, "")).filter(Boolean)
+      : [];
+    if (records.length) return records;
+  } catch {
+  }
+  try {
+    const { stdout } = await execFileAsync("curl", [
+      "-fsS",
+      "-H",
+      "Accept: application/dns-json",
+      `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(hostname)}&type=CNAME`
+    ], { timeout: 10000 });
+    const body = JSON.parse(stdout);
+    const records = Array.isArray(body.Answer)
+      ? body.Answer.map((answer) => String(answer.data || "").replace(/\.$/, "")).filter(Boolean)
+      : [];
+    if (records.length) return records;
   } catch {
   }
   return digRecords(hostname, "CNAME");
@@ -153,7 +203,11 @@ if (ready) {
   console.log("WWW domain blockers:");
   for (const blocker of (wwwBlockers.length ? wwwBlockers : writeBlockers)) console.log(`- ${blocker}`);
   console.log("");
-  console.log("Next action: add www.luxveritas.media as a Firebase Hosting custom domain, set the DNS record Firebase provides, then wait for SSL.");
+  if (wwwA.length || wwwCname.length) {
+    console.log("Next action: wait for Firebase certificate minting and Hosting mapping to finish, then rerun domain readiness.");
+  } else {
+    console.log("Next action: add www.luxveritas.media as a Firebase Hosting custom domain, set the DNS record Firebase provides, then wait for SSL.");
+  }
   if (writeBlockers.some((item) => item.startsWith(apexHost) || item.startsWith(`https://${apexHost}`))) {
     console.log("Apex checks were inconclusive in this environment; verify with node tools/qa-domain-readiness.mjs before closeout.");
   }

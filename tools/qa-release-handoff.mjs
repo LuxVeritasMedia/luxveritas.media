@@ -157,7 +157,7 @@ for (const marker of [
 }
 
 for (const marker of [
-  "Configure www.luxveritas.media DNS and Hosting redirect",
+  "Wait for Firebase certificate minting/Hosting mapping for www.luxveritas.media",
   "Configure and verify email provider runtime secret `RESEND_API_KEY`",
   "Add legal review packet for Privacy and Terms approval",
   "Add final strict release-gate command for launch-day acceptance",

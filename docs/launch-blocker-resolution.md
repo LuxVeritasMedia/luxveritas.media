@@ -1,6 +1,6 @@
 # Lux Veritas Launch Blocker Resolution
 
-Status date: 2026-06-17
+Status date: 2026-06-18
 
 This packet tracks only the remaining public-release blockers for LuxVeritas.media. Keep secrets out of this file. Use Firebase Secret Manager, provider dashboards, and approved operator tokens for private values.
 
@@ -43,7 +43,8 @@ Use `LUX_LAUNCH_DRY_RUN=1` to validate without writing. A `ready` launch gate al
 - Browser-flow pilot QA passes locally with form, media, and reporting paths.
 - Private handoff secret set is active for `firebase_handoff`.
 - Operator reporting token hash is configured.
-- Release readiness currently reports three blockers: Privacy approval, Terms approval, and `www` DNS.
+- Release readiness currently reports three external blockers: Privacy approval, Terms approval, and `www` Firebase certificate/Hosting mapping.
+- `www.luxveritas.media` DNS and Firebase custom-domain verification are complete; HTTPS currently reaches Firebase but returns HTTP 404 while the certificate/mapping finishes.
 - Inbox provider closeout is resolved: 2026-06-17 live form matrix confirmed 10 capture intents with inbox delivery required.
 
 ## Blocker 1 - www Domain
@@ -52,10 +53,10 @@ Goal: `https://www.luxveritas.media` resolves and redirects or serves correctly 
 
 Actions:
 
-1. Add `www.luxveritas.media` as a Firebase Hosting custom domain for project `lux-veritas-media`.
-2. Add the DNS record Firebase provides for `www` in the domain DNS provider.
-3. Wait for Firebase SSL to become active.
-4. If Firebase offers a redirect option, redirect `www` to the apex domain.
+1. Confirm `www.luxveritas.media` remains added and verified as a Firebase Hosting custom domain for project `lux-veritas-media`.
+2. Confirm the DNS record Firebase provides for `www` remains present in the domain DNS provider.
+3. Wait for Firebase SSL and Hosting mapping to become active.
+4. If Firebase offers a redirect option after SSL is active, redirect `www` to the apex domain.
 
 Verify:
 

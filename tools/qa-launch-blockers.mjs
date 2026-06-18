@@ -28,9 +28,9 @@ const blockerChecks = [
   {
     id: "www_redirect",
     label: "www Domain",
-    todoMarker: "Configure www.luxveritas.media DNS and Hosting redirect",
-    handoffMarker: "`www.luxveritas.media` DNS and Firebase Hosting redirect are not configured.",
-    runbookMarker: "`www.luxveritas.media` does not resolve over HTTPS."
+    todoMarker: "Wait for Firebase certificate minting/Hosting mapping for www.luxveritas.media",
+    handoffMarker: "`www.luxveritas.media` DNS and Firebase custom-domain verification are complete, but HTTPS still returns Firebase 404 while certificate/Hosting mapping finishes.",
+    runbookMarker: "`www.luxveritas.media` still returns Firebase 404 or does not serve/redirect over HTTPS."
   },
   {
     id: "inbox_notifications",

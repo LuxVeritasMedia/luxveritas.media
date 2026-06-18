@@ -6,12 +6,12 @@
     {
       "id": "www_redirect",
       "gateId": "www_redirect",
-      "label": "WWW DNS and Hosting",
+      "label": "WWW Hosting and Certificate",
       "status": "open",
       "owner": "Domain operator",
       "requiredEvidence": [
-        "Firebase Hosting custom domain for www.luxveritas.media is added",
-        "DNS record for www.luxveritas.media exists",
+        "Firebase Hosting custom domain for www.luxveritas.media is added and verified",
+        "DNS record for www.luxveritas.media exists and resolves",
         "https://www.luxveritas.media returns HTTP 200 or redirects to https://luxveritas.media",
         "node tools/qa-domain-readiness.mjs reports no blockers"
       ],

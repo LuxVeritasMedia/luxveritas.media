@@ -41,6 +41,49 @@ function validPoster(value) {
   return !value || validHttps(value) || String(value).startsWith("/assets/");
 }
 
+function responseOk(status) {
+  return [200, 204, 301, 302, 307, 308].includes(status);
+}
+
+async function checkHttps(url) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 12000);
+
+  try {
+    const response = await fetch(url, {
+      method: "HEAD",
+      redirect: "manual",
+      signal: controller.signal
+    });
+
+    return {
+      ok: response.ok || responseOk(response.status),
+      status: response.status,
+      location: response.headers.get("location") || ""
+    };
+  } catch {
+    try {
+      const { stdout } = await execFileAsync("curl", ["-sS", "-I", "--max-time", "12", url], { timeout: 15000 });
+      const status = Number(stdout.match(/^HTTP\/\S+\s+(\d+)/im)?.[1] || 0);
+      const location = stdout.match(/^location:\s*(.+)$/im)?.[1]?.trim() || "";
+      return {
+        ok: responseOk(status),
+        status,
+        location
+      };
+    } catch (error) {
+      const message = String(error?.stderr || error?.message || error).split("\n")[0];
+      return {
+        ok: false,
+        status: 0,
+        error: message
+      };
+    }
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function resolveHost(hostname) {
   try {
     const records = await resolve4(hostname);
@@ -266,10 +309,12 @@ add(workflow.includes("node tools/qa-browser-flows.mjs"), "Browser-flow QA is en
 add(workflow.includes("node tools/qa-live-site.mjs"), "Live-site QA is enforced after Hosting deploy.");
 add(workflow.includes("LUX_BROWSER_BASE_URL=https://luxveritas.media node tools/qa-browser-flows.mjs"), "Live browser-flow QA is enforced after Hosting deploy.");
 
-const [rootDns, wwwDns, wwwCnameDns] = await Promise.all([
+const [rootDns, wwwDns, wwwCnameDns, rootHttps, wwwHttps] = await Promise.all([
   resolveHost("luxveritas.media"),
   resolveHost("www.luxveritas.media"),
-  resolveCnameHost("www.luxveritas.media")
+  resolveCnameHost("www.luxveritas.media"),
+  checkHttps("https://luxveritas.media"),
+  checkHttps("https://www.luxveritas.media")
 ]);
 
 if (rootDns.verified) {
@@ -277,13 +322,19 @@ if (rootDns.verified) {
 } else {
   warnings.push("Root DNS could not be verified from this environment.");
 }
+add(rootHttps.ok, `https://luxveritas.media responds with HTTP ${rootHttps.status || rootHttps.error || "not ready"}.`);
 
 if (wwwDns.verified || wwwCnameDns.verified) {
   const found = [
     wwwDns.records.length ? `A=${wwwDns.records.join(", ")}` : null,
     wwwCnameDns.records.length ? `CNAME=${wwwCnameDns.records.join(", ")}` : null
   ].filter(Boolean).join(" ");
-  add(wwwDns.records.length > 0 || wwwCnameDns.records.length > 0, `www.luxveritas.media has DNS records. Found: ${found || "none"}`);
+  const wwwDnsReady = wwwDns.records.length > 0 || wwwCnameDns.records.length > 0;
+  add(wwwDnsReady, `www.luxveritas.media has DNS records. Found: ${found || "none"}`);
+  add(
+    !wwwDnsReady || wwwHttps.ok,
+    `https://www.luxveritas.media responds with HTTP ${wwwHttps.status || wwwHttps.error || "not ready"}.`
+  );
 } else {
   warnings.push("www DNS could not be verified from this environment.");
 }

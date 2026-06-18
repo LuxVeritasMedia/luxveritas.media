@@ -76,10 +76,10 @@
       "label": "WWW Redirect",
       "category": "domain",
       "status": "blocked",
-      "nextAction": "Configure www.luxveritas.media DNS and Hosting redirect after the root domain remains stable.",
+      "nextAction": "Wait for Firebase certificate minting and Hosting mapping to finish for www.luxveritas.media; DNS and custom-domain verification are complete.",
       "owner": "Domain operator",
       "blockerType": "dns_ssl",
-      "verification": "Run domain-readiness QA after adding the Firebase Hosting www custom domain and required A or CNAME record.",
+      "verification": "Run domain-readiness QA until https://www.luxveritas.media returns HTTP 200 or redirects to https://luxveritas.media.",
       "requiredForPublicLaunch": true
     }
   ]

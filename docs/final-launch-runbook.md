@@ -1,6 +1,6 @@
 # Lux Veritas Final Launch Runbook
 
-Status date: 2026-06-17
+Status date: 2026-06-18
 
 Use this only when moving from pilot-ready to public-release ready. Keep secrets out of the repo and terminal history where possible. Do not call the site release-ready until the final gate passes with write tests enabled and without blocker overrides.
 
@@ -9,7 +9,7 @@ Use this only when moving from pilot-ready to public-release ready. Keep secrets
 - Apex site is live at `https://luxveritas.media`.
 - Current asset version is `20260616-closeout-report`.
 - Media, inbox delivery, private handoff, and operator reporting are ready.
-- Remaining blockers are `www` DNS, Privacy approval, and Terms approval.
+- Remaining blockers are `www` Firebase certificate/Hosting mapping, Privacy approval, and Terms approval.
 
 ## Launch Order
 
@@ -24,7 +24,7 @@ git status --short --branch
 node tools/qa-deploy-status.mjs
 ```
 
-2. Clear `www` DNS and Hosting:
+2. Clear `www` Firebase certificate/Hosting mapping:
 
 ```bash
 node tools/qa-domain-readiness.mjs
@@ -82,7 +82,7 @@ The final gate also runs operator-environment, MVP status, and MVP preflight che
 - `LUX_FINAL_WRITE_TESTS=1` has not been run.
 - Live form writes do not send to `info@luxveritas.media`.
 - Privacy or Terms still show `needs_review`.
-- `www.luxveritas.media` does not resolve over HTTPS.
+- `www.luxveritas.media` still returns Firebase 404 or does not serve/redirect over HTTPS.
 
 ## After The Gate Passes
 

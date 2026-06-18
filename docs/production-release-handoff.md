@@ -1,6 +1,6 @@
 # Lux Veritas Production Release Handoff
 
-Status date: 2026-06-17
+Status date: 2026-06-18
 
 This repo is the public LuxVeritas.media front door. The apex site is live and serving the current build. Do not move LuxFlow OS, private prompts, internal dashboards, finance, rights operations, or unreleased canon into this public repo.
 
@@ -35,7 +35,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 
 These are the known blockers before calling the site public-launch ready.
 
-1. `www.luxveritas.media` DNS and Firebase Hosting redirect are not configured.
+1. `www.luxveritas.media` DNS and Firebase custom-domain verification are complete, but HTTPS still returns Firebase 404 while certificate/Hosting mapping finishes.
 2. Privacy page needs legal/business approval.
 3. Terms page needs legal/business approval.
 4. External CRM/Google workflow target may be selected after the private workflow is approved. The signed Firebase private handoff is already active for the MVP intake queue.
@@ -99,4 +99,4 @@ Do not call the MVP release-ready until all of these are true:
 - Test submissions send silently to `info@luxveritas.media`.
 - Pending stored submissions can be replayed from private reporting.
 - Privacy and Terms are approved in `data/lux-legal-review.json`.
-- `www.luxveritas.media` resolves and redirects or serves correctly over HTTPS.
+- `www.luxveritas.media` serves correctly over HTTPS or redirects to the apex domain.

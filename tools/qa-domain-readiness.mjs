@@ -134,9 +134,11 @@ if (issues.length) {
   console.log("Domain readiness blockers:");
   for (const item of issues) console.log(`BLOCK ${item}`);
   console.log("");
-  console.log("Expected Firebase Hosting DNS:");
+  console.log("Expected Firebase Hosting state:");
   console.log(`- A ${apexHost} ${firebaseHostingIp}`);
-  console.log(`- Add ${wwwHost} as a Firebase Hosting custom domain, then use the DNS record Firebase gives for www.`);
+  console.log(`- ${wwwHost} added and verified as a Firebase Hosting custom domain.`);
+  console.log(`- ${wwwHost} has the DNS record Firebase gives for www.`);
+  console.log("- If DNS already resolves but HTTPS returns 404, wait for Firebase certificate minting and Hosting mapping to finish.");
   console.log("- If Firebase offers a redirect option, redirect www to the apex after SSL is active.");
   if (strict) process.exit(1);
 }
