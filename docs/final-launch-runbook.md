@@ -7,9 +7,10 @@ Use this only when moving from pilot-ready to public-release ready. Keep secrets
 ## Starting State
 
 - Apex site is live at `https://luxveritas.media`.
+- `www.luxveritas.media` returns HTTP 200.
 - Current asset version is `20260616-closeout-report`.
 - Media, inbox delivery, private handoff, and operator reporting are ready.
-- Remaining blockers are `www` Firebase certificate/Hosting mapping, Privacy approval, and Terms approval.
+- Remaining blockers are Privacy approval and Terms approval.
 
 ## Launch Order
 
@@ -24,7 +25,7 @@ git status --short --branch
 node tools/qa-deploy-status.mjs
 ```
 
-2. Clear `www` Firebase certificate/Hosting mapping:
+2. Reconfirm `www` HTTPS:
 
 ```bash
 node tools/qa-domain-readiness.mjs
@@ -82,7 +83,7 @@ The final gate also runs operator-environment, MVP status, and MVP preflight che
 - `LUX_FINAL_WRITE_TESTS=1` has not been run.
 - Live form writes do not send to `info@luxveritas.media`.
 - Privacy or Terms still show `needs_review`.
-- `www.luxveritas.media` still returns Firebase 404 or does not serve/redirect over HTTPS.
+- `www.luxveritas.media` does not serve/redirect over HTTPS.
 
 ## After The Gate Passes
 

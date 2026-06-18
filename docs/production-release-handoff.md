@@ -17,6 +17,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 
 - Public site deploys from GitHub to Firebase Hosting.
 - Apex HTTPS works at `https://luxveritas.media`.
+- `www.luxveritas.media` HTTPS works and returns HTTP 200.
 - Public forms submit to `/api/submit`.
 - Approved sender identity is `forms@luxveritas.media`, with delivery to `info@luxveritas.media` confirmed through live matrix QA.
 - Valid live form submissions are stored server-side and sent silently to the approved inbox when the provider is active.
@@ -35,10 +36,9 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 
 These are the known blockers before calling the site public-launch ready.
 
-1. `www.luxveritas.media` DNS and Firebase custom-domain verification are complete, but HTTPS still returns Firebase 404 while certificate/Hosting mapping finishes.
-2. Privacy page needs legal/business approval.
-3. Terms page needs legal/business approval.
-4. External CRM/Google workflow target may be selected after the private workflow is approved. The signed Firebase private handoff is already active for the MVP intake queue.
+1. Privacy page needs legal/business approval.
+2. Terms page needs legal/business approval.
+3. External CRM/Google workflow target may be selected after the private workflow is approved. The signed Firebase private handoff is already active for the MVP intake queue.
 
 Use `docs/launch-blocker-resolution.md` as the operational closeout packet for the remaining release blockers. Use `docs/legal-review-packet.md` for Privacy and Terms review. Use `docs/final-launch-runbook.md` for the exact final launch sequence.
 

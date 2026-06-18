@@ -28,7 +28,8 @@ const blockerChecks = [
   {
     id: "www_redirect",
     label: "www Domain",
-    todoMarker: "Wait for Firebase certificate minting/Hosting mapping for www.luxveritas.media",
+    blockedTodoMarker: "Wait for Firebase certificate minting/Hosting mapping for www.luxveritas.media",
+    readyTodoMarker: "Close the www.luxveritas.media launch gate after Firebase certificate/Hosting mapping returned HTTP 200",
     handoffMarker: "`www.luxveritas.media` DNS and Firebase custom-domain verification are complete, but HTTPS still returns Firebase 404 while certificate/Hosting mapping finishes.",
     runbookMarker: "`www.luxveritas.media` still returns Firebase 404 or does not serve/redirect over HTTPS."
   },
@@ -90,16 +91,18 @@ for (const check of blockerChecks) {
   if (!blockerPacket.includes(`## Blocker`) || !blockerPacket.includes(check.label)) {
     issue(`docs/launch-blocker-resolution.md missing blocker section for ${check.label}`);
   }
+  const blockedTodoMarker = check.blockedTodoMarker || check.todoMarker;
+  const readyTodoMarker = check.readyTodoMarker || check.todoMarker;
   if (gate.status === "blocked") {
-    if (!uncheckedTodoIncludes(check.todoMarker)) issue(`TODO.md must leave ${check.todoMarker} unchecked while ${check.id} is blocked`);
+    if (!uncheckedTodoIncludes(blockedTodoMarker)) issue(`TODO.md must leave ${blockedTodoMarker} unchecked while ${check.id} is blocked`);
     if (!handoff.includes(check.handoffMarker)) issue(`production-release-handoff.md missing active blocker marker for ${check.id}`);
     if (!runbook.includes(check.runbookMarker)) issue(`final-launch-runbook.md missing do-not-ship marker for ${check.id}`);
   }
-  if (gate.status === "ready" && uncheckedTodoIncludes(check.todoMarker)) {
-    issue(`TODO.md still shows ${check.todoMarker} unchecked after ${check.id} is ready`);
+  if (gate.status === "ready" && uncheckedTodoIncludes(blockedTodoMarker)) {
+    issue(`TODO.md still shows ${blockedTodoMarker} unchecked after ${check.id} is ready`);
   }
-  if (gate.status === "ready" && !checkedTodoIncludes(check.todoMarker)) {
-    issue(`TODO.md should show ${check.todoMarker} checked after ${check.id} is ready`);
+  if (gate.status === "ready" && !checkedTodoIncludes(readyTodoMarker)) {
+    issue(`TODO.md should show ${readyTodoMarker} checked after ${check.id} is ready`);
   }
   if (gate.status === "ready" && handoff.includes(check.handoffMarker)) {
     issue(`production-release-handoff.md still describes ${check.id} as an active blocker after it is ready`);

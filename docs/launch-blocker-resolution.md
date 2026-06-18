@@ -43,13 +43,15 @@ Use `LUX_LAUNCH_DRY_RUN=1` to validate without writing. A `ready` launch gate al
 - Browser-flow pilot QA passes locally with form, media, and reporting paths.
 - Private handoff secret set is active for `firebase_handoff`.
 - Operator reporting token hash is configured.
-- Release readiness currently reports three external blockers: Privacy approval, Terms approval, and `www` Firebase certificate/Hosting mapping.
-- `www.luxveritas.media` DNS and Firebase custom-domain verification are complete; HTTPS currently reaches Firebase but returns HTTP 404 while the certificate/mapping finishes.
+- Release readiness currently reports two external blockers: Privacy approval and Terms approval.
+- `www.luxveritas.media` closeout is resolved: DNS, Firebase custom-domain verification, certificate, and Hosting mapping return HTTP 200.
 - Inbox provider closeout is resolved: 2026-06-17 live form matrix confirmed 10 capture intents with inbox delivery required.
 
-## Blocker 1 - www Domain
+## Closed - www Domain
 
 Goal: `https://www.luxveritas.media` resolves and redirects or serves correctly over HTTPS.
+
+Status: closed on 2026-06-18. Keep the steps below as revalidation guidance if DNS, Hosting domains, or Firebase certificates change.
 
 Actions:
 

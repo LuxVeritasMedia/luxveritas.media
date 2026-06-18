@@ -1,13 +1,13 @@
 {
   "schemaVersion": "luxveritas.launch_closeout.v1",
-  "updatedAt": "2026-06-17T09:28:55.743Z",
+  "updatedAt": "2026-06-18T23:44:05.172Z",
   "purpose": "No-secret public-release closeout tracker. Store evidence references only; do not store credentials, operator tokens, private report exports, provider keys, or legal advice in this file.",
   "items": [
     {
       "id": "www_redirect",
       "gateId": "www_redirect",
       "label": "WWW Hosting and Certificate",
-      "status": "open",
+      "status": "closed",
       "owner": "Domain operator",
       "requiredEvidence": [
         "Firebase Hosting custom domain for www.luxveritas.media is added and verified",
@@ -20,9 +20,9 @@
         "dig +short www.luxveritas.media",
         "curl -I https://www.luxveritas.media"
       ],
-      "evidenceReference": "",
-      "closedAt": "",
-      "closedBy": ""
+      "evidenceReference": "Domain readiness QA 2026-06-18 workflow 157 HTTP 200",
+      "closedAt": "2026-06-18T23:44:05.172Z",
+      "closedBy": "Codex"
     },
     {
       "id": "inbox_notifications",

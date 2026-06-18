@@ -31,7 +31,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Enable Cloud Firestore and create default Firestore Native database in `nam5` for form submission storage.
 - [x] Confirm live valid form submissions return `stored:true` from `/api/submit`.
 - [x] Confirm live QA submission is stored when inbox provider is missing: `email_provider_not_configured`.
-- [ ] Wait for Firebase certificate minting/Hosting mapping for www.luxveritas.media, then close the www launch gate.
+- [x] Close the www.luxveritas.media launch gate after Firebase certificate/Hosting mapping returned HTTP 200.
 - [x] Add consented site-event relay for CTA, media, portal, and content-view reporting.
 - [x] Add protected activity report API for approved operator review.
 - [x] Add protected operator summaries for lead paths, roles, events, pages, and clicked destinations.

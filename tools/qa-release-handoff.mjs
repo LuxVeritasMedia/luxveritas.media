@@ -157,7 +157,7 @@ for (const marker of [
 }
 
 for (const marker of [
-  "Wait for Firebase certificate minting/Hosting mapping for www.luxveritas.media",
+  "Close the www.luxveritas.media launch gate after Firebase certificate/Hosting mapping returned HTTP 200",
   "Configure and verify email provider runtime secret `RESEND_API_KEY`",
   "Add legal review packet for Privacy and Terms approval",
   "Add final strict release-gate command for launch-day acceptance",

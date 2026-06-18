@@ -1,6 +1,6 @@
 {
   "version": "2026-06-11-launch-gates",
-  "updatedAt": "2026-06-17T09:28:55.564Z",
+  "updatedAt": "2026-06-18T23:44:05.172Z",
   "gates": [
     {
       "id": "media_sources",
@@ -75,12 +75,15 @@
       "id": "www_redirect",
       "label": "WWW Redirect",
       "category": "domain",
-      "status": "blocked",
-      "nextAction": "Wait for Firebase certificate minting and Hosting mapping to finish for www.luxveritas.media; DNS and custom-domain verification are complete.",
+      "status": "ready",
+      "nextAction": "Monitor www.luxveritas.media during launch checks; Firebase certificate and Hosting mapping returned HTTP 200.",
       "owner": "Domain operator",
       "blockerType": "dns_ssl",
-      "verification": "Run domain-readiness QA until https://www.luxveritas.media returns HTTP 200 or redirects to https://luxveritas.media.",
-      "requiredForPublicLaunch": true
+      "verification": "Run domain-readiness QA during release checks and confirm https://www.luxveritas.media returns HTTP 200 or redirects to https://luxveritas.media.",
+      "requiredForPublicLaunch": true,
+      "statusEvidenceReference": "Domain readiness QA 2026-06-18 workflow 157 HTTP 200",
+      "statusUpdatedAt": "2026-06-18T23:44:05.172Z",
+      "statusUpdatedBy": "Codex"
     }
   ]
 }
