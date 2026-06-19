@@ -26,6 +26,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Browser-flow QA covers stored capture, email-draft fallback, rate-limit recovery, portal fallback, and submit-button reset.
 - Portal sign-in is a screened access capture, not a real account login yet.
 - Lux Player MVP has audio, visual, and radio slots with approved preview sources.
+- Live media-source QA verifies the exact manifest source URLs, content types, and audio/video signatures for the audio, visual, and radio slots.
 - Listen, Watch, and Radio player actions select the matching source and return stable reporting keys.
 - Audio, video, and radio playback lifecycle events return play, pause, milestone, and ended reporting values.
 - Protected operator reporting summarizes playback actions, source types, reporting keys, and retention milestones.
@@ -57,6 +58,7 @@ node tools/qa-launch-evidence.mjs
 firebase login --reauth
 node tools/qa-provider-readiness.mjs
 node tools/qa-private-workflow-matrix.mjs
+node tools/qa-live-media-sources.mjs
 node tools/qa-domain-readiness.mjs
 node tools/resolve-www-domain.mjs
 node tools/qa-release-readiness.mjs

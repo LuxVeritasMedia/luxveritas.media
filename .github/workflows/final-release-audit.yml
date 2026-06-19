@@ -44,6 +44,9 @@ jobs:
       - name: QA launch evidence
         run: node tools/qa-launch-evidence.mjs
 
+      - name: QA live media sources
+        run: node tools/qa-live-media-sources.mjs
+
       - name: QA private integration field map
         run: node tools/qa-private-integration-field-map.mjs
 

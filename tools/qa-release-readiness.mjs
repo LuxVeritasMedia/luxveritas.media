@@ -308,6 +308,7 @@ add(!hasUncheckedAny(todo, ["Attach approved release audio, video, and radio sou
 add(workflow.includes("node tools/qa-browser-flows.mjs"), "Browser-flow QA is enforced before Hosting deploy.");
 add(workflow.includes("node tools/qa-live-site.mjs"), "Live-site QA is enforced after Hosting deploy.");
 add(workflow.includes("node tools/qa-live-assets.mjs"), "Live asset QA is enforced after Hosting deploy.");
+add(workflow.includes("node tools/qa-live-media-sources.mjs"), "Live media-source QA is enforced after Hosting deploy.");
 add(workflow.includes("LUX_BROWSER_BASE_URL=https://luxveritas.media node tools/qa-browser-flows.mjs"), "Live browser-flow QA is enforced after Hosting deploy.");
 
 const [rootDns, wwwDns, wwwCnameDns, rootHttps, wwwHttps] = await Promise.all([

@@ -132,6 +132,9 @@ jobs:
       - name: QA live assets
         run: node tools/qa-live-assets.mjs
 
+      - name: QA live media sources
+        run: node tools/qa-live-media-sources.mjs
+
       - name: QA live form matrix
         run: node tools/qa-live-form-matrix.mjs
 

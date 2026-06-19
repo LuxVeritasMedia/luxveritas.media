@@ -37,6 +37,7 @@ for (const marker of [
   "node tools/qa-mvp-preflight.mjs",
   "node tools/qa-launch-evidence.mjs",
   "node tools/qa-private-workflow-matrix.mjs",
+  "node tools/qa-live-media-sources.mjs",
   "LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs",
   "Do not use `LUX_FINAL_SKIP_BROWSER=1` or `LUX_FINAL_SKIP_LIVE=1` for release approval.",
   "LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.mjs"
@@ -117,6 +118,7 @@ for (const marker of [
   "node tools/qa-launch-evidence.mjs",
   "node tools/qa-deploy-status.mjs",
   "node tools/qa-live-assets.mjs",
+  "node tools/qa-live-media-sources.mjs",
   "node tools/qa-domain-readiness.mjs",
   "node tools/resolve-www-domain.mjs",
   "LUX_RESEND_API_KEY=\"re_...\" node tools/activate-inbox-delivery.mjs",

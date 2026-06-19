@@ -152,6 +152,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add asset-version QA so live pages cannot serve stale app/CSS URLs after app changes.
 - [x] Add live brand-house asset QA so public mark SVGs cannot deploy broken or missing.
 - [x] Add live deploy-artifact asset integrity QA for public static assets.
+- [x] Add live media-source QA for manifest URLs, media content types, poster assets, and audio/video signatures.
 - [x] Bump public asset version after portal sign-in capture behavior changed.
 - [x] Bump public asset version after operator closeout reporting changed.
 - [x] Add release-readiness QA for launch blockers, media sources, DNS, legal, email, and integration status.
@@ -205,3 +206,4 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Show queued vs source-ready media status in the private pilot report.
 - [x] Add approved media source helper for audio, video, and radio URLs.
 - [x] Attach approved MVP preview audio, video, and radio sources.
+- [x] Verify approved live audio, video, and radio source URLs against the production media manifest.

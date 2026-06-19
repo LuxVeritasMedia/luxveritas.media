@@ -72,6 +72,7 @@ git commit -m "Approve launch legal review"
 git push origin main
 node tools/qa-deploy-status.mjs
 node tools/qa-live-assets.mjs
+node tools/qa-live-media-sources.mjs
 ```
 
 6. Run final release approval with real writes:

@@ -394,6 +394,7 @@ node tools/qa-release-readiness.mjs
 node tools/qa-domain-readiness.mjs
 node tools/qa-provider-readiness.mjs
 node tools/qa-live-assets.mjs
+node tools/qa-live-media-sources.mjs
 node tools/qa-live-product-boundary.mjs
 node tools/qa-deploy-status.mjs
 /Users/frederickparent/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node tools/qa-browser-flows.mjs
