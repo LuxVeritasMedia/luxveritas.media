@@ -10,35 +10,60 @@ function secretShape(value) {
 
 const [
   profilesRaw,
+  fieldMapRaw,
   launchRaw,
   closeoutRaw,
   buildRaw,
   contractJs
 ] = await Promise.all([
   readFile("docs/private-integration-profiles.json", "utf8"),
+  readFile("docs/private-integration-field-map.json", "utf8"),
   readFile("data/lux-launch-readiness.json", "utf8"),
   readFile("data/lux-launch-closeout.json", "utf8"),
   readFile("data/lux-build-manifest.json", "utf8"),
   readFile("functions/integration-contract.js", "utf8")
 ]);
 
-if (secretShape(`${profilesRaw}\n${launchRaw}\n${closeoutRaw}\n${buildRaw}`)) {
+if (secretShape(`${profilesRaw}\n${fieldMapRaw}\n${launchRaw}\n${closeoutRaw}\n${buildRaw}`)) {
   console.error("Private integration request input appears to contain secret-shaped data.");
   process.exit(1);
 }
 
 const registry = JSON.parse(profilesRaw);
+const fieldMap = JSON.parse(fieldMapRaw);
 const launch = JSON.parse(launchRaw);
 const closeout = JSON.parse(closeoutRaw);
 const build = JSON.parse(buildRaw);
 const profiles = Array.isArray(registry.profiles) ? registry.profiles : [];
 const activeProfiles = profiles.filter((profile) => profile.status !== "future");
 const futureProfiles = profiles.filter((profile) => profile.status === "future");
+const fieldMapProfiles = Array.isArray(fieldMap.profiles) ? fieldMap.profiles : [];
 const privateHandoffGate = (Array.isArray(launch.gates) ? launch.gates : [])
   .find((gate) => gate.id === "private_handoff");
 const integrationContractVersion = contractJs.match(/integrationContractVersion\s*=\s*"([^"]+)"/)?.[1] || "luxveritas.form_submission.v1";
 const integrationEventType = contractJs.match(/integrationEventType\s*=\s*"([^"]+)"/)?.[1] || "form.submission.received";
 const requiredSecrets = [...new Set(profiles.flatMap((profile) => profile.requiredSecrets || []))].sort();
+
+function fieldBuckets(profile = {}) {
+  return Object.fromEntries(
+    Object.entries(profile)
+      .filter(([key, value]) => key.endsWith("Fields") && Array.isArray(value))
+      .map(([key, value]) => [key, value])
+  );
+}
+
+function mappedProfile(profile) {
+  const mapping = fieldMapProfiles.find((item) => item.id === profile.id) || {};
+  return {
+    id: profile.id,
+    label: profile.label,
+    destinationType: mapping.destinationType || "",
+    primaryRecord: mapping.primaryRecord || "",
+    actions: mapping.actions || [],
+    fieldBuckets: fieldBuckets(mapping),
+    notes: mapping.notes || ""
+  };
+}
 
 const packet = {
   schemaVersion: "luxveritas.private_integration_request.v1",
@@ -70,6 +95,14 @@ const packet = {
       "X-Lux-Target",
       "X-Lux-Signature"
     ]
+  },
+  fieldMap: {
+    schemaVersion: fieldMap.schemaVersion || "",
+    purpose: fieldMap.purpose || "",
+    contract: fieldMap.contract || "",
+    eventType: fieldMap.eventType || "",
+    requiredPayloadPaths: fieldMap.requiredPayloadPaths || [],
+    profileMappings: profiles.map(mappedProfile)
   },
   requiredSecrets,
   approvedProfiles: activeProfiles.map((profile) => ({
@@ -128,6 +161,14 @@ if (format === "json") {
   const futureRows = packet.futureProfiles
     .map((profile) => `- ${profile.id}: ${profile.label} - ${profile.approvalRequired}`)
     .join("\n");
+  const mappingRows = packet.fieldMap.profileMappings
+    .map((profile) => {
+      const bucketList = Object.entries(profile.fieldBuckets)
+        .map(([key, value]) => `${key}: ${value.join(", ")}`)
+        .join("; ");
+      return `- ${profile.id}: ${profile.destinationType} -> ${profile.primaryRecord}; actions: ${profile.actions.join(", ")}; fields: ${bucketList}`;
+    })
+    .join("\n");
 
   rendered = `# Lux Veritas Private Integration Activation Request
 
@@ -152,6 +193,15 @@ Asset version: ${packet.assetVersion}
 - Replay safe: ${packet.contract.replaySafe ? "yes" : "no"}
 - Idempotency key: ${packet.contract.idempotencyKeyShape}
 - Headers: ${packet.contract.headers.join(", ")}
+
+## Downstream Field Map
+
+- Schema: ${packet.fieldMap.schemaVersion}
+- Contract: ${packet.fieldMap.contract}
+- Event: ${packet.fieldMap.eventType}
+- Required payload paths: ${packet.fieldMap.requiredPayloadPaths.join(", ")}
+
+${mappingRows || "- None"}
 
 ## Required Firebase Secrets
 

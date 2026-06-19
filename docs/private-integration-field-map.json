@@ -1,0 +1,247 @@
+{
+  "schemaVersion": "luxveritas.private_integration_field_map.v1",
+  "purpose": "No-secret downstream field mapping for approved private handoff targets. This file must not contain provider URLs or private values.",
+  "contract": "luxveritas.form_submission.v1",
+  "eventType": "form.submission.received",
+  "requiredPayloadPaths": [
+    "schemaVersion",
+    "eventType",
+    "idempotencyKey",
+    "integrationTarget",
+    "submissionId",
+    "receiptId",
+    "receivedAt",
+    "source",
+    "sourcePage",
+    "formType",
+    "tag",
+    "inquiryType",
+    "inquiryKey",
+    "rolePath",
+    "accessPath",
+    "portalRoleTarget",
+    "routing.queue",
+    "routing.label",
+    "routing.priority",
+    "routing.nextAction",
+    "routing.sla",
+    "contact.name",
+    "contact.email",
+    "contact.phone",
+    "consent.email",
+    "consent.sms",
+    "legal.publicTermsVersion",
+    "legal.privacyVersion",
+    "legal.termsVersion",
+    "legal.submissionTermsVersion",
+    "message"
+  ],
+  "profiles": [
+    {
+      "id": "firebase_handoff",
+      "destinationType": "protected_intake_record",
+      "primaryRecord": "private_handoff",
+      "actions": [
+        "accept_signed_payload",
+        "persist_full_contract",
+        "summarize_by_route",
+        "support_replay"
+      ],
+      "identityFields": [
+        "submissionId",
+        "receiptId",
+        "idempotencyKey",
+        "contact.email"
+      ],
+      "routingFields": [
+        "inquiryKey",
+        "accessPath",
+        "portalRoleTarget",
+        "routing.queue",
+        "routing.priority",
+        "routing.nextAction"
+      ],
+      "auditFields": [
+        "schemaVersion",
+        "eventType",
+        "integrationTarget",
+        "receivedAt",
+        "sourcePage",
+        "legal.publicTermsVersion",
+        "legal.privacyVersion",
+        "legal.termsVersion",
+        "legal.submissionTermsVersion"
+      ],
+      "notes": "Current internal receiver stores the full versioned contract for protected operator review."
+    },
+    {
+      "id": "private_workflow",
+      "destinationType": "approved_workflow_router",
+      "primaryRecord": "screened_intake",
+      "actions": [
+        "receive_signed_payload",
+        "route_by_queue",
+        "create_follow_up_task",
+        "support_replay"
+      ],
+      "identityFields": [
+        "receiptId",
+        "contact.name",
+        "contact.email",
+        "contact.phone"
+      ],
+      "routingFields": [
+        "formType",
+        "tag",
+        "inquiryKey",
+        "accessPath",
+        "routing.queue",
+        "routing.label",
+        "routing.priority",
+        "routing.sla"
+      ],
+      "auditFields": [
+        "submissionId",
+        "idempotencyKey",
+        "receivedAt",
+        "source",
+        "sourcePage",
+        "consent.email",
+        "consent.sms"
+      ],
+      "notes": "Generic approved workflow map before a named external provider is selected."
+    },
+    {
+      "id": "ghl_crm",
+      "destinationType": "crm_contact_pipeline",
+      "primaryRecord": "contact",
+      "actions": [
+        "upsert_contact",
+        "apply_tags",
+        "append_internal_note",
+        "route_pipeline_stage",
+        "support_replay"
+      ],
+      "identityFields": [
+        "contact.name",
+        "contact.email",
+        "contact.phone",
+        "receiptId"
+      ],
+      "routingFields": [
+        "inquiryKey",
+        "accessPath",
+        "portalRoleTarget",
+        "routing.queue",
+        "routing.label",
+        "routing.priority",
+        "routing.nextAction"
+      ],
+      "tagFields": [
+        "source",
+        "sourcePage",
+        "formType",
+        "tag",
+        "inquiryKey",
+        "accessPath"
+      ],
+      "auditFields": [
+        "submissionId",
+        "idempotencyKey",
+        "receivedAt",
+        "legal.publicTermsVersion",
+        "legal.privacyVersion",
+        "legal.termsVersion",
+        "legal.submissionTermsVersion"
+      ],
+      "notes": "Future CRM map for contact creation, tags, pipeline routing, and screened follow-up after account and workflow approval."
+    },
+    {
+      "id": "google_workspace",
+      "destinationType": "workspace_intake_archive",
+      "primaryRecord": "intake_row",
+      "actions": [
+        "append_intake_row",
+        "create_review_note",
+        "route_owner_view",
+        "support_replay"
+      ],
+      "identityFields": [
+        "receivedAt",
+        "receiptId",
+        "contact.name",
+        "contact.email",
+        "contact.phone"
+      ],
+      "routingFields": [
+        "routing.queue",
+        "routing.label",
+        "routing.priority",
+        "routing.sla",
+        "portalRoleTarget"
+      ],
+      "archiveFields": [
+        "submissionId",
+        "idempotencyKey",
+        "sourcePage",
+        "formType",
+        "tag",
+        "inquiryType",
+        "rolePath",
+        "accessPath",
+        "message"
+      ],
+      "auditFields": [
+        "consent.email",
+        "consent.sms",
+        "legal.publicTermsVersion",
+        "legal.privacyVersion",
+        "legal.termsVersion",
+        "legal.submissionTermsVersion"
+      ],
+      "notes": "Future workspace map for approved intake rows, review notes, and private archive routing."
+    },
+    {
+      "id": "codex_ops",
+      "destinationType": "operator_build_packet",
+      "primaryRecord": "review_packet",
+      "actions": [
+        "create_triage_packet",
+        "route_by_role",
+        "attach_receipt_context",
+        "support_replay"
+      ],
+      "identityFields": [
+        "submissionId",
+        "receiptId",
+        "idempotencyKey"
+      ],
+      "routingFields": [
+        "inquiryKey",
+        "accessPath",
+        "portalRoleTarget",
+        "routing.queue",
+        "routing.nextAction"
+      ],
+      "packetFields": [
+        "sourcePage",
+        "formType",
+        "tag",
+        "contact.name",
+        "contact.email",
+        "message",
+        "receivedAt"
+      ],
+      "auditFields": [
+        "schemaVersion",
+        "eventType",
+        "integrationTarget",
+        "legal.publicTermsVersion",
+        "legal.privacyVersion",
+        "legal.termsVersion",
+        "legal.submissionTermsVersion"
+      ],
+      "notes": "Future operator-reviewed build-packet map; it must not route private prompts, secrets, or internal dashboards into the public site."
+    }
+  ]
+}

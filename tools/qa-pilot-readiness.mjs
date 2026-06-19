@@ -20,6 +20,7 @@ const checks = [
   ["Integrations", "tools/qa-integrations.mjs"],
   ["Integration Contract", "tools/qa-integration-contract.mjs"],
   ["Integration Profiles", "tools/qa-integration-profiles.mjs"],
+  ["Private Integration Field Map", "tools/qa-private-integration-field-map.mjs"],
   ["Private Integration Request", "tools/qa-private-integration-request.mjs"],
   ["Legal Review Packet", "tools/qa-legal-review-packet.mjs"],
   ["Legal Review Request", "tools/qa-legal-review-request.mjs"],

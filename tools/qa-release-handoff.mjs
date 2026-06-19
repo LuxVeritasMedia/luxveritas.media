@@ -121,6 +121,7 @@ for (const marker of [
   "node tools/export-legal-review-request.mjs",
   "node tools/qa-legal-review-request.mjs",
   "node tools/export-private-integration-request.mjs",
+  "node tools/qa-private-integration-field-map.mjs",
   "LUX_PRIVATE_INTEGRATION_PACKET_OUT=/tmp/lux-private-integration-request.md",
   "LUX_LEGAL_REVIEW_ITEM=privacy",
   "LUX_LEGAL_REVIEW_ITEM=terms",

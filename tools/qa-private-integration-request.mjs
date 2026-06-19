@@ -13,7 +13,7 @@ function secretShape(value) {
   return /re_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}|FORM_INTEGRATION_URL=https:\/\/\S+/i.test(value);
 }
 
-const [markdownResult, jsonResult, profilesRaw] = await Promise.all([
+const [markdownResult, jsonResult, profilesRaw, fieldMapRaw] = await Promise.all([
   execFileAsync(process.execPath, ["tools/export-private-integration-request.mjs"], {
     timeout: 30000,
     maxBuffer: 1024 * 1024 * 4
@@ -23,12 +23,14 @@ const [markdownResult, jsonResult, profilesRaw] = await Promise.all([
     timeout: 30000,
     maxBuffer: 1024 * 1024 * 4
   }),
-  readFile("docs/private-integration-profiles.json", "utf8")
+  readFile("docs/private-integration-profiles.json", "utf8"),
+  readFile("docs/private-integration-field-map.json", "utf8")
 ]);
 
 const markdown = markdownResult.stdout;
 const jsonRaw = jsonResult.stdout;
 const registry = JSON.parse(profilesRaw);
+const fieldMap = JSON.parse(fieldMapRaw);
 const profiles = Array.isArray(registry.profiles) ? registry.profiles : [];
 
 if (secretShape(markdown) || secretShape(jsonRaw)) {
@@ -39,6 +41,7 @@ for (const marker of [
   "# Lux Veritas Private Integration Activation Request",
   "No-secret private handoff activation request",
   "Current Handoff Gate",
+  "Downstream Field Map",
   "Required Firebase Secrets",
   "Active Or Ready Profiles",
   "Future Profiles",
@@ -69,6 +72,12 @@ if (packet) {
   if (packet.liveUrl !== "https://luxveritas.media") issue("private integration request liveUrl mismatch");
   if (!packet.assetVersion) issue("private integration request assetVersion missing");
   if (packet.registry?.schemaVersion !== registry.schemaVersion) issue("profile registry schema mismatch");
+  if (packet.fieldMap?.schemaVersion !== fieldMap.schemaVersion) issue("field map schema mismatch");
+  if (packet.fieldMap?.contract !== "luxveritas.form_submission.v1") issue("field map contract mismatch");
+  if (packet.fieldMap?.eventType !== "form.submission.received") issue("field map event mismatch");
+  for (const path of ["receiptId", "contact.email", "routing.queue", "legal.termsVersion"]) {
+    if (!packet.fieldMap?.requiredPayloadPaths?.includes(path)) issue(`field map missing required path ${path}`);
+  }
   if (packet.contract?.schemaVersion !== "luxveritas.form_submission.v1") issue("contract schema mismatch");
   if (packet.contract?.eventType !== "form.submission.received") issue("contract event mismatch");
   for (const header of ["X-Lux-Event", "X-Lux-Idempotency-Key", "X-Lux-Target", "X-Lux-Signature"]) {
@@ -86,6 +95,12 @@ if (packet) {
     }
     if (requestProfile.targetSecretValue !== profile.targetSecretValue) {
       issue(`${profile.id}: targetSecretValue mismatch`);
+    }
+    const mapping = packet.fieldMap?.profileMappings?.find((item) => item.id === profile.id);
+    if (!mapping) issue(`private integration request missing field map profile ${profile.id}`);
+    else {
+      if (!mapping.destinationType || !mapping.primaryRecord) issue(`${profile.id}: field map summary missing destination metadata`);
+      if (!mapping.fieldBuckets || !Object.keys(mapping.fieldBuckets).length) issue(`${profile.id}: field map summary missing field buckets`);
     }
   }
   for (const id of ["ghl_crm", "google_workspace", "codex_ops"]) {

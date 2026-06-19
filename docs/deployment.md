@@ -316,12 +316,15 @@ Private handoff target labels are tracked in `docs/private-integration-profiles.
 - `google_workspace` - future workspace intake profile after account and workflow approval.
 - `codex_ops` - future build-packet routing profile after operator approval.
 
+Downstream field mapping is tracked in `docs/private-integration-field-map.json`. This no-secret map aligns the versioned form payload with contact, routing, audit, tag, archive, and review-packet fields for `firebase_handoff`, `private_workflow`, `ghl_crm`, `google_workspace`, and `codex_ops`. It is an implementation guide only; receiver URLs, account identifiers, field IDs, tokens, and private workflow details still belong outside the repo.
+
 Export a no-secret private integration activation request before choosing or changing the external workflow target:
 
 ```bash
 node tools/export-private-integration-request.mjs
 LUX_PRIVATE_INTEGRATION_PACKET_OUT=/tmp/lux-private-integration-request.md node tools/export-private-integration-request.mjs
 LUX_PRIVATE_INTEGRATION_PACKET_FORMAT=json node tools/export-private-integration-request.mjs
+node tools/qa-private-integration-field-map.mjs
 node tools/qa-private-integration-request.mjs
 ```
 

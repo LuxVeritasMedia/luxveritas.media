@@ -95,7 +95,7 @@ The final gate also runs operator-environment, MVP status, and MVP preflight che
 - Replay pending inbox notifications from `/portal/reporting.html` with an approved operator token.
 - Export the private report JSON/CSV for launch evidence.
 - Export the no-secret legal review request with `LUX_LEGAL_PACKET_OUT=/tmp/lux-legal-review-request.md node tools/export-legal-review-request.mjs`, then move it to the private launch folder with any real legal approval notes.
-- Export the no-secret private integration request with `LUX_PRIVATE_INTEGRATION_PACKET_OUT=/tmp/lux-private-integration-request.md node tools/export-private-integration-request.mjs`, then move it to the private launch folder before adding any real provider workflow details.
+- Export the no-secret private integration request with `LUX_PRIVATE_INTEGRATION_PACKET_OUT=/tmp/lux-private-integration-request.md node tools/export-private-integration-request.mjs`, run `node tools/qa-private-integration-field-map.mjs`, then move it to the private launch folder before adding any real provider workflow details.
 - Export the no-secret launch evidence packet with `LUX_EVIDENCE_LIVE=1 LUX_EVIDENCE_OUT=/tmp/lux-launch-evidence.md node tools/export-launch-evidence.mjs`, then move it to the private launch folder.
 - Record the passing final-gate command output in the private launch folder.
 - Do not paste provider keys, operator tokens, or private report exports into this public repo.

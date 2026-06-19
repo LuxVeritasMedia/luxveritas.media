@@ -7,6 +7,7 @@ const appJs = await readFile("app.js", "utf8");
 const buildScript = await readFile("tools/build-static.mjs", "utf8");
 const docs = await readFile("docs/deployment.md", "utf8");
 const profileRegistry = await readFile("docs/private-integration-profiles.json", "utf8");
+const fieldMap = await readFile("docs/private-integration-field-map.json", "utf8");
 
 for (const marker of [
   "FORM_INTEGRATION_URL",
@@ -174,8 +175,29 @@ for (const marker of [
   if (!profileRegistry.includes(marker)) issues.push(`private-integration-profiles.json: missing profile marker ${marker}`);
 }
 
+for (const marker of [
+  "luxveritas.private_integration_field_map.v1",
+  "luxveritas.form_submission.v1",
+  "form.submission.received",
+  "requiredPayloadPaths",
+  "firebase_handoff",
+  "private_workflow",
+  "ghl_crm",
+  "google_workspace",
+  "codex_ops",
+  "contact.email",
+  "routing.queue",
+  "legal.publicTermsVersion",
+  "support_replay"
+]) {
+  if (!fieldMap.includes(marker)) issues.push(`private-integration-field-map.json: missing field-map marker ${marker}`);
+}
+
 if (/https?:\/\//i.test(profileRegistry)) {
   issues.push("private-integration-profiles.json: must not contain provider URLs");
+}
+if (/https?:\/\//i.test(fieldMap)) {
+  issues.push("private-integration-field-map.json: must not contain provider URLs");
 }
 
 if (/FORM_INTEGRATION_URL\s*=|https:\/\/hooks\.|webhookUrl/i.test(appJs)) {

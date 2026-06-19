@@ -20,6 +20,8 @@ for (const marker of [
   "node tools/qa-integrations.mjs",
   "node tools/qa-integration-contract.mjs",
   "node tools/qa-integration-profiles.mjs",
+  "node tools/qa-private-integration-field-map.mjs",
+  "node tools/qa-private-integration-request.mjs",
   "node tools/qa-release-handoff.mjs",
   "node tools/qa-launch-closeout.mjs",
   "node tools/qa-launch-blockers.mjs",
@@ -87,6 +89,8 @@ for (const marker of [
   "node tools/qa-launch-blockers.mjs",
   "node tools/qa-mvp-status.mjs",
   "node tools/qa-launch-evidence.mjs",
+  "node tools/qa-private-integration-field-map.mjs",
+  "node tools/qa-private-integration-request.mjs",
   "node tools/qa-workflows.mjs",
   "LUX_FINAL_ALLOW_BLOCKERS=1 LUX_FINAL_SKIP_BROWSER=1 LUX_FINAL_SKIP_LIVE=1 node tools/qa-final-release-gate.mjs"
 ]) {
