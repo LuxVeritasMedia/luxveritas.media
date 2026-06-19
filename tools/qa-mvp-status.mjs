@@ -79,12 +79,21 @@ if (report) {
 
   const blocked = Array.isArray(report.launchGates?.blocked) ? report.launchGates.blocked : [];
   const blockedIds = new Set(blocked.map((gate) => gate.id));
+  if (!report.launchGates?.blockedByCategory || typeof report.launchGates.blockedByCategory !== "object") {
+    issue("launch gate blockedByCategory summary missing");
+  }
+  if (typeof report.launchGates?.codeBlockingCount !== "number") {
+    issue("launch gate codeBlockingCount missing");
+  }
+  if (typeof report.launchGates?.externalApprovalCount !== "number") {
+    issue("launch gate externalApprovalCount missing");
+  }
   for (const id of activeBlockedGateIds) {
     if (!blockedIds.has(id)) warn(`expected current public-launch blocker ${id} is not reported as blocked`);
   }
   for (const gate of blocked) {
-    if (!gate.label || !gate.nextAction || !gate.verification) {
-      issue(`blocked launch gate ${gate.id || "unknown"} lacks label, nextAction, or verification`);
+    if (!gate.label || !gate.category || !gate.owner || !gate.nextAction || !gate.verification) {
+      issue(`blocked launch gate ${gate.id || "unknown"} lacks label, category, owner, nextAction, or verification`);
     }
   }
 
@@ -113,6 +122,18 @@ if (report) {
     "ready-for-final-release-gate"
   ]);
   if (!allowedDecisions.has(report.decision)) issue(`unexpected decision ${report.decision || "missing"}`);
+  const allowedPilotStatuses = new Set(["pilot-ready", "operator-attention-needed"]);
+  const allowedLaunchStatuses = new Set(["blocked-by-external-approval", "operator-attention-needed", "ready-for-final-release-gate"]);
+  if (!allowedPilotStatuses.has(report.pilotStatus)) issue(`unexpected pilotStatus ${report.pilotStatus || "missing"}`);
+  if (!allowedLaunchStatuses.has(report.publicLaunchStatus)) issue(`unexpected publicLaunchStatus ${report.publicLaunchStatus || "missing"}`);
+  if (!Array.isArray(report.nextActions)) issue("nextActions missing");
+  if (Array.isArray(report.nextActions)) {
+    for (const action of report.nextActions) {
+      if (!action.owner || !action.label || !action.action || !action.verification) {
+        issue(`next action ${action.label || "unknown"} lacks owner, label, action, or verification`);
+      }
+    }
+  }
 }
 
 if (warnings.length) {

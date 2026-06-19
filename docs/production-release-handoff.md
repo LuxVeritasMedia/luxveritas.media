@@ -12,6 +12,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Current live asset version: `20260619-brand-marks`
 - Current phase: Phase 4 of 10, capture/legal/readiness
 - Next major phase: Phase 5, authenticated portal shell
+- Current MVP posture: pilot-ready with public launch blocked only by external Privacy and Terms approval.
 
 ## What Is Working
 

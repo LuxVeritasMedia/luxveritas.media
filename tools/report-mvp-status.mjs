@@ -114,6 +114,13 @@ const gates = Array.isArray(launch.gates) ? launch.gates : [];
 const closeoutItems = Array.isArray(closeout.items) ? closeout.items : [];
 const readyGates = gates.filter((gate) => gate.status === "ready");
 const blockedGates = gates.filter((gate) => gate.requiredForPublicLaunch === true && gate.status === "blocked");
+const blockedByCategory = blockedGates.reduce((counts, gate) => {
+  const category = gate.category || "unknown";
+  counts[category] = (counts[category] || 0) + 1;
+  return counts;
+}, {});
+const codeBlockingGates = blockedGates.filter((gate) => !["legal"].includes(gate.category || ""));
+const externalApprovalGates = blockedGates.filter((gate) => ["legal"].includes(gate.category || ""));
 const closeoutByStatus = closeoutItems.reduce((counts, item) => {
   const status = item.status || "unknown";
   counts[status] = (counts[status] || 0) + 1;
@@ -135,6 +142,28 @@ const operatorIssues = [
   liveManifest.ok && liveVersion !== localVersion ? `Live asset version ${liveVersion || "missing"} does not match local ${localVersion || "missing"}.` : null,
   media.missingRequiredSources.length ? `Missing required media sources: ${media.missingRequiredSources.join(", ")}.` : null
 ].filter(Boolean);
+const pilotStatus = operatorIssues.length || codeBlockingGates.length
+  ? "operator-attention-needed"
+  : "pilot-ready";
+const publicLaunchStatus = operatorIssues.length || codeBlockingGates.length
+  ? "operator-attention-needed"
+  : blockedGates.length
+    ? "blocked-by-external-approval"
+    : "ready-for-final-release-gate";
+const nextActions = [
+  ...externalApprovalGates.map((gate) => ({
+    owner: gate.owner || "Reviewer",
+    label: gate.label,
+    action: gate.nextAction,
+    verification: gate.verification
+  })),
+  ...operatorIssues.map((item) => ({
+    owner: "Release operator",
+    label: "Operator Attention",
+    action: item,
+    verification: "Resolve the operator issue, then rerun node tools/report-mvp-status.mjs."
+  }))
+];
 
 const report = {
   generatedAt: new Date().toISOString(),
@@ -162,9 +191,14 @@ const report = {
   media,
   launchGates: {
     ready: readyGates.map((gate) => gate.id),
+    blockedByCategory,
+    codeBlockingCount: codeBlockingGates.length,
+    externalApprovalCount: externalApprovalGates.length,
     blocked: blockedGates.map((gate) => ({
       id: gate.id,
       label: gate.label,
+      category: gate.category,
+      owner: gate.owner,
       nextAction: gate.nextAction,
       verification: gate.verification
     }))
@@ -184,6 +218,9 @@ const report = {
     }))
   },
   operatorIssues,
+  pilotStatus,
+  publicLaunchStatus,
+  nextActions,
   decision: blockedGates.length
     ? "pilot-ready-with-public-launch-blockers"
     : operatorIssues.length
@@ -204,6 +241,9 @@ if (jsonMode) {
   line("Media", `${media.itemCount} item(s), missing required sources: ${media.missingRequiredSources.length ? media.missingRequiredSources.join(", ") : "none"}`);
   line("Legal", `privacy=${report.legal.privacy.status}, terms=${report.legal.terms.status}`);
   line("Launch gates", `${readyGates.length} ready, ${blockedGates.length} blocked`);
+  line("Pilot status", report.pilotStatus);
+  line("Public launch status", report.publicLaunchStatus);
+  line("Blocking gate type", `${report.launchGates.externalApprovalCount} external approval, ${report.launchGates.codeBlockingCount} code/config`);
   line("Closeout", `${closedCloseoutItems.length} closed, ${closeoutItems.length - closedCloseoutItems.length} open or blocked`);
   if (operatorIssues.length) {
     console.log("");
@@ -215,6 +255,13 @@ if (jsonMode) {
     console.log("Blocked public-launch gates:");
     for (const gate of report.launchGates.blocked) {
       console.log(`- ${gate.label}: ${gate.nextAction}`);
+    }
+  }
+  if (nextActions.length) {
+    console.log("");
+    console.log("Next action owners:");
+    for (const action of nextActions) {
+      console.log(`- ${action.owner}: ${action.label} - ${action.action}`);
     }
   }
   console.log("");

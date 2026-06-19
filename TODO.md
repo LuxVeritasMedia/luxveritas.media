@@ -177,6 +177,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add local operator-environment QA for launch machine readiness.
 - [x] Add no-secret MVP status report for release operators.
 - [x] Add MVP status report QA and workflow coverage.
+- [x] Add MVP status separation for pilot readiness, public-launch approval blockers, and code/config blockers.
 - [x] Include no-secret launch closeout status in the MVP status report.
 - [x] Keep MVP status QA pre-deploy safe; deploy-status owns stale live asset blockers.
 - [x] Add combined no-secret MVP preflight command for release operators.
