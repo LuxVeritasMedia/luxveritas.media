@@ -8,6 +8,7 @@
   "houseMarks": [
     {
       "mark": "LVR",
+      "logo": "/assets/lux-house-records.svg",
       "title": "Lux Veritas Records",
       "body": "Release rooms, artist worlds, sessions, radio signals, and long-form music culture.",
       "path": "/music.html",
@@ -15,6 +16,7 @@
     },
     {
       "mark": "LVS",
+      "logo": "/assets/lux-house-studios.svg",
       "title": "Lux Veritas Studios",
       "body": "Cinematic chapters, visual worlds, screenings, and filmed atmosphere.",
       "path": "/film.html",
@@ -22,6 +24,7 @@
     },
     {
       "mark": "LVP",
+      "logo": "/assets/lux-house-publishing.svg",
       "title": "Lux Veritas Publishing",
       "body": "Outer Codex essays, story language, print signals, and selected written works.",
       "path": "/codex.html",
@@ -29,6 +32,7 @@
     },
     {
       "mark": "LVL",
+      "logo": "/assets/lux-house-live.svg",
       "title": "Lux Veritas Live",
       "body": "Listening rooms, salons, private screenings, and destination cultural gatherings.",
       "path": "/events.html",
@@ -36,6 +40,7 @@
     },
     {
       "mark": "LVC",
+      "logo": "/assets/lux-house-circle.svg",
       "title": "Lux Circle",
       "body": "First access, private drops, presales, behind-the-scenes releases, and member paths.",
       "path": "/membership.html",
@@ -43,6 +48,7 @@
     },
     {
       "mark": "LVA",
+      "logo": "/assets/lux-house-atelier.svg",
       "title": "Lux Atelier",
       "body": "Editions, merch, objects, and owned commerce for supporters.",
       "path": "/store.html",

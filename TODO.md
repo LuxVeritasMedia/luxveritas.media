@@ -81,6 +81,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Store is live products or drop waitlist only.
 - [x] Brands are noindex/gated until active.
 - [x] Add manifest-driven brand-house map for public studio, publishing, live, circle, and commerce paths.
+- [x] Add public brand-house mark assets for records, studios, publishing, live, circle, and atelier paths.
 - [x] Create Phase 5 private portal content model before adding account features.
 
 ## P3 - Legal

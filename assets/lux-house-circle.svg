@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title">
+  <title>Lux Circle mark</title>
+  <rect width="160" height="160" fill="#070908"/>
+  <circle cx="80" cy="80" r="52" fill="none" stroke="#c8a86a" stroke-width="2"/>
+  <circle cx="80" cy="80" r="36" fill="none" stroke="#f3eee4" stroke-opacity=".72" stroke-width="1.5"/>
+  <path d="M80 42l11 23 25 4-18 18 4 25-22-12-22 12 4-25-18-18 25-4z" fill="none" stroke="#0d5a49" stroke-width="4" stroke-linejoin="round"/>
+  <text x="80" y="88" text-anchor="middle" fill="#f3eee4" font-family="Georgia,serif" font-size="20" letter-spacing="3">LVC</text>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title">
+  <title>Lux Atelier mark</title>
+  <rect width="160" height="160" fill="#070908"/>
+  <path d="M46 45h68l8 78H38z" fill="none" stroke="#c8a86a" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M61 45c2-17 10-25 19-25s17 8 19 25" fill="none" stroke="#f3eee4" stroke-opacity=".72" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M56 69h48M54 91h52M52 113h56" stroke="#0d5a49" stroke-width="4" stroke-linecap="round"/>
+  <text x="80" y="143" text-anchor="middle" fill="#f3eee4" font-family="Georgia,serif" font-size="19" letter-spacing="3">LVA</text>
+</svg>

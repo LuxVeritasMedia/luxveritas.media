@@ -280,13 +280,29 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
 .house-mark {
   display: grid;
   place-items: center;
-  width: 58px;
+  width: 72px;
   aspect-ratio: 1;
   border: 1px solid rgba(200,168,106,.48);
+  background: radial-gradient(circle at 50% 36%, rgba(200,168,106,.12), rgba(6,8,7,.88));
   color: var(--gold);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: .88rem;
+  font-size: .68rem;
   letter-spacing: .1em;
+  position: relative;
+  overflow: hidden;
+}
+.house-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.house-mark span {
+  position: absolute;
+  inset: auto 0 8px;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
 }
 .house-card strong {
   display: block;

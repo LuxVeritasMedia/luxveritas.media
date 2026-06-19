@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title">
+  <title>Lux Veritas Live mark</title>
+  <rect width="160" height="160" fill="#070908"/>
+  <path d="M32 111c12-32 25-48 48-48s36 16 48 48" fill="none" stroke="#c8a86a" stroke-width="2"/>
+  <path d="M49 111c8-20 17-30 31-30s23 10 31 30" fill="none" stroke="#f3eee4" stroke-opacity=".72" stroke-width="1.5"/>
+  <path d="M80 30v50M62 42l18-16 18 16" stroke="#0d5a49" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="80" cy="80" r="8" fill="#c8a86a"/>
+  <text x="80" y="139" text-anchor="middle" fill="#f3eee4" font-family="Georgia,serif" font-size="19" letter-spacing="3">LVL</text>
+</svg>

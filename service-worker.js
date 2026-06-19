@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260619-brand-house";
+const CACHE_NAME = "luxveritas-static-20260619-brand-marks";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260619-brand-house",
-  "/app.js?v=20260619-brand-house",
+  "/styles.css?v=20260619-brand-marks",
+  "/app.js?v=20260619-brand-marks",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"

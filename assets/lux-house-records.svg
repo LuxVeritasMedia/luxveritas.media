@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title">
+  <title>Lux Veritas Records mark</title>
+  <rect width="160" height="160" fill="#070908"/>
+  <circle cx="80" cy="80" r="54" fill="none" stroke="#c8a86a" stroke-width="2"/>
+  <circle cx="80" cy="80" r="30" fill="none" stroke="#f3eee4" stroke-opacity=".7" stroke-width="1.5"/>
+  <circle cx="80" cy="80" r="7" fill="#c8a86a"/>
+  <path d="M80 25v21M80 114v21M25 80h21M114 80h21" stroke="#0d5a49" stroke-width="4" stroke-linecap="round"/>
+  <text x="80" y="87" text-anchor="middle" fill="#f3eee4" font-family="Georgia,serif" font-size="20" letter-spacing="3">LVR</text>
+</svg>

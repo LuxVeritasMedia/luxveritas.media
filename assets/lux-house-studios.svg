@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title">
+  <title>Lux Veritas Studios mark</title>
+  <rect width="160" height="160" fill="#070908"/>
+  <path d="M33 45h94v70H33z" fill="none" stroke="#c8a86a" stroke-width="2"/>
+  <path d="M45 57h70v46H45z" fill="none" stroke="#f3eee4" stroke-opacity=".72" stroke-width="1.5"/>
+  <path d="M33 45l18-20h58l18 20" fill="none" stroke="#0d5a49" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M67 68l30 12-30 12z" fill="#c8a86a"/>
+  <text x="80" y="130" text-anchor="middle" fill="#f3eee4" font-family="Georgia,serif" font-size="19" letter-spacing="3">LVS</text>
+</svg>

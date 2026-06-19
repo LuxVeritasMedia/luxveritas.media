@@ -51,6 +51,12 @@ const assetFiles = [
   "assets/luxveritas-threshold.png",
   "assets/luxveritas-signal-poster.svg",
   "assets/luxveritas-icon.svg",
+  "assets/lux-house-records.svg",
+  "assets/lux-house-studios.svg",
+  "assets/lux-house-publishing.svg",
+  "assets/lux-house-live.svg",
+  "assets/lux-house-circle.svg",
+  "assets/lux-house-atelier.svg",
   "assets/luxveritas-spmvp-preview.wav",
   "assets/luxveritas-radio-preview.wav",
   "assets/luxveritas-visual-preview.webm"

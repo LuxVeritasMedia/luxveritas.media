@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260619-brand-house";
+const assetVersion = "20260619-brand-marks";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 const brandHouse = JSON.parse(await readFile("data/lux-brand-house.json", "utf8"));
@@ -295,7 +295,7 @@ function brandHouseSection() {
     </div>
     <div class="house-grid" aria-label="Lux Veritas house marks">
       ${houseMarks.map((item) => `<a class="house-card" href="${item.path}">
-        <span class="house-mark">${item.mark}</span>
+        <span class="house-mark">${item.logo ? `<img src="${item.logo}" alt="" loading="lazy" decoding="async" aria-hidden="true" />` : ""}<span>${item.mark}</span></span>
         <strong>${item.title}</strong>
         <p>${item.body}</p>
         <small>${item.action}</small>

@@ -1,12 +1,12 @@
 {
   "schemaVersion": "luxveritas.build_manifest.v1",
-  "version": "20260619-brand-house",
-  "assetVersion": "20260619-brand-house",
+  "version": "20260619-brand-marks",
+  "assetVersion": "20260619-brand-marks",
   "mediaManifestVersion": "2026-06-10-mvp-media-preview",
   "brandHouseVersion": "2026-06-19-brand-house",
   "publicTermsVersion": "2026-06-09-public-capture",
   "routeCount": 37,
   "publicRouteCount": 20,
-  "appScript": "app.js?v=20260619-brand-house",
-  "stylesheet": "styles.css?v=20260619-brand-house"
+  "appScript": "app.js?v=20260619-brand-marks",
+  "stylesheet": "styles.css?v=20260619-brand-marks"
 }

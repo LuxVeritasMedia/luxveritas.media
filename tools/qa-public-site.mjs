@@ -21,6 +21,12 @@ const requiredFiles = [
   "data/lux-public-terms.json",
   "assets/luxveritas-threshold.png",
   "assets/luxveritas-icon.svg",
+  "assets/lux-house-records.svg",
+  "assets/lux-house-studios.svg",
+  "assets/lux-house-publishing.svg",
+  "assets/lux-house-live.svg",
+  "assets/lux-house-circle.svg",
+  "assets/lux-house-atelier.svg",
   "assets/luxveritas-signal-poster.svg",
   "assets/luxveritas-spmvp-preview.wav",
   "assets/luxveritas-radio-preview.wav",
@@ -181,7 +187,7 @@ for (const file of htmlFiles) {
       issues.push(`${rel}: missing public brand-house section`);
     }
     for (const mark of ["LVR", "LVS", "LVP", "LVL", "LVC", "LVA"]) {
-      if (!html.includes(`<span class="house-mark">${mark}</span>`)) {
+      if (!html.includes("class=\"house-mark\"") || !html.includes(`<span>${mark}</span>`)) {
         issues.push(`${rel}: missing house mark ${mark}`);
       }
     }
@@ -365,11 +371,21 @@ try {
   const expectedMarks = new Set(["LVR", "LVS", "LVP", "LVL", "LVC", "LVA"]);
   for (const item of marks) {
     if (!expectedMarks.has(item.mark)) issues.push(`data/lux-brand-house.json: unexpected house mark ${item.mark || "missing"}`);
-    for (const field of ["title", "body", "path", "action"]) {
+    for (const field of ["title", "body", "path", "action", "logo"]) {
       if (!item[field]) issues.push(`data/lux-brand-house.json: ${item.mark || "item"} missing ${field}`);
     }
     if (item.path && (!item.path.startsWith("/") || !item.path.endsWith(".html"))) {
       issues.push(`data/lux-brand-house.json: ${item.mark || "item"} has invalid public path`);
+    }
+    if (item.logo && (!item.logo.startsWith("/assets/") || !item.logo.endsWith(".svg"))) {
+      issues.push(`data/lux-brand-house.json: ${item.mark || "item"} has invalid logo path`);
+    }
+    if (item.logo) {
+      try {
+        await access(join(root, item.logo.replace(/^\//, "")));
+      } catch {
+        issues.push(`data/lux-brand-house.json: ${item.mark || "item"} logo missing from deploy artifact`);
+      }
     }
   }
   for (const rel of ["index.html", "about.html"]) {
@@ -378,8 +394,11 @@ try {
       issues.push(`${rel}: missing brand house version ${brandHouse.version}`);
     }
     for (const item of marks) {
-      if (!html.includes(`<span class="house-mark">${item.mark}</span>`)) {
+      if (!html.includes("class=\"house-mark\"") || !html.includes(`<span>${item.mark}</span>`)) {
         issues.push(`${rel}: missing brand manifest mark ${item.mark}`);
+      }
+      if (item.logo && !html.includes(`src="${item.logo}"`)) {
+        issues.push(`${rel}: missing brand logo ${item.logo}`);
       }
       if (!html.includes(`<small>${item.action}</small>`)) {
         issues.push(`${rel}: missing brand manifest action ${item.action}`);
