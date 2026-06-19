@@ -115,6 +115,7 @@ for (const marker of [
   "node tools/qa-mvp-preflight.mjs",
   "node tools/qa-launch-evidence.mjs",
   "node tools/qa-deploy-status.mjs",
+  "node tools/qa-live-assets.mjs",
   "node tools/qa-domain-readiness.mjs",
   "node tools/resolve-www-domain.mjs",
   "LUX_RESEND_API_KEY=\"re_...\" node tools/activate-inbox-delivery.mjs",

@@ -71,6 +71,7 @@ git add data/lux-legal-review.json legal/privacy.html legal/terms.html data/lux-
 git commit -m "Approve launch legal review"
 git push origin main
 node tools/qa-deploy-status.mjs
+node tools/qa-live-assets.mjs
 ```
 
 6. Run final release approval with real writes:
