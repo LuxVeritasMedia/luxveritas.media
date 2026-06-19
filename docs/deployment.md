@@ -316,6 +316,17 @@ Private handoff target labels are tracked in `docs/private-integration-profiles.
 - `google_workspace` - future workspace intake profile after account and workflow approval.
 - `codex_ops` - future build-packet routing profile after operator approval.
 
+Export a no-secret private integration activation request before choosing or changing the external workflow target:
+
+```bash
+node tools/export-private-integration-request.mjs
+LUX_PRIVATE_INTEGRATION_PACKET_OUT=/tmp/lux-private-integration-request.md node tools/export-private-integration-request.mjs
+LUX_PRIVATE_INTEGRATION_PACKET_FORMAT=json node tools/export-private-integration-request.mjs
+node tools/qa-private-integration-request.mjs
+```
+
+The exported request lists the active and future profile labels, required Firebase secret names, handoff contract, dry-run command, approval guard for future profiles, and acceptance checks. Move the generated file to the private launch folder before storing real provider URLs, workflow notes, or approval records.
+
 The private operator report includes accepted handoff counts, recent handoff receipts, and handoff summaries by target, event type, source page, and routing queue. Pending handoffs still come from submission records whose `integrationStatus` has not reached `sent`; accepted handoffs come from the protected `private_handoffs` collection.
 
 ```bash

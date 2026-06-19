@@ -120,6 +120,8 @@ for (const marker of [
   "LUX_RESEND_API_KEY=\"re_...\" node tools/activate-inbox-delivery.mjs",
   "node tools/export-legal-review-request.mjs",
   "node tools/qa-legal-review-request.mjs",
+  "node tools/export-private-integration-request.mjs",
+  "LUX_PRIVATE_INTEGRATION_PACKET_OUT=/tmp/lux-private-integration-request.md",
   "LUX_LEGAL_REVIEW_ITEM=privacy",
   "LUX_LEGAL_REVIEW_ITEM=terms",
   "LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs",

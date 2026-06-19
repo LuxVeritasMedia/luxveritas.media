@@ -58,6 +58,9 @@ jobs:
       - name: QA integration profiles
         run: node tools/qa-integration-profiles.mjs
 
+      - name: QA private integration request
+        run: node tools/qa-private-integration-request.mjs
+
       - name: QA legal review packet
         run: node tools/qa-legal-review-packet.mjs
 
