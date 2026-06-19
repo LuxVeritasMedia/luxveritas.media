@@ -183,8 +183,8 @@ function matrixCoverageCheck() {
   if (duplicates.length) {
     issues.push(`live form matrix has duplicate capture intent(s): ${[...new Set(duplicates)].join(", ")}`);
   }
-  if (matrix.length + 1 > 12) {
-    issues.push(`live form matrix has ${matrix.length} write checks plus validation; keep total under the submit rate limit of 12.`);
+  if (matrix.length + 1 > 20) {
+    issues.push(`live form matrix has ${matrix.length} write checks plus validation; keep total under the submit rate limit of 20.`);
   }
 }
 

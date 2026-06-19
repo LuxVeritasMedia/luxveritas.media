@@ -29,7 +29,7 @@ const allowedOrigins = new Set([
   "http://127.0.0.1:4173"
 ]);
 const rateWindowMs = 10 * 60 * 1000;
-const maxRequestsPerWindow = 12;
+const maxRequestsPerWindow = 20;
 const maxEventsPerWindow = 40;
 const maxReportsPerWindow = 20;
 const maxReplayPerWindow = 8;
