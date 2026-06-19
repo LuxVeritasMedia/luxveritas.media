@@ -6,8 +6,7 @@ const issues = [];
 const warnings = [];
 const activeBlockedGateIds = [
   "privacy_review",
-  "terms_review",
-  "www_redirect"
+  "terms_review"
 ];
 const closeoutItemIds = [
   "inbox_notifications",
