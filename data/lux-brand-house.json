@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "luxveritas.brand_house.v1",
+  "version": "2026-06-19-brand-house",
+  "updatedAt": "2026-06-19T00:00:00.000Z",
+  "publicPurpose": "Audience-facing brand house map for Lux Veritas public routes.",
+  "headline": "One house. Many rooms.",
+  "summary": "The public Lux Veritas world is organized as a living media house: records, studios, publishing, live rooms, community, and selected drops moving together without flattening the work.",
+  "houseMarks": [
+    {
+      "mark": "LVR",
+      "title": "Lux Veritas Records",
+      "body": "Release rooms, artist worlds, sessions, radio signals, and long-form music culture.",
+      "path": "/music.html",
+      "action": "Listen"
+    },
+    {
+      "mark": "LVS",
+      "title": "Lux Veritas Studios",
+      "body": "Cinematic chapters, visual worlds, screenings, and filmed atmosphere.",
+      "path": "/film.html",
+      "action": "Watch"
+    },
+    {
+      "mark": "LVP",
+      "title": "Lux Veritas Publishing",
+      "body": "Outer Codex essays, story language, print signals, and selected written works.",
+      "path": "/codex.html",
+      "action": "Read"
+    },
+    {
+      "mark": "LVL",
+      "title": "Lux Veritas Live",
+      "body": "Listening rooms, salons, private screenings, and destination cultural gatherings.",
+      "path": "/events.html",
+      "action": "Attend"
+    },
+    {
+      "mark": "LVC",
+      "title": "Lux Circle",
+      "body": "First access, private drops, presales, behind-the-scenes releases, and member paths.",
+      "path": "/membership.html",
+      "action": "Join"
+    },
+    {
+      "mark": "LVA",
+      "title": "Lux Atelier",
+      "body": "Editions, merch, objects, and owned commerce for supporters.",
+      "path": "/store.html",
+      "action": "Collect"
+    }
+  ]
+}

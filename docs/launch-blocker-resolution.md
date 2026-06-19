@@ -39,7 +39,7 @@ Use `LUX_LAUNCH_DRY_RUN=1` to validate without writing. A `ready` launch gate al
 ## Current Evidence
 
 - Apex site: `https://luxveritas.media` returns HTTP 200.
-- Live build version: `20260616-closeout-report`.
+- Live build version: `20260619-brand-house`.
 - Browser-flow pilot QA passes locally with form, media, and reporting paths.
 - Private handoff secret set is active for `firebase_handoff`.
 - Operator reporting token hash is configured.

@@ -302,6 +302,13 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
   font-size: .92rem;
   line-height: 1.55;
 }
+.house-card small {
+  align-self: end;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  font-size: .68rem;
+}
 .ops-preview { background: linear-gradient(180deg, #08100e, var(--indigo)); }
 .ops-grid, .portal-grid, .event-grid, .codex-list {
   display: grid;

@@ -14,6 +14,7 @@ const requiredFiles = [
   "sitemap.xml",
   "data/lux-launch-readiness.json",
   "data/lux-launch-closeout-public.json",
+  "data/lux-brand-house.json",
   "data/lux-media-manifest.json",
   "data/lux-build-manifest.json",
   "data/lux-legal-review.json",
@@ -282,6 +283,7 @@ for (const marker of ["luxveritas-static-", "/offline.html", "/site.webmanifest"
   if (!serviceWorkerRaw.includes(marker)) issues.push(`service-worker.js: missing offline marker ${marker}`);
 }
 
+const brandHouseRaw = await readFile(join(root, "data/lux-brand-house.json"), "utf8");
 const mediaManifestRaw = await readFile(join(root, "data/lux-media-manifest.json"), "utf8");
 const buildManifestRaw = await readFile(join(root, "data/lux-build-manifest.json"), "utf8");
 const webManifestRaw = await readFile(join(root, "site.webmanifest"), "utf8");
@@ -295,6 +297,7 @@ for (const pattern of bannedTerms) {
   if (pattern.test(webManifestRaw)) issues.push(`site.webmanifest: banned public term matched ${pattern}`);
   if (pattern.test(launchReadinessRaw)) issues.push(`data/lux-launch-readiness.json: banned public term matched ${pattern}`);
   if (pattern.test(launchCloseoutRaw)) issues.push(`data/lux-launch-closeout-public.json: banned public term matched ${pattern}`);
+  if (pattern.test(brandHouseRaw)) issues.push(`data/lux-brand-house.json: banned public term matched ${pattern}`);
   if (pattern.test(mediaManifestRaw)) issues.push(`data/lux-media-manifest.json: banned public term matched ${pattern}`);
   if (pattern.test(legalReviewRaw)) issues.push(`data/lux-legal-review.json: banned public term matched ${pattern}`);
   if (pattern.test(publicTermsRaw)) issues.push(`data/lux-public-terms.json: banned public term matched ${pattern}`);
@@ -340,11 +343,51 @@ try {
   if (buildManifest.routeCount !== htmlFiles.length) {
     issues.push(`data/lux-build-manifest.json: routeCount ${buildManifest.routeCount} does not match ${htmlFiles.length} generated HTML files`);
   }
-  if (!buildManifest.publicRouteCount || !buildManifest.mediaManifestVersion || !buildManifest.publicTermsVersion) {
-    issues.push("data/lux-build-manifest.json: missing publicRouteCount, mediaManifestVersion, or publicTermsVersion");
+  if (!buildManifest.publicRouteCount || !buildManifest.mediaManifestVersion || !buildManifest.brandHouseVersion || !buildManifest.publicTermsVersion) {
+    issues.push("data/lux-build-manifest.json: missing publicRouteCount, mediaManifestVersion, brandHouseVersion, or publicTermsVersion");
   }
 } catch (error) {
   issues.push(`data/lux-build-manifest.json: invalid JSON (${error.message})`);
+}
+
+try {
+  const brandHouse = JSON.parse(brandHouseRaw);
+  const marks = Array.isArray(brandHouse.houseMarks) ? brandHouse.houseMarks : [];
+  if (brandHouse.schemaVersion !== "luxveritas.brand_house.v1") {
+    issues.push("data/lux-brand-house.json: missing schemaVersion luxveritas.brand_house.v1");
+  }
+  if (!brandHouse.version || !brandHouse.headline || !brandHouse.summary) {
+    issues.push("data/lux-brand-house.json: missing version, headline, or summary");
+  }
+  if (marks.length !== 6) {
+    issues.push(`data/lux-brand-house.json: expected 6 house marks, found ${marks.length}`);
+  }
+  const expectedMarks = new Set(["LVR", "LVS", "LVP", "LVL", "LVC", "LVA"]);
+  for (const item of marks) {
+    if (!expectedMarks.has(item.mark)) issues.push(`data/lux-brand-house.json: unexpected house mark ${item.mark || "missing"}`);
+    for (const field of ["title", "body", "path", "action"]) {
+      if (!item[field]) issues.push(`data/lux-brand-house.json: ${item.mark || "item"} missing ${field}`);
+    }
+    if (item.path && (!item.path.startsWith("/") || !item.path.endsWith(".html"))) {
+      issues.push(`data/lux-brand-house.json: ${item.mark || "item"} has invalid public path`);
+    }
+  }
+  for (const rel of ["index.html", "about.html"]) {
+    const html = await readFile(join(root, rel), "utf8");
+    if (!html.includes(`data-brand-house-version="${brandHouse.version}"`)) {
+      issues.push(`${rel}: missing brand house version ${brandHouse.version}`);
+    }
+    for (const item of marks) {
+      if (!html.includes(`<span class="house-mark">${item.mark}</span>`)) {
+        issues.push(`${rel}: missing brand manifest mark ${item.mark}`);
+      }
+      if (!html.includes(`<small>${item.action}</small>`)) {
+        issues.push(`${rel}: missing brand manifest action ${item.action}`);
+      }
+    }
+  }
+} catch (error) {
+  issues.push(`data/lux-brand-house.json: invalid JSON (${error.message})`);
 }
 
 try {

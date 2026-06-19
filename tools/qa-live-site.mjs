@@ -150,8 +150,8 @@ try {
     if (buildManifest.stylesheet !== `styles.css?v=${expectedAssetVersion}`) {
       issues.push("/data/lux-build-manifest.json: stylesheet does not match current asset version");
     }
-    if (!buildManifest.mediaManifestVersion || !buildManifest.publicTermsVersion) {
-      issues.push("/data/lux-build-manifest.json: missing mediaManifestVersion or publicTermsVersion");
+    if (!buildManifest.mediaManifestVersion || !buildManifest.brandHouseVersion || !buildManifest.publicTermsVersion) {
+      issues.push("/data/lux-build-manifest.json: missing mediaManifestVersion, brandHouseVersion, or publicTermsVersion");
     }
   }
 } catch (error) {

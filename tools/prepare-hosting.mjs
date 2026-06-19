@@ -69,6 +69,7 @@ for (const file of assetFiles) {
   await cp(file, join(dist, file));
 }
 await mkdir(join(dist, "data"), { recursive: true });
+await cp("data/lux-brand-house.json", join(dist, "data/lux-brand-house.json"));
 await cp("data/lux-media-manifest.json", join(dist, "data/lux-media-manifest.json"));
 await cp("data/lux-build-manifest.json", join(dist, "data/lux-build-manifest.json"));
 await cp("data/lux-launch-readiness.json", join(dist, "data/lux-launch-readiness.json"));
@@ -96,6 +97,7 @@ await writeFile(join(dist, "data/lux-launch-closeout-public.json"), `${JSON.stri
 const requiredNonEmpty = [
   ...files,
   ...assetFiles,
+  "data/lux-brand-house.json",
   "data/lux-build-manifest.json",
   "data/lux-media-manifest.json",
   "data/lux-launch-readiness.json",
@@ -111,4 +113,4 @@ for (const file of requiredNonEmpty) {
   }
 }
 
-console.log(`Prepared Firebase Hosting artifact with ${files.length + assetFiles.length + 6} files.`);
+console.log(`Prepared Firebase Hosting artifact with ${files.length + assetFiles.length + 7} files.`);

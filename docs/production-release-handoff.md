@@ -9,7 +9,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Live apex: `https://luxveritas.media`
 - Firebase project: `lux-veritas-media`
 - GitHub repo: `LuxVeritasMedia/luxveritas.media`
-- Current live asset version: `20260616-closeout-report`
+- Current live asset version: `20260619-brand-house`
 - Current phase: Phase 4 of 10, capture/legal/readiness
 - Next major phase: Phase 5, authenticated portal shell
 
@@ -28,7 +28,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Listen, Watch, and Radio player actions select the matching source and return stable reporting keys.
 - Audio, video, and radio playback lifecycle events return play, pause, milestone, and ended reporting values.
 - Protected operator reporting summarizes playback actions, source types, reporting keys, and retention milestones.
-- Brand-house visual identity is live on Home and About, with responsive QA coverage for the six public house marks.
+- Brand-house visual identity is manifest-driven and live on Home and About, with responsive QA coverage for the six public house marks.
 - CTA, media, consented interaction, and form reporting paths have QA coverage.
 - Private operator reporting exists behind approved access.
 

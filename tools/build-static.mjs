@@ -1,9 +1,10 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260616-closeout-report";
+const assetVersion = "20260619-brand-house";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
+const brandHouse = JSON.parse(await readFile("data/lux-brand-house.json", "utf8"));
 
 const nav = [
   ["Home", "/index.html"],
@@ -284,27 +285,20 @@ function fanSignalSection() {
   </section>`;
 }
 
-const houseMarks = [
-  ["LVR", "Lux Veritas Records", "Release rooms, artist worlds, sessions, radio signals, and long-form music culture.", "/music.html"],
-  ["LVS", "Lux Veritas Studios", "Cinematic chapters, visual worlds, screenings, and filmed atmosphere.", "/film.html"],
-  ["LVP", "Lux Veritas Publishing", "Outer Codex essays, story language, print signals, and selected written works.", "/codex.html"],
-  ["LVL", "Lux Veritas Live", "Listening rooms, salons, private screenings, and destination cultural gatherings.", "/events.html"],
-  ["LVC", "Lux Circle", "First access, private drops, presales, behind-the-scenes releases, and member paths.", "/membership.html"],
-  ["LVA", "Lux Atelier", "Future drops, editions, merch, objects, and owned commerce for supporters.", "/store.html"]
-];
-
 function brandHouseSection() {
-  return `<section class="section brand-house" data-brand-house>
+  const houseMarks = Array.isArray(brandHouse.houseMarks) ? brandHouse.houseMarks : [];
+  return `<section class="section brand-house" data-brand-house data-brand-house-version="${brandHouse.version || ""}">
     <div class="section-heading">
       <p class="kicker">House</p>
-      <h2>One house. Many rooms.</h2>
-      <p>The public Lux Veritas world is organized as a living media house: records, studios, publishing, live rooms, community, and future drops moving together without flattening the work.</p>
+      <h2>${brandHouse.headline || "One house. Many rooms."}</h2>
+      <p>${brandHouse.summary || ""}</p>
     </div>
     <div class="house-grid" aria-label="Lux Veritas house marks">
-      ${houseMarks.map(([mark, title, body, href]) => `<a class="house-card" href="${href}">
-        <span class="house-mark">${mark}</span>
-        <strong>${title}</strong>
-        <p>${body}</p>
+      ${houseMarks.map((item) => `<a class="house-card" href="${item.path}">
+        <span class="house-mark">${item.mark}</span>
+        <strong>${item.title}</strong>
+        <p>${item.body}</p>
+        <small>${item.action}</small>
       </a>`).join("")}
     </div>
   </section>`;
@@ -1041,6 +1035,7 @@ await writeFile("data/lux-build-manifest.json", `${JSON.stringify({
   version: assetVersion,
   assetVersion,
   mediaManifestVersion: mediaManifest.version,
+  brandHouseVersion: brandHouse.version,
   publicTermsVersion: publicTerms.version,
   routeCount: pages.length,
   publicRouteCount: publicPaths.length,
