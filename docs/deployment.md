@@ -41,7 +41,7 @@ Before launch-day operations, check the local operator machine:
 node tools/qa-operator-environment.mjs
 ```
 
-This no-secret check confirms the repo, Node runtime, Firebase CLI, Firebase login/project visibility, optional GitHub CLI, live asset version pointer, and local preview port. Use `LUX_OPERATOR_ENV_STRICT=1` only when machine setup warnings or blockers should fail the command.
+This no-secret check confirms the repo, Node runtime, Firebase CLI, Firebase login/project visibility, optional GitHub CLI, live asset version pointer, and local preview port. The Firebase CLI account must be `info@luxveritas.media`; a different Google account can make provider secrets look missing even when production is healthy. Use `LUX_OPERATOR_ENV_STRICT=1` only when machine setup warnings or blockers should fail the command.
 
 For a no-secret snapshot of the MVP status, live asset version, legal status, media readiness, and active launch blockers:
 

@@ -119,18 +119,18 @@ const firebaseLogin = await run("firebase", ["login:list"], { timeout: 15000 });
 if (firebaseLogin.ok && /info@luxveritas\.media/i.test(firebaseLogin.stdout)) {
   pass("Firebase CLI lists info@luxveritas.media as logged in.");
 } else if (firebaseLogin.ok && firebaseLogin.stdout) {
-  warn(`Firebase CLI is logged in, but not visibly as info@luxveritas.media: ${firebaseLogin.stdout.replace(/\n/g, "; ")}`);
+  issue(`Firebase CLI is logged in, but not as info@luxveritas.media: ${firebaseLogin.stdout.replace(/\n/g, "; ")}`);
 } else {
-  warn(`Firebase CLI login state needs attention: ${compactError(firebaseLogin)}`);
+  issue(`Firebase CLI login state needs attention: ${compactError(firebaseLogin)}`);
 }
 
 const firebaseProjects = await run("firebase", ["projects:list", "--json"], { timeout: 20000 });
 if (firebaseProjects.ok && /lux-veritas-media/.test(firebaseProjects.stdout)) {
   pass("Firebase CLI can read project metadata for lux-veritas-media.");
 } else if (firebaseProjects.ok) {
-  warn("Firebase CLI responded, but lux-veritas-media was not visible in projects:list.");
+  issue("Firebase CLI responded, but lux-veritas-media was not visible in projects:list.");
 } else if (/reauth|auth|login|expired|credential/i.test(compactError(firebaseProjects))) {
-  warn("Firebase CLI credentials need interactive refresh; run firebase login --reauth in Terminal.");
+  issue("Firebase CLI credentials need interactive refresh; run firebase login --reauth in Terminal.");
 } else {
   warn(`Firebase project metadata check unavailable: ${compactError(firebaseProjects)}`);
 }

@@ -25,6 +25,8 @@ git status --short --branch
 node tools/qa-deploy-status.mjs
 ```
 
+If the operator-environment check reports a different Firebase account, log it out and run a fresh login with `info@luxveritas.media` before checking provider secrets or deploying Functions.
+
 2. Reconfirm `www` HTTPS:
 
 ```bash
