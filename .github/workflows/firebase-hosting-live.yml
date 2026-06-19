@@ -61,6 +61,9 @@ jobs:
       - name: QA private integration field map
         run: node tools/qa-private-integration-field-map.mjs
 
+      - name: QA private workflow matrix
+        run: node tools/qa-private-workflow-matrix.mjs
+
       - name: QA private integration request
         run: node tools/qa-private-integration-request.mjs
 

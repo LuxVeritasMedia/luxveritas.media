@@ -65,6 +65,9 @@ Lux Veritas Website Build/
     strategy-round2.md
     deployment.md
     supabase-blueprint.md
+    private-integration-profiles.json
+    private-integration-field-map.json
+    private-workflow-matrix.json
   tools/
     build-static.mjs
 ```
@@ -81,6 +84,7 @@ If you want the lightest possible handoff, at minimum upload:
 - [docs/arie-handoff-website-build.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/arie-handoff-website-build.md)
 - [docs/arie-quickstart.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/arie-quickstart.md)
 - [docs/strategy-round2.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/strategy-round2.md)
+- [docs/private-workflow-matrix.json](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/private-workflow-matrix.json)
 - [assets](/Users/frederickparent/Documents/Codex/LuxVeritas-website/assets)
 
 If Arie is expected to view the current static output immediately, also upload:

@@ -21,6 +21,7 @@ for (const marker of [
   "node tools/qa-integration-contract.mjs",
   "node tools/qa-integration-profiles.mjs",
   "node tools/qa-private-integration-field-map.mjs",
+  "node tools/qa-private-workflow-matrix.mjs",
   "node tools/qa-private-integration-request.mjs",
   "node tools/qa-release-handoff.mjs",
   "node tools/qa-launch-closeout.mjs",
@@ -91,6 +92,7 @@ for (const marker of [
   "node tools/qa-mvp-status.mjs",
   "node tools/qa-launch-evidence.mjs",
   "node tools/qa-private-integration-field-map.mjs",
+  "node tools/qa-private-workflow-matrix.mjs",
   "node tools/qa-private-integration-request.mjs",
   "node tools/qa-workflows.mjs",
   "LUX_FINAL_ALLOW_BLOCKERS=1 LUX_FINAL_SKIP_BROWSER=1 LUX_FINAL_SKIP_LIVE=1 node tools/qa-final-release-gate.mjs"
@@ -153,6 +155,7 @@ for (const marker of [
 for (const marker of [
   "node tools/activate-inbox-delivery.mjs",
   "node tools/resolve-www-domain.mjs",
+  "node tools/qa-private-workflow-matrix.mjs",
   "LUX_INBOX_ACTIVATION_WRITE_TEST=1",
   "ready to receive QA mail"
 ]) {

@@ -41,6 +41,8 @@ These are the known blockers before calling the site public-launch ready.
 2. Terms page needs legal/business approval.
 3. External CRM/Google workflow target may be selected after the private workflow is approved. The signed Firebase private handoff is already active for the MVP intake queue.
 
+Before selecting the external target, review `docs/private-workflow-matrix.json` and run `node tools/qa-private-workflow-matrix.mjs`. The matrix maps every public capture queue to its owner, SLA, current `firebase_handoff` path, approved next profiles, workflow actions, and acceptance checks without storing provider details.
+
 Use `docs/launch-blocker-resolution.md` as the operational closeout packet for the remaining release blockers. Use `docs/legal-review-packet.md` for Privacy and Terms review. Use `docs/final-launch-runbook.md` for the exact final launch sequence.
 
 ## Required Commands
@@ -54,6 +56,7 @@ node tools/qa-mvp-preflight.mjs
 node tools/qa-launch-evidence.mjs
 firebase login --reauth
 node tools/qa-provider-readiness.mjs
+node tools/qa-private-workflow-matrix.mjs
 node tools/qa-domain-readiness.mjs
 node tools/resolve-www-domain.mjs
 node tools/qa-release-readiness.mjs

@@ -70,6 +70,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Configure and verify email provider runtime secret `RESEND_API_KEY` plus approved sender domain for inbox notification after Firestore capture. 2026-06-17 live matrix confirmed 10 capture intents with inbox delivery required.
 - [x] Add no-secret private integration request export for future GHL, Google Workspace, and CodexOps activation.
 - [x] Add no-secret downstream field map for future GHL, Google Workspace, and CodexOps activation.
+- [x] Add no-secret private workflow matrix for capture queues, owners, SLAs, handoff profiles, and acceptance checks.
 - [ ] Configure approved external CRM/Google workflow target after the private workflow is chosen.
 - [x] Reauthenticate Firebase CLI locally before provider-secret inspection.
 - [x] Configure `REPORT_OPERATOR_TOKEN_SHA256` on `reportactivity` for private pilot reporting access.

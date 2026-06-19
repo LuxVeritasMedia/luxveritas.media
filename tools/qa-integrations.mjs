@@ -8,6 +8,7 @@ const buildScript = await readFile("tools/build-static.mjs", "utf8");
 const docs = await readFile("docs/deployment.md", "utf8");
 const profileRegistry = await readFile("docs/private-integration-profiles.json", "utf8");
 const fieldMap = await readFile("docs/private-integration-field-map.json", "utf8");
+const workflowMatrix = await readFile("docs/private-workflow-matrix.json", "utf8");
 
 for (const marker of [
   "FORM_INTEGRATION_URL",
@@ -193,11 +194,32 @@ for (const marker of [
   if (!fieldMap.includes(marker)) issues.push(`private-integration-field-map.json: missing field-map marker ${marker}`);
 }
 
+for (const marker of [
+  "luxveritas.private_workflow_matrix.v1",
+  "membership_waitlist",
+  "submission_review",
+  "event_access",
+  "press_contact",
+  "partner_licensing",
+  "strategic_access",
+  "access_review",
+  "firebase_handoff",
+  "ghl_crm",
+  "google_workspace",
+  "codex_ops",
+  "publicExposure"
+]) {
+  if (!workflowMatrix.includes(marker)) issues.push(`private-workflow-matrix.json: missing workflow marker ${marker}`);
+}
+
 if (/https?:\/\//i.test(profileRegistry)) {
   issues.push("private-integration-profiles.json: must not contain provider URLs");
 }
 if (/https?:\/\//i.test(fieldMap)) {
   issues.push("private-integration-field-map.json: must not contain provider URLs");
+}
+if (/https?:\/\//i.test(workflowMatrix)) {
+  issues.push("private-workflow-matrix.json: must not contain provider URLs");
 }
 
 if (/FORM_INTEGRATION_URL\s*=|https:\/\/hooks\.|webhookUrl/i.test(appJs)) {

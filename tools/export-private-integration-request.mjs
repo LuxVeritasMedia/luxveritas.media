@@ -11,6 +11,7 @@ function secretShape(value) {
 const [
   profilesRaw,
   fieldMapRaw,
+  workflowMatrixRaw,
   launchRaw,
   closeoutRaw,
   buildRaw,
@@ -18,19 +19,21 @@ const [
 ] = await Promise.all([
   readFile("docs/private-integration-profiles.json", "utf8"),
   readFile("docs/private-integration-field-map.json", "utf8"),
+  readFile("docs/private-workflow-matrix.json", "utf8"),
   readFile("data/lux-launch-readiness.json", "utf8"),
   readFile("data/lux-launch-closeout.json", "utf8"),
   readFile("data/lux-build-manifest.json", "utf8"),
   readFile("functions/integration-contract.js", "utf8")
 ]);
 
-if (secretShape(`${profilesRaw}\n${fieldMapRaw}\n${launchRaw}\n${closeoutRaw}\n${buildRaw}`)) {
+if (secretShape(`${profilesRaw}\n${fieldMapRaw}\n${workflowMatrixRaw}\n${launchRaw}\n${closeoutRaw}\n${buildRaw}`)) {
   console.error("Private integration request input appears to contain secret-shaped data.");
   process.exit(1);
 }
 
 const registry = JSON.parse(profilesRaw);
 const fieldMap = JSON.parse(fieldMapRaw);
+const workflowMatrix = JSON.parse(workflowMatrixRaw);
 const launch = JSON.parse(launchRaw);
 const closeout = JSON.parse(closeoutRaw);
 const build = JSON.parse(buildRaw);
@@ -104,6 +107,27 @@ const packet = {
     requiredPayloadPaths: fieldMap.requiredPayloadPaths || [],
     profileMappings: profiles.map(mappedProfile)
   },
+  workflowMatrix: {
+    schemaVersion: workflowMatrix.schemaVersion || "",
+    contract: workflowMatrix.contract || "",
+    eventType: workflowMatrix.eventType || "",
+    currentPrimaryProfile: workflowMatrix.currentPrimaryProfile || "",
+    publicExposure: workflowMatrix.publicExposure || "",
+    queueCount: Array.isArray(workflowMatrix.queues) ? workflowMatrix.queues.length : 0,
+    queues: Array.isArray(workflowMatrix.queues)
+      ? workflowMatrix.queues.map((queue) => ({
+        id: queue.id,
+        label: queue.label,
+        owner: queue.owner,
+        priority: queue.priority,
+        sla: queue.sla,
+        currentProfile: queue.currentProfile,
+        approvedNextProfiles: queue.approvedNextProfiles || [],
+        actions: queue.actions || [],
+        acceptance: queue.acceptance || []
+      }))
+      : []
+  },
   requiredSecrets,
   approvedProfiles: activeProfiles.map((profile) => ({
     id: profile.id,
@@ -169,6 +193,9 @@ if (format === "json") {
       return `- ${profile.id}: ${profile.destinationType} -> ${profile.primaryRecord}; actions: ${profile.actions.join(", ")}; fields: ${bucketList}`;
     })
     .join("\n");
+  const workflowRows = packet.workflowMatrix.queues
+    .map((queue) => `- ${queue.id}: ${queue.owner}; SLA ${queue.sla}; current ${queue.currentProfile}; next ${queue.approvedNextProfiles.join(", ")}; actions: ${queue.actions.join(", ")}`)
+    .join("\n");
 
   rendered = `# Lux Veritas Private Integration Activation Request
 
@@ -202,6 +229,15 @@ Asset version: ${packet.assetVersion}
 - Required payload paths: ${packet.fieldMap.requiredPayloadPaths.join(", ")}
 
 ${mappingRows || "- None"}
+
+## Downstream Workflow Matrix
+
+- Schema: ${packet.workflowMatrix.schemaVersion}
+- Current primary profile: ${packet.workflowMatrix.currentPrimaryProfile}
+- Public exposure: ${packet.workflowMatrix.publicExposure}
+- Queue count: ${packet.workflowMatrix.queueCount}
+
+${workflowRows || "- None"}
 
 ## Required Firebase Secrets
 

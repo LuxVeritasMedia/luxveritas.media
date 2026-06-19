@@ -1,0 +1,165 @@
+{
+  "schemaVersion": "luxveritas.private_workflow_matrix.v1",
+  "purpose": "No-secret routing matrix for approved downstream workflow targets. This file must not contain provider URLs, private destination details, provider secrets, tenant identifiers, or private values.",
+  "contract": "luxveritas.form_submission.v1",
+  "eventType": "form.submission.received",
+  "currentPrimaryProfile": "firebase_handoff",
+  "publicExposure": "none",
+  "activationRule": "External CRM, Google Workspace, and CodexOps targets can be activated only after a human-approved private workflow is chosen and configured through Firebase Secret Manager.",
+  "queues": [
+    {
+      "id": "membership_waitlist",
+      "label": "Membership Waitlist",
+      "owner": "Membership operator",
+      "priority": "standard",
+      "sla": "3 business days",
+      "inquiryKeys": ["membership"],
+      "roleTargets": ["member"],
+      "currentProfile": "firebase_handoff",
+      "approvedNextProfiles": ["ghl_crm", "google_workspace"],
+      "actions": [
+        "save_intake_record",
+        "send_first_access_follow_up",
+        "tag_membership_waitlist",
+        "archive_consent_record"
+      ],
+      "acceptance": [
+        "Live membership capture stores a receipt-backed submission.",
+        "Private reporting shows membership_waitlist under routing summaries.",
+        "Future CRM target can tag first access without exposing public client code."
+      ]
+    },
+    {
+      "id": "submission_review",
+      "label": "Submission Review",
+      "owner": "Submissions reviewer",
+      "priority": "high",
+      "sla": "5 business days",
+      "inquiryKeys": ["submissions"],
+      "roleTargets": ["artist", "creator"],
+      "currentProfile": "firebase_handoff",
+      "approvedNextProfiles": ["google_workspace", "codex_ops"],
+      "actions": [
+        "save_intake_record",
+        "confirm_submission_terms_versions",
+        "create_review_packet",
+        "route_rights_safe_fit_review"
+      ],
+      "acceptance": [
+        "Submission payload includes public, privacy, terms, and submission terms versions.",
+        "Private reporting shows submission_review under routing summaries.",
+        "Future CodexOps target receives only review-packet fields, not private prompts."
+      ]
+    },
+    {
+      "id": "event_access",
+      "label": "Event Access",
+      "owner": "Events operator",
+      "priority": "standard",
+      "sla": "3 business days",
+      "inquiryKeys": ["events", "event_guest"],
+      "roleTargets": ["member"],
+      "currentProfile": "firebase_handoff",
+      "approvedNextProfiles": ["ghl_crm", "google_workspace"],
+      "actions": [
+        "save_intake_record",
+        "screen_event_fit",
+        "route_invitation_path",
+        "archive_rsvp_interest"
+      ],
+      "acceptance": [
+        "Event access capture stores receipt-backed inquiry data.",
+        "Private reporting shows event_access under routing summaries.",
+        "Future workflow target can distinguish invite interest from paid ticketing."
+      ]
+    },
+    {
+      "id": "press_contact",
+      "label": "Press Contact",
+      "owner": "Press operator",
+      "priority": "standard",
+      "sla": "2 business days",
+      "inquiryKeys": ["press"],
+      "roleTargets": ["press"],
+      "currentProfile": "firebase_handoff",
+      "approvedNextProfiles": ["google_workspace", "ghl_crm"],
+      "actions": [
+        "save_intake_record",
+        "route_press_response",
+        "assemble_public_epk_follow_up",
+        "archive_contact_record"
+      ],
+      "acceptance": [
+        "Press capture stores inquiry and consent values.",
+        "Private reporting shows press_contact under routing summaries.",
+        "Future workspace target can route public kit requests without exposing gated EPK materials."
+      ]
+    },
+    {
+      "id": "partner_licensing",
+      "label": "Partner / Licensing",
+      "owner": "Partnerships operator",
+      "priority": "high",
+      "sla": "3 business days",
+      "inquiryKeys": ["partnership", "licensing", "partner"],
+      "roleTargets": ["partner"],
+      "currentProfile": "firebase_handoff",
+      "approvedNextProfiles": ["google_workspace", "ghl_crm", "codex_ops"],
+      "actions": [
+        "save_intake_record",
+        "screen_use_case",
+        "route_access_level",
+        "create_partner_review_packet"
+      ],
+      "acceptance": [
+        "Partner and licensing captures route to partner_licensing.",
+        "Private reporting shows partner_licensing under routing summaries.",
+        "Future targets receive screened inquiry context only, not private deal files or internal operations."
+      ]
+    },
+    {
+      "id": "strategic_access",
+      "label": "Strategic Access",
+      "owner": "Strategic access operator",
+      "priority": "high",
+      "sla": "2 business days",
+      "inquiryKeys": ["investor"],
+      "roleTargets": ["investor"],
+      "currentProfile": "firebase_handoff",
+      "approvedNextProfiles": ["google_workspace"],
+      "actions": [
+        "save_intake_record",
+        "screen_strategic_fit",
+        "route_materials_request",
+        "archive_access_decision"
+      ],
+      "acceptance": [
+        "Investor capture stores a screened request without public deck details.",
+        "Private reporting shows strategic_access under routing summaries.",
+        "Future workspace target can route access review without exposing projections or data-room material."
+      ]
+    },
+    {
+      "id": "access_review",
+      "label": "Access Review",
+      "owner": "Portal operator",
+      "priority": "standard",
+      "sla": "3 business days",
+      "inquiryKeys": ["portal", "general"],
+      "roleTargets": ["visitor", "creator", "partner"],
+      "currentProfile": "firebase_handoff",
+      "approvedNextProfiles": ["google_workspace", "codex_ops"],
+      "actions": [
+        "save_intake_record",
+        "confirm_role_path",
+        "route_access_need",
+        "create_operator_review_note"
+      ],
+      "acceptance": [
+        "Portal and general access captures store role and inquiry context.",
+        "Private reporting shows access_review under routing summaries.",
+        "Future CodexOps target can create operator-reviewed packets without public internal app code."
+      ]
+    }
+  ]
+}

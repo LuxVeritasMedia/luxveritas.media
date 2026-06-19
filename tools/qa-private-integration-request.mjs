@@ -13,7 +13,7 @@ function secretShape(value) {
   return /re_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}|FORM_INTEGRATION_URL=https:\/\/\S+/i.test(value);
 }
 
-const [markdownResult, jsonResult, profilesRaw, fieldMapRaw] = await Promise.all([
+const [markdownResult, jsonResult, profilesRaw, fieldMapRaw, workflowMatrixRaw] = await Promise.all([
   execFileAsync(process.execPath, ["tools/export-private-integration-request.mjs"], {
     timeout: 30000,
     maxBuffer: 1024 * 1024 * 4
@@ -24,13 +24,15 @@ const [markdownResult, jsonResult, profilesRaw, fieldMapRaw] = await Promise.all
     maxBuffer: 1024 * 1024 * 4
   }),
   readFile("docs/private-integration-profiles.json", "utf8"),
-  readFile("docs/private-integration-field-map.json", "utf8")
+  readFile("docs/private-integration-field-map.json", "utf8"),
+  readFile("docs/private-workflow-matrix.json", "utf8")
 ]);
 
 const markdown = markdownResult.stdout;
 const jsonRaw = jsonResult.stdout;
 const registry = JSON.parse(profilesRaw);
 const fieldMap = JSON.parse(fieldMapRaw);
+const workflowMatrix = JSON.parse(workflowMatrixRaw);
 const profiles = Array.isArray(registry.profiles) ? registry.profiles : [];
 
 if (secretShape(markdown) || secretShape(jsonRaw)) {
@@ -42,6 +44,7 @@ for (const marker of [
   "No-secret private handoff activation request",
   "Current Handoff Gate",
   "Downstream Field Map",
+  "Downstream Workflow Matrix",
   "Required Firebase Secrets",
   "Active Or Ready Profiles",
   "Future Profiles",
@@ -80,6 +83,23 @@ if (packet) {
   }
   if (packet.contract?.schemaVersion !== "luxveritas.form_submission.v1") issue("contract schema mismatch");
   if (packet.contract?.eventType !== "form.submission.received") issue("contract event mismatch");
+  if (packet.workflowMatrix?.schemaVersion !== workflowMatrix.schemaVersion) issue("workflow matrix schema mismatch");
+  if (packet.workflowMatrix?.contract !== "luxveritas.form_submission.v1") issue("workflow matrix contract mismatch");
+  if (packet.workflowMatrix?.eventType !== "form.submission.received") issue("workflow matrix event mismatch");
+  if (packet.workflowMatrix?.currentPrimaryProfile !== "firebase_handoff") issue("workflow matrix primary profile mismatch");
+  if (packet.workflowMatrix?.publicExposure !== "none") issue("workflow matrix public exposure mismatch");
+  if (packet.workflowMatrix?.queueCount !== 7) issue("workflow matrix queue count mismatch");
+  for (const queueId of ["membership_waitlist", "submission_review", "event_access", "press_contact", "partner_licensing", "strategic_access", "access_review"]) {
+    const queue = packet.workflowMatrix?.queues?.find((item) => item.id === queueId);
+    if (!queue) {
+      issue(`workflow matrix missing queue ${queueId}`);
+      continue;
+    }
+    if (!queue.owner || !queue.sla || !queue.currentProfile) issue(`${queueId}: workflow matrix summary missing owner, sla, or currentProfile`);
+    if (!queue.approvedNextProfiles?.length) issue(`${queueId}: workflow matrix summary missing approvedNextProfiles`);
+    if (!queue.actions?.length) issue(`${queueId}: workflow matrix summary missing actions`);
+    if (!queue.acceptance?.length) issue(`${queueId}: workflow matrix summary missing acceptance checks`);
+  }
   for (const header of ["X-Lux-Event", "X-Lux-Idempotency-Key", "X-Lux-Target", "X-Lux-Signature"]) {
     if (!packet.contract?.headers?.includes(header)) issue(`contract missing header ${header}`);
   }

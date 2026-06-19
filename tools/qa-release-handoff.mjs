@@ -36,6 +36,7 @@ for (const marker of [
   "node tools/report-mvp-status.mjs",
   "node tools/qa-mvp-preflight.mjs",
   "node tools/qa-launch-evidence.mjs",
+  "node tools/qa-private-workflow-matrix.mjs",
   "LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs",
   "Do not use `LUX_FINAL_SKIP_BROWSER=1` or `LUX_FINAL_SKIP_LIVE=1` for release approval.",
   "LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.mjs"
@@ -123,6 +124,7 @@ for (const marker of [
   "node tools/qa-legal-review-request.mjs",
   "node tools/export-private-integration-request.mjs",
   "node tools/qa-private-integration-field-map.mjs",
+  "node tools/qa-private-workflow-matrix.mjs",
   "LUX_PRIVATE_INTEGRATION_PACKET_OUT=/tmp/lux-private-integration-request.md",
   "LUX_LEGAL_REVIEW_ITEM=privacy",
   "LUX_LEGAL_REVIEW_ITEM=terms",
