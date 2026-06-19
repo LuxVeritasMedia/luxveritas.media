@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 const baseUrl = (process.env.LUX_LIVE_URL || "https://luxveritas.media").replace(/\/$/, "");
 const issues = [];
 const warnings = [];
+let liveBuildManifest = null;
 const requiredRoutes = [
   "/",
   "/music.html",
@@ -138,6 +139,7 @@ try {
     issues.push(`/data/lux-build-manifest.json: expected HTTP 200, received ${response.status}`);
   } else {
     const buildManifest = JSON.parse(text);
+    liveBuildManifest = buildManifest;
     if (buildManifest.schemaVersion !== "luxveritas.build_manifest.v1") {
       issues.push("/data/lux-build-manifest.json: schemaVersion mismatch");
     }
@@ -156,6 +158,52 @@ try {
   }
 } catch (error) {
   issues.push(`/data/lux-build-manifest.json: invalid response (${error.message})`);
+}
+
+try {
+  const { response, text } = await fetchWithTimeout("/data/lux-brand-house.json");
+  if (!response.ok) {
+    issues.push(`/data/lux-brand-house.json: expected HTTP 200, received ${response.status}`);
+  } else {
+    const brandHouse = JSON.parse(text);
+    const marks = Array.isArray(brandHouse.houseMarks) ? brandHouse.houseMarks : [];
+    const expectedMarks = new Set(["LVR", "LVS", "LVP", "LVL", "LVC", "LVA"]);
+    if (brandHouse.schemaVersion !== "luxveritas.brand_house.v1") {
+      issues.push("/data/lux-brand-house.json: schemaVersion mismatch");
+    }
+    if (liveBuildManifest?.brandHouseVersion && liveBuildManifest.brandHouseVersion !== brandHouse.version) {
+      issues.push("/data/lux-brand-house.json: version does not match build manifest brandHouseVersion");
+    }
+    if (marks.length !== 6) {
+      issues.push(`/data/lux-brand-house.json: expected 6 house marks, received ${marks.length}`);
+    }
+    for (const item of marks) {
+      if (!expectedMarks.has(item.mark)) {
+        issues.push(`/data/lux-brand-house.json: unexpected house mark ${item.mark || "missing"}`);
+      }
+      if (!item.logo || !item.logo.startsWith("/assets/") || !item.logo.endsWith(".svg")) {
+        issues.push(`/data/lux-brand-house.json: ${item.mark || "item"} has invalid logo path`);
+        continue;
+      }
+      try {
+        const asset = await fetchWithTimeout(item.logo);
+        const contentType = asset.response.headers.get("content-type") || "";
+        if (!asset.response.ok) {
+          issues.push(`${item.logo}: expected HTTP 200, received ${asset.response.status}`);
+        }
+        if (!/image\/svg\+xml/i.test(contentType)) {
+          issues.push(`${item.logo}: expected image/svg+xml, received ${contentType || "missing"}`);
+        }
+        if (!asset.text.includes("<svg") || !asset.text.includes(item.mark)) {
+          issues.push(`${item.logo}: missing SVG markup or ${item.mark} mark text`);
+        }
+      } catch (error) {
+        issues.push(`${item.logo}: request failed (${error.message})`);
+      }
+    }
+  }
+} catch (error) {
+  issues.push(`/data/lux-brand-house.json: invalid response (${error.message})`);
 }
 
 try {
