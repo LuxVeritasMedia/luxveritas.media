@@ -51,6 +51,9 @@ LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.m
 4. Approve legal only after review:
 
 ```bash
+node tools/export-legal-review-request.mjs
+LUX_LEGAL_PACKET_OUT=/tmp/lux-legal-review-request.md node tools/export-legal-review-request.mjs
+node tools/qa-legal-review-request.mjs
 LUX_LEGAL_REVIEW_ITEM=privacy LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY="Reviewer Name" node tools/set-legal-review-status.mjs
 LUX_LEGAL_REVIEW_ITEM=terms LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY="Reviewer Name" node tools/set-legal-review-status.mjs
 node tools/build-static.mjs
@@ -89,6 +92,7 @@ The final gate also runs operator-environment, MVP status, and MVP preflight che
 
 - Replay pending inbox notifications from `/portal/reporting.html` with an approved operator token.
 - Export the private report JSON/CSV for launch evidence.
+- Export the no-secret legal review request with `LUX_LEGAL_PACKET_OUT=/tmp/lux-legal-review-request.md node tools/export-legal-review-request.mjs`, then move it to the private launch folder with any real legal approval notes.
 - Export the no-secret launch evidence packet with `LUX_EVIDENCE_LIVE=1 LUX_EVIDENCE_OUT=/tmp/lux-launch-evidence.md node tools/export-launch-evidence.mjs`, then move it to the private launch folder.
 - Record the passing final-gate command output in the private launch folder.
 - Do not paste provider keys, operator tokens, or private report exports into this public repo.

@@ -98,6 +98,8 @@ for (const marker of [
   "data/lux-public-terms.json",
   "Privacy Checklist",
   "Terms Checklist",
+  "node tools/export-legal-review-request.mjs",
+  "node tools/qa-legal-review-request.mjs",
   "LUX_LEGAL_REVIEW_ITEM=privacy",
   "LUX_LEGAL_REVIEW_ITEM=terms"
 ]) {
@@ -116,6 +118,8 @@ for (const marker of [
   "node tools/qa-domain-readiness.mjs",
   "node tools/resolve-www-domain.mjs",
   "LUX_RESEND_API_KEY=\"re_...\" node tools/activate-inbox-delivery.mjs",
+  "node tools/export-legal-review-request.mjs",
+  "node tools/qa-legal-review-request.mjs",
   "LUX_LEGAL_REVIEW_ITEM=privacy",
   "LUX_LEGAL_REVIEW_ITEM=terms",
   "LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs",

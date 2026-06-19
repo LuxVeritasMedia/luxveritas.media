@@ -87,6 +87,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add active public terms version manifest for capture auditability.
 - [x] Add auditable legal review status manifest and approval helper.
 - [x] Add legal review packet for Privacy and Terms approval.
+- [x] Add no-secret legal review request export for counsel/business approval.
 - [ ] Legal review: Privacy.
 - [ ] Legal review: Terms.
 - [ ] Add Event Terms if ticketing or public RSVP goes live.

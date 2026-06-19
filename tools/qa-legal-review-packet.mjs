@@ -28,6 +28,8 @@ for (const marker of [
   "Terms Checklist",
   "Approval Commands",
   "Acceptance",
+  "node tools/export-legal-review-request.mjs",
+  "node tools/qa-legal-review-request.mjs",
   "LUX_LEGAL_REVIEW_ITEM=privacy",
   "LUX_LEGAL_REVIEW_ITEM=terms",
   "node tools/qa-release-readiness.mjs"

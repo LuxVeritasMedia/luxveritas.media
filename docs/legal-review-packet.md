@@ -48,6 +48,15 @@ Confirm that `/legal/terms.html` accurately describes the actual practices for:
 
 ## Approval Commands
 
+Generate the current no-secret reviewer request before approval:
+
+```bash
+node tools/export-legal-review-request.mjs
+LUX_LEGAL_PACKET_OUT=/tmp/lux-legal-review-request.md node tools/export-legal-review-request.mjs
+LUX_LEGAL_PACKET_FORMAT=json node tools/export-legal-review-request.mjs
+node tools/qa-legal-review-request.mjs
+```
+
 Run these only after approval is real:
 
 ```bash
