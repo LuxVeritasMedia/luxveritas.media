@@ -37,6 +37,7 @@ async function fetchJson(url) {
     const response = await fetch(url, {
       headers: {
         Accept: "application/json, application/vnd.github+json",
+        "Cache-Control": "no-cache",
         "User-Agent": "luxveritas-deploy-status"
       }
     });
@@ -48,6 +49,8 @@ async function fetchJson(url) {
         "-fsS",
         "-H",
         "Accept: application/json, application/vnd.github+json",
+        "-H",
+        "Cache-Control: no-cache",
         "-H",
         "User-Agent: luxveritas-deploy-status",
         url
@@ -99,6 +102,14 @@ let latestRun = null;
 try {
   const runs = await fetchJson(`https://api.github.com/repos/${repo}/actions/workflows/${workflow}/runs?per_page=1&branch=main`);
   latestRun = Array.isArray(runs.workflow_runs) ? runs.workflow_runs[0] : null;
+  if (latestRun?.url) {
+    try {
+      const refreshedRun = await fetchJson(latestRun.url);
+      if (refreshedRun?.id === latestRun.id) latestRun = refreshedRun;
+    } catch {
+      // The workflow list response is still usable when the direct run lookup is unavailable.
+    }
+  }
   if (latestRun) {
     const runSha = latestRun.head_sha || "";
     const runUrl = latestRun.html_url || "";

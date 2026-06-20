@@ -168,6 +168,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Make pilot-readiness QA rebuild and prepare the deploy artifact before checks.
 - [x] Add deploy-status QA for GitHub Actions and live build-manifest drift.
 - [x] Add stale GitHub Hosting workflow detection to deploy-status QA.
+- [x] Refresh direct GitHub Actions run status in deploy-status QA to avoid stale workflow-list warnings.
 - [x] Add Firebase Hosting security/privacy header QA and live header verification.
 - [x] Add final strict release-gate command for launch-day acceptance.
 - [x] Add operator/MVP status/preflight coverage to the final release gate.
