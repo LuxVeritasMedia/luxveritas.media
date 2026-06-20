@@ -9,7 +9,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Live apex: `https://luxveritas.media`
 - Firebase project: `lux-veritas-media`
 - GitHub repo: `LuxVeritasMedia/luxveritas.media`
-- Current live asset version: `20260619-brand-marks`
+- Current live asset version: `20260620-fan-flywheel`
 - Current phase: Phase 4 of 10, capture/legal/readiness
 - Next major phase: Phase 5, authenticated portal shell
 - Current MVP posture: pilot-ready with public launch blocked only by external Privacy and Terms approval.

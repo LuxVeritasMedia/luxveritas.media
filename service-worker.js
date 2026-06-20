@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260619-brand-marks";
+const CACHE_NAME = "luxveritas-static-20260620-fan-flywheel";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260619-brand-marks",
-  "/app.js?v=20260619-brand-marks",
+  "/styles.css?v=20260620-fan-flywheel",
+  "/app.js?v=20260620-fan-flywheel",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"

@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "luxveritas.fan_flywheel.v1",
+  "version": "2026-06-20-fan-flywheel",
+  "updatedAt": "2026-06-20T00:00:00.000Z",
+  "publicPurpose": "Audience-facing map for moving fans through Lux Veritas music, film, events, membership, drops, and submissions.",
+  "headline": "The world opens by return.",
+  "summary": "Lux Veritas is built so a fan can enter through one signal and keep finding the next door: music, visuals, rooms, drops, story, and creation moving together.",
+  "stages": [
+    {
+      "id": "listen",
+      "label": "Listen",
+      "title": "Start With Sound",
+      "body": "Music is the first signal: releases, sessions, radio moments, and artist worlds that give the larger universe a pulse.",
+      "path": "/music.html",
+      "action": "Play the signal"
+    },
+    {
+      "id": "watch",
+      "label": "Watch",
+      "title": "See the World",
+      "body": "Visual chapters, cinematic language, and selected previews turn the sound into atmosphere, story, and image.",
+      "path": "/film.html",
+      "action": "Watch the world"
+    },
+    {
+      "id": "join",
+      "label": "Join",
+      "title": "Enter the Circle",
+      "body": "First access creates a clean fan path for early release notes, private drops, listening rooms, and future member identity.",
+      "path": "/join.html",
+      "action": "Join first access"
+    },
+    {
+      "id": "attend",
+      "label": "Attend",
+      "title": "Find the Room",
+      "body": "Listening rooms, salons, screenings, and destination gatherings turn attention into presence and shared memory.",
+      "path": "/events.html",
+      "action": "Request a room"
+    },
+    {
+      "id": "collect",
+      "label": "Collect",
+      "title": "Hold the Drop",
+      "body": "Selected objects, editions, garments, books, and release-linked pieces let supporters carry the world beyond the screen.",
+      "path": "/store.html",
+      "action": "Join the drop list"
+    },
+    {
+      "id": "create",
+      "label": "Create",
+      "title": "Approach the Source",
+      "body": "Artists, creators, story builders, and partners can enter through screened submissions when the fit is aligned.",
+      "path": "/submissions.html",
+      "action": "Submit for review"
+    }
+  ]
+}

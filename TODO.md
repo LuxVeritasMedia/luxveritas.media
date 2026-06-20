@@ -17,6 +17,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Rewrite Events as request-access invitation layer.
 - [x] Upgrade Join, Store, Membership, and Community into richer fan conversion pages.
 - [x] Add local Circle Signal panel so fan-facing pages return live on-device engagement values.
+- [x] Add public fan-flywheel map for Listen, Watch, Join, Attend, Collect, and Create paths.
 - [x] Add static email handoff to `info@luxveritas.media` for public forms.
 - [x] Add Firebase server-side form relay with validation, honeypot, rate limiting, and email fallback.
 - [x] Mount inbox provider API key through Firebase Functions Secret Manager.

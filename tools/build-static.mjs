@@ -1,10 +1,11 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260619-brand-marks";
+const assetVersion = "20260620-fan-flywheel";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 const brandHouse = JSON.parse(await readFile("data/lux-brand-house.json", "utf8"));
+const fanFlywheel = JSON.parse(await readFile("data/lux-fan-flywheel.json", "utf8"));
 
 const nav = [
   ["Home", "/index.html"],
@@ -244,6 +245,7 @@ function fanConversionPage({ path, title, description, eyebrow, headline, copy, 
     title: `${title} | Lux Veritas`,
     description,
     body: `${pageHero(eyebrow, headline, copy, `<div class="hero-actions"><button class="button button-primary" type="button" data-open-form="fan">${primaryLabel}</button><button class="button button-quiet" type="button" data-open-form="request">Request Access</button></div>`)}
+    ${fanFlywheelSection()}
     <section class="section split-band">
       <div><p class="kicker">Fan Circle</p><h2>${closingTitle}</h2></div>
       <div><p>${closingCopy}</p><div class="hero-actions"><button class="button button-primary" type="button" data-open-form="fan">Join for first access</button></div></div>
@@ -254,6 +256,25 @@ function fanConversionPage({ path, title, description, eyebrow, headline, copy, 
     </div></section>
     ${cta()}`
   });
+}
+
+function fanFlywheelSection() {
+  const stages = Array.isArray(fanFlywheel.stages) ? fanFlywheel.stages : [];
+  return `<section class="section fan-flywheel" data-fan-flywheel data-fan-flywheel-version="${fanFlywheel.version || ""}">
+    <div class="section-heading">
+      <p class="kicker">Fan Flywheel</p>
+      <h2>${fanFlywheel.headline || "The world opens by return."}</h2>
+      <p>${fanFlywheel.summary || ""}</p>
+    </div>
+    <div class="flywheel-grid" aria-label="Lux Veritas fan journey">
+      ${stages.map((stage, index) => `<a class="flywheel-card" href="${stage.path}" data-fan-flywheel-stage="${stage.id}">
+        <span>${String(index + 1).padStart(2, "0")} · ${stage.label}</span>
+        <strong>${stage.title}</strong>
+        <p>${stage.body}</p>
+        <small>${stage.action}</small>
+      </a>`).join("")}
+    </div>
+  </section>`;
 }
 
 function fanSignalSection() {
@@ -420,6 +441,7 @@ function home() {
       }).join("")}
     </div></section>
     <section class="section split-band"><div><p class="kicker">Journey</p><h2>Listen to the signal.<br />Watch the world open.<br />Join the circle.</h2></div><div><p>Attend the room.</p><p>Collect the drop.</p><p>Create from the source.</p><div class="hero-actions"><button class="button button-primary" data-open-form="request">Enter Lux Veritas</button><button class="button button-quiet" data-open-form="fan">Join for first access</button></div></div></section>
+    ${fanFlywheelSection()}
     ${brandHouseSection()}
     ${fanSignalSection()}
     ${cta()}`
@@ -1036,6 +1058,7 @@ await writeFile("data/lux-build-manifest.json", `${JSON.stringify({
   assetVersion,
   mediaManifestVersion: mediaManifest.version,
   brandHouseVersion: brandHouse.version,
+  fanFlywheelVersion: fanFlywheel.version,
   publicTermsVersion: publicTerms.version,
   routeCount: pages.length,
   publicRouteCount: publicPaths.length,

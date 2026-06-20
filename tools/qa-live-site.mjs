@@ -152,8 +152,8 @@ try {
     if (buildManifest.stylesheet !== `styles.css?v=${expectedAssetVersion}`) {
       issues.push("/data/lux-build-manifest.json: stylesheet does not match current asset version");
     }
-    if (!buildManifest.mediaManifestVersion || !buildManifest.brandHouseVersion || !buildManifest.publicTermsVersion) {
-      issues.push("/data/lux-build-manifest.json: missing mediaManifestVersion, brandHouseVersion, or publicTermsVersion");
+    if (!buildManifest.mediaManifestVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.publicTermsVersion) {
+      issues.push("/data/lux-build-manifest.json: missing mediaManifestVersion, brandHouseVersion, fanFlywheelVersion, or publicTermsVersion");
     }
   }
 } catch (error) {
@@ -204,6 +204,36 @@ try {
   }
 } catch (error) {
   issues.push(`/data/lux-brand-house.json: invalid response (${error.message})`);
+}
+
+try {
+  const { response, text } = await fetchWithTimeout("/data/lux-fan-flywheel.json");
+  if (!response.ok) {
+    issues.push(`/data/lux-fan-flywheel.json: expected HTTP 200, received ${response.status}`);
+  } else {
+    const fanFlywheel = JSON.parse(text);
+    const stages = Array.isArray(fanFlywheel.stages) ? fanFlywheel.stages : [];
+    const expectedStages = ["listen", "watch", "join", "attend", "collect", "create"];
+    if (fanFlywheel.schemaVersion !== "luxveritas.fan_flywheel.v1") {
+      issues.push("/data/lux-fan-flywheel.json: schemaVersion mismatch");
+    }
+    if (liveBuildManifest?.fanFlywheelVersion && liveBuildManifest.fanFlywheelVersion !== fanFlywheel.version) {
+      issues.push("/data/lux-fan-flywheel.json: version does not match build manifest fanFlywheelVersion");
+    }
+    if (stages.map((stage) => stage.id).join("|") !== expectedStages.join("|")) {
+      issues.push(`/data/lux-fan-flywheel.json: expected stages ${expectedStages.join(", ")}`);
+    }
+    for (const stage of stages) {
+      if (!stage.path || !stage.path.startsWith("/") || !stage.path.endsWith(".html")) {
+        issues.push(`/data/lux-fan-flywheel.json: ${stage.id || "stage"} has invalid path`);
+      }
+      if (!stage.action || !stage.title || !stage.body) {
+        issues.push(`/data/lux-fan-flywheel.json: ${stage.id || "stage"} missing public copy`);
+      }
+    }
+  }
+} catch (error) {
+  issues.push(`/data/lux-fan-flywheel.json: invalid response (${error.message})`);
 }
 
 try {
