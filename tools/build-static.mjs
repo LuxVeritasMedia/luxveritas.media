@@ -1,12 +1,13 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260620-drop-room";
+const assetVersion = "20260620-portal-rooms";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 const brandHouse = JSON.parse(await readFile("data/lux-brand-house.json", "utf8"));
 const fanFlywheel = JSON.parse(await readFile("data/lux-fan-flywheel.json", "utf8"));
 const dropRoom = JSON.parse(await readFile("data/lux-drop-room.json", "utf8"));
+const portalRooms = JSON.parse(await readFile("data/lux-portal-rooms.json", "utf8"));
 
 const nav = [
   ["Home", "/index.html"],
@@ -611,57 +612,18 @@ function portal(path, title, cards = "") {
   });
 }
 
-const portalAccessCards = [
-  {
-    label: "Member",
-    title: "Members",
-    body: "Early access, private drops, listening rooms, presales, community moments, and selected merch.",
-    action: "Join Waitlist",
-    formType: "fan"
-  },
-  {
-    label: "Artist",
-    title: "Artists",
-    body: "Submission review, release consideration, artist-world fit, and future collaboration paths.",
-    action: "Submit for Review",
-    formType: "submission"
-  },
-  {
-    label: "Creator",
-    title: "Creators",
-    body: "Story, visual, Codex, worldbuilding, and participation review for approved collaborators.",
-    action: "Request Creator Access",
-    formType: "creator"
-  },
-  {
-    label: "Press",
-    title: "Press",
-    body: "Institutional contact, selected boilerplate, media requests, and approved kit access.",
-    action: "Send Press Inquiry",
-    formType: "press"
-  },
-  {
-    label: "Partner",
-    title: "Partners",
-    body: "Licensing, venues, studios, brand conversations, distribution, and strategic alignment.",
-    action: "Request Partner Access",
-    formType: "licensing"
-  },
-  {
-    label: "Investor",
-    title: "Strategic Access",
-    body: "Screened investor, studio, and strategic partner access for approved conversations.",
-    action: "Request Investor Access",
-    formType: "investor"
-  }
-];
+const portalAccessCards = Array.isArray(portalRooms.rooms) ? portalRooms.rooms : [];
 
 function portalAccessCard(card) {
-  return `<article data-portal-role="${card.label.toLowerCase()}">
+  const role = card.roleTarget || card.id || String(card.label || "").toLowerCase();
+  const action = card.formType
+    ? `<button class="button button-quiet" type="button" data-open-form="${card.formType}">${card.action}</button>`
+    : `<a class="button button-quiet" href="${card.path}">${card.action}</a>`;
+  return `<article data-portal-room="${card.id}" data-portal-role="${role}" data-portal-room-status="${card.status}">
     <span>${card.label}</span>
     <h3>${card.title}</h3>
     <p>${card.body}</p>
-    <button class="button button-quiet" type="button" data-open-form="${card.formType}">${card.action}</button>
+    ${action}
   </article>`;
 }
 
@@ -672,15 +634,9 @@ function portalIndex() {
     description: "Private access for approved members, collaborators, and selected guests.",
     noindex: true,
     body: `${pageHero("Private Access", "Private Access", "This portal is for approved artists, creators, partners, members, and operators.", `<div class="hero-actions"><a class="button button-primary" href="/auth/signin.html">Sign In</a><button class="button button-quiet" data-open-form="request">Request Access</button></div>`)}
-    <section class="section split-band"><div><p class="kicker">Access Model</p><h2>Screened by role. Opened by approval.</h2></div><div><p>Start with the door that matches your relationship to the work. Approved access will open only to the rooms and materials connected to that path.</p></div></section>
-    <section class="section portal-grid" aria-label="Portal access paths">
+    <section class="section split-band" data-portal-rooms-version="${portalRooms.version || ""}" data-access-mode="${portalRooms.accessMode || ""}"><div><p class="kicker">Access Model</p><h2>${portalRooms.headline || "Screened by role. Opened by approval."}</h2></div><div><p>${portalRooms.summary || "Start with the door that matches your relationship to the work. Approved access will open only to the rooms and materials connected to that path."}</p><p class="drop-notice">${portalRooms.notice || ""}</p></div></section>
+    <section class="section portal-grid" aria-label="Portal access paths" data-portal-rooms>
       ${portalAccessCards.map(portalAccessCard).join("")}
-      <article data-portal-role="operator">
-        <span>Operator</span>
-        <h3>Pilot Reporting</h3>
-        <p>Approved operators can review protected capture, engagement, readiness, and routing signals.</p>
-        <a class="button button-quiet" href="/portal/reporting.html">Open Reporting</a>
-      </article>
     </section>
     <section class="section report-detail">
       <div>
@@ -1084,6 +1040,7 @@ await writeFile("data/lux-build-manifest.json", `${JSON.stringify({
   brandHouseVersion: brandHouse.version,
   fanFlywheelVersion: fanFlywheel.version,
   dropRoomVersion: dropRoom.version,
+  portalRoomsVersion: portalRooms.version,
   publicTermsVersion: publicTerms.version,
   routeCount: pages.length,
   publicRouteCount: publicPaths.length,

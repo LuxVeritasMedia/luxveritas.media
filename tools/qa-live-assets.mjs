@@ -121,6 +121,9 @@ if (!assetFiles.some((asset) => asset.path === "/data/lux-fan-flywheel.json")) {
 if (!assetFiles.some((asset) => asset.path === "/data/lux-drop-room.json")) {
   issue("dist artifact missing /data/lux-drop-room.json");
 }
+if (!assetFiles.some((asset) => asset.path === "/data/lux-portal-rooms.json")) {
+  issue("dist artifact missing /data/lux-portal-rooms.json");
+}
 if (!assetFiles.some((asset) => asset.path === "/assets/luxveritas-icon.svg")) {
   issue("dist artifact missing /assets/luxveritas-icon.svg");
 }

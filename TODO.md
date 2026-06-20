@@ -110,6 +110,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 
 ## P5 - Portal Prep
 - [x] Keep Portal and Sign In as private-access shells.
+- [x] Add manifest-driven portal room map for Phase 5 private access shell.
 - [x] Define approved role model before auth build: visitor, member, artist, creator, press, partner, investor, operator, admin.
 - [x] Define access request interface before wiring any live services.
 - [x] Define screened intake routing map before wiring live services.

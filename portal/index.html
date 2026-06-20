@@ -24,7 +24,7 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070909'/%3E%3Cpath d='M18 48V16h6v27h18v5H18Zm21-32h7L34 48h-6l11-32Z' fill='%23c8a86a'/%3E%3C/svg%3E" />
     <link rel="manifest" href="../../site.webmanifest" />
     <link rel="apple-touch-icon" href="../../assets/luxveritas-icon.svg" />
-    <link rel="stylesheet" href="../../styles.css?v=20260620-drop-room" />
+    <link rel="stylesheet" href="../../styles.css?v=20260620-portal-rooms" />
   </head>
   <body data-page="/portal/index.html">
     <a class="skip-link" href="#main">Skip to content</a>
@@ -48,45 +48,44 @@
       <div class="hero-actions"><a class="button button-primary" href="/auth/signin.html">Sign In</a><button class="button button-quiet" data-open-form="request">Request Access</button></div>
     </div>
   </section>
-    <section class="section split-band"><div><p class="kicker">Access Model</p><h2>Screened by role. Opened by approval.</h2></div><div><p>Start with the door that matches your relationship to the work. Approved access will open only to the rooms and materials connected to that path.</p></div></section>
-    <section class="section portal-grid" aria-label="Portal access paths">
-      <article data-portal-role="member">
+    <section class="section split-band" data-portal-rooms-version="2026-06-20-portal-rooms" data-access-mode="request_access_only"><div><p class="kicker">Access Model</p><h2>Private rooms open by role.</h2></div><div><p>Lux Veritas portal access begins with screened paths for members, artists, creators, press, partners, investors, and approved operators.</p><p class="drop-notice">No account, payment, entitlement, or private room is activated from this public shell.</p></div></section>
+    <section class="section portal-grid" aria-label="Portal access paths" data-portal-rooms>
+      <article data-portal-room="member" data-portal-role="member" data-portal-room-status="request_access">
     <span>Member</span>
     <h3>Members</h3>
     <p>Early access, private drops, listening rooms, presales, community moments, and selected merch.</p>
     <button class="button button-quiet" type="button" data-open-form="fan">Join Waitlist</button>
-  </article><article data-portal-role="artist">
+  </article><article data-portal-room="artist" data-portal-role="artist" data-portal-room-status="request_access">
     <span>Artist</span>
     <h3>Artists</h3>
     <p>Submission review, release consideration, artist-world fit, and future collaboration paths.</p>
     <button class="button button-quiet" type="button" data-open-form="submission">Submit for Review</button>
-  </article><article data-portal-role="creator">
+  </article><article data-portal-room="creator" data-portal-role="creator" data-portal-room-status="request_access">
     <span>Creator</span>
     <h3>Creators</h3>
     <p>Story, visual, Codex, worldbuilding, and participation review for approved collaborators.</p>
     <button class="button button-quiet" type="button" data-open-form="creator">Request Creator Access</button>
-  </article><article data-portal-role="press">
+  </article><article data-portal-room="press" data-portal-role="press" data-portal-room-status="request_access">
     <span>Press</span>
     <h3>Press</h3>
     <p>Institutional contact, selected boilerplate, media requests, and approved kit access.</p>
     <button class="button button-quiet" type="button" data-open-form="press">Send Press Inquiry</button>
-  </article><article data-portal-role="partner">
+  </article><article data-portal-room="partner" data-portal-role="partner" data-portal-room-status="request_access">
     <span>Partner</span>
     <h3>Partners</h3>
     <p>Licensing, venues, studios, brand conversations, distribution, and strategic alignment.</p>
     <button class="button button-quiet" type="button" data-open-form="licensing">Request Partner Access</button>
-  </article><article data-portal-role="investor">
+  </article><article data-portal-room="investor" data-portal-role="investor" data-portal-room-status="request_access">
     <span>Investor</span>
     <h3>Strategic Access</h3>
     <p>Screened investor, studio, and strategic partner access for approved conversations.</p>
     <button class="button button-quiet" type="button" data-open-form="investor">Request Investor Access</button>
+  </article><article data-portal-room="operator" data-portal-role="operator" data-portal-room-status="approved_operator_only">
+    <span>Operator</span>
+    <h3>Operator Room</h3>
+    <p>Reserved for approved operators. Access opens only through the private reporting path.</p>
+    <a class="button button-quiet" href="/portal/reporting.html">Open Reporting</a>
   </article>
-      <article data-portal-role="operator">
-        <span>Operator</span>
-        <h3>Pilot Reporting</h3>
-        <p>Approved operators can review protected capture, engagement, readiness, and routing signals.</p>
-        <a class="button button-quiet" href="/portal/reporting.html">Open Reporting</a>
-      </article>
     </section>
     <section class="section report-detail">
       <div>
@@ -144,6 +143,6 @@
     <button class="button button-primary" type="submit" data-submit-form data-default-label="Send to Lux Veritas">Send to Lux Veritas</button>
   </form>
 </dialog>
-    <script src="../../app.js?v=20260620-drop-room"></script>
+    <script src="../../app.js?v=20260620-portal-rooms"></script>
   </body>
 </html>

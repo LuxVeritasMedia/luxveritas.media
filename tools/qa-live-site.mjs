@@ -152,8 +152,8 @@ try {
     if (buildManifest.stylesheet !== `styles.css?v=${expectedAssetVersion}`) {
       issues.push("/data/lux-build-manifest.json: stylesheet does not match current asset version");
     }
-    if (!buildManifest.mediaManifestVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.publicTermsVersion) {
-      issues.push("/data/lux-build-manifest.json: missing mediaManifestVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, or publicTermsVersion");
+    if (!buildManifest.mediaManifestVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.publicTermsVersion) {
+      issues.push("/data/lux-build-manifest.json: missing mediaManifestVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, or publicTermsVersion");
     }
   }
 } catch (error) {
@@ -262,6 +262,34 @@ try {
   }
 } catch (error) {
   issues.push(`/data/lux-drop-room.json: invalid response (${error.message})`);
+}
+
+try {
+  const { response, text } = await fetchWithTimeout("/data/lux-portal-rooms.json");
+  if (!response.ok) {
+    issues.push(`/data/lux-portal-rooms.json: expected HTTP 200, received ${response.status}`);
+  } else {
+    const portalRooms = JSON.parse(text);
+    const rooms = Array.isArray(portalRooms.rooms) ? portalRooms.rooms : [];
+    const expectedRooms = ["member", "artist", "creator", "press", "partner", "investor", "operator"];
+    if (portalRooms.schemaVersion !== "luxveritas.portal_rooms.v1") {
+      issues.push("/data/lux-portal-rooms.json: schemaVersion mismatch");
+    }
+    if (liveBuildManifest?.portalRoomsVersion && liveBuildManifest.portalRoomsVersion !== portalRooms.version) {
+      issues.push("/data/lux-portal-rooms.json: version does not match build manifest portalRoomsVersion");
+    }
+    if (portalRooms.accessMode !== "request_access_only") {
+      issues.push("/data/lux-portal-rooms.json: accessMode must remain request_access_only");
+    }
+    if (!/No account, payment, entitlement, or private room is activated/i.test(portalRooms.notice || "")) {
+      issues.push("/data/lux-portal-rooms.json: missing no-account/no-payment notice");
+    }
+    if (rooms.map((room) => room.id).join("|") !== expectedRooms.join("|")) {
+      issues.push(`/data/lux-portal-rooms.json: expected rooms ${expectedRooms.join(", ")}`);
+    }
+  }
+} catch (error) {
+  issues.push(`/data/lux-portal-rooms.json: invalid response (${error.message})`);
 }
 
 try {

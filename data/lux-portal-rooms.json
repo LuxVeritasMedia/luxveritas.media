@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "luxveritas.portal_rooms.v1",
+  "version": "2026-06-20-portal-rooms",
+  "updatedAt": "2026-06-20T00:00:00.000Z",
+  "accessMode": "request_access_only",
+  "headline": "Private rooms open by role.",
+  "summary": "Lux Veritas portal access begins with screened paths for members, artists, creators, press, partners, investors, and approved operators.",
+  "notice": "No account, payment, entitlement, or private room is activated from this public shell.",
+  "rooms": [
+    {
+      "id": "member",
+      "label": "Member",
+      "title": "Members",
+      "body": "Early access, private drops, listening rooms, presales, community moments, and selected merch.",
+      "status": "request_access",
+      "roleTarget": "member",
+      "path": "/membership.html",
+      "action": "Join Waitlist",
+      "formType": "fan"
+    },
+    {
+      "id": "artist",
+      "label": "Artist",
+      "title": "Artists",
+      "body": "Submission review, release consideration, artist-world fit, and future collaboration paths.",
+      "status": "request_access",
+      "roleTarget": "artist",
+      "path": "/submissions.html",
+      "action": "Submit for Review",
+      "formType": "submission"
+    },
+    {
+      "id": "creator",
+      "label": "Creator",
+      "title": "Creators",
+      "body": "Story, visual, Codex, worldbuilding, and participation review for approved collaborators.",
+      "status": "request_access",
+      "roleTarget": "creator",
+      "path": "/portal/library.html",
+      "action": "Request Creator Access",
+      "formType": "creator"
+    },
+    {
+      "id": "press",
+      "label": "Press",
+      "title": "Press",
+      "body": "Institutional contact, selected boilerplate, media requests, and approved kit access.",
+      "status": "request_access",
+      "roleTarget": "press",
+      "path": "/press.html",
+      "action": "Send Press Inquiry",
+      "formType": "press"
+    },
+    {
+      "id": "partner",
+      "label": "Partner",
+      "title": "Partners",
+      "body": "Licensing, venues, studios, brand conversations, distribution, and strategic alignment.",
+      "status": "request_access",
+      "roleTarget": "partner",
+      "path": "/contact.html",
+      "action": "Request Partner Access",
+      "formType": "licensing"
+    },
+    {
+      "id": "investor",
+      "label": "Investor",
+      "title": "Strategic Access",
+      "body": "Screened investor, studio, and strategic partner access for approved conversations.",
+      "status": "request_access",
+      "roleTarget": "investor",
+      "path": "/investor.html",
+      "action": "Request Investor Access",
+      "formType": "investor"
+    },
+    {
+      "id": "operator",
+      "label": "Operator",
+      "title": "Operator Room",
+      "body": "Reserved for approved operators. Access opens only through the private reporting path.",
+      "status": "approved_operator_only",
+      "roleTarget": "operator",
+      "path": "/portal/reporting.html",
+      "action": "Open Reporting"
+    }
+  ]
+}

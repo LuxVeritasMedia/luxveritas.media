@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260620-drop-room";
+const CACHE_NAME = "luxveritas-static-20260620-portal-rooms";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260620-drop-room",
-  "/app.js?v=20260620-drop-room",
+  "/styles.css?v=20260620-portal-rooms",
+  "/app.js?v=20260620-portal-rooms",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"

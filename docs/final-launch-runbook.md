@@ -8,7 +8,7 @@ Use this only when moving from pilot-ready to public-release ready. Keep secrets
 
 - Apex site is live at `https://luxveritas.media`.
 - `www.luxveritas.media` returns HTTP 200.
-- Current asset version is `20260620-drop-room`.
+- Current asset version is `20260620-portal-rooms`.
 - Media, inbox delivery, private handoff, and operator reporting are ready.
 - Remaining blockers are Privacy approval and Terms approval.
 

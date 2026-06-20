@@ -17,6 +17,7 @@ const requiredFiles = [
   "data/lux-brand-house.json",
   "data/lux-fan-flywheel.json",
   "data/lux-drop-room.json",
+  "data/lux-portal-rooms.json",
   "data/lux-media-manifest.json",
   "data/lux-build-manifest.json",
   "data/lux-legal-review.json",
@@ -294,6 +295,7 @@ for (const marker of ["luxveritas-static-", "/offline.html", "/site.webmanifest"
 const brandHouseRaw = await readFile(join(root, "data/lux-brand-house.json"), "utf8");
 const fanFlywheelRaw = await readFile(join(root, "data/lux-fan-flywheel.json"), "utf8");
 const dropRoomRaw = await readFile(join(root, "data/lux-drop-room.json"), "utf8");
+const portalRoomsRaw = await readFile(join(root, "data/lux-portal-rooms.json"), "utf8");
 const mediaManifestRaw = await readFile(join(root, "data/lux-media-manifest.json"), "utf8");
 const buildManifestRaw = await readFile(join(root, "data/lux-build-manifest.json"), "utf8");
 const webManifestRaw = await readFile(join(root, "site.webmanifest"), "utf8");
@@ -310,6 +312,7 @@ for (const pattern of bannedTerms) {
   if (pattern.test(brandHouseRaw)) issues.push(`data/lux-brand-house.json: banned public term matched ${pattern}`);
   if (pattern.test(fanFlywheelRaw)) issues.push(`data/lux-fan-flywheel.json: banned public term matched ${pattern}`);
   if (pattern.test(dropRoomRaw)) issues.push(`data/lux-drop-room.json: banned public term matched ${pattern}`);
+  if (pattern.test(portalRoomsRaw)) issues.push(`data/lux-portal-rooms.json: banned public term matched ${pattern}`);
   if (pattern.test(mediaManifestRaw)) issues.push(`data/lux-media-manifest.json: banned public term matched ${pattern}`);
   if (pattern.test(legalReviewRaw)) issues.push(`data/lux-legal-review.json: banned public term matched ${pattern}`);
   if (pattern.test(publicTermsRaw)) issues.push(`data/lux-public-terms.json: banned public term matched ${pattern}`);
@@ -355,8 +358,8 @@ try {
   if (buildManifest.routeCount !== htmlFiles.length) {
     issues.push(`data/lux-build-manifest.json: routeCount ${buildManifest.routeCount} does not match ${htmlFiles.length} generated HTML files`);
   }
-  if (!buildManifest.publicRouteCount || !buildManifest.mediaManifestVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.publicTermsVersion) {
-    issues.push("data/lux-build-manifest.json: missing publicRouteCount, mediaManifestVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, or publicTermsVersion");
+  if (!buildManifest.publicRouteCount || !buildManifest.mediaManifestVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.publicTermsVersion) {
+    issues.push("data/lux-build-manifest.json: missing publicRouteCount, mediaManifestVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, or publicTermsVersion");
   }
 } catch (error) {
   issues.push(`data/lux-build-manifest.json: invalid JSON (${error.message})`);
@@ -508,6 +511,65 @@ try {
   }
 } catch (error) {
   issues.push(`data/lux-drop-room.json: invalid JSON (${error.message})`);
+}
+
+try {
+  const portalRooms = JSON.parse(portalRoomsRaw);
+  const rooms = Array.isArray(portalRooms.rooms) ? portalRooms.rooms : [];
+  if (portalRooms.schemaVersion !== "luxveritas.portal_rooms.v1") {
+    issues.push("data/lux-portal-rooms.json: missing schemaVersion luxveritas.portal_rooms.v1");
+  }
+  if (portalRooms.accessMode !== "request_access_only") {
+    issues.push("data/lux-portal-rooms.json: accessMode must remain request_access_only before auth is approved");
+  }
+  if (!portalRooms.version || !portalRooms.headline || !portalRooms.summary || !portalRooms.notice) {
+    issues.push("data/lux-portal-rooms.json: missing version, headline, summary, or notice");
+  }
+  if (!/No account, payment, entitlement, or private room is activated/i.test(portalRooms.notice || "")) {
+    issues.push("data/lux-portal-rooms.json: notice must state no account, payment, entitlement, or private room is activated");
+  }
+  const expectedRooms = ["member", "artist", "creator", "press", "partner", "investor", "operator"];
+  const roomIds = rooms.map((room) => room.id);
+  if (roomIds.join("|") !== expectedRooms.join("|")) {
+    issues.push(`data/lux-portal-rooms.json: expected rooms ${expectedRooms.join(", ")}, found ${roomIds.join(", ")}`);
+  }
+  for (const room of rooms) {
+    for (const field of ["id", "label", "title", "body", "status", "roleTarget", "path", "action"]) {
+      if (!room[field]) issues.push(`data/lux-portal-rooms.json: ${room.id || "room"} missing ${field}`);
+    }
+    if (!["request_access", "approved_operator_only"].includes(room.status)) {
+      issues.push(`data/lux-portal-rooms.json: ${room.id || "room"} has invalid status`);
+    }
+    if (room.path && (!room.path.startsWith("/") || !room.path.endsWith(".html"))) {
+      issues.push(`data/lux-portal-rooms.json: ${room.id || "room"} has invalid public path`);
+    }
+    if (room.id !== "operator" && !room.formType) {
+      issues.push(`data/lux-portal-rooms.json: ${room.id || "room"} missing formType`);
+    }
+  }
+  const portalHtml = await readFile(join(root, "portal/index.html"), "utf8");
+  if (!portalHtml.includes(`data-portal-rooms-version="${portalRooms.version}"`)) {
+    issues.push(`portal/index.html: missing portal rooms version ${portalRooms.version}`);
+  }
+  if (!portalHtml.includes('data-access-mode="request_access_only"')) {
+    issues.push("portal/index.html: missing request-access-only portal access mode");
+  }
+  for (const room of rooms) {
+    if (!portalHtml.includes(`data-portal-room="${room.id}"`)) {
+      issues.push(`portal/index.html: missing portal room ${room.id}`);
+    }
+    if (!portalHtml.includes(`data-portal-role="${room.roleTarget}"`)) {
+      issues.push(`portal/index.html: missing portal role ${room.roleTarget}`);
+    }
+    if (!portalHtml.includes(`data-portal-room-status="${room.status}"`)) {
+      issues.push(`portal/index.html: missing portal room status ${room.status}`);
+    }
+    if (room.formType && !portalHtml.includes(`data-open-form="${room.formType}"`)) {
+      issues.push(`portal/index.html: missing portal form trigger ${room.formType}`);
+    }
+  }
+} catch (error) {
+  issues.push(`data/lux-portal-rooms.json: invalid JSON (${error.message})`);
 }
 
 try {

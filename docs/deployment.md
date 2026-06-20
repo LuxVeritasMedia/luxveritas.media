@@ -176,7 +176,7 @@ Live-site QA verifies this endpoint remains present and sanitized after deployme
 
 The public media manifest uses `luxveritas.media_manifest.v1`. Each media item carries source status, source-required, source type, reporting key, queued CTA, and fallback form path so listen/watch/radio intent can be reported even before approved media URLs are attached.
 
-The public build manifest uses `luxveritas.build_manifest.v1` and is deployed at `/data/lux-build-manifest.json`. It records the active asset version, app script URL, stylesheet URL, media manifest version, brand-house version, fan-flywheel version, drop-room version, public terms version, and route counts so live-site diagnostics can confirm production is serving the intended build.
+The public build manifest uses `luxveritas.build_manifest.v1` and is deployed at `/data/lux-build-manifest.json`. It records the active asset version, app script URL, stylesheet URL, media manifest version, brand-house version, fan-flywheel version, drop-room version, portal-room version, public terms version, and route counts so live-site diagnostics can confirm production is serving the intended build.
 
 The public web app manifest is deployed at `/site.webmanifest` with Lux Veritas app naming, theme color, standalone display mode, and the `/assets/luxveritas-icon.svg` icon. Public-site QA validates page-level manifest links and install metadata; live-site QA validates the deployed manifest.
 
