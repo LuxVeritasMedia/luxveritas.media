@@ -1,7 +1,7 @@
 {
   "schemaVersion": "luxveritas.action_inventory.v1",
   "version": "2026-06-20-action-inventory",
-  "buildAssetVersion": "20260620-action-inventory",
+  "buildAssetVersion": "20260620-action-coverage",
   "routeCount": 38,
   "actionCount": 1050,
   "summary": {

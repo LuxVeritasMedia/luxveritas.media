@@ -219,6 +219,17 @@ for (const file of files) {
     if (!html.includes("data-launch-readiness-summary") || !html.includes("data-launch-readiness-list")) {
       issues.push(`${rel}: missing launch gates report`);
     }
+    for (const marker of [
+      'data-action-inventory="summary"',
+      'data-action-inventory="detail"',
+      'data-action-inventory="types"',
+      'data-action-inventory="events"',
+      'data-action-inventory="routes"'
+    ]) {
+      if (!html.includes(marker)) {
+        issues.push(`${rel}: missing action inventory report marker ${marker}`);
+      }
+    }
     for (const action of ["replay-integration", "export-private-json", "export-private-csv", "export-csv"]) {
       if (!html.includes(`data-report-action="${action}"`)) {
         issues.push(`${rel}: missing report export action "${action}"`);

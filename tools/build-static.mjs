@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { actionInventoryVersion } from "./lib/action-inventory.mjs";
 
-const assetVersion = "20260620-action-inventory";
+const assetVersion = "20260620-action-coverage";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 const brandHouse = JSON.parse(await readFile("data/lux-brand-house.json", "utf8"));
@@ -719,6 +719,25 @@ function portalReport() {
           <p class="kicker">Closeout</p>
           <h3 data-launch-closeout-summary>Checking closeout status...</h3>
           <ul class="report-list" data-launch-closeout-list><li>Checking launch closeout.</li></ul>
+        </div>
+      </div>
+      <div class="report-detail report-summary" data-action-inventory="panel">
+        <div>
+          <p class="kicker">Action Coverage</p>
+          <h3 data-action-inventory="summary">Checking action coverage...</h3>
+          <p data-action-inventory="detail">Every public control should have a clear outcome and reporting path.</p>
+        </div>
+        <div>
+          <p class="kicker">Action Types</p>
+          <ul class="report-list" data-action-inventory="types"><li>Checking action types.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Report Events</p>
+          <ul class="report-list" data-action-inventory="events"><li>Checking event coverage.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Top Surfaces</p>
+          <ul class="report-list" data-action-inventory="routes"><li>Checking route coverage.</li></ul>
         </div>
       </div>
       <div class="report-detail">

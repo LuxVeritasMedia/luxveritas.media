@@ -9,7 +9,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Live apex: `https://luxveritas.media`
 - Firebase project: `lux-veritas-media`
 - GitHub repo: `LuxVeritasMedia/luxveritas.media`
-- Current live asset version: `20260620-action-inventory`
+- Current live asset version: `20260620-action-coverage`
 - Current phase: Phase 5 of 10, portal pilot prep active
 - Phase 4 closeout: legal approval remains open before full public release
 - Next major phase: authenticated portal shell with approved auth and role gates
@@ -37,6 +37,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Brand-house visual identity is manifest-driven and live on Home and About, with responsive QA coverage for the six public house marks.
 - CTA, media, consented interaction, and form reporting paths have QA coverage.
 - Public action inventory is generated as a no-secret manifest for links, buttons, forms, media actions, and private report controls.
+- Protected operator reporting renders the no-secret action inventory as action coverage by type, reporting event, and route surface.
 - Fan-flywheel and brand-house navigation cards have stable link tracking for retention-path reporting.
 - Protected operator reporting now summarizes retention-path clicks across fan-flywheel and brand-house cards.
 - Pilot testing is covered by a no-secret scenario matrix for public capture, media player, portal capture, operator reporting, launch gates, and private workflow readiness.

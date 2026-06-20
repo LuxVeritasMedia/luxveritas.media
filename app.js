@@ -108,14 +108,16 @@ const submitEndpoint = "/api/submit";
 const eventEndpoint = "/api/event";
 const reportEndpoint = "/api/report";
 const mediaManifestPath = "/data/lux-media-manifest.json";
+const actionInventoryPath = "/data/lux-action-inventory.json";
 const launchChecklistPath = "/data/lux-launch-readiness.json";
 const launchCloseoutPath = "/data/lux-launch-closeout-public.json";
 const legalReviewPath = "/data/lux-legal-review.json";
 const submitTimeoutMs = 8000;
-const publicBuildVersion = "20260620-action-inventory";
+const publicBuildVersion = "20260620-action-coverage";
 const allowedInterestPaths = new Set(["music", "film", "events", "drops", "community", "codex", "create"]);
 let activeFormType = "request";
 let mediaManifestPromise = null;
+let actionInventoryPromise = null;
 let launchChecklistPromise = null;
 let launchCloseoutPromise = null;
 let legalReviewPromise = null;
@@ -740,6 +742,21 @@ async function loadMediaManifest() {
   return mediaManifestPromise;
 }
 
+async function loadActionInventory() {
+  if (!actionInventoryPromise) {
+    actionInventoryPromise = fetch(actionInventoryPath, { headers: { Accept: "application/json" } })
+      .then((response) => {
+        if (!response.ok) throw new Error("action_inventory_unavailable");
+        return response.json();
+      })
+      .then((inventory) => {
+        if (!inventory.summary || !Array.isArray(inventory.actions)) throw new Error("action_inventory_invalid");
+        return inventory;
+      });
+  }
+  return actionInventoryPromise;
+}
+
 async function loadLaunchChecklist() {
   if (!launchChecklistPromise) {
     launchChecklistPromise = fetch(launchChecklistPath, { headers: { Accept: "application/json" } })
@@ -1032,6 +1049,60 @@ async function renderLaunchCloseoutReport() {
   } catch {
     if (summary) summary.textContent = "Launch closeout unavailable";
     if (list) list.innerHTML = "<li>Launch closeout could not be loaded.</li>";
+  }
+}
+
+function actionInventoryEntries(summary = {}, limit = 12) {
+  return Object.entries(summary || {})
+    .sort((a, b) => Number(b[1] || 0) - Number(a[1] || 0))
+    .slice(0, limit)
+    .map(([label, count]) => ({ label, count }));
+}
+
+function renderActionInventoryList(list, items, fallback) {
+  if (!list) return;
+  if (!items.length) {
+    list.innerHTML = `<li>${escapeHtml(fallback)}</li>`;
+    return;
+  }
+  list.innerHTML = items.map((item) => (
+    `<li><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.count)} action${item.count === 1 ? "" : "s"}</span></li>`
+  )).join("");
+}
+
+async function renderActionInventoryReport() {
+  const panel = document.querySelector('[data-action-inventory="panel"]');
+  if (!panel) return;
+  const summary = panel.querySelector('[data-action-inventory="summary"]');
+  const detail = panel.querySelector('[data-action-inventory="detail"]');
+  const typeList = panel.querySelector('[data-action-inventory="types"]');
+  const eventList = panel.querySelector('[data-action-inventory="events"]');
+  const routeList = panel.querySelector('[data-action-inventory="routes"]');
+
+  try {
+    const inventory = await loadActionInventory();
+    const actions = inventory.actionCount || inventory.actions.length || 0;
+    const routes = inventory.routeCount || Object.keys(inventory.summary?.byRoute || {}).length;
+    if (summary) {
+      summary.textContent = `${actions} actions across ${routes} surfaces`;
+    }
+    if (detail) {
+      detail.textContent = `Build ${inventory.buildAssetVersion || publicBuildVersion}. Covers navigation, capture, media, consent, portal, and reporting controls.`;
+    }
+    renderActionInventoryList(typeList, actionInventoryEntries(inventory.summary?.byType), "No action types found.");
+    renderActionInventoryList(eventList, actionInventoryEntries(inventory.summary?.byReportingEvent), "No report events found.");
+    renderActionInventoryList(routeList, actionInventoryEntries(inventory.summary?.byRoute), "No route coverage found.");
+    trackEvent("action_inventory_view", {
+      actions,
+      routes,
+      version: inventory.version || null
+    });
+  } catch {
+    if (summary) summary.textContent = "Action coverage unavailable";
+    if (detail) detail.textContent = "The action inventory could not be loaded from this browser.";
+    renderActionInventoryList(typeList, [], "Action types unavailable.");
+    renderActionInventoryList(eventList, [], "Report events unavailable.");
+    renderActionInventoryList(routeList, [], "Route coverage unavailable.");
   }
 }
 
@@ -2157,6 +2228,7 @@ if ("serviceWorker" in navigator) {
 renderMediaReadinessReport();
 renderLaunchReadinessReport();
 renderLaunchCloseoutReport();
+renderActionInventoryReport();
 renderLocalReport();
 renderFanSignal();
 

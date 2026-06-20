@@ -987,12 +987,21 @@ async function operatorReportFlow(page, baseUrl) {
     const summary = document.querySelector("[data-launch-closeout-summary]");
     return summary && /closeout items closed|unavailable/i.test(summary.textContent || "");
   }, null, { timeout: 5000 });
+  await page.waitForFunction(() => {
+    const summary = document.querySelector('[data-action-inventory="summary"]');
+    return summary && /actions across|unavailable/i.test(summary.textContent || "");
+  }, null, { timeout: 5000 });
   const mediaSummary = await page.locator("[data-media-readiness-summary]").innerText();
   const mediaReadiness = await page.locator("[data-media-readiness-list]").innerText();
   const launchSummaryBeforeLoad = await page.locator("[data-launch-readiness-summary]").innerText();
   const launchReadinessBeforeLoad = await page.locator("[data-launch-readiness-list]").innerText();
   const closeoutSummaryBeforeLoad = await page.locator("[data-launch-closeout-summary]").innerText();
   const closeoutBeforeLoad = await page.locator("[data-launch-closeout-list]").innerText();
+  const actionCoverageSummary = await page.locator('[data-action-inventory="summary"]').innerText();
+  const actionCoverageDetail = await page.locator('[data-action-inventory="detail"]').innerText();
+  const actionCoverageTypes = await page.locator('[data-action-inventory="types"]').innerText();
+  const actionCoverageEvents = await page.locator('[data-action-inventory="events"]').innerText();
+  const actionCoverageRoutes = await page.locator('[data-action-inventory="routes"]').innerText();
   if (!/3 of 3 source-ready/.test(mediaSummary)) {
     issues.push(`/portal/reporting.html: expected media readiness summary, found "${mediaSummary}"`);
   }
@@ -1001,6 +1010,27 @@ async function operatorReportFlow(page, baseUrl) {
   }
   if (!/2 of 4 closeout items closed/.test(closeoutSummaryBeforeLoad)) {
     issues.push(`/portal/reporting.html: expected closeout summary, found "${closeoutSummaryBeforeLoad}"`);
+  }
+  if (!/1050 actions across 38 surfaces/.test(actionCoverageSummary)) {
+    issues.push(`/portal/reporting.html: expected action coverage summary, found "${actionCoverageSummary}"`);
+  }
+  if (!/Build 20260620-action-coverage/.test(actionCoverageDetail)) {
+    issues.push(`/portal/reporting.html: action coverage detail did not show current build, found "${actionCoverageDetail}"`);
+  }
+  for (const label of ["link_click", "form_open", "navigation_toggle", "consent_update"]) {
+    if (!actionCoverageTypes.includes(label)) {
+      issues.push(`/portal/reporting.html: action coverage types missing ${label}`);
+    }
+  }
+  for (const label of ["lead_accepted", "media_action", "report_action"]) {
+    if (!actionCoverageEvents.includes(label)) {
+      issues.push(`/portal/reporting.html: action coverage events missing ${label}`);
+    }
+  }
+  for (const label of ["index.html", "music.html", "portal/reporting.html"]) {
+    if (!actionCoverageRoutes.includes(label)) {
+      issues.push(`/portal/reporting.html: action coverage routes missing ${label}`);
+    }
   }
   for (const label of ["SPMVP", "Visual World", "Lux Radio"]) {
     if (!mediaReadiness.includes(label)) {

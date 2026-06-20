@@ -24,7 +24,7 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070909'/%3E%3Cpath d='M18 48V16h6v27h18v5H18Zm21-32h7L34 48h-6l11-32Z' fill='%23c8a86a'/%3E%3C/svg%3E" />
     <link rel="manifest" href="../../site.webmanifest" />
     <link rel="apple-touch-icon" href="../../assets/luxveritas-icon.svg" />
-    <link rel="stylesheet" href="../../styles.css?v=20260620-action-inventory" />
+    <link rel="stylesheet" href="../../styles.css?v=20260620-action-coverage" />
   </head>
   <body data-page="/portal/reporting.html">
     <a class="skip-link" href="#main">Skip to content</a>
@@ -89,6 +89,25 @@
           <p class="kicker">Closeout</p>
           <h3 data-launch-closeout-summary>Checking closeout status...</h3>
           <ul class="report-list" data-launch-closeout-list><li>Checking launch closeout.</li></ul>
+        </div>
+      </div>
+      <div class="report-detail report-summary" data-action-inventory="panel">
+        <div>
+          <p class="kicker">Action Coverage</p>
+          <h3 data-action-inventory="summary">Checking action coverage...</h3>
+          <p data-action-inventory="detail">Every public control should have a clear outcome and reporting path.</p>
+        </div>
+        <div>
+          <p class="kicker">Action Types</p>
+          <ul class="report-list" data-action-inventory="types"><li>Checking action types.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Report Events</p>
+          <ul class="report-list" data-action-inventory="events"><li>Checking event coverage.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Top Surfaces</p>
+          <ul class="report-list" data-action-inventory="routes"><li>Checking route coverage.</li></ul>
         </div>
       </div>
       <div class="report-detail">
@@ -293,6 +312,6 @@
     <button class="button button-primary" type="submit" data-submit-form data-default-label="Send to Lux Veritas">Send to Lux Veritas</button>
   </form>
 </dialog>
-    <script src="../../app.js?v=20260620-action-inventory"></script>
+    <script src="../../app.js?v=20260620-action-coverage"></script>
   </body>
 </html>
