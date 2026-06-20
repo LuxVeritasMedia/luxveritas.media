@@ -29,6 +29,7 @@ for (const marker of [
   "# Lux Veritas Launch Evidence",
   "Decision:",
   "Asset version:",
+  "## Pilot Test Matrix",
   "## Launch Gates",
   "## Closeout",
   "## Command Summaries",
@@ -55,6 +56,14 @@ if (evidence) {
   if (evidence.currentPhase?.id !== "phase-5" || evidence.currentPhase?.status !== "active_pilot") issue("evidence current phase mismatch");
   if (!evidence.assetVersion) issue("evidence assetVersion missing");
   if (!evidence.media?.itemCount || evidence.media.itemCount < 3) issue("evidence media item count should include MVP audio/video/stream");
+  if (evidence.pilotTestMatrix?.status !== "active") issue("evidence pilot test matrix status should be active");
+  if (!evidence.pilotTestMatrix?.scenarioCount || evidence.pilotTestMatrix.scenarioCount < 9) {
+    issue("evidence pilot test matrix should include required pilot scenarios");
+  }
+  const coverage = new Set(evidence.pilotTestMatrix?.requiredCoverage || []);
+  for (const item of ["public_capture", "media_player", "operator_reporting", "launch_gates"]) {
+    if (!coverage.has(item)) issue(`evidence pilot test matrix missing coverage ${item}`);
+  }
   const blocked = Array.isArray(evidence.launchGates?.blocked) ? evidence.launchGates.blocked : [];
   for (const id of ["privacy_review", "terms_review"]) {
     if (!blocked.some((gate) => gate.id === id)) issue(`evidence missing current blocked gate ${id}`);

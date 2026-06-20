@@ -11,6 +11,7 @@ Use this only when moving from pilot-ready to public-release ready. Keep secrets
 - Current asset version is `20260620-queue-workbench`.
 - Current phase status is Phase 5 portal pilot prep, with Phase 4 legal closeout still open.
 - Media, inbox delivery, private handoff, operator reporting, private intake queue workbench, and private workflow-target recommendation reporting are ready.
+- Pilot scenario coverage is tracked in `data/lux-pilot-test-matrix.json`.
 - Remaining blockers are Privacy approval and Terms approval.
 
 ## Launch Order
@@ -22,6 +23,7 @@ node tools/qa-operator-environment.mjs
 node tools/report-mvp-status.mjs
 node tools/qa-mvp-preflight.mjs
 node tools/qa-launch-evidence.mjs
+node tools/qa-pilot-test-matrix.mjs
 git status --short --branch
 node tools/qa-deploy-status.mjs
 ```

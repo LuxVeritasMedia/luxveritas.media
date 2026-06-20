@@ -34,6 +34,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Protected operator reporting summarizes playback actions, source types, reporting keys, and retention milestones.
 - Brand-house visual identity is manifest-driven and live on Home and About, with responsive QA coverage for the six public house marks.
 - CTA, media, consented interaction, and form reporting paths have QA coverage.
+- Pilot testing is covered by a no-secret scenario matrix for public capture, media player, portal capture, operator reporting, launch gates, and private workflow readiness.
 - Operator reporting summarizes audience-interest demand from stored captures.
 - Operator reporting includes a protected intake queue workbench with queue pressure, SLA, next action, inbox status, and handoff status.
 - Operator reporting recommends the next private workflow target from real routing demand while keeping external provider details out of the public site.
@@ -61,6 +62,7 @@ node tools/qa-operator-environment.mjs
 node tools/report-mvp-status.mjs
 node tools/qa-mvp-preflight.mjs
 node tools/qa-launch-evidence.mjs
+node tools/qa-pilot-test-matrix.mjs
 firebase login --reauth
 node tools/qa-provider-readiness.mjs
 node tools/qa-private-workflow-matrix.mjs

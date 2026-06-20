@@ -1,0 +1,162 @@
+{
+  "schemaVersion": "luxveritas.pilot_test_matrix.v1",
+  "version": "2026-06-20-pilot-test-matrix",
+  "status": "active",
+  "purpose": "No-secret pilot acceptance matrix for exercising the public LuxVeritas.media MVP before public release.",
+  "acceptanceRule": "Every required scenario must have a route, trigger or selector, expected evidence, and at least one QA command. Final public release still requires Privacy and Terms approval.",
+  "requiredCoverage": [
+    "public_capture",
+    "media_player",
+    "portal_capture",
+    "operator_reporting",
+    "launch_gates",
+    "private_workflow_readiness"
+  ],
+  "scenarios": [
+    {
+      "id": "home_access_request",
+      "label": "Home access request",
+      "coverage": ["public_capture"],
+      "route": "/index.html",
+      "selector": "button[data-open-form=\"request\"]",
+      "formType": "request",
+      "expectedRolePath": "General",
+      "expectedInquiryType": "Portal",
+      "expectedQueue": "access_review",
+      "evidence": [
+        "Browser flow opens request form and receives accepted capture response.",
+        "Live form matrix covers /index.html request intent.",
+        "Operator report includes access_review in intake queue summaries when requests exist."
+      ],
+      "qaCommands": ["node tools/qa-browser-flows.mjs", "node tools/qa-live-form-matrix.mjs"]
+    },
+    {
+      "id": "membership_waitlist",
+      "label": "Membership waitlist",
+      "coverage": ["public_capture"],
+      "route": "/membership.html",
+      "selector": "button[data-open-form=\"fan\"]",
+      "formType": "fan",
+      "expectedRolePath": "Member",
+      "expectedInquiryType": "Membership",
+      "expectedQueue": "membership_waitlist",
+      "evidence": [
+        "Membership CTA opens the fan form with member defaults.",
+        "Private reporting shows Membership Waitlist queue pressure.",
+        "Future workflow recommendation can prioritize membership follow-up from real demand."
+      ],
+      "qaCommands": ["node tools/qa-browser-flows.mjs", "node tools/qa-live-operator-report.mjs"]
+    },
+    {
+      "id": "creator_submission",
+      "label": "Creator submission",
+      "coverage": ["public_capture", "private_workflow_readiness"],
+      "route": "/submissions.html",
+      "selector": "button[data-open-form=\"submission\"]",
+      "formType": "submission",
+      "expectedRolePath": "Creator",
+      "expectedInquiryType": "Submissions",
+      "expectedQueue": "submission_review",
+      "evidence": [
+        "Submission capture stores legal version IDs and reviewed consent values.",
+        "Private workflow field map includes submission review fields.",
+        "Operator reporting can surface Submission Review queue demand."
+      ],
+      "qaCommands": ["node tools/qa-integration-contract.mjs", "node tools/qa-private-integration-field-map.mjs"]
+    },
+    {
+      "id": "music_player",
+      "label": "Music player",
+      "coverage": ["media_player"],
+      "route": "/music.html",
+      "selector": "[data-media-player]",
+      "mediaActions": ["play", "watch", "radio"],
+      "evidence": [
+        "Listen, Watch, and Radio controls select approved media sources.",
+        "Playback lifecycle reports play, pause, milestones, and ended values.",
+        "Live media source QA confirms approved audio, video, and radio source URLs."
+      ],
+      "qaCommands": ["node tools/qa-browser-flows.mjs", "node tools/qa-live-media-sources.mjs"]
+    },
+    {
+      "id": "spmvp_release_hub",
+      "label": "SPMVP release hub",
+      "coverage": ["media_player", "public_capture"],
+      "route": "/spmvp.html",
+      "selector": "[data-media-player]",
+      "mediaActions": ["play", "watch", "radio"],
+      "evidence": [
+        "SPMVP page offers listen, watch, and join paths.",
+        "Media follow-up conversion path opens when needed.",
+        "Reporting keys remain stable for release, visual, and radio source slots."
+      ],
+      "qaCommands": ["node tools/qa-media-contract.mjs", "node tools/qa-browser-flows.mjs"]
+    },
+    {
+      "id": "event_access",
+      "label": "Event access",
+      "coverage": ["public_capture"],
+      "route": "/events.html",
+      "selector": "button[data-open-form=\"request\"]",
+      "formType": "request",
+      "expectedRolePath": "General",
+      "expectedInquiryType": "Portal",
+      "expectedQueue": "access_review",
+      "evidence": [
+        "Public event page remains invitation/request-access oriented.",
+        "Event-specific pages remain public teaser or request-access routes.",
+        "Live event matrix covers CTA and reporting events."
+      ],
+      "qaCommands": ["node tools/qa-live-event-matrix.mjs", "node tools/qa-public-site.mjs"]
+    },
+    {
+      "id": "portal_signin_capture",
+      "label": "Portal sign-in capture",
+      "coverage": ["portal_capture"],
+      "route": "/auth/signin.html",
+      "selector": "[data-portal-signin-form]",
+      "formType": "portal_signin",
+      "expectedRolePath": "General",
+      "expectedInquiryType": "Portal",
+      "expectedQueue": "access_review",
+      "evidence": [
+        "Sign-in shell captures screened access requests without account entitlement promises.",
+        "Portal fallback button resets after submission or fallback.",
+        "Portal access remains noindex and private-shell only."
+      ],
+      "qaCommands": ["node tools/qa-browser-flows.mjs", "node tools/qa-access-model.mjs"]
+    },
+    {
+      "id": "operator_reporting",
+      "label": "Operator reporting",
+      "coverage": ["operator_reporting", "launch_gates", "private_workflow_readiness"],
+      "route": "/portal/reporting.html",
+      "selector": "[data-private-report]",
+      "reportSurfaces": [
+        "data-private-queue=\"summary\"",
+        "data-private-workflow=\"primary\"",
+        "data-launch-readiness-summary",
+        "data-media-readiness-summary"
+      ],
+      "evidence": [
+        "Unauthenticated report requests are rejected.",
+        "Approved operator report returns counts, queue workbench, launch gates, media readiness, and workflow target recommendations.",
+        "Private JSON and CSV exports omit secret-shaped values."
+      ],
+      "qaCommands": ["node tools/qa-live-operator-report.mjs", "node tools/qa-browser-flows.mjs"]
+    },
+    {
+      "id": "legal_launch_gate",
+      "label": "Legal launch gate",
+      "coverage": ["launch_gates"],
+      "route": "/legal/privacy.html",
+      "selector": "main",
+      "evidence": [
+        "Privacy and Terms pages are drafts, not placeholders.",
+        "Launch readiness keeps Privacy and Terms approval as public-release blockers until reviewed.",
+        "Final release gate fails without legal approval and write tests."
+      ],
+      "qaCommands": ["node tools/qa-release-readiness.mjs", "node tools/qa-final-release-gate.mjs"]
+    }
+  ]
+}

@@ -180,6 +180,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Add Firebase Hosting security/privacy header QA and live header verification.
 - [x] Add final strict release-gate command for launch-day acceptance.
 - [x] Add operator/MVP status/preflight coverage to the final release gate.
+- [x] Add no-secret pilot test matrix for TestFlight-quality scenario coverage.
 - [x] Require final release-gate write mode for launch-day approval.
 - [x] Require browser and live coverage in final release-gate approval mode.
 - [x] Add final launch runbook for DNS, inbox, legal, write tests, and gate approval.

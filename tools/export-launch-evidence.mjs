@@ -61,6 +61,7 @@ const [
   mediaRaw,
   phaseStatusRaw,
   termsRaw,
+  pilotMatrixRaw,
   todo,
   mvpStatus,
   deployStatus,
@@ -73,6 +74,7 @@ const [
   readFile("data/lux-media-manifest.json", "utf8"),
   readFile("data/lux-phase-status.json", "utf8"),
   readFile("data/lux-public-terms.json", "utf8"),
+  readFile("data/lux-pilot-test-matrix.json", "utf8"),
   readFile("TODO.md", "utf8"),
   run("tools/report-mvp-status.mjs", includeLive ? {} : { LUX_LIVE_URL: "https://luxveritas.media" }),
   includeLive ? run("tools/qa-deploy-status.mjs") : Promise.resolve({ ok: false, output: "Skipped. Set LUX_EVIDENCE_LIVE=1 to include live deploy-status output." }),
@@ -86,6 +88,7 @@ const legalReview = JSON.parse(legalRaw);
 const mediaManifest = JSON.parse(mediaRaw);
 const phaseStatus = JSON.parse(phaseStatusRaw);
 const publicTerms = JSON.parse(termsRaw);
+const pilotMatrix = JSON.parse(pilotMatrixRaw);
 const gates = Array.isArray(launch.gates) ? launch.gates : [];
 const closeoutItems = Array.isArray(closeout.items) ? closeout.items : [];
 const readyGates = gates.filter((gate) => gate.status === "ready");
@@ -121,6 +124,21 @@ const evidence = {
     version: mediaManifest.version || "",
     itemCount: mediaItems.length,
     sourceTypes
+  },
+  pilotTestMatrix: {
+    version: pilotMatrix.version || "",
+    status: pilotMatrix.status || "",
+    scenarioCount: Array.isArray(pilotMatrix.scenarios) ? pilotMatrix.scenarios.length : 0,
+    requiredCoverage: Array.isArray(pilotMatrix.requiredCoverage) ? pilotMatrix.requiredCoverage : [],
+    scenarios: Array.isArray(pilotMatrix.scenarios)
+      ? pilotMatrix.scenarios.map((scenario) => ({
+        id: scenario.id,
+        label: scenario.label,
+        route: scenario.route,
+        coverage: scenario.coverage || [],
+        qaCommands: scenario.qaCommands || []
+      }))
+      : []
   },
   legal: {
     privacy: legalItem(legalReview, "privacy"),
@@ -181,6 +199,15 @@ Public terms version: ${evidence.publicTermsVersion}
 - Manifest version: ${evidence.media.version}
 - Items: ${evidence.media.itemCount}
 - Source types: ${evidence.media.sourceTypes.join(", ") || "none"}
+
+## Pilot Test Matrix
+
+- Matrix version: ${evidence.pilotTestMatrix.version}
+- Status: ${evidence.pilotTestMatrix.status}
+- Scenarios: ${evidence.pilotTestMatrix.scenarioCount}
+- Coverage: ${evidence.pilotTestMatrix.requiredCoverage.join(", ") || "none"}
+
+${evidence.pilotTestMatrix.scenarios.map((scenario) => `- ${scenario.label} (${scenario.id}) - ${scenario.route} - ${scenario.coverage.join(", ")}`).join("\n") || "- none"}
 
 ## Legal
 

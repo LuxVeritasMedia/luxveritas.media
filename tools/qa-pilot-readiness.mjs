@@ -31,6 +31,7 @@ const checks = [
   ["MVP Status", "tools/qa-mvp-status.mjs"],
   ["Launch Evidence", "tools/qa-launch-evidence.mjs"],
   ["Release Handoff", "tools/qa-release-handoff.mjs"],
+  ["Pilot Test Matrix", "tools/qa-pilot-test-matrix.mjs"],
   ["Media Contract", "tools/qa-media-contract.mjs"],
   ["Fan Signal", "tools/qa-fan-signal.mjs"],
   ["Mobile Layout", "tools/qa-mobile-layout.mjs"],
