@@ -17,6 +17,7 @@ const submissionSummaryFields = [
   "byRolePath",
   "byAccessPath",
   "byPortalRoleTarget",
+  "byInterestPath",
   "byRoutingQueue",
   "byRoutingPriority",
   "byDeliveryStatus",

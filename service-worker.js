@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260620-phase-status";
+const CACHE_NAME = "luxveritas-static-20260620-interest-paths";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260620-phase-status",
-  "/app.js?v=20260620-phase-status",
+  "/styles.css?v=20260620-interest-paths",
+  "/app.js?v=20260620-interest-paths",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"

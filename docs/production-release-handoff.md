@@ -9,7 +9,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Live apex: `https://luxveritas.media`
 - Firebase project: `lux-veritas-media`
 - GitHub repo: `LuxVeritasMedia/luxveritas.media`
-- Current live asset version: `20260620-phase-status`
+- Current live asset version: `20260620-interest-paths`
 - Current phase: Phase 5 of 10, portal pilot prep active
 - Phase 4 closeout: legal approval remains open before full public release
 - Next major phase: authenticated portal shell with approved auth and role gates
@@ -21,6 +21,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Apex HTTPS works at `https://luxveritas.media`.
 - `www.luxveritas.media` HTTPS works and returns HTTP 200.
 - Public forms submit to `/api/submit`.
+- Public forms capture optional audience-interest paths for retention and future screened routing.
 - Approved sender identity is `forms@luxveritas.media`, with delivery to `info@luxveritas.media` confirmed through live matrix QA.
 - Valid live form submissions are stored server-side and sent silently to the approved inbox when the provider is active.
 - Public submit buttons reset after success, stored capture, timeout, validation failure, or fallback.
@@ -33,6 +34,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Protected operator reporting summarizes playback actions, source types, reporting keys, and retention milestones.
 - Brand-house visual identity is manifest-driven and live on Home and About, with responsive QA coverage for the six public house marks.
 - CTA, media, consented interaction, and form reporting paths have QA coverage.
+- Operator reporting summarizes audience-interest demand from stored captures.
 - Private operator reporting exists behind approved access.
 - Machine-readable phase status is deployed at `/data/lux-phase-status.json`.
 

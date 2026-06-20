@@ -34,6 +34,7 @@ const mockReport = {
         access_path: "member",
         portal_role_target: "member",
         inquiry_key: "membership",
+        interest_paths: ["music", "events"],
         routing_queue: "membership_waitlist",
         routing_label: "Membership Waitlist",
         routing_priority: "standard",
@@ -110,6 +111,7 @@ const mockReport = {
     submissions: {
       byFormType: [{ label: "fan", count: 18 }],
       byRolePath: [{ label: "Member", count: 24 }],
+      byInterestPath: [{ label: "music", count: 24 }, { label: "events", count: 12 }],
       byRoutingQueue: [{ label: "Membership Waitlist", count: 24 }],
       byRoutingPriority: [{ label: "standard", count: 24 }],
       byDeliveryStatus: [{ label: "stored", count: 35 }, { label: "email_provider_not_configured", count: 7 }],
@@ -250,6 +252,8 @@ async function openFlow(page, baseUrl, flow) {
   await page.fill('input[name="name"]', "Lux Browser QA");
   await page.fill('input[name="email"]', "qa@luxveritas.media");
   await page.fill('textarea[name="message"]', `Browser flow QA for ${flow.path}`);
+  await page.check('input[name="interest_paths"][value="music"]');
+  await page.check('input[name="interest_paths"][value="events"]');
   await page.check('input[name="consent_email"]');
   await clickSubmitButton(page);
   await page.waitForFunction(() => {
@@ -282,6 +286,9 @@ async function openFlow(page, baseUrl, flow) {
   }
   if (payload.role_path !== flow.role) issues.push(`${flow.path}: payload role_path mismatch`);
   if (payload.inquiry_type !== flow.inquiry) issues.push(`${flow.path}: payload inquiry_type mismatch`);
+  if (!Array.isArray(payload.interest_paths) || !payload.interest_paths.includes("music") || !payload.interest_paths.includes("events")) {
+    issues.push(`${flow.path}: submitted payload missing expected interest paths`);
+  }
 }
 
 async function clickSubmitButton(page) {
@@ -810,6 +817,7 @@ async function operatorReportFlow(page, baseUrl) {
   const reportAuthViewer = await page.locator('[data-private-auth="viewer"]').innerText();
   const formsSummary = await page.locator('[data-private-summary="forms"]').innerText();
   const rolesSummary = await page.locator('[data-private-summary="roles"]').innerText();
+  const interestsSummary = await page.locator('[data-private-summary="interests"]').innerText();
   const routingSummary = await page.locator('[data-private-summary="routing"]').innerText();
   const deliverySummary = await page.locator('[data-private-summary="delivery"]').innerText();
   const integrationsSummary = await page.locator('[data-private-summary="integrations"]').innerText();
@@ -847,6 +855,7 @@ async function operatorReportFlow(page, baseUrl) {
   for (const [label, text] of [
     ["forms", formsSummary],
     ["roles", rolesSummary],
+    ["interests", interestsSummary],
     ["routing", routingSummary],
     ["delivery", deliverySummary],
     ["integrations", integrationsSummary],
@@ -869,6 +878,9 @@ async function operatorReportFlow(page, baseUrl) {
   }
   if (!/Membership Waitlist/.test(routingSummary)) {
     issues.push(`/portal/reporting.html: screened routing summary missing mocked queue`);
+  }
+  if (!/music/.test(interestsSummary) || !/events/.test(interestsSummary)) {
+    issues.push(`/portal/reporting.html: interest summary missing mocked interest paths`);
   }
   if (!/email_provider_not_configured/.test(deliverySummary)) {
     issues.push(`/portal/reporting.html: inbox outcomes summary missing mocked delivery status`);

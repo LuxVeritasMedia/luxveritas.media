@@ -142,6 +142,7 @@ async function writeCheck(item, index) {
     message: `QA matrix test for ${item.formType} capture from ${item.sourcePage}. Safe to archive.`,
     formType: item.formType,
     tag: item.tag,
+    interest_paths: ["music", "events"],
     source: "luxveritas.media",
     source_page: item.sourcePage,
     consent_email: "yes",

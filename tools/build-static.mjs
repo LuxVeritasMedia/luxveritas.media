@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260620-phase-status";
+const assetVersion = "20260620-interest-paths";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 const brandHouse = JSON.parse(await readFile("data/lux-brand-house.json", "utf8"));
@@ -203,6 +203,16 @@ function formDialog() {
     <label><span>Inquiry type</span><select name="inquiry_type" required>
       <option value="">Select one</option><option>Membership</option><option>Submissions</option><option>Events</option><option>Press</option><option>Partnership</option><option>Licensing</option><option>Investor</option><option>Portal</option><option>General</option>
     </select></label>
+    <fieldset class="interest-paths" data-interest-paths>
+      <legend>What should we keep you close to?</legend>
+      <label><input type="checkbox" name="interest_paths" value="music" /> <span>Music</span></label>
+      <label><input type="checkbox" name="interest_paths" value="film" /> <span>Film</span></label>
+      <label><input type="checkbox" name="interest_paths" value="events" /> <span>Events</span></label>
+      <label><input type="checkbox" name="interest_paths" value="drops" /> <span>Drops</span></label>
+      <label><input type="checkbox" name="interest_paths" value="community" /> <span>Community</span></label>
+      <label><input type="checkbox" name="interest_paths" value="codex" /> <span>Codex</span></label>
+      <label><input type="checkbox" name="interest_paths" value="create" /> <span>Create</span></label>
+    </fieldset>
     <label><span>Message</span><textarea name="message" rows="5" required></textarea></label>
     <label class="check-row"><input type="checkbox" name="consent_email" value="yes" /> <span>Email follow-up is allowed.</span></label>
     <label class="check-row"><input type="checkbox" name="consent_sms" value="yes" /> <span>SMS follow-up is allowed if a phone number is supplied.</span></label>
@@ -718,6 +728,10 @@ function portalReport() {
         <div>
           <p class="kicker">Role Demand</p>
           <ul class="report-list" data-private-summary="roles"><li>Load private activity to view audience paths.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Interest Signals</p>
+          <ul class="report-list" data-private-summary="interests"><li>Load private activity to view selected fan interests.</li></ul>
         </div>
         <div>
           <p class="kicker">Screened Routing</p>

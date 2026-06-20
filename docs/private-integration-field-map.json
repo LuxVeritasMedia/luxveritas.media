@@ -17,6 +17,7 @@
     "tag",
     "inquiryType",
     "inquiryKey",
+    "interestPaths",
     "rolePath",
     "accessPath",
     "portalRoleTarget",
@@ -55,6 +56,7 @@
       ],
       "routingFields": [
         "inquiryKey",
+        "interestPaths",
         "accessPath",
         "portalRoleTarget",
         "routing.queue",
@@ -94,6 +96,7 @@
         "formType",
         "tag",
         "inquiryKey",
+        "interestPaths",
         "accessPath",
         "routing.queue",
         "routing.label",
@@ -130,6 +133,7 @@
       ],
       "routingFields": [
         "inquiryKey",
+        "interestPaths",
         "accessPath",
         "portalRoleTarget",
         "routing.queue",
@@ -143,6 +147,7 @@
         "formType",
         "tag",
         "inquiryKey",
+        "interestPaths",
         "accessPath"
       ],
       "auditFields": [
@@ -187,6 +192,7 @@
         "formType",
         "tag",
         "inquiryType",
+        "interestPaths",
         "rolePath",
         "accessPath",
         "message"
@@ -218,6 +224,7 @@
       ],
       "routingFields": [
         "inquiryKey",
+        "interestPaths",
         "accessPath",
         "portalRoleTarget",
         "routing.queue",
@@ -227,6 +234,7 @@
         "sourcePage",
         "formType",
         "tag",
+        "interestPaths",
         "contact.name",
         "contact.email",
         "message",

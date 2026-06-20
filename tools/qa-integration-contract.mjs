@@ -23,6 +23,7 @@ const sample = {
   portal_role_target: "member",
   inquiry_type: "Membership",
   inquiry_key: "membership",
+  interest_paths: ["music", "events"],
   routing_queue: "membership_waitlist",
   routing_label: "Membership Waitlist",
   routing_priority: "standard",
@@ -71,6 +72,9 @@ expectEqual(payload.submissionId, submissionId, "payload submissionId");
 expectEqual(payload.receiptId, "LV-CONTRACT-QA", "payload receiptId");
 expectEqual(payload.receivedAt, receivedAt, "payload receivedAt");
 expectEqual(payload.sourcePage, "/membership.html", "payload sourcePage");
+if (!Array.isArray(payload.interestPaths) || payload.interestPaths.join("|") !== "music|events") {
+  issues.push("payload interest paths mismatch");
+}
 expectEqual(payload.routing.queue, "membership_waitlist", "payload routing queue");
 expectEqual(payload.routing.priority, "standard", "payload routing priority");
 expectEqual(payload.contact.email, "qa@luxveritas.media", "payload contact email");
@@ -82,6 +86,9 @@ expectEqual(payload.legal.termsVersion, "terms-draft-2026-06-09", "payload terms
 expectEqual(payload.legal.submissionTermsVersion, "submission-draft-2026-06-09", "payload submission terms version");
 expectEqual(payload.submission.id, submissionId, "payload nested submission id");
 expectEqual(payload.submission.receiptId, "LV-CONTRACT-QA", "payload nested receipt");
+if (!Array.isArray(payload.submission.interestPaths) || payload.submission.interestPaths.join("|") !== "music|events") {
+  issues.push("payload nested submission interest paths mismatch");
+}
 expectEqual(headers["X-Lux-Event"], integrationContractVersion, "header X-Lux-Event");
 expectEqual(headers["X-Lux-Idempotency-Key"], expectedIdempotencyKey, "header idempotency key");
 expectEqual(headers["X-Lux-Target"], "private_workflow", "header target");

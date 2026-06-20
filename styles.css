@@ -857,6 +857,29 @@ select option { color: var(--ink); }
   align-items: start;
 }
 .check-row input { width: 18px; margin-top: .25rem; }
+.interest-paths {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: .7rem .9rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: .9rem;
+}
+.interest-paths legend {
+  color: rgba(243,238,228,.58);
+  font-size: .74rem;
+  letter-spacing: .04em;
+  padding: 0 .35rem;
+  text-transform: uppercase;
+}
+.interest-paths label {
+  align-items: center;
+  color: rgba(243,238,228,.7);
+  display: flex;
+  font-size: .86rem;
+  gap: .5rem;
+}
+.interest-paths input { width: 18px; }
 .form-terms {
   margin: 0;
   color: rgba(243,238,228,.58);
@@ -927,7 +950,7 @@ select option { color: var(--ink); }
     justify-content: flex-start;
   }
   .primary-nav.open { display: flex; }
-  .section-grid, .card-grid, .house-grid, .flywheel-grid, .drop-grid, .release-rail, .slate, .ops-grid, .portal-grid, .event-grid, .codex-list, .split-band, .cta-band, .site-footer, .consent-banner, .media-player-section, .media-player, .fan-signal-section, .fan-signal-panel, .report-grid, .report-detail, .report-list li {
+  .section-grid, .card-grid, .house-grid, .flywheel-grid, .drop-grid, .release-rail, .slate, .ops-grid, .portal-grid, .event-grid, .codex-list, .split-band, .cta-band, .site-footer, .consent-banner, .media-player-section, .media-player, .fan-signal-section, .fan-signal-panel, .interest-paths, .report-grid, .report-detail, .report-list li {
     grid-template-columns: 1fr;
   }
   .fan-signal-tier, .fan-signal-latest {

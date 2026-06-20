@@ -41,6 +41,7 @@ export function buildIntegrationPayload(payload, id, options = {}) {
     tag: payload.tag || "",
     inquiryType: payload.inquiry_type || "",
     inquiryKey: payload.inquiry_key || "",
+    interestPaths: Array.isArray(payload.interest_paths) ? payload.interest_paths : [],
     rolePath: payload.role_path || "",
     accessPath: payload.access_path || "",
     portalRoleTarget: payload.portal_role_target || "",
@@ -72,6 +73,7 @@ export function buildIntegrationPayload(payload, id, options = {}) {
       sourcePage,
       formType: payload.formType || "",
       tag: payload.tag || "",
+      interestPaths: Array.isArray(payload.interest_paths) ? payload.interest_paths : [],
       receivedAt
     },
     message: payload.message

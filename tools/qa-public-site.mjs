@@ -274,6 +274,12 @@ for (const file of htmlFiles) {
     for (const field of ["public_terms_version", "privacy_version", "terms_version", "submission_terms_version"]) {
       if (!html.includes(`name="${field}"`)) issues.push(`index.html: missing hidden legal field ${field}`);
     }
+    if (!html.includes('data-interest-paths')) issues.push("index.html: missing interest path fieldset");
+    for (const interest of ["music", "film", "events", "drops", "community", "codex", "create"]) {
+      if (!html.includes(`name="interest_paths" value="${interest}"`)) {
+        issues.push(`index.html: missing interest path ${interest}`);
+      }
+    }
   }
 }
 

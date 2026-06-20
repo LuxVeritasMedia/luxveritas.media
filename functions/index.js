@@ -54,6 +54,7 @@ const pendingIntegrationStatuses = [
   "integration_relay_error",
   "relay_error"
 ];
+const allowedInterestPaths = new Set(["music", "film", "events", "drops", "community", "codex", "create"]);
 
 function getDb() {
   if (!admin.apps.length) admin.initializeApp();
@@ -105,6 +106,14 @@ function isRateLimited(req, maxRequests = maxRequestsPerWindow, namespace = "def
 
 function text(value, max = 2000) {
   return String(value || "").trim().slice(0, max);
+}
+
+function normalizeInterestPaths(values) {
+  const raw = Array.isArray(values) ? values : String(values || "").split(",");
+  return [...new Set(raw
+    .map((value) => text(value, 40).toLowerCase().replace(/[^a-z0-9_-]+/g, "-"))
+    .filter((value) => allowedInterestPaths.has(value))
+  )].slice(0, 7);
 }
 
 function emailProviderKey() {
@@ -259,6 +268,7 @@ function validate(payload) {
     access_path: accessPath?.access_path || "",
     portal_role_target: accessPath?.portal_role_target || "",
     inquiry_key: inquiryKey || "",
+    interest_paths: normalizeInterestPaths(payload.interest_paths),
     message: text(payload.message, 5000),
     formType: text(payload.formType, 80),
     tag: text(payload.tag, 120),
@@ -366,6 +376,7 @@ function cleanDoc(snapshot) {
     access_path: data.access_path || null,
     portal_role_target: data.portal_role_target || null,
     inquiry_key: data.inquiry_key || null,
+    interest_paths: Array.isArray(data.interest_paths) ? data.interest_paths : [],
     routing_queue: data.routing_queue || routing.routing_queue,
     routing_label: data.routing_label || routing.routing_label,
     routing_priority: data.routing_priority || routing.routing_priority,
@@ -396,6 +407,7 @@ function cleanHandoffDoc(snapshot) {
     receiptId: data.receiptId || null,
     source: data.source || null,
     sourcePage: data.sourcePage || null,
+    interestPaths: Array.isArray(data.interestPaths) ? data.interestPaths : [],
     routing_queue: data.routing?.queue || null,
     routing_label: data.routing?.label || null,
     contact_email: data.contact?.email || null
@@ -416,6 +428,7 @@ function cleanReplayDoc(snapshot) {
     portal_role_target: data.portal_role_target || "",
     inquiry_type: data.inquiry_type || "",
     inquiry_key: data.inquiry_key || "",
+    interest_paths: Array.isArray(data.interest_paths) ? data.interest_paths : [],
     routing_queue: data.routing_queue || routing.routing_queue,
     routing_label: data.routing_label || routing.routing_label,
     routing_priority: data.routing_priority || routing.routing_priority,
@@ -442,6 +455,23 @@ function topCounts(items, pick, limit = 8) {
     const value = text(raw, 160);
     if (!value) continue;
     counts.set(value, (counts.get(value) || 0) + 1);
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, limit)
+    .map(([label, count]) => ({ label, count }));
+}
+
+function topCountsMany(items, pick, limit = 8) {
+  const counts = new Map();
+  for (const item of items) {
+    const values = pick(item);
+    const list = Array.isArray(values) ? values : [values];
+    for (const raw of list) {
+      const value = text(raw, 160);
+      if (!value) continue;
+      counts.set(value, (counts.get(value) || 0) + 1);
+    }
   }
   return [...counts.entries()]
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
@@ -523,6 +553,7 @@ function summarizeActivity(submissionDocs, eventDocs) {
       byRolePath: topCounts(submissionItems, (item) => item.role_path),
       byAccessPath: topCounts(submissionItems, (item) => item.access_path),
       byPortalRoleTarget: topCounts(submissionItems, (item) => item.portal_role_target),
+      byInterestPath: topCountsMany(submissionItems, (item) => item.interest_paths),
       byRoutingQueue: topCounts(submissionItems, (item) => item.routing_label || item.routing_queue),
       byRoutingPriority: topCounts(submissionItems, (item) => item.routing_priority),
       byDeliveryStatus: topCounts(submissionItems, (item) => item.deliveryStatus),
@@ -621,6 +652,7 @@ function emailText(payload, id) {
     `Portal role target: ${payload.portal_role_target}`,
     `Inquiry type: ${payload.inquiry_type}`,
     `Inquiry key: ${payload.inquiry_key}`,
+    `Interest paths: ${(payload.interest_paths || []).join(", ")}`,
     `Routing queue: ${payload.routing_queue}`,
     `Routing priority: ${payload.routing_priority}`,
     `Routing next action: ${payload.routing_next_action}`,
@@ -1163,6 +1195,7 @@ export const receivePrivateHandoff = onRequest(
         receiptId: req.body.receiptId || null,
         source: req.body.source || "luxveritas.media",
         sourcePage: req.body.sourcePage || null,
+        interestPaths: Array.isArray(req.body.interestPaths) ? req.body.interestPaths : [],
         routing: req.body.routing || null,
         contact: req.body.contact || null,
         consent: req.body.consent || null,

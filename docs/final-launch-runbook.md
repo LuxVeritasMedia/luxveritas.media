@@ -8,7 +8,7 @@ Use this only when moving from pilot-ready to public-release ready. Keep secrets
 
 - Apex site is live at `https://luxveritas.media`.
 - `www.luxveritas.media` returns HTTP 200.
-- Current asset version is `20260620-phase-status`.
+- Current asset version is `20260620-interest-paths`.
 - Current phase status is Phase 5 portal pilot prep, with Phase 4 legal closeout still open.
 - Media, inbox delivery, private handoff, and operator reporting are ready.
 - Remaining blockers are Privacy approval and Terms approval.

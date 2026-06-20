@@ -26,6 +26,7 @@ const requiredPaths = [
   "receivedAt",
   "sourcePage",
   "inquiryKey",
+  "interestPaths",
   "accessPath",
   "portalRoleTarget",
   "routing.queue",

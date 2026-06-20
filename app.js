@@ -112,7 +112,8 @@ const launchChecklistPath = "/data/lux-launch-readiness.json";
 const launchCloseoutPath = "/data/lux-launch-closeout-public.json";
 const legalReviewPath = "/data/lux-legal-review.json";
 const submitTimeoutMs = 8000;
-const publicBuildVersion = "20260620-phase-status";
+const publicBuildVersion = "20260620-interest-paths";
+const allowedInterestPaths = new Set(["music", "film", "events", "drops", "community", "codex", "create"]);
 let activeFormType = "request";
 let mediaManifestPromise = null;
 let launchChecklistPromise = null;
@@ -162,6 +163,19 @@ function formLegalPayload() {
   };
 }
 
+function normalizeInterestPaths(values) {
+  const raw = Array.isArray(values) ? values : String(values || "").split(",");
+  return [...new Set(raw
+    .map((value) => String(value || "").trim().toLowerCase().replace(/[^a-z0-9_-]+/g, "-"))
+    .filter((value) => allowedInterestPaths.has(value))
+  )].slice(0, 7);
+}
+
+function selectedInterestPaths(form) {
+  if (!form) return [];
+  return normalizeInterestPaths(new FormData(form).getAll("interest_paths"));
+}
+
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (char) => ({
     "&": "&amp;",
@@ -191,6 +205,7 @@ function submissionBody(payload) {
     `Portal role target: ${payload.portal_role_target || ""}`,
     `Inquiry type: ${payload.inquiry_type || ""}`,
     `Inquiry key: ${payload.inquiry_key || ""}`,
+    `Interest paths: ${(payload.interest_paths || []).join(", ")}`,
     `Form type: ${payload.formType || ""}`,
     `Source page: ${payload.source_page || ""}`,
     `Timestamp: ${payload.timestamp || ""}`,
@@ -1164,7 +1179,7 @@ function localReportRows(report) {
       timestamp: item.timestamp || "",
       page: item.source_page || "",
       label: item.client_submission_id || item.formType || "",
-      detail: item.delivery_status || item.inquiry_type || item.role_path || ""
+      detail: item.interest_paths?.join(", ") || item.delivery_status || item.inquiry_type || item.role_path || ""
     })),
     ...report.portal.map((item) => ({
       source: "local",
@@ -1268,6 +1283,7 @@ function renderPrivateReport(report) {
   renderPrivateFunnel(panel, report.summary?.funnel || report.funnel);
   renderPrivateSummary(panel, "forms", report.summary?.submissions?.byFormType);
   renderPrivateSummary(panel, "roles", report.summary?.submissions?.byRolePath);
+  renderPrivateSummary(panel, "interests", report.summary?.submissions?.byInterestPath);
   renderPrivateSummary(panel, "routing", report.summary?.submissions?.byRoutingQueue);
   renderPrivateSummary(panel, "delivery", report.summary?.submissions?.byDeliveryStatus);
   renderPrivateSummary(panel, "integrations", report.summary?.submissions?.byIntegrationStatus);
@@ -1676,6 +1692,7 @@ async function handleFormSubmit(event) {
       access_path: accessPathMap[data.role_path]?.accessPath || "general",
       portal_role_target: accessPathMap[data.role_path]?.portalRoleTarget || "visitor",
       inquiry_key: inquiryKeyMap[data.inquiry_type] || "general",
+      interest_paths: selectedInterestPaths(dialogForm),
       formType: activeFormType,
       tag: formCopy[activeFormType].tag,
       timestamp: new Date().toISOString(),
