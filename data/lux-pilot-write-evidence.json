@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "luxveritas.pilot_write_evidence.v1",
+  "updatedAt": "2026-06-20T12:19:49Z",
+  "liveUrl": "https://luxveritas.media",
+  "assetVersion": "20260620-action-coverage",
+  "qaRunId": "20260620121456",
+  "command": "LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs",
+  "result": "passed",
+  "operatorTokenSource": "macOS Keychain",
+  "writeEvidence": {
+    "formCaptureIntents": 10,
+    "eventWrites": 11,
+    "inboxDeliveryRequired": true,
+    "operatorReportVerified": true,
+    "postWriteReconciliation": true
+  },
+  "coverage": {
+    "domainReadiness": true,
+    "providerReadiness": true,
+    "liveSite": true,
+    "liveAssets": true,
+    "liveMediaSources": true,
+    "liveBrowserFlows": true,
+    "liveOperatorReport": true,
+    "releaseReadinessChecked": true
+  },
+  "passedChecks": [
+    "Operator Environment",
+    "MVP Status",
+    "Deploy Status",
+    "Domain Readiness",
+    "Provider Readiness",
+    "Live Site",
+    "Live Assets",
+    "Live Media Sources",
+    "Live Browser Flows",
+    "Live Operator Report",
+    "Release Readiness",
+    "Live Form Write Matrix",
+    "Live Event Write Matrix",
+    "Post-Write Report Reconciliation"
+  ],
+  "knownPublicLaunchBlockersAllowed": [
+    "privacy_review",
+    "terms_review"
+  ],
+  "notes": "No-secret receipt for the current live pilot write gate. Full public release still requires Privacy and Terms approval."
+}

@@ -88,6 +88,14 @@ if (report) {
   if (Array.isArray(report.media?.missingRequiredSources) && report.media.missingRequiredSources.length) {
     issue(`required media sources missing: ${report.media.missingRequiredSources.join(", ")}`);
   }
+  if (report.pilotWriteEvidence?.result !== "passed") issue("pilot write evidence result must be passed");
+  if (report.pilotWriteEvidence?.assetVersion !== localVersion) issue("pilot write evidence asset version must match local asset version");
+  if (!/^\d{14}$/.test(report.pilotWriteEvidence?.qaRunId || "")) issue("pilot write evidence qaRunId missing or invalid");
+  if (report.pilotWriteEvidence?.formCaptureIntents !== 10) issue("pilot write evidence must include 10 form capture intents");
+  if (report.pilotWriteEvidence?.eventWrites !== 11) issue("pilot write evidence must include 11 event writes");
+  if (report.pilotWriteEvidence?.inboxDeliveryRequired !== true) issue("pilot write evidence must require inbox delivery");
+  if (report.pilotWriteEvidence?.operatorReportVerified !== true) issue("pilot write evidence must verify operator reporting");
+  if (report.pilotWriteEvidence?.postWriteReconciliation !== true) issue("pilot write evidence must verify post-write reconciliation");
 
   const blocked = Array.isArray(report.launchGates?.blocked) ? report.launchGates.blocked : [];
   const blockedIds = new Set(blocked.map((gate) => gate.id));

@@ -35,6 +35,7 @@ const checks = [
   ["Launch Evidence", "tools/qa-launch-evidence.mjs"],
   ["Release Handoff", "tools/qa-release-handoff.mjs"],
   ["Pilot Test Matrix", "tools/qa-pilot-test-matrix.mjs"],
+  ["Pilot Write Evidence", "tools/qa-pilot-write-evidence.mjs"],
   ["Media Contract", "tools/qa-media-contract.mjs"],
   ["Fan Signal", "tools/qa-fan-signal.mjs"],
   ["Mobile Layout", "tools/qa-mobile-layout.mjs"],

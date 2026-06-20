@@ -66,6 +66,7 @@ const [
   closeoutRaw,
   legalRaw,
   mediaRaw,
+  pilotWriteRaw,
   actionInventoryRaw,
   phaseStatusRaw,
   termsRaw,
@@ -80,6 +81,7 @@ const [
   readFile("data/lux-launch-closeout.json", "utf8"),
   readFile("data/lux-legal-review.json", "utf8"),
   readFile("data/lux-media-manifest.json", "utf8"),
+  readFile("data/lux-pilot-write-evidence.json", "utf8"),
   readFile("data/lux-action-inventory.json", "utf8"),
   readFile("data/lux-phase-status.json", "utf8"),
   readFile("data/lux-public-terms.json", "utf8"),
@@ -95,6 +97,7 @@ const launch = JSON.parse(launchRaw);
 const closeout = JSON.parse(closeoutRaw);
 const legalReview = JSON.parse(legalRaw);
 const mediaManifest = JSON.parse(mediaRaw);
+const pilotWriteEvidence = JSON.parse(pilotWriteRaw);
 const actionInventory = JSON.parse(actionInventoryRaw);
 const phaseStatus = JSON.parse(phaseStatusRaw);
 const publicTerms = JSON.parse(termsRaw);
@@ -158,6 +161,20 @@ const evidence = {
         qaCommands: scenario.qaCommands || []
       }))
       : []
+  },
+  pilotWriteEvidence: {
+    schemaVersion: pilotWriteEvidence.schemaVersion || "",
+    updatedAt: pilotWriteEvidence.updatedAt || "",
+    qaRunId: pilotWriteEvidence.qaRunId || "",
+    assetVersion: pilotWriteEvidence.assetVersion || "",
+    result: pilotWriteEvidence.result || "",
+    command: pilotWriteEvidence.command || "",
+    formCaptureIntents: pilotWriteEvidence.writeEvidence?.formCaptureIntents || 0,
+    eventWrites: pilotWriteEvidence.writeEvidence?.eventWrites || 0,
+    inboxDeliveryRequired: pilotWriteEvidence.writeEvidence?.inboxDeliveryRequired === true,
+    operatorReportVerified: pilotWriteEvidence.writeEvidence?.operatorReportVerified === true,
+    postWriteReconciliation: pilotWriteEvidence.writeEvidence?.postWriteReconciliation === true,
+    passedChecks: Array.isArray(pilotWriteEvidence.passedChecks) ? pilotWriteEvidence.passedChecks : []
   },
   legal: {
     privacy: legalItem(legalReview, "privacy"),
@@ -237,6 +254,20 @@ Public terms version: ${evidence.publicTermsVersion}
 - Coverage: ${evidence.pilotTestMatrix.requiredCoverage.join(", ") || "none"}
 
 ${evidence.pilotTestMatrix.scenarios.map((scenario) => `- ${scenario.label} (${scenario.id}) - ${scenario.route} - ${scenario.coverage.join(", ")}`).join("\n") || "- none"}
+
+## Pilot Write Evidence
+
+- Updated: ${evidence.pilotWriteEvidence.updatedAt || "unknown"}
+- QA run ID: ${evidence.pilotWriteEvidence.qaRunId || "unknown"}
+- Asset version: ${evidence.pilotWriteEvidence.assetVersion || "unknown"}
+- Result: ${evidence.pilotWriteEvidence.result || "unknown"}
+- Command: ${evidence.pilotWriteEvidence.command || "unknown"}
+- Form capture intents: ${evidence.pilotWriteEvidence.formCaptureIntents}
+- Event writes: ${evidence.pilotWriteEvidence.eventWrites}
+- Inbox delivery required: ${evidence.pilotWriteEvidence.inboxDeliveryRequired ? "yes" : "no"}
+- Operator report verified: ${evidence.pilotWriteEvidence.operatorReportVerified ? "yes" : "no"}
+- Post-write reconciliation: ${evidence.pilotWriteEvidence.postWriteReconciliation ? "yes" : "no"}
+- Passed checks: ${evidence.pilotWriteEvidence.passedChecks.join(", ") || "none"}
 
 ## Legal
 

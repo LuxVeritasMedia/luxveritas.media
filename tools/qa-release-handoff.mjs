@@ -7,6 +7,7 @@ const launchCloseout = await readFile("data/lux-launch-closeout.json", "utf8");
 const legalReviewPacket = await readFile("docs/legal-review-packet.md", "utf8");
 const finalLaunchRunbook = await readFile("docs/final-launch-runbook.md", "utf8");
 const todo = await readFile("TODO.md", "utf8");
+const pilotWriteEvidence = await readFile("data/lux-pilot-write-evidence.json", "utf8");
 const buildManifest = JSON.parse(await readFile("data/lux-build-manifest.json", "utf8"));
 const finalGate = await readFile("tools/qa-final-release-gate.mjs", "utf8");
 const pilotWriteGate = await readFile("tools/qa-pilot-write-gate.mjs", "utf8");
@@ -43,6 +44,7 @@ for (const marker of [
   "node tools/report-mvp-status.mjs",
   "node tools/qa-mvp-preflight.mjs",
   "node tools/qa-launch-evidence.mjs",
+  "node tools/qa-pilot-write-evidence.mjs",
   "node tools/qa-private-workflow-matrix.mjs",
   "node tools/qa-external-workflow-targets.mjs",
   "node tools/qa-private-integration-activation-dry-runs.mjs",
@@ -53,6 +55,17 @@ for (const marker of [
   "LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.mjs"
 ]) {
   if (!handoff.includes(marker)) issue(`production-release-handoff.md missing marker: ${marker}`);
+}
+
+for (const marker of [
+  "luxveritas.pilot_write_evidence.v1",
+  buildManifest.assetVersion,
+  "20260620121456",
+  "Post-Write Report Reconciliation",
+  "formCaptureIntents",
+  "eventWrites"
+]) {
+  if (!pilotWriteEvidence.includes(marker)) issue(`data/lux-pilot-write-evidence.json missing marker: ${marker}`);
 }
 
 if (!handoff.includes("Use `docs/legal-review-packet.md` for Privacy and Terms review.")) {
@@ -132,6 +145,7 @@ for (const marker of [
   "node tools/report-mvp-status.mjs",
   "node tools/qa-mvp-preflight.mjs",
   "node tools/qa-launch-evidence.mjs",
+  "node tools/qa-pilot-write-evidence.mjs",
   "node tools/qa-action-inventory.mjs",
   "node tools/qa-deploy-status.mjs",
   "node tools/qa-live-assets.mjs",
@@ -152,6 +166,8 @@ for (const marker of [
   "LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs",
   "LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs",
   "LUX_PILOT_WRITE_DRY_RUN=1 node tools/qa-pilot-write-gate.mjs",
+  "data/lux-pilot-write-evidence.json",
+  "20260620121456",
   "reconciles the exact write-run IDs",
   "Do Not Ship If",
   "Replay pending inbox notifications"
@@ -253,6 +269,7 @@ for (const marker of [
   "Add final strict release-gate command for launch-day acceptance",
   "Add dedicated pilot write gate for TestFlight-quality live submissions",
   "Add post-write protected report reconciliation",
+  "Record current live pilot write-gate evidence for the deployed asset version",
   "Add private integration activation dry-run QA",
   "Require final release-gate write mode for launch-day approval",
   "Require browser and live coverage in final release-gate approval mode",

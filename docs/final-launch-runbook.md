@@ -11,7 +11,8 @@ Use this only when moving from pilot-ready to public-release ready. Keep secrets
 - Current asset version is `20260620-action-coverage`.
 - Current phase status is Phase 5 portal pilot prep, with Phase 4 legal closeout still open.
 - Media, fan reactions, inbox delivery, private handoff, operator reporting, private intake queue workbench, and private workflow-target recommendation reporting are ready.
-- The pilot write gate last passed on 2026-06-20 with live QA submissions, inbox delivery required, live event writes, media checks, browser-flow coverage, and protected operator-report verification. The live event matrix includes fan-reaction reporting for the media retention loop, and the gate now reconciles exact write-run IDs back through the protected report.
+- The pilot write gate last passed on 2026-06-20 with live QA submissions, inbox delivery required, live event writes, media checks, browser-flow coverage, and protected operator-report verification. QA run ID: `20260620121456`. The live event matrix includes fan-reaction reporting for the media retention loop, and the gate now reconciles exact write-run IDs back through the protected report.
+- The no-secret receipt is tracked in `data/lux-pilot-write-evidence.json` and validated with `node tools/qa-pilot-write-evidence.mjs`.
 - Pilot scenario coverage is tracked in `data/lux-pilot-test-matrix.json`.
 - Remaining blockers are Privacy approval and Terms approval.
 
@@ -26,6 +27,7 @@ node tools/qa-mvp-preflight.mjs
 node tools/export-launch-evidence.mjs
 node tools/qa-launch-evidence.mjs
 node tools/qa-pilot-test-matrix.mjs
+node tools/qa-pilot-write-evidence.mjs
 node tools/qa-action-inventory.mjs
 node tools/qa-private-integration-activation-dry-runs.mjs
 git status --short --branch

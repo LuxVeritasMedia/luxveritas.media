@@ -82,6 +82,7 @@ const [
   closeoutRaw,
   legalRaw,
   mediaRaw,
+  pilotWriteRaw,
   phaseStatusRaw,
   publicTermsRaw,
   todo,
@@ -96,6 +97,7 @@ const [
   readFile("data/lux-launch-closeout.json", "utf8"),
   readFile("data/lux-legal-review.json", "utf8"),
   readFile("data/lux-media-manifest.json", "utf8"),
+  readFile("data/lux-pilot-write-evidence.json", "utf8"),
   readFile("data/lux-phase-status.json", "utf8"),
   readFile("data/lux-public-terms.json", "utf8"),
   readFile("TODO.md", "utf8"),
@@ -111,6 +113,7 @@ const launch = JSON.parse(launchRaw);
 const closeout = JSON.parse(closeoutRaw);
 const legalReview = JSON.parse(legalRaw);
 const mediaManifest = JSON.parse(mediaRaw);
+const pilotWriteEvidence = JSON.parse(pilotWriteRaw);
 const phaseStatus = JSON.parse(phaseStatusRaw);
 const publicTerms = JSON.parse(publicTermsRaw);
 const gates = Array.isArray(launch.gates) ? launch.gates : [];
@@ -147,7 +150,9 @@ const operatorIssues = [
   repoAligned ? null : "Local HEAD does not match origin/main.",
   liveManifest.ok ? null : `Live build manifest is unreadable: ${liveManifest.error || "unavailable"}.`,
   liveManifest.ok && liveVersion !== localVersion ? `Live asset version ${liveVersion || "missing"} does not match local ${localVersion || "missing"}.` : null,
-  media.missingRequiredSources.length ? `Missing required media sources: ${media.missingRequiredSources.join(", ")}.` : null
+  media.missingRequiredSources.length ? `Missing required media sources: ${media.missingRequiredSources.join(", ")}.` : null,
+  pilotWriteEvidence.result !== "passed" ? "Pilot write evidence is not passed." : null,
+  pilotWriteEvidence.assetVersion !== localVersion ? `Pilot write evidence asset version ${pilotWriteEvidence.assetVersion || "missing"} does not match local ${localVersion || "missing"}.` : null
 ].filter(Boolean);
 const pilotStatus = operatorIssues.length || codeBlockingGates.length
   ? "operator-attention-needed"
@@ -214,6 +219,17 @@ const report = {
     terms: legalStatus(legalReview, "terms")
   },
   media,
+  pilotWriteEvidence: {
+    updatedAt: pilotWriteEvidence.updatedAt || "",
+    qaRunId: pilotWriteEvidence.qaRunId || "",
+    assetVersion: pilotWriteEvidence.assetVersion || "",
+    result: pilotWriteEvidence.result || "",
+    formCaptureIntents: pilotWriteEvidence.writeEvidence?.formCaptureIntents || 0,
+    eventWrites: pilotWriteEvidence.writeEvidence?.eventWrites || 0,
+    inboxDeliveryRequired: pilotWriteEvidence.writeEvidence?.inboxDeliveryRequired === true,
+    operatorReportVerified: pilotWriteEvidence.writeEvidence?.operatorReportVerified === true,
+    postWriteReconciliation: pilotWriteEvidence.writeEvidence?.postWriteReconciliation === true
+  },
   launchGates: {
     ready: readyGates.map((gate) => gate.id),
     blockedByCategory,
@@ -264,6 +280,7 @@ if (jsonMode) {
   line("Live", `${report.liveUrl} asset=${report.build.liveAssetVersion || "unreadable"}`);
   line("Local asset", report.build.localAssetVersion || "missing");
   line("Media", `${media.itemCount} item(s), missing required sources: ${media.missingRequiredSources.length ? media.missingRequiredSources.join(", ") : "none"}`);
+  line("Pilot write evidence", `${report.pilotWriteEvidence.result || "missing"} run=${report.pilotWriteEvidence.qaRunId || "missing"} forms=${report.pilotWriteEvidence.formCaptureIntents} events=${report.pilotWriteEvidence.eventWrites}`);
   line("Legal", `privacy=${report.legal.privacy.status}, terms=${report.legal.terms.status}`);
   line("Launch gates", `${readyGates.length} ready, ${blockedGates.length} blocked`);
   line("Pilot status", report.pilotStatus);

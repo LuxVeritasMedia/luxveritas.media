@@ -49,6 +49,10 @@ for (const marker of [
   "link_click",
   "lead_accepted",
   "## Pilot Test Matrix",
+  "## Pilot Write Evidence",
+  "QA run ID: 20260620121456",
+  "Form capture intents: 10",
+  "Event writes: 11",
   "## Launch Gates",
   "## Closeout",
   "## Command Summaries",
@@ -106,6 +110,15 @@ if (evidence) {
   for (const item of ["public_capture", "media_player", "fan_reaction", "operator_reporting", "launch_gates"]) {
     if (!coverage.has(item)) issue(`evidence pilot test matrix missing coverage ${item}`);
   }
+  if (evidence.pilotWriteEvidence?.schemaVersion !== "luxveritas.pilot_write_evidence.v1") issue("evidence pilot write schemaVersion mismatch");
+  if (evidence.pilotWriteEvidence?.assetVersion !== evidence.assetVersion) issue("evidence pilot write assetVersion must match launch evidence assetVersion");
+  if (evidence.pilotWriteEvidence?.qaRunId !== "20260620121456") issue("evidence pilot write qaRunId mismatch");
+  if (evidence.pilotWriteEvidence?.result !== "passed") issue("evidence pilot write result must be passed");
+  if (evidence.pilotWriteEvidence?.formCaptureIntents !== 10) issue("evidence pilot write must include 10 capture intents");
+  if (evidence.pilotWriteEvidence?.eventWrites !== 11) issue("evidence pilot write must include 11 event writes");
+  if (evidence.pilotWriteEvidence?.inboxDeliveryRequired !== true) issue("evidence pilot write must require inbox delivery");
+  if (evidence.pilotWriteEvidence?.operatorReportVerified !== true) issue("evidence pilot write must verify operator report");
+  if (evidence.pilotWriteEvidence?.postWriteReconciliation !== true) issue("evidence pilot write must verify post-write reconciliation");
   const blocked = Array.isArray(evidence.launchGates?.blocked) ? evidence.launchGates.blocked : [];
   for (const id of ["privacy_review", "terms_review"]) {
     if (!blocked.some((gate) => gate.id === id)) issue(`evidence missing current blocked gate ${id}`);

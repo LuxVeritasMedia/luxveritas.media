@@ -50,6 +50,9 @@ jobs:
       - name: QA launch evidence
         run: node tools/qa-launch-evidence.mjs
 
+      - name: QA pilot write evidence
+        run: node tools/qa-pilot-write-evidence.mjs
+
       - name: QA live media sources
         run: node tools/qa-live-media-sources.mjs
 
