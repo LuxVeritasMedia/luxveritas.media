@@ -163,6 +163,7 @@ const inquiryKeyMap = {
   Licensing: "licensing",
   Investor: "investor",
   Portal: "portal",
+  "Pilot Feedback": "pilot_feedback",
   General: "general"
 };
 
@@ -236,6 +237,13 @@ const routingMap = {
     routing_priority: "standard",
     routing_next_action: "Confirm role path and access need",
     routing_sla: "3 business days"
+  },
+  pilot_feedback: {
+    routing_queue: "access_review",
+    routing_label: "Pilot Feedback",
+    routing_priority: "high",
+    routing_next_action: "Review tester issue and update release QA notes",
+    routing_sla: "1 business day"
   },
   general: {
     routing_queue: "access_review",

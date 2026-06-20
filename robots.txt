@@ -8,3 +8,4 @@ Disallow: /auth/
 Disallow: /portal/
 Disallow: /brands/
 Disallow: /investor.html
+Disallow: /pilot-feedback.html

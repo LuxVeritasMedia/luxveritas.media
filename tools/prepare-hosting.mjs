@@ -22,6 +22,7 @@ const files = [
   "membership.html",
   "music.html",
   "offline.html",
+  "pilot-feedback.html",
   "press.html",
   "robots.txt",
   "service-worker.js",

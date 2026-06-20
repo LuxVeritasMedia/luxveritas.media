@@ -10,7 +10,7 @@
   "portalRoomsVersion": "2026-06-20-portal-rooms",
   "phaseStatusVersion": "2026-06-20-phase-status",
   "publicTermsVersion": "2026-06-09-public-capture",
-  "routeCount": 37,
+  "routeCount": 38,
   "publicRouteCount": 20,
   "appScript": "app.js?v=20260620-brand-house-rail",
   "stylesheet": "styles.css?v=20260620-brand-house-rail"

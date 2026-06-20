@@ -70,6 +70,14 @@ const formCopy = {
     tag: "creator-access",
     rolePath: "Creator",
     inquiryType: "Portal"
+  },
+  feedback: {
+    kicker: "Pilot Feedback",
+    title: "Pilot Feedback",
+    copy: "Report a bug, frozen submit, media issue, unclear page, or launch-readiness note.",
+    tag: "pilot-feedback",
+    rolePath: "General",
+    inquiryType: "Pilot Feedback"
   }
 };
 
@@ -93,6 +101,7 @@ const inquiryKeyMap = {
   Licensing: "licensing",
   Investor: "investor",
   Portal: "portal",
+  "Pilot Feedback": "pilot_feedback",
   General: "general"
 };
 

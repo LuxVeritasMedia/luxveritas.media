@@ -71,6 +71,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Add public terms version IDs to capture, reporting, and private handoff payloads.
 - [x] Add optional audience-interest paths to public capture, private reporting, and future handoff payloads.
 - [x] Add fan-reaction capture to the media player for replay, invite, collect, and create intent.
+- [x] Add noindex pilot feedback capture for TestFlight-quality bug and launch-readiness notes.
 - [x] Add private workflow-target recommendations from real capture demand to help choose GHL, Google Workspace, or CodexOps without exposing provider details.
 - [x] Add protected intake queue workbench for queue pressure, SLA, next action, delivery status, and handoff status.
 - [x] Configure signed internal Firebase private handoff endpoint `firebase_handoff`.
