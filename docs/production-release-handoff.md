@@ -77,6 +77,7 @@ node tools/qa-provider-readiness.mjs
 node tools/qa-private-workflow-matrix.mjs
 node tools/qa-private-integration-activation-dry-runs.mjs
 node tools/qa-external-workflow-targets.mjs
+node tools/qa-legal-sync.mjs
 node tools/qa-action-inventory.mjs
 node tools/qa-live-media-sources.mjs
 node tools/qa-live-operator-report.mjs

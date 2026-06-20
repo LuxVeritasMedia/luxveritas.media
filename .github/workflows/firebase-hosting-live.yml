@@ -79,6 +79,9 @@ jobs:
       - name: QA legal review request
         run: node tools/qa-legal-review-request.mjs
 
+      - name: QA legal sync
+        run: node tools/qa-legal-sync.mjs
+
       - name: QA release handoff
         run: node tools/qa-release-handoff.mjs
 

@@ -28,6 +28,7 @@ const checks = [
   ["Private Integration Request", "tools/qa-private-integration-request.mjs"],
   ["Legal Review Packet", "tools/qa-legal-review-packet.mjs"],
   ["Legal Review Request", "tools/qa-legal-review-request.mjs"],
+  ["Legal Sync", "tools/qa-legal-sync.mjs"],
   ["Launch Closeout", "tools/qa-launch-closeout.mjs"],
   ["Launch Blockers", "tools/qa-launch-blockers.mjs"],
   ["MVP Status", "tools/qa-mvp-status.mjs"],

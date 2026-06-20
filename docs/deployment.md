@@ -221,6 +221,8 @@ node tools/set-legal-review-status.mjs
 
 Use `LUX_LEGAL_DRY_RUN=1` to validate the command without writing. `LUX_LEGAL_SYNC_LAUNCH=1` keeps `data/lux-legal-review.json`, `data/lux-launch-readiness.json`, and `data/lux-launch-closeout.json` synchronized. Do not mark either item approved until counsel or the responsible business reviewer has accepted the public page language.
 
+Run `node tools/qa-legal-sync.mjs` before launch approval to verify the synced approval dry-runs and no-secret evidence guards.
+
 The notification replay action:
 
 - requires the same approved operator bearer token as the private report

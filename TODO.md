@@ -102,6 +102,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Add active public terms version manifest for capture auditability.
 - [x] Add auditable legal review status manifest and approval helper.
 - [x] Add synced legal approval mode for legal review, launch readiness, and closeout.
+- [x] Wire legal sync dry-run QA into pilot, workflow, and final release gates.
 - [x] Add legal review packet for Privacy and Terms approval.
 - [x] Add no-secret legal review request export for counsel/business approval.
 - [ ] Legal review: Privacy.

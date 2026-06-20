@@ -170,6 +170,8 @@ for (const marker of [
   "tools/qa-mvp-preflight.mjs",
   "Launch Evidence",
   "tools/qa-launch-evidence.mjs",
+  "Legal Sync",
+  "tools/qa-legal-sync.mjs",
   "Deploy Status",
   "Domain Readiness",
   "Provider Readiness",

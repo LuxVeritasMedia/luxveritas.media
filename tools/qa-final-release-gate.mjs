@@ -30,6 +30,11 @@ const checks = [
     env: {}
   },
   {
+    label: "Legal Sync",
+    script: "tools/qa-legal-sync.mjs",
+    env: {}
+  },
+  {
     label: "Deploy Status",
     script: "tools/qa-deploy-status.mjs",
     env: { LUX_DEPLOY_STATUS_STRICT: "1" }

@@ -55,6 +55,7 @@ node tools/export-legal-review-request.mjs
 LUX_LEGAL_PACKET_OUT=/tmp/lux-legal-review-request.md node tools/export-legal-review-request.mjs
 LUX_LEGAL_PACKET_FORMAT=json node tools/export-legal-review-request.mjs
 node tools/qa-legal-review-request.mjs
+node tools/qa-legal-sync.mjs
 ```
 
 Run these only after approval is real:
