@@ -40,6 +40,11 @@ const checks = [
     env: { LUX_PROVIDER_STRICT: "1" }
   },
   {
+    label: "Live Operator Report",
+    script: "tools/qa-live-operator-report.mjs",
+    env: { LUX_OPERATOR_REPORT_STRICT: writeTests ? "1" : "0" }
+  },
+  {
     label: "Release Readiness",
     script: "tools/qa-release-readiness.mjs",
     env: { LUX_RELEASE_STRICT: "1" }

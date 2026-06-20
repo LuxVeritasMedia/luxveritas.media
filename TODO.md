@@ -209,3 +209,4 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add approved media source helper for audio, video, and radio URLs.
 - [x] Attach approved MVP preview audio, video, and radio sources.
 - [x] Verify approved live audio, video, and radio source URLs against the production media manifest.
+- [x] Add live approved-operator report QA for private counts, summaries, readiness, playback reporting, handoff reporting, and secret-shaped value protection.

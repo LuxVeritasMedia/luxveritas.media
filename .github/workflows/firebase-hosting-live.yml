@@ -129,6 +129,11 @@ jobs:
       - name: QA live site
         run: node tools/qa-live-site.mjs
 
+      - name: QA live operator report
+        run: node tools/qa-live-operator-report.mjs
+        env:
+          LUX_REPORT_TOKEN: ${{ secrets.LUX_REPORT_TOKEN }}
+
       - name: QA live assets
         run: node tools/qa-live-assets.mjs
 

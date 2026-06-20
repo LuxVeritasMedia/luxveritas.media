@@ -73,6 +73,7 @@ git push origin main
 node tools/qa-deploy-status.mjs
 node tools/qa-live-assets.mjs
 node tools/qa-live-media-sources.mjs
+node tools/qa-live-operator-report.mjs
 ```
 
 6. Run final release approval with real writes:
@@ -89,6 +90,7 @@ The final gate also runs operator-environment, MVP status, and MVP preflight che
 - `LUX_FINAL_SKIP_BROWSER=1` or `LUX_FINAL_SKIP_LIVE=1` is used for final approval.
 - `LUX_FINAL_WRITE_TESTS=1` has not been run.
 - Live form writes do not send to `info@luxveritas.media`.
+- The live operator report cannot be verified with `LUX_REPORT_TOKEN`.
 - Privacy or Terms still show `needs_review`.
 - `www.luxveritas.media` does not serve/redirect over HTTPS.
 

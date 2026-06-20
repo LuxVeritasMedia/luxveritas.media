@@ -27,6 +27,7 @@ for (const marker of [
   "Terms page needs legal/business approval",
   "External CRM/Google workflow target",
   "node tools/qa-provider-readiness.mjs",
+  "node tools/qa-live-operator-report.mjs",
   "node tools/qa-domain-readiness.mjs",
   "node tools/resolve-www-domain.mjs",
   "node tools/qa-release-readiness.mjs",
@@ -38,6 +39,7 @@ for (const marker of [
   "node tools/qa-launch-evidence.mjs",
   "node tools/qa-private-workflow-matrix.mjs",
   "node tools/qa-live-media-sources.mjs",
+  "node tools/qa-live-operator-report.mjs",
   "LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs",
   "Do not use `LUX_FINAL_SKIP_BROWSER=1` or `LUX_FINAL_SKIP_LIVE=1` for release approval.",
   "LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.mjs"
@@ -149,6 +151,7 @@ for (const marker of [
   "Deploy Status",
   "Domain Readiness",
   "Provider Readiness",
+  "Live Operator Report",
   "Release Readiness",
   "Full Pilot Readiness",
   "Final Write Tests"
