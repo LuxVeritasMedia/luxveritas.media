@@ -18,6 +18,7 @@ const requiredFiles = [
   "data/lux-fan-flywheel.json",
   "data/lux-drop-room.json",
   "data/lux-portal-rooms.json",
+  "data/lux-phase-status.json",
   "data/lux-media-manifest.json",
   "data/lux-build-manifest.json",
   "data/lux-legal-review.json",
@@ -296,6 +297,7 @@ const brandHouseRaw = await readFile(join(root, "data/lux-brand-house.json"), "u
 const fanFlywheelRaw = await readFile(join(root, "data/lux-fan-flywheel.json"), "utf8");
 const dropRoomRaw = await readFile(join(root, "data/lux-drop-room.json"), "utf8");
 const portalRoomsRaw = await readFile(join(root, "data/lux-portal-rooms.json"), "utf8");
+const phaseStatusRaw = await readFile(join(root, "data/lux-phase-status.json"), "utf8");
 const mediaManifestRaw = await readFile(join(root, "data/lux-media-manifest.json"), "utf8");
 const buildManifestRaw = await readFile(join(root, "data/lux-build-manifest.json"), "utf8");
 const webManifestRaw = await readFile(join(root, "site.webmanifest"), "utf8");
@@ -313,6 +315,7 @@ for (const pattern of bannedTerms) {
   if (pattern.test(fanFlywheelRaw)) issues.push(`data/lux-fan-flywheel.json: banned public term matched ${pattern}`);
   if (pattern.test(dropRoomRaw)) issues.push(`data/lux-drop-room.json: banned public term matched ${pattern}`);
   if (pattern.test(portalRoomsRaw)) issues.push(`data/lux-portal-rooms.json: banned public term matched ${pattern}`);
+  if (pattern.test(phaseStatusRaw)) issues.push(`data/lux-phase-status.json: banned public term matched ${pattern}`);
   if (pattern.test(mediaManifestRaw)) issues.push(`data/lux-media-manifest.json: banned public term matched ${pattern}`);
   if (pattern.test(legalReviewRaw)) issues.push(`data/lux-legal-review.json: banned public term matched ${pattern}`);
   if (pattern.test(publicTermsRaw)) issues.push(`data/lux-public-terms.json: banned public term matched ${pattern}`);
@@ -358,8 +361,8 @@ try {
   if (buildManifest.routeCount !== htmlFiles.length) {
     issues.push(`data/lux-build-manifest.json: routeCount ${buildManifest.routeCount} does not match ${htmlFiles.length} generated HTML files`);
   }
-  if (!buildManifest.publicRouteCount || !buildManifest.mediaManifestVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.publicTermsVersion) {
-    issues.push("data/lux-build-manifest.json: missing publicRouteCount, mediaManifestVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, or publicTermsVersion");
+  if (!buildManifest.publicRouteCount || !buildManifest.mediaManifestVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.phaseStatusVersion || !buildManifest.publicTermsVersion) {
+    issues.push("data/lux-build-manifest.json: missing publicRouteCount, mediaManifestVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, phaseStatusVersion, or publicTermsVersion");
   }
 } catch (error) {
   issues.push(`data/lux-build-manifest.json: invalid JSON (${error.message})`);
@@ -570,6 +573,43 @@ try {
   }
 } catch (error) {
   issues.push(`data/lux-portal-rooms.json: invalid JSON (${error.message})`);
+}
+
+try {
+  const phaseStatus = JSON.parse(phaseStatusRaw);
+  const currentPhase = phaseStatus.currentPhase || {};
+  const activeWorkstreams = Array.isArray(phaseStatus.activeWorkstreams) ? phaseStatus.activeWorkstreams : [];
+  const deferredBoundaries = Array.isArray(phaseStatus.deferredBoundaries) ? phaseStatus.deferredBoundaries : [];
+  if (phaseStatus.schemaVersion !== "luxveritas.phase_status.v1") {
+    issues.push("data/lux-phase-status.json: missing schemaVersion luxveritas.phase_status.v1");
+  }
+  if (phaseStatus.version !== "2026-06-20-phase-status") {
+    issues.push("data/lux-phase-status.json: version mismatch");
+  }
+  if (currentPhase.id !== "phase-5" || currentPhase.status !== "active_pilot") {
+    issues.push("data/lux-phase-status.json: currentPhase must be phase-5 active_pilot");
+  }
+  if (!/Full public release is still blocked by Privacy and Terms approval/i.test(currentPhase.summary || "")) {
+    issues.push("data/lux-phase-status.json: current phase summary must name Privacy and Terms approval as launch blockers");
+  }
+  for (const blocker of ["privacy_review", "terms_review"]) {
+    if (!phaseStatus.publicLaunchBlockers?.includes(blocker)) {
+      issues.push(`data/lux-phase-status.json: missing public launch blocker ${blocker}`);
+    }
+  }
+  if (!Array.isArray(phaseStatus.codeConfigBlockers) || phaseStatus.codeConfigBlockers.length !== 0) {
+    issues.push("data/lux-phase-status.json: codeConfigBlockers must be empty for current pilot status");
+  }
+  for (const workstreamId of ["phase-4-closeout", "phase-5-portal-shell", "phase-6-intake-routing", "media-mvp"]) {
+    if (!activeWorkstreams.some((item) => item.id === workstreamId)) {
+      issues.push(`data/lux-phase-status.json: missing active workstream ${workstreamId}`);
+    }
+  }
+  if (!deferredBoundaries.some((item) => item.id === "internal-bridge" && item.status === "deferred")) {
+    issues.push("data/lux-phase-status.json: internal bridge must remain deferred");
+  }
+} catch (error) {
+  issues.push(`data/lux-phase-status.json: invalid JSON (${error.message})`);
 }
 
 try {

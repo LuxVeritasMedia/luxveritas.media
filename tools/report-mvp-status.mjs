@@ -82,6 +82,7 @@ const [
   closeoutRaw,
   legalRaw,
   mediaRaw,
+  phaseStatusRaw,
   publicTermsRaw,
   todo,
   branch,
@@ -95,6 +96,7 @@ const [
   readFile("data/lux-launch-closeout.json", "utf8"),
   readFile("data/lux-legal-review.json", "utf8"),
   readFile("data/lux-media-manifest.json", "utf8"),
+  readFile("data/lux-phase-status.json", "utf8"),
   readFile("data/lux-public-terms.json", "utf8"),
   readFile("TODO.md", "utf8"),
   run("git", ["branch", "--show-current"]),
@@ -109,6 +111,7 @@ const launch = JSON.parse(launchRaw);
 const closeout = JSON.parse(closeoutRaw);
 const legalReview = JSON.parse(legalRaw);
 const mediaManifest = JSON.parse(mediaRaw);
+const phaseStatus = JSON.parse(phaseStatusRaw);
 const publicTerms = JSON.parse(publicTermsRaw);
 const gates = Array.isArray(launch.gates) ? launch.gates : [];
 const closeoutItems = Array.isArray(closeout.items) ? closeout.items : [];
@@ -128,6 +131,10 @@ const closeoutByStatus = closeoutItems.reduce((counts, item) => {
 }, {});
 const closedCloseoutItems = closeoutItems.filter((item) => item.status === "closed");
 const phaseLine = todo.split("\n").find((item) => item.startsWith("Current phase:")) || "";
+const currentPhase = phaseStatus.currentPhase || {};
+const phaseSummary = currentPhase.summary
+  || phaseLine.replace(/^Current phase:\s*/, "")
+  || "";
 const media = summarizeMedia(mediaManifest);
 const liveVersion = liveManifest.ok
   ? liveManifest.value.assetVersion || liveManifest.value.version || ""
@@ -169,7 +176,25 @@ const report = {
   generatedAt: new Date().toISOString(),
   project: "LuxVeritas.media",
   liveUrl: baseUrl,
-  phase: phaseLine.replace(/^Current phase:\s*/, ""),
+  phase: phaseSummary,
+  phaseStatus: {
+    version: phaseStatus.version || "",
+    currentPhase: {
+      id: currentPhase.id || "",
+      number: currentPhase.number || null,
+      label: currentPhase.label || "",
+      status: currentPhase.status || "",
+      summary: currentPhase.summary || ""
+    },
+    publicLaunchStatus: phaseStatus.publicLaunchStatus || "",
+    pilotStatus: phaseStatus.pilotStatus || "",
+    completedPhases: Array.isArray(phaseStatus.completedPhases) ? phaseStatus.completedPhases : [],
+    activeWorkstreams: Array.isArray(phaseStatus.activeWorkstreams) ? phaseStatus.activeWorkstreams : [],
+    deferredBoundaries: Array.isArray(phaseStatus.deferredBoundaries) ? phaseStatus.deferredBoundaries : [],
+    publicLaunchBlockers: Array.isArray(phaseStatus.publicLaunchBlockers) ? phaseStatus.publicLaunchBlockers : [],
+    codeConfigBlockers: Array.isArray(phaseStatus.codeConfigBlockers) ? phaseStatus.codeConfigBlockers : [],
+    nextDecisions: Array.isArray(phaseStatus.nextDecisions) ? phaseStatus.nextDecisions : []
+  },
   repo: {
     branch: branch.ok ? branch.value : "unknown",
     localSha: localSha.ok ? localSha.value : "",

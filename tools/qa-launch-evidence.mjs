@@ -51,6 +51,8 @@ if (evidence) {
   if (evidence.schemaVersion !== "luxveritas.launch_evidence.v1") issue("evidence schemaVersion mismatch");
   if (evidence.project !== "LuxVeritas.media") issue("evidence project mismatch");
   if (evidence.liveUrl !== "https://luxveritas.media") issue("evidence liveUrl mismatch");
+  if (evidence.phaseStatusVersion !== "2026-06-20-phase-status") issue("evidence phaseStatusVersion mismatch");
+  if (evidence.currentPhase?.id !== "phase-5" || evidence.currentPhase?.status !== "active_pilot") issue("evidence current phase mismatch");
   if (!evidence.assetVersion) issue("evidence assetVersion missing");
   if (!evidence.media?.itemCount || evidence.media.itemCount < 3) issue("evidence media item count should include MVP audio/video/stream");
   const blocked = Array.isArray(evidence.launchGates?.blocked) ? evidence.launchGates.blocked : [];

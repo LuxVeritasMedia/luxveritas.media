@@ -152,8 +152,8 @@ try {
     if (buildManifest.stylesheet !== `styles.css?v=${expectedAssetVersion}`) {
       issues.push("/data/lux-build-manifest.json: stylesheet does not match current asset version");
     }
-    if (!buildManifest.mediaManifestVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.publicTermsVersion) {
-      issues.push("/data/lux-build-manifest.json: missing mediaManifestVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, or publicTermsVersion");
+    if (!buildManifest.mediaManifestVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.phaseStatusVersion || !buildManifest.publicTermsVersion) {
+      issues.push("/data/lux-build-manifest.json: missing mediaManifestVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, phaseStatusVersion, or publicTermsVersion");
     }
   }
 } catch (error) {
@@ -290,6 +290,32 @@ try {
   }
 } catch (error) {
   issues.push(`/data/lux-portal-rooms.json: invalid response (${error.message})`);
+}
+
+try {
+  const { response, text } = await fetchWithTimeout("/data/lux-phase-status.json");
+  if (!response.ok) {
+    issues.push(`/data/lux-phase-status.json: expected HTTP 200, received ${response.status}`);
+  } else {
+    const phaseStatus = JSON.parse(text);
+    const currentPhase = phaseStatus.currentPhase || {};
+    if (phaseStatus.schemaVersion !== "luxveritas.phase_status.v1") {
+      issues.push("/data/lux-phase-status.json: schemaVersion mismatch");
+    }
+    if (liveBuildManifest?.phaseStatusVersion && liveBuildManifest.phaseStatusVersion !== phaseStatus.version) {
+      issues.push("/data/lux-phase-status.json: version does not match build manifest phaseStatusVersion");
+    }
+    if (currentPhase.id !== "phase-5" || currentPhase.status !== "active_pilot") {
+      issues.push("/data/lux-phase-status.json: current phase mismatch");
+    }
+    for (const blocker of ["privacy_review", "terms_review"]) {
+      if (!phaseStatus.publicLaunchBlockers?.includes(blocker)) {
+        issues.push(`/data/lux-phase-status.json: missing public launch blocker ${blocker}`);
+      }
+    }
+  }
+} catch (error) {
+  issues.push(`/data/lux-phase-status.json: invalid response (${error.message})`);
 }
 
 try {

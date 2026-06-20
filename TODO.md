@@ -1,6 +1,6 @@
 # Lux Veritas Website TODO
 
-Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
+Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout remains open before full public release.
 
 ## P0 - Protect Internal Material
 - [x] Remove internal ops/backend terms from generated public pages.
@@ -111,6 +111,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 ## P5 - Portal Prep
 - [x] Keep Portal and Sign In as private-access shells.
 - [x] Add manifest-driven portal room map for Phase 5 private access shell.
+- [x] Add machine-readable phase status for pilot, launch blockers, active workstreams, and deferred LuxFlow bridge boundaries.
 - [x] Define approved role model before auth build: visitor, member, artist, creator, press, partner, investor, operator, admin.
 - [x] Define access request interface before wiring any live services.
 - [x] Define screened intake routing map before wiring live services.

@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "luxveritas.phase_status.v1",
+  "version": "2026-06-20-phase-status",
+  "updatedAt": "2026-06-20T00:00:00.000Z",
+  "currentPhase": {
+    "id": "phase-5",
+    "number": 5,
+    "label": "Portal Pilot Prep",
+    "status": "active_pilot",
+    "summary": "Phase 5 pilot prep is active: the public site, capture layer, media preview player, private access shell, and operator reporting are live. Full public release is still blocked by Privacy and Terms approval."
+  },
+  "publicLaunchStatus": "blocked_by_external_legal_approval",
+  "pilotStatus": "pilot_ready_when_live_checks_pass",
+  "completedPhases": [
+    {
+      "id": "phase-1",
+      "number": 1,
+      "label": "Public Site Foundation",
+      "status": "complete"
+    },
+    {
+      "id": "phase-2",
+      "number": 2,
+      "label": "Firebase, GitHub, Domain",
+      "status": "complete"
+    },
+    {
+      "id": "phase-3",
+      "number": 3,
+      "label": "Public Access-Control Cleanup",
+      "status": "complete"
+    }
+  ],
+  "activeWorkstreams": [
+    {
+      "id": "phase-4-closeout",
+      "phaseNumber": 4,
+      "label": "Capture, Legal, Seed, Boundary Closeout",
+      "status": "external_approval_open",
+      "summary": "Capture, media, reporting, domain, inbox, and boundary work are ready. Privacy and Terms review remain open before full public release."
+    },
+    {
+      "id": "phase-5-portal-shell",
+      "phaseNumber": 5,
+      "label": "Private Portal Shell",
+      "status": "implemented_shell",
+      "summary": "Portal and sign-in routes are private-access shells with screened request paths and no account entitlement promises."
+    },
+    {
+      "id": "phase-6-intake-routing",
+      "phaseNumber": 6,
+      "label": "Role/Tier Matrix and Screened Intake Routing",
+      "status": "implemented_contract",
+      "summary": "Public role paths, inquiry keys, routing queues, and private handoff payloads are defined and QA-covered before any external workflow target is selected."
+    },
+    {
+      "id": "media-mvp",
+      "phaseNumber": 7,
+      "label": "Public Media MVP Workstream",
+      "status": "preview_sources_live",
+      "summary": "Listen, Watch, and Radio preview sources are live, with playback lifecycle and retention reporting available to approved operators."
+    }
+  ],
+  "deferredBoundaries": [
+    {
+      "id": "internal-bridge",
+      "phaseNumber": 7,
+      "label": "Internal Systems Bridge",
+      "status": "deferred",
+      "rule": "Keep internal app logic outside the public repo until the bridge contract is approved server-side."
+    },
+    {
+      "id": "paid-commerce",
+      "phaseNumber": 10,
+      "label": "Paid Membership and Commerce",
+      "status": "deferred",
+      "rule": "Keep store and membership waitlist-only until purchase, refund, and membership terms are approved."
+    }
+  ],
+  "publicLaunchBlockers": ["privacy_review", "terms_review"],
+  "codeConfigBlockers": [],
+  "nextDecisions": [
+    {
+      "id": "external-workflow-target",
+      "label": "External Workflow Target",
+      "status": "decision_pending",
+      "summary": "Choose Google Workspace, an approved external CRM, an operator build-packet bridge, or an approved private workflow only after the receiver owner and workflow are approved."
+    },
+    {
+      "id": "legal-approval",
+      "label": "Privacy and Terms Approval",
+      "status": "external_review_pending",
+      "summary": "Approve legal review only after the pages match actual site practices."
+    }
+  ]
+}

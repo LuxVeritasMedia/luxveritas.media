@@ -1,13 +1,14 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260620-portal-rooms";
+const assetVersion = "20260620-phase-status";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 const brandHouse = JSON.parse(await readFile("data/lux-brand-house.json", "utf8"));
 const fanFlywheel = JSON.parse(await readFile("data/lux-fan-flywheel.json", "utf8"));
 const dropRoom = JSON.parse(await readFile("data/lux-drop-room.json", "utf8"));
 const portalRooms = JSON.parse(await readFile("data/lux-portal-rooms.json", "utf8"));
+const phaseStatus = JSON.parse(await readFile("data/lux-phase-status.json", "utf8"));
 
 const nav = [
   ["Home", "/index.html"],
@@ -1041,6 +1042,7 @@ await writeFile("data/lux-build-manifest.json", `${JSON.stringify({
   fanFlywheelVersion: fanFlywheel.version,
   dropRoomVersion: dropRoom.version,
   portalRoomsVersion: portalRooms.version,
+  phaseStatusVersion: phaseStatus.version,
   publicTermsVersion: publicTerms.version,
   routeCount: pages.length,
   publicRouteCount: publicPaths.length,

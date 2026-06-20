@@ -45,7 +45,19 @@ try {
 if (report) {
   if (report.project !== "LuxVeritas.media") issue("project label mismatch");
   if (report.liveUrl !== "https://luxveritas.media") issue("liveUrl mismatch");
-  if (!/Phase 4 of 10/i.test(report.phase || "")) warn(`phase is not Phase 4 text: ${report.phase || "missing"}`);
+  if (report.phaseStatus?.version !== "2026-06-20-phase-status") issue("phase status version mismatch");
+  if (report.phaseStatus?.currentPhase?.id !== "phase-5") issue("phase status current phase must be phase-5");
+  if (report.phaseStatus?.currentPhase?.status !== "active_pilot") issue("phase status current phase must be active_pilot");
+  if (!/Phase 5 pilot prep is active/i.test(report.phase || "")) issue(`phase summary mismatch: ${report.phase || "missing"}`);
+  if (!Array.isArray(report.phaseStatus?.publicLaunchBlockers) || !report.phaseStatus.publicLaunchBlockers.includes("privacy_review") || !report.phaseStatus.publicLaunchBlockers.includes("terms_review")) {
+    issue("phase status must report Privacy and Terms as public launch blockers");
+  }
+  if (!Array.isArray(report.phaseStatus?.activeWorkstreams) || report.phaseStatus.activeWorkstreams.length < 4) {
+    issue("phase status active workstreams missing");
+  }
+  if (!Array.isArray(report.phaseStatus?.deferredBoundaries) || !report.phaseStatus.deferredBoundaries.some((item) => item.id === "internal-bridge" && item.status === "deferred")) {
+    issue("phase status must keep internal bridge deferred");
+  }
 
   if (report.repo?.branch !== "main") issue(`repo branch is ${report.repo?.branch || "missing"}`);
   if (!/^[a-f0-9]{40}$/i.test(report.repo?.localSha || "")) issue("repo localSha missing or invalid");

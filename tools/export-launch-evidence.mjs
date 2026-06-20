@@ -59,6 +59,7 @@ const [
   closeoutRaw,
   legalRaw,
   mediaRaw,
+  phaseStatusRaw,
   termsRaw,
   todo,
   mvpStatus,
@@ -70,6 +71,7 @@ const [
   readFile("data/lux-launch-closeout.json", "utf8"),
   readFile("data/lux-legal-review.json", "utf8"),
   readFile("data/lux-media-manifest.json", "utf8"),
+  readFile("data/lux-phase-status.json", "utf8"),
   readFile("data/lux-public-terms.json", "utf8"),
   readFile("TODO.md", "utf8"),
   run("tools/report-mvp-status.mjs", includeLive ? {} : { LUX_LIVE_URL: "https://luxveritas.media" }),
@@ -82,6 +84,7 @@ const launch = JSON.parse(launchRaw);
 const closeout = JSON.parse(closeoutRaw);
 const legalReview = JSON.parse(legalRaw);
 const mediaManifest = JSON.parse(mediaRaw);
+const phaseStatus = JSON.parse(phaseStatusRaw);
 const publicTerms = JSON.parse(termsRaw);
 const gates = Array.isArray(launch.gates) ? launch.gates : [];
 const closeoutItems = Array.isArray(closeout.items) ? closeout.items : [];
@@ -92,7 +95,9 @@ const closeoutByStatus = closeoutItems.reduce((counts, item) => {
   counts[status] = (counts[status] || 0) + 1;
   return counts;
 }, {});
-const phase = (todo.split("\n").find((line) => line.startsWith("Current phase:")) || "").replace(/^Current phase:\s*/, "");
+const currentPhase = phaseStatus.currentPhase || {};
+const phase = currentPhase.summary
+  || (todo.split("\n").find((line) => line.startsWith("Current phase:")) || "").replace(/^Current phase:\s*/, "");
 const mediaItems = Array.isArray(mediaManifest.items) ? mediaManifest.items : [];
 const sourceTypes = [...new Set(mediaItems.map((item) => item.sourceType || "unknown"))].sort();
 const evidence = {
@@ -100,6 +105,13 @@ const evidence = {
   generatedAt: new Date().toISOString(),
   project: "LuxVeritas.media",
   phase,
+  phaseStatusVersion: phaseStatus.version || "",
+  currentPhase: {
+    id: currentPhase.id || "",
+    number: currentPhase.number || null,
+    label: currentPhase.label || "",
+    status: currentPhase.status || ""
+  },
   liveUrl: "https://luxveritas.media",
   githubRepo: "LuxVeritasMedia/luxveritas.media",
   firebaseProject: "lux-veritas-media",

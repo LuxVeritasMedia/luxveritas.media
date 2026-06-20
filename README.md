@@ -4,7 +4,7 @@ External public-facing Lux Veritas website.
 
 This repo is separate from the internal LuxFlow OS app.
 
-Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
+Current phase: Phase 5 of 10 - portal pilot prep active. Phase 4 legal closeout remains open before full public release.
 
 Public website repo:
 
@@ -32,6 +32,6 @@ docs/build-phase-plan.md
 docs/PRODUCT_BOUNDARY.md
 ```
 
-Phase 5 should remain a private portal shell. Phase 6 should define roles and screened intake routing. Phase 7 is the controlled LuxOS/LuxFlow bridge and must not merge internal app code into the public website.
+Phase 5 remains a private portal shell. Phase 6 intake/routing contracts are defined for screened access. The public media MVP is live with preview sources. The controlled LuxOS/LuxFlow bridge remains deferred and must not merge internal app code into the public website.
 
 Internal KYS/master-seed documents should be stored in Google Drive or a private internal repository, not pushed to the public GitHub website repo.

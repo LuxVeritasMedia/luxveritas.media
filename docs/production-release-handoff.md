@@ -9,9 +9,10 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Live apex: `https://luxveritas.media`
 - Firebase project: `lux-veritas-media`
 - GitHub repo: `LuxVeritasMedia/luxveritas.media`
-- Current live asset version: `20260620-portal-rooms`
-- Current phase: Phase 4 of 10, capture/legal/readiness
-- Next major phase: Phase 5, authenticated portal shell
+- Current live asset version: `20260620-phase-status`
+- Current phase: Phase 5 of 10, portal pilot prep active
+- Phase 4 closeout: legal approval remains open before full public release
+- Next major phase: authenticated portal shell with approved auth and role gates
 - Current MVP posture: pilot-ready with public launch blocked only by external Privacy and Terms approval.
 
 ## What Is Working
@@ -33,6 +34,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Brand-house visual identity is manifest-driven and live on Home and About, with responsive QA coverage for the six public house marks.
 - CTA, media, consented interaction, and form reporting paths have QA coverage.
 - Private operator reporting exists behind approved access.
+- Machine-readable phase status is deployed at `/data/lux-phase-status.json`.
 
 ## Launch Blockers
 
