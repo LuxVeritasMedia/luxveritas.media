@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260620-workflow-targets";
+const assetVersion = "20260620-queue-workbench";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 const brandHouse = JSON.parse(await readFile("data/lux-brand-house.json", "utf8"));
@@ -718,6 +718,16 @@ function portalReport() {
           <p class="kicker">Pilot Funnel</p>
           <h3>Capture and engagement health.</h3>
           <ul class="report-list" data-private-funnel><li>Load private activity to view funnel health.</li></ul>
+        </div>
+      </div>
+      <div class="report-detail">
+        <div>
+          <p class="kicker">Intake Queue</p>
+          <h3 data-private-queue="summary">Load private activity.</h3>
+          <p data-private-queue="detail">Screened requests appear here with queue pressure, SLA, and next action.</p>
+        </div>
+        <div>
+          <ul class="report-list" data-private-queue="list"><li>Load private activity to view intake queues.</li></ul>
         </div>
       </div>
       <div class="report-detail">

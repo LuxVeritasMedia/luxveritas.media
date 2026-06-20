@@ -9,7 +9,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Live apex: `https://luxveritas.media`
 - Firebase project: `lux-veritas-media`
 - GitHub repo: `LuxVeritasMedia/luxveritas.media`
-- Current live asset version: `20260620-workflow-targets`
+- Current live asset version: `20260620-queue-workbench`
 - Current phase: Phase 5 of 10, portal pilot prep active
 - Phase 4 closeout: legal approval remains open before full public release
 - Next major phase: authenticated portal shell with approved auth and role gates
@@ -35,6 +35,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Brand-house visual identity is manifest-driven and live on Home and About, with responsive QA coverage for the six public house marks.
 - CTA, media, consented interaction, and form reporting paths have QA coverage.
 - Operator reporting summarizes audience-interest demand from stored captures.
+- Operator reporting includes a protected intake queue workbench with queue pressure, SLA, next action, inbox status, and handoff status.
 - Operator reporting recommends the next private workflow target from real routing demand while keeping external provider details out of the public site.
 - Private operator reporting exists behind approved access.
 - Machine-readable phase status is deployed at `/data/lux-phase-status.json`.

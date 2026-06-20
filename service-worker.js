@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260620-workflow-targets";
+const CACHE_NAME = "luxveritas-static-20260620-queue-workbench";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260620-workflow-targets",
-  "/app.js?v=20260620-workflow-targets",
+  "/styles.css?v=20260620-queue-workbench",
+  "/app.js?v=20260620-queue-workbench",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"

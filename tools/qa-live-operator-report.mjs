@@ -191,6 +191,42 @@ function checkWorkflowTargets(report) {
   }
 }
 
+function checkIntakeQueue(report) {
+  const queue = valueAt(report, "summary.intakeQueue");
+  if (!queue || typeof queue !== "object" || Array.isArray(queue)) {
+    issue("/api/report: summary.intakeQueue is missing or not an object");
+    return;
+  }
+
+  for (const field of ["sampleSize", "openItems", "highPriority", "pendingInbox", "pendingHandoff"]) {
+    if (typeof queue[field] !== "number") {
+      issue(`/api/report: summary.intakeQueue.${field} is missing or not numeric`);
+    }
+  }
+  for (const field of ["topQueue", "nextAction"]) {
+    if (typeof queue[field] !== "string") {
+      issue(`/api/report: summary.intakeQueue.${field} is missing`);
+    }
+  }
+  if (!Array.isArray(queue.queues)) {
+    issue("/api/report: summary.intakeQueue.queues is not an array");
+    return;
+  }
+
+  for (const [index, item] of queue.queues.entries()) {
+    for (const field of ["queue", "label", "owner", "priority", "sla", "nextAction", "reviewSignal", "reviewLabel"]) {
+      if (typeof item[field] !== "string" || !item[field]) {
+        issue(`/api/report: summary.intakeQueue.queues[${index}].${field} is missing`);
+      }
+    }
+    for (const field of ["count", "pendingInbox", "pendingHandoff", "sentInbox", "acceptedHandoff", "highPriority", "oldestAgeDays"]) {
+      if (typeof item[field] !== "number") {
+        issue(`/api/report: summary.intakeQueue.queues[${index}].${field} is missing or not numeric`);
+      }
+    }
+  }
+}
+
 function scanSecretValues(value, path = "$") {
   if (Array.isArray(value)) {
     value.forEach((item, index) => scanSecretValues(item, `${path}[${index}]`));
@@ -268,6 +304,7 @@ function checkReportBody(report) {
   for (const field of handoffSummaryFields) {
     assertSummaryArrayItems(assertArray(report, `summary.handoffs.${field}`), `summary.handoffs.${field}`);
   }
+  checkIntakeQueue(report);
   checkWorkflowTargets(report);
 
   scanSecretValues(report);

@@ -123,6 +123,35 @@ const mockReport = {
       bySourcePage: [{ label: "/membership.html", count: 6 }],
       byRoutingQueue: [{ label: "Membership Waitlist", count: 6 }]
     },
+    intakeQueue: {
+      sampleSize: 42,
+      openItems: 24,
+      highPriority: 0,
+      pendingInbox: 7,
+      pendingHandoff: 0,
+      topQueue: "Membership Waitlist",
+      nextAction: "Send first-access follow-up for Membership Waitlist.",
+      queues: [
+        {
+          queue: "membership_waitlist",
+          label: "Membership Waitlist",
+          owner: "Membership operator",
+          priority: "standard",
+          sla: "3 business days",
+          nextAction: "Send first-access follow-up",
+          count: 24,
+          pendingInbox: 7,
+          pendingHandoff: 0,
+          sentInbox: 17,
+          acceptedHandoff: 24,
+          highPriority: 0,
+          oldestAgeDays: 1,
+          latestAt: "2026-06-09T00:00:00.000Z",
+          reviewSignal: "inbox_attention",
+          reviewLabel: "Inbox attention"
+        }
+      ]
+    },
     workflowTargets: {
       activeTarget: "firebase_handoff",
       activeLabel: "Firebase Private Handoff",
@@ -858,6 +887,9 @@ async function operatorReportFlow(page, baseUrl) {
   const workflowTargets = await page.locator('[data-private-workflow="targets"]').innerText();
   const workflowQueues = await page.locator('[data-private-workflow="queues"]').innerText();
   const workflowGuardrails = await page.locator('[data-private-workflow="guardrails"]').innerText();
+  const queueSummary = await page.locator('[data-private-queue="summary"]').innerText();
+  const queueDetail = await page.locator('[data-private-queue="detail"]').innerText();
+  const queueList = await page.locator('[data-private-queue="list"]').innerText();
   const funnelSummary = await page.locator("[data-private-funnel]").innerText();
   const launchSummary = await page.locator("[data-launch-readiness-summary]").innerText();
   const launchReadiness = await page.locator("[data-launch-readiness-list]").innerText();
@@ -900,6 +932,9 @@ async function operatorReportFlow(page, baseUrl) {
     ["workflow-targets", workflowTargets],
     ["workflow-queues", workflowQueues],
     ["workflow-guardrails", workflowGuardrails],
+    ["queue-summary", queueSummary],
+    ["queue-detail", queueDetail],
+    ["queue-list", queueList],
     ["funnel", funnelSummary],
     ["latest", latest]
   ]) {
@@ -921,6 +956,12 @@ async function operatorReportFlow(page, baseUrl) {
   }
   if (!/Firebase Secret Manager/.test(workflowGuardrails)) {
     issues.push(`/portal/reporting.html: workflow guardrails did not render`);
+  }
+  if (!/24 open/.test(queueSummary) || !/Pending inbox: 7/.test(queueDetail)) {
+    issues.push(`/portal/reporting.html: intake queue summary did not render open and pending values`);
+  }
+  if (!/Membership Waitlist/i.test(queueList) || !/Inbox attention/i.test(queueList) || !/Membership operator/i.test(queueList)) {
+    issues.push(`/portal/reporting.html: intake queue list did not render queue, review signal, and owner (text="${queueList.replace(/\s+/g, " ")}")`);
   }
   if (!/music/.test(interestsSummary) || !/events/.test(interestsSummary)) {
     issues.push(`/portal/reporting.html: interest summary missing mocked interest paths`);
@@ -950,6 +991,16 @@ async function operatorReportFlow(page, baseUrl) {
   });
   if (!workflowExportReady) {
     issues.push(`/portal/reporting.html: workflow recommendation was missing from private export rows`);
+  }
+  const queueExportReady = await page.evaluate(() => {
+    return privateReportRows(privateReportCache).some((row) => (
+      row.type === "intake_queue"
+      && row.label === "Membership Waitlist"
+      && /Inbox attention/.test(row.detail)
+    ));
+  });
+  if (!queueExportReady) {
+    issues.push(`/portal/reporting.html: intake queue records were missing from private export rows`);
   }
   const playbackExportReady = await page.evaluate(() => {
     return privateReportRows(privateReportCache).some((row) => (

@@ -299,6 +299,16 @@ const workflowTargetLabels = {
   private_workflow: "Approved Private Workflow"
 };
 
+const queueOwners = {
+  membership_waitlist: "Membership operator",
+  submission_review: "Submissions reviewer",
+  event_access: "Events operator",
+  press_contact: "Press operator",
+  partner_licensing: "Partnerships operator",
+  strategic_access: "Strategic access operator",
+  access_review: "Portal operator"
+};
+
 function deriveRouting(payload = {}) {
   return routingMap[payload.inquiry_key]
     || routingMap[payload.access_path]
@@ -541,6 +551,20 @@ function percent(numerator, denominator) {
   return Math.round((numerator / denominator) * 100);
 }
 
+function timestampIso(value) {
+  if (!value) return null;
+  if (typeof value === "string" && !Number.isNaN(Date.parse(value))) return new Date(value).toISOString();
+  if (value.toDate) return value.toDate().toISOString();
+  if (value instanceof Date) return value.toISOString();
+  return null;
+}
+
+function ageDays(value) {
+  const iso = timestampIso(value);
+  if (!iso) return 0;
+  return Math.max(0, Math.floor((Date.now() - Date.parse(iso)) / 86400000));
+}
+
 function buildPilotFunnel(submissionItems, eventItems) {
   const views = countWhere(eventItems, (item) => item.event === "view_content");
   const formOpens = countWhere(eventItems, (item) => item.event === "form_open");
@@ -662,6 +686,92 @@ function buildWorkflowTargetRecommendations(submissionItems) {
   };
 }
 
+function buildIntakeQueueWorkbench(submissionItems) {
+  const queues = new Map();
+
+  for (const item of submissionItems) {
+    const routing = deriveRouting(item);
+    const queue = item.routing_queue || routing.routing_queue;
+    if (!queue) continue;
+
+    const current = queues.get(queue) || {
+      queue,
+      label: item.routing_label || routing.routing_label || queue,
+      owner: queueOwners[queue] || "Portal operator",
+      priority: item.routing_priority || routing.routing_priority || "standard",
+      sla: item.routing_sla || routing.routing_sla || "3 business days",
+      nextAction: item.routing_next_action || routing.routing_next_action || "Review screened request",
+      count: 0,
+      pendingInbox: 0,
+      pendingHandoff: 0,
+      sentInbox: 0,
+      acceptedHandoff: 0,
+      highPriority: 0,
+      oldestAgeDays: 0,
+      latestAt: null
+    };
+
+    current.count += 1;
+    if ((item.routing_priority || routing.routing_priority) === "high") current.highPriority += 1;
+    if (pendingDeliveryStatuses.includes(item.deliveryStatus)) current.pendingInbox += 1;
+    if (pendingIntegrationStatuses.includes(item.integrationStatus)) current.pendingHandoff += 1;
+    if (item.deliveryStatus === "sent") current.sentInbox += 1;
+    if (item.integrationStatus === "sent") current.acceptedHandoff += 1;
+
+    const createdAt = timestampIso(item.createdAt);
+    if (createdAt && (!current.latestAt || createdAt > current.latestAt)) current.latestAt = createdAt;
+    current.oldestAgeDays = Math.max(current.oldestAgeDays, ageDays(item.createdAt));
+
+    queues.set(queue, current);
+  }
+
+  const rows = [...queues.values()]
+    .map((item) => {
+      const reviewSignal = item.pendingHandoff > 0
+        ? "handoff_attention"
+        : item.pendingInbox > 0
+          ? "inbox_attention"
+          : item.highPriority > 0
+            ? "priority_review"
+            : "standard_review";
+      return {
+        ...item,
+        reviewSignal,
+        reviewLabel: reviewSignal === "handoff_attention"
+          ? "Handoff attention"
+          : reviewSignal === "inbox_attention"
+            ? "Inbox attention"
+            : reviewSignal === "priority_review"
+              ? "Priority review"
+              : "Standard review"
+      };
+    })
+    .sort((a, b) => {
+      const score = (item) => (item.pendingHandoff * 100) + (item.pendingInbox * 60) + (item.highPriority * 30) + item.count;
+      return score(b) - score(a) || a.label.localeCompare(b.label);
+    })
+    .slice(0, 8);
+
+  const openItems = rows.reduce((total, item) => total + item.count, 0);
+  const pendingInbox = rows.reduce((total, item) => total + item.pendingInbox, 0);
+  const pendingHandoff = rows.reduce((total, item) => total + item.pendingHandoff, 0);
+  const highPriority = rows.reduce((total, item) => total + item.highPriority, 0);
+  const topQueue = rows[0] || null;
+
+  return {
+    sampleSize: submissionItems.length,
+    openItems,
+    highPriority,
+    pendingInbox,
+    pendingHandoff,
+    topQueue: topQueue?.label || "",
+    nextAction: topQueue
+      ? `${topQueue.nextAction} for ${topQueue.label}.`
+      : "Keep collecting screened access requests.",
+    queues: rows
+  };
+}
+
 function summarizeActivity(submissionDocs, eventDocs) {
   const submissionItems = submissionDocs.map((snapshot) => snapshot.data() || {});
   const eventItems = eventDocs.map((snapshot) => snapshot.data() || {});
@@ -694,6 +804,7 @@ function summarizeActivity(submissionDocs, eventDocs) {
       playbackByReportingKey: topCounts(playbackItems, (item) => item.detail?.reporting_key || item.detail?.title),
       playbackMilestones: topCounts(playbackItems, (item) => item.detail?.milestone)
     },
+    intakeQueue: buildIntakeQueueWorkbench(submissionItems),
     workflowTargets: buildWorkflowTargetRecommendations(submissionItems)
   };
 }

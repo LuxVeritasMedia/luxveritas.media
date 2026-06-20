@@ -112,7 +112,7 @@ const launchChecklistPath = "/data/lux-launch-readiness.json";
 const launchCloseoutPath = "/data/lux-launch-closeout-public.json";
 const legalReviewPath = "/data/lux-legal-review.json";
 const submitTimeoutMs = 8000;
-const publicBuildVersion = "20260620-workflow-targets";
+const publicBuildVersion = "20260620-queue-workbench";
 const allowedInterestPaths = new Set(["music", "film", "events", "drops", "community", "codex", "create"]);
 let activeFormType = "request";
 let mediaManifestPromise = null;
@@ -1221,6 +1221,14 @@ function privateReportRows(report) {
       label: item.receiptId || item.submissionId || "",
       detail: item.integrationTarget || item.routing_label || item.routing_queue || item.eventType || ""
     })),
+    ...(report.summary?.intakeQueue?.queues || []).map((item) => ({
+      source: "protected",
+      type: "intake_queue",
+      timestamp: report.generatedAt || "",
+      page: "/portal/reporting.html",
+      label: item.label || item.queue || "",
+      detail: `${item.count || 0} open · ${item.reviewLabel || item.reviewSignal || "Review"} · ${item.nextAction || ""}`
+    })),
     ...(report.summary?.workflowTargets?.queueRecommendations || []).map((item) => ({
       source: "protected",
       type: "workflow_target",
@@ -1287,6 +1295,7 @@ function renderPrivateReport(report) {
   if (authViewer) authViewer.textContent = report.viewer || "Approved operator";
 
   renderPrivateDelivery(panel, report.delivery);
+  renderPrivateQueue(panel, report.summary?.intakeQueue);
   renderPrivateWorkflow(panel, report.summary?.workflowTargets);
   renderLaunchReadinessReport(report);
   renderPrivateFunnel(panel, report.summary?.funnel || report.funnel);
@@ -1323,6 +1332,32 @@ function renderPrivateReport(report) {
     const detail = item.integrationTarget || item.routing_label || item.routing_queue || item.detail?.destination || item.detail?.formType || item.detail?.surface || item.formType || item.inquiry_type || item.page || item.sourcePage || item.role_path || "Lux Veritas";
     const time = item.updatedAt || item.createdAt ? new Date(item.updatedAt || item.createdAt).toLocaleString() : "Recent";
     return `<li><strong>${escapeHtml(label)}</strong><span>${escapeHtml(detail)}</span><small>${escapeHtml(time)}</small></li>`;
+  }).join("");
+}
+
+function renderPrivateQueue(panel, queue = {}) {
+  const summary = panel.querySelector('[data-private-queue="summary"]');
+  const detail = panel.querySelector('[data-private-queue="detail"]');
+  const list = panel.querySelector('[data-private-queue="list"]');
+  if (summary) {
+    summary.textContent = `${queue.openItems ?? 0} open · ${queue.highPriority ?? 0} high priority`;
+  }
+  if (detail) {
+    const pendingInbox = queue.pendingInbox ?? 0;
+    const pendingHandoff = queue.pendingHandoff ?? 0;
+    const nextAction = queue.nextAction || "Load private activity to view queue actions.";
+    detail.textContent = `${nextAction} Pending inbox: ${pendingInbox}. Pending handoff: ${pendingHandoff}.`;
+  }
+  if (!list) return;
+  const items = Array.isArray(queue.queues) ? queue.queues : [];
+  if (!items.length) {
+    list.innerHTML = "<li>Load private activity to view intake queues.</li>";
+    return;
+  }
+  list.innerHTML = items.map((item) => {
+    const delivery = `${item.sentInbox || 0} sent · ${item.pendingInbox || 0} pending inbox · ${item.pendingHandoff || 0} pending handoff`;
+    const age = item.oldestAgeDays ? `Oldest: ${item.oldestAgeDays} day${item.oldestAgeDays === 1 ? "" : "s"}` : "Recent";
+    return `<li><strong>${escapeHtml(item.label || item.queue)}</strong><span>${escapeHtml(item.reviewLabel || item.priority || "Review")} · ${escapeHtml(item.count || 0)} open · ${escapeHtml(item.sla || "")}</span><small>${escapeHtml(item.owner || "Operator")} · ${escapeHtml(item.nextAction || "")} · ${escapeHtml(delivery)} · ${escapeHtml(age)}</small></li>`;
   }).join("");
 }
 
