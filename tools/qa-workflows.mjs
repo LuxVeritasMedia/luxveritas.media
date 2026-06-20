@@ -162,6 +162,7 @@ for (const marker of [
   "node tools/qa-private-workflow-matrix.mjs",
   "node tools/qa-external-workflow-targets.mjs",
   "LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs",
+  "reconciles the exact write-run IDs",
   "LUX_INBOX_ACTIVATION_WRITE_TEST=1",
   "ready to receive QA mail"
 ]) {

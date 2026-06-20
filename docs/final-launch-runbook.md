@@ -11,7 +11,7 @@ Use this only when moving from pilot-ready to public-release ready. Keep secrets
 - Current asset version is `20260620-fan-reactions`.
 - Current phase status is Phase 5 portal pilot prep, with Phase 4 legal closeout still open.
 - Media, fan reactions, inbox delivery, private handoff, operator reporting, private intake queue workbench, and private workflow-target recommendation reporting are ready.
-- The pilot write gate last passed on 2026-06-20 with live QA submissions, inbox delivery required, live event writes, media checks, browser-flow coverage, and protected operator-report verification. The live event matrix includes fan-reaction reporting for the media retention loop.
+- The pilot write gate last passed on 2026-06-20 with live QA submissions, inbox delivery required, live event writes, media checks, browser-flow coverage, and protected operator-report verification. The live event matrix includes fan-reaction reporting for the media retention loop, and the gate now reconciles exact write-run IDs back through the protected report.
 - Pilot scenario coverage is tracked in `data/lux-pilot-test-matrix.json`.
 - Remaining blockers are Privacy approval and Terms approval.
 
@@ -31,7 +31,7 @@ node tools/qa-deploy-status.mjs
 
 If the operator-environment check reports a different Firebase account, log it out and run a fresh login with `info@luxveritas.media` before checking provider secrets or deploying Functions.
 
-For pilot/TestFlight-quality proof before legal approval is closed, run the pilot write gate. This sends live QA submissions and event writes, requires inbox delivery, checks the live media sources, verifies protected operator reporting, and allows only the known Privacy and Terms review blockers:
+For pilot/TestFlight-quality proof before legal approval is closed, run the pilot write gate. This sends live QA submissions and event writes, requires inbox delivery, checks the live media sources, verifies protected operator reporting, reconciles the exact write-run IDs back through the protected report, and allows only the known Privacy and Terms review blockers:
 
 ```bash
 LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs

@@ -101,6 +101,14 @@ function stamp() {
   return new Date().toISOString();
 }
 
+function compactStamp() {
+  return new Date().toISOString().replace(/[-:.TZ]/g, "").slice(0, 14);
+}
+
+const qaRunId = (process.env.LUX_QA_RUN_ID || compactStamp())
+  .replace(/[^A-Za-z0-9_-]+/g, "")
+  .slice(0, 48) || compactStamp();
+
 async function curlJson(path, payload) {
   const marker = "__HTTP_STATUS__:";
   const { stdout } = await execFileAsync("curl", [
@@ -174,7 +182,7 @@ async function writeCheck(item, index) {
     timestamp: stamp(),
     detail: {
       ...item.detail,
-      qa_id: `LV-EVENT-MATRIX-${String(index + 1).padStart(2, "0")}`
+      qa_id: `LV-EVENT-MATRIX-${qaRunId}-${String(index + 1).padStart(2, "0")}`
     }
   };
   const { response, json } = await postJson("/api/event", payload);

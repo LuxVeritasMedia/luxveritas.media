@@ -10,6 +10,7 @@ const todo = await readFile("TODO.md", "utf8");
 const buildManifest = JSON.parse(await readFile("data/lux-build-manifest.json", "utf8"));
 const finalGate = await readFile("tools/qa-final-release-gate.mjs", "utf8");
 const pilotWriteGate = await readFile("tools/qa-pilot-write-gate.mjs", "utf8");
+const writeReconciliation = await readFile("tools/qa-live-write-reconciliation.mjs", "utf8");
 
 function issue(message) {
   issues.push(message);
@@ -139,6 +140,7 @@ for (const marker of [
   "LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs",
   "LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs",
   "LUX_PILOT_WRITE_DRY_RUN=1 node tools/qa-pilot-write-gate.mjs",
+  "reconciles the exact write-run IDs",
   "Do Not Ship If",
   "Replay pending inbox notifications"
 ]) {
@@ -173,8 +175,10 @@ for (const marker of [
   "LUX_PILOT_WRITE_DRY_RUN",
   "Live Form Write Matrix",
   "Live Event Write Matrix",
+  "Post-Write Report Reconciliation",
   "Live Browser Flows",
   "Live Operator Report",
+  "tools/qa-live-write-reconciliation.mjs",
   "Release Readiness",
   "allowLegalOnly",
   "Privacy page legal review complete",
@@ -182,6 +186,22 @@ for (const marker of [
 ]) {
   if (!pilotWriteGate.includes(marker)) {
     issue(`tools/qa-pilot-write-gate.mjs missing marker: ${marker}`);
+  }
+}
+
+for (const marker of [
+  "Live write reconciliation",
+  "LUX_QA_RUN_ID",
+  "LV-MATRIX-",
+  "LV-EVENT-MATRIX-",
+  "fan_reaction",
+  "spmvp_release_audio",
+  "latest.submissions",
+  "latest.events",
+  "latest.handoffs"
+]) {
+  if (!writeReconciliation.includes(marker)) {
+    issue(`tools/qa-live-write-reconciliation.mjs missing marker: ${marker}`);
   }
 }
 
@@ -201,6 +221,7 @@ for (const marker of [
   "Add legal review packet for Privacy and Terms approval",
   "Add final strict release-gate command for launch-day acceptance",
   "Add dedicated pilot write gate for TestFlight-quality live submissions",
+  "Add post-write protected report reconciliation",
   "Require final release-gate write mode for launch-day approval",
   "Require browser and live coverage in final release-gate approval mode",
   "Add final launch runbook for DNS, inbox, legal, write tests, and gate approval",

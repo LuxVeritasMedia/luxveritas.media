@@ -41,6 +41,10 @@ function stamp() {
   return new Date().toISOString().replace(/[-:.TZ]/g, "").slice(0, 14);
 }
 
+const qaRunId = (process.env.LUX_QA_RUN_ID || stamp())
+  .replace(/[^A-Za-z0-9_-]+/g, "")
+  .slice(0, 48) || stamp();
+
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -131,7 +135,7 @@ async function validationCheck() {
 }
 
 async function writeCheck(item, index) {
-  const id = `LV-MATRIX-${stamp()}-${String(index + 1).padStart(2, "0")}`;
+  const id = `LV-MATRIX-${qaRunId}-${String(index + 1).padStart(2, "0")}`;
   const payload = {
     client_submission_id: id,
     name: `Codex Matrix QA ${index + 1}`,

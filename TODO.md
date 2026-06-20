@@ -181,6 +181,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Add Firebase Hosting security/privacy header QA and live header verification.
 - [x] Add final strict release-gate command for launch-day acceptance.
 - [x] Add dedicated pilot write gate for TestFlight-quality live submissions, event writes, browser flows, media checks, and protected operator reporting while legal approval remains open.
+- [x] Add post-write protected report reconciliation so the pilot write gate proves live submission/event writes return through operator reporting.
 - [x] Add operator/MVP status/preflight coverage to the final release gate.
 - [x] Add no-secret pilot test matrix for TestFlight-quality scenario coverage.
 - [x] Require final release-gate write mode for launch-day approval.
@@ -223,3 +224,4 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Verify approved live audio, video, and radio source URLs against the production media manifest.
 - [x] Add live approved-operator report QA for private counts, summaries, readiness, playback reporting, handoff reporting, and secret-shaped value protection.
 - [x] Run the pilot write gate with `LUX_PILOT_WRITE_TESTS=1` before public release rehearsal so the latest live capture/reporting loop has fresh write evidence.
+- [x] Re-run the pilot write gate after post-write reconciliation lands so the latest live capture/reporting loop has exact report-return evidence.

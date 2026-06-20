@@ -6,6 +6,9 @@ const node = process.execPath;
 const baseUrl = (process.env.LUX_LIVE_URL || "https://luxveritas.media").replace(/\/$/, "");
 const writeTests = process.env.LUX_PILOT_WRITE_TESTS === "1";
 const dryRun = process.env.LUX_PILOT_WRITE_DRY_RUN === "1";
+const qaRunId = (process.env.LUX_QA_RUN_ID || new Date().toISOString().replace(/[-:.TZ]/g, "").slice(0, 14))
+  .replace(/[^A-Za-z0-9_-]+/g, "")
+  .slice(0, 48);
 
 const failures = [];
 const passed = [];
@@ -98,7 +101,8 @@ const checks = [
     env: {
       LUX_FORM_MATRIX_WRITE: writeTests ? "1" : "0",
       LUX_EXPECT_EMAIL_SENT: writeTests ? "1" : "0",
-      LUX_STRICT_LIVE_QA: "1"
+      LUX_STRICT_LIVE_QA: "1",
+      LUX_QA_RUN_ID: qaRunId
     }
   } : null,
   (writeTests || dryRun) ? {
@@ -106,8 +110,19 @@ const checks = [
     script: "tools/qa-live-event-matrix.mjs",
     env: {
       LUX_EVENT_MATRIX_WRITE: writeTests ? "1" : "0",
-      LUX_STRICT_LIVE_QA: "1"
+      LUX_STRICT_LIVE_QA: "1",
+      LUX_QA_RUN_ID: qaRunId
     }
+  } : null,
+  writeTests ? {
+    label: "Post-Write Report Reconciliation",
+    script: "tools/qa-live-write-reconciliation.mjs",
+    env: {
+      LUX_QA_RUN_ID: qaRunId,
+      LUX_QA_EXPECT_FORM_COUNT: "10",
+      LUX_QA_EXPECT_EVENT_COUNT: "9"
+    },
+    needsReportToken: true
   } : null
 ].filter(Boolean);
 
@@ -184,6 +199,7 @@ async function runCheck(check) {
 console.log("Lux Veritas pilot write gate");
 console.log(`Live URL: ${baseUrl}`);
 console.log(`Write tests: ${writeTests ? "enabled" : dryRun ? "dry-run only" : "disabled"}`);
+console.log(`QA run ID: ${qaRunId}`);
 console.log(`Operator token source: ${reportToken ? (process.env.LUX_REPORT_TOKEN ? "environment" : "macOS Keychain") : "missing"}`);
 
 for (const check of checks) {
