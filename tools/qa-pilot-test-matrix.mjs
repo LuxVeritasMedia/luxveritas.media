@@ -6,6 +6,7 @@ const root = "dist";
 const requiredCoverage = new Set([
   "public_capture",
   "media_player",
+  "fan_reaction",
   "portal_capture",
   "operator_reporting",
   "launch_gates",
@@ -30,6 +31,7 @@ const requiredScenarioIds = new Set([
   "creator_submission",
   "music_player",
   "spmvp_release_hub",
+  "fan_reactions",
   "event_access",
   "portal_signin_capture",
   "operator_reporting",

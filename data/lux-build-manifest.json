@@ -1,7 +1,7 @@
 {
   "schemaVersion": "luxveritas.build_manifest.v1",
-  "version": "20260620-queue-workbench",
-  "assetVersion": "20260620-queue-workbench",
+  "version": "20260620-fan-reactions",
+  "assetVersion": "20260620-fan-reactions",
   "mediaManifestVersion": "2026-06-10-mvp-media-preview",
   "brandHouseVersion": "2026-06-19-brand-house",
   "fanFlywheelVersion": "2026-06-20-fan-flywheel",
@@ -11,6 +11,6 @@
   "publicTermsVersion": "2026-06-09-public-capture",
   "routeCount": 37,
   "publicRouteCount": 20,
-  "appScript": "app.js?v=20260620-queue-workbench",
-  "stylesheet": "styles.css?v=20260620-queue-workbench"
+  "appScript": "app.js?v=20260620-fan-reactions",
+  "stylesheet": "styles.css?v=20260620-fan-reactions"
 }

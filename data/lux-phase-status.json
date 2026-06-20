@@ -7,7 +7,7 @@
     "number": 5,
     "label": "Portal Pilot Prep",
     "status": "active_pilot",
-    "summary": "Phase 5 pilot prep is active: the public site, capture layer, media preview player, private access shell, operator reporting, and private intake queue workbench are live. Full public release is still blocked by Privacy and Terms approval."
+    "summary": "Phase 5 pilot prep is active: the public site, capture layer, media preview player, fan reactions, private access shell, operator reporting, and private intake queue workbench are live. Full public release is still blocked by Privacy and Terms approval."
   },
   "publicLaunchStatus": "blocked_by_external_legal_approval",
   "pilotStatus": "pilot_ready_when_live_checks_pass",
@@ -58,7 +58,7 @@
       "phaseNumber": 7,
       "label": "Public Media MVP Workstream",
       "status": "preview_sources_live",
-      "summary": "Listen, Watch, and Radio preview sources are live, with playback lifecycle and retention reporting available to approved operators."
+      "summary": "Listen, Watch, and Radio preview sources are live, with playback lifecycle, fan reaction, and retention reporting available to approved operators."
     }
   ],
   "deferredBoundaries": [

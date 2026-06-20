@@ -35,7 +35,9 @@ const eventSummaryFields = [
   "playbackByAction",
   "playbackBySourceType",
   "playbackByReportingKey",
-  "playbackMilestones"
+  "playbackMilestones",
+  "fanReactions",
+  "fanReactionsBySource"
 ];
 const handoffSummaryFields = ["byTarget", "byEventType", "bySourcePage", "byRoutingQueue"];
 

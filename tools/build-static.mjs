@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260620-queue-workbench";
+const assetVersion = "20260620-fan-reactions";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 const brandHouse = JSON.parse(await readFile("data/lux-brand-house.json", "utf8"));
@@ -435,6 +435,13 @@ function mediaPlayerShell(context = "music") {
           <button class="button button-quiet" type="button" data-media-action="watch">Watch</button>
           <button class="button button-quiet" type="button" data-media-action="radio">Radio</button>
         </div>
+        <div class="media-reactions" aria-label="Fan reactions">
+          <span>After this</span>
+          <button type="button" data-fan-reaction="replay">Replay</button>
+          <button type="button" data-fan-reaction="invite">Invite me</button>
+          <button type="button" data-fan-reaction="collect">Collect</button>
+          <button type="button" data-fan-reaction="create">Create</button>
+        </div>
       </div>
       <div class="media-queue" role="list" aria-label="Media queue">
         ${items.map((item, index) => `<button class="media-item${index === 0 ? " active" : ""}" type="button" data-media-item data-media-id="${item.id}" data-kind="${item.kind}" data-title="${item.title}" data-status="${item.status}" data-action="${item.primaryAction}" data-access="${item.access}" data-source-status="${item.sourceStatus || "queued"}" data-source-required="${String(Boolean(item.sourceRequired))}" data-source-type="${item.sourceType}" data-source-url="${item.sourceUrl || ""}" data-poster-url="${item.posterUrl || ""}" data-reporting-key="${item.reportingKey || item.id}" data-fallback-form-type="${item.fallbackFormType || "fan"}" role="listitem">
@@ -795,6 +802,10 @@ function portalReport() {
         <div>
           <p class="kicker">Playback Milestones</p>
           <ul class="report-list" data-private-summary="playback-milestones"><li>Load private activity to view retention milestones.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Fan Reactions</p>
+          <ul class="report-list" data-private-summary="reactions"><li>Load private activity to view fan reactions.</li></ul>
         </div>
       </div>
       <div class="report-detail">

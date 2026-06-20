@@ -7,6 +7,7 @@
   "requiredCoverage": [
     "public_capture",
     "media_player",
+    "fan_reaction",
     "portal_capture",
     "operator_reporting",
     "launch_gates",
@@ -91,6 +92,19 @@
         "Reporting keys remain stable for release, visual, and radio source slots."
       ],
       "qaCommands": ["node tools/qa-media-contract.mjs", "node tools/qa-browser-flows.mjs"]
+    },
+    {
+      "id": "fan_reactions",
+      "label": "Fan reactions",
+      "coverage": ["media_player", "fan_reaction"],
+      "route": "/music.html",
+      "selector": "button[data-fan-reaction=\"collect\"]",
+      "evidence": [
+        "Media player reaction buttons record what fans want after listening or watching.",
+        "Local signal pass includes reaction history on this device.",
+        "Protected operator reporting summarizes fan reaction demand."
+      ],
+      "qaCommands": ["node tools/qa-browser-flows.mjs", "node tools/qa-live-operator-report.mjs"]
     },
     {
       "id": "event_access",

@@ -11,6 +11,7 @@ const actionAttributes = [
   "data-consent",
   "data-track",
   "data-media-action",
+  "data-fan-reaction",
   "data-media-item",
   "data-fan-signal-export",
   "data-portal-signin",
@@ -217,7 +218,7 @@ for (const file of files) {
         issues.push(`${rel}: missing report export action "${action}"`);
       }
     }
-    for (const summary of ["forms", "roles", "interests", "routing", "delivery", "integrations", "events", "ctas", "destinations", "playback", "playback-sources", "playback-milestones"]) {
+    for (const summary of ["forms", "roles", "interests", "routing", "delivery", "integrations", "events", "ctas", "destinations", "playback", "playback-sources", "playback-milestones", "reactions"]) {
       if (!html.includes(`data-private-summary="${summary}"`)) {
         issues.push(`${rel}: missing private summary "${summary}"`);
       }

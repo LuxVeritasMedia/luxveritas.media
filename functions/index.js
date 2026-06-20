@@ -569,6 +569,7 @@ function buildPilotFunnel(submissionItems, eventItems) {
   const views = countWhere(eventItems, (item) => item.event === "view_content");
   const formOpens = countWhere(eventItems, (item) => item.event === "form_open");
   const mediaActions = countWhere(eventItems, (item) => item.event === "media_action");
+  const fanReactions = countWhere(eventItems, (item) => item.event === "fan_reaction");
   const playbackEvents = countWhere(eventItems, (item) => item.event === "media_playback");
   const playbackEnds = countWhere(eventItems, (item) => item.event === "media_playback" && item.detail?.action === "ended");
   const acceptedLeads = countWhere(eventItems, (item) => item.event === "lead_accepted");
@@ -603,7 +604,7 @@ function buildPilotFunnel(submissionItems, eventItems) {
     {
       label: "Media actions",
       value: mediaActions,
-      detail: "Listen, watch, radio, and media queue intent"
+      detail: `${fanReactions} fan reaction signal${fanReactions === 1 ? "" : "s"}`
     },
     {
       label: "Playback events",
@@ -776,6 +777,7 @@ function summarizeActivity(submissionDocs, eventDocs) {
   const submissionItems = submissionDocs.map((snapshot) => snapshot.data() || {});
   const eventItems = eventDocs.map((snapshot) => snapshot.data() || {});
   const playbackItems = eventItems.filter((item) => item.event === "media_playback");
+  const reactionItems = eventItems.filter((item) => item.event === "fan_reaction");
   return {
     funnel: buildPilotFunnel(submissionItems, eventItems),
     submissions: {
@@ -802,7 +804,9 @@ function summarizeActivity(submissionDocs, eventDocs) {
       playbackByAction: topCounts(playbackItems, (item) => item.detail?.action),
       playbackBySourceType: topCounts(playbackItems, (item) => item.detail?.source_type),
       playbackByReportingKey: topCounts(playbackItems, (item) => item.detail?.reporting_key || item.detail?.title),
-      playbackMilestones: topCounts(playbackItems, (item) => item.detail?.milestone)
+      playbackMilestones: topCounts(playbackItems, (item) => item.detail?.milestone),
+      fanReactions: topCounts(reactionItems, (item) => item.detail?.reaction_label || item.detail?.reaction),
+      fanReactionsBySource: topCounts(reactionItems, (item) => item.detail?.reporting_key || item.detail?.title)
     },
     intakeQueue: buildIntakeQueueWorkbench(submissionItems),
     workflowTargets: buildWorkflowTargetRecommendations(submissionItems)

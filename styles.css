@@ -566,6 +566,37 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
   display: none;
 }
 .media-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.4rem; }
+.media-reactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+  align-items: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(243,238,228,.1);
+}
+.media-reactions span {
+  color: rgba(243,238,228,.52);
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  font-size: .68rem;
+  margin-right: .35rem;
+}
+.media-reactions button {
+  min-height: 36px;
+  border: 1px solid rgba(200,168,106,.28);
+  background: rgba(200,168,106,.06);
+  color: rgba(243,238,228,.82);
+  padding: .55rem .75rem;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  font-size: .66rem;
+  cursor: pointer;
+}
+.media-reactions button:hover {
+  border-color: var(--gold);
+  background: rgba(200,168,106,.12);
+}
 .media-queue {
   display: grid;
   align-content: stretch;

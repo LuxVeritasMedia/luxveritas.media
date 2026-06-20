@@ -61,7 +61,7 @@ if (evidence) {
     issue("evidence pilot test matrix should include required pilot scenarios");
   }
   const coverage = new Set(evidence.pilotTestMatrix?.requiredCoverage || []);
-  for (const item of ["public_capture", "media_player", "operator_reporting", "launch_gates"]) {
+  for (const item of ["public_capture", "media_player", "fan_reaction", "operator_reporting", "launch_gates"]) {
     if (!coverage.has(item)) issue(`evidence pilot test matrix missing coverage ${item}`);
   }
   const blocked = Array.isArray(evidence.launchGates?.blocked) ? evidence.launchGates.blocked : [];

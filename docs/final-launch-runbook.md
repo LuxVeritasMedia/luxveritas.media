@@ -8,9 +8,9 @@ Use this only when moving from pilot-ready to public-release ready. Keep secrets
 
 - Apex site is live at `https://luxveritas.media`.
 - `www.luxveritas.media` returns HTTP 200.
-- Current asset version is `20260620-queue-workbench`.
+- Current asset version is `20260620-fan-reactions`.
 - Current phase status is Phase 5 portal pilot prep, with Phase 4 legal closeout still open.
-- Media, inbox delivery, private handoff, operator reporting, private intake queue workbench, and private workflow-target recommendation reporting are ready.
+- Media, fan reactions, inbox delivery, private handoff, operator reporting, private intake queue workbench, and private workflow-target recommendation reporting are ready.
 - Pilot scenario coverage is tracked in `data/lux-pilot-test-matrix.json`.
 - Remaining blockers are Privacy approval and Terms approval.
 

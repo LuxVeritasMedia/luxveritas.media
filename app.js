@@ -112,7 +112,7 @@ const launchChecklistPath = "/data/lux-launch-readiness.json";
 const launchCloseoutPath = "/data/lux-launch-closeout-public.json";
 const legalReviewPath = "/data/lux-legal-review.json";
 const submitTimeoutMs = 8000;
-const publicBuildVersion = "20260620-queue-workbench";
+const publicBuildVersion = "20260620-fan-reactions";
 const allowedInterestPaths = new Set(["music", "film", "events", "drops", "community", "codex", "create"]);
 let activeFormType = "request";
 let mediaManifestPromise = null;
@@ -541,6 +541,37 @@ function writeMediaPlaybackEvent(phase, player, element, detail = {}) {
   trackEvent("media_playback", payload);
   updateMediaReport(player);
   renderFanSignal();
+  return events.length;
+}
+
+function writeFanReaction(button, player) {
+  const item = activeMediaItemData(player);
+  const reaction = button?.dataset.fanReaction || "return";
+  const reactionLabel = elementLabel(button) || reaction;
+  const payload = {
+    event: "fan_reaction",
+    action: reaction,
+    reaction,
+    reaction_label: reactionLabel,
+    cta_id: `${slugify(player?.dataset.playerContext || document.body.dataset.page || "site", "media")}__fan_reaction__${slugify(reaction, "reaction")}`,
+    context: player?.dataset.playerContext || document.body.dataset.page || "site",
+    media_id: item.mediaId || null,
+    title: item.title || player?.querySelector("[data-media-title]")?.textContent?.trim() || "SPMVP",
+    kind: item.kind || player?.querySelector("[data-media-mode]")?.textContent?.trim()?.toLowerCase() || "signal",
+    source_type: item.sourceType || null,
+    source_status: item.sourceStatus || "queued",
+    reporting_key: item.reportingKey || null,
+    source_page: window.location.pathname,
+    timestamp: new Date().toISOString()
+  };
+  const events = mediaEvents();
+  events.push(payload);
+  writeJson("luxveritas_media_events", events.slice(-150));
+  trackEvent("fan_reaction", payload);
+  updateMediaReport(player);
+  renderFanSignal();
+  const report = player?.querySelector("[data-media-report]");
+  if (report) report.textContent = `${reactionLabel} saved to your local signal.`;
   return events.length;
 }
 
@@ -1039,6 +1070,7 @@ function fanSignalActivityLabel(item) {
   if (item.status && item.email) return "Portal email checked";
   if (item.event === "form_open") return `Opened ${item.detail?.formType || "access"} form`;
   if (item.event === "media_action") return `${item.detail?.title || "Media"} ${item.detail?.action || "action"}`;
+  if (item.event === "fan_reaction") return `${item.detail?.title || "Media"} ${item.detail?.reaction_label || item.detail?.reaction || "reaction"}`;
   if (item.event === "link_click") return item.detail?.destination || "Page opened";
   return item.event || "Signal recorded";
 }
@@ -1210,7 +1242,7 @@ function privateReportRows(report) {
       type: item.event || "event",
       timestamp: item.createdAt || "",
       page: item.page || "",
-      label: item.detail?.label || item.detail?.surface || item.detail?.action || "",
+      label: item.detail?.label || item.detail?.reaction_label || item.detail?.surface || item.detail?.action || "",
       detail: item.detail?.destination || item.detail?.formType || item.detail?.title || ""
     })),
     ...handoffs.map((item) => ({
@@ -1312,6 +1344,7 @@ function renderPrivateReport(report) {
   renderPrivateSummary(panel, "playback", report.summary?.events?.playbackByAction);
   renderPrivateSummary(panel, "playback-sources", report.summary?.events?.playbackBySourceType || report.summary?.events?.playbackByReportingKey);
   renderPrivateSummary(panel, "playback-milestones", report.summary?.events?.playbackMilestones);
+  renderPrivateSummary(panel, "reactions", report.summary?.events?.fanReactions || report.summary?.events?.fanReactionsBySource);
 
   const list = panel.querySelector("[data-private-report-list]");
   if (!list) return;
@@ -2036,6 +2069,13 @@ document.addEventListener("click", (event) => {
   if (!button) return;
   event.preventDefault();
   handleMediaAction(button.dataset.mediaAction, button.closest("[data-media-player]"));
+});
+
+document.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-fan-reaction]");
+  if (!button) return;
+  event.preventDefault();
+  writeFanReaction(button, button.closest("[data-media-player]"));
 });
 
 document.addEventListener("click", (event) => {

@@ -24,7 +24,7 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070909'/%3E%3Cpath d='M18 48V16h6v27h18v5H18Zm21-32h7L34 48h-6l11-32Z' fill='%23c8a86a'/%3E%3C/svg%3E" />
     <link rel="manifest" href="../site.webmanifest" />
     <link rel="apple-touch-icon" href="../assets/luxveritas-icon.svg" />
-    <link rel="stylesheet" href="../styles.css?v=20260620-queue-workbench" />
+    <link rel="stylesheet" href="../styles.css?v=20260620-fan-reactions" />
   </head>
   <body data-page="/music.html">
     <a class="skip-link" href="#main">Skip to content</a>
@@ -74,6 +74,13 @@ Every release is intentional, protected, and built to last.</p>
           <button class="button button-primary" type="button" data-media-action="play">Play Signal</button>
           <button class="button button-quiet" type="button" data-media-action="watch">Watch</button>
           <button class="button button-quiet" type="button" data-media-action="radio">Radio</button>
+        </div>
+        <div class="media-reactions" aria-label="Fan reactions">
+          <span>After this</span>
+          <button type="button" data-fan-reaction="replay">Replay</button>
+          <button type="button" data-fan-reaction="invite">Invite me</button>
+          <button type="button" data-fan-reaction="collect">Collect</button>
+          <button type="button" data-fan-reaction="create">Create</button>
         </div>
       </div>
       <div class="media-queue" role="list" aria-label="Media queue">
@@ -180,6 +187,6 @@ Every release is intentional, protected, and built to last.</p>
     <button class="button button-primary" type="submit" data-submit-form data-default-label="Send to Lux Veritas">Send to Lux Veritas</button>
   </form>
 </dialog>
-    <script src="../app.js?v=20260620-queue-workbench"></script>
+    <script src="../app.js?v=20260620-fan-reactions"></script>
   </body>
 </html>

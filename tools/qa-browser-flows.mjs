@@ -72,6 +72,19 @@ const mockReport = {
           milestone: "ended",
           progress_percent: 100
         }
+      },
+      {
+        id: "evt_qa_3",
+        createdAt: "2026-06-09T00:02:00.000Z",
+        event: "fan_reaction",
+        page: "/music.html",
+        detail: {
+          cta_id: "music__fan_reaction__collect",
+          reaction: "collect",
+          reaction_label: "Collect",
+          title: "SPMVP",
+          reporting_key: "spmvp_release_audio"
+        }
       }
     ],
     handoffs: [
@@ -185,7 +198,9 @@ const mockReport = {
       playbackByAction: [{ label: "play", count: 18 }, { label: "ended", count: 7 }],
       playbackBySourceType: [{ label: "audio", count: 14 }, { label: "video", count: 9 }, { label: "stream", count: 5 }],
       playbackByReportingKey: [{ label: "spmvp_release_audio", count: 14 }],
-      playbackMilestones: [{ label: "25%", count: 8 }, { label: "ended", count: 7 }]
+      playbackMilestones: [{ label: "25%", count: 8 }, { label: "ended", count: 7 }],
+      fanReactions: [{ label: "Collect", count: 12 }],
+      fanReactionsBySource: [{ label: "spmvp_release_audio", count: 12 }]
     }
   }
 };
@@ -623,6 +638,44 @@ async function mediaPlaybackReportingFlow(page, baseUrl) {
   }
 }
 
+async function fanReactionFlow(page, baseUrl) {
+  const beforeEventCount = events.length;
+  await page.goto(`${baseUrl}/music.html`, { waitUntil: "domcontentloaded" });
+  await page.evaluate(() => {
+    localStorage.removeItem("luxveritas_media_events");
+    localStorage.setItem("luxveritas_consent", "accepted");
+  });
+  await page.waitForSelector('[data-fan-reaction="collect"]', { timeout: 5000 });
+  await page.click('[data-fan-reaction="collect"]');
+  await waitForCondition(() => (
+    events.slice(beforeEventCount).some((item) => item.event === "fan_reaction" && item.detail?.reaction === "collect")
+  ), 6000);
+
+  const reaction = events.slice(beforeEventCount).find((item) => item.event === "fan_reaction");
+  if (!reaction) {
+    issues.push("/music.html: fan reaction did not report");
+    return;
+  }
+  if (reaction.detail?.reaction_label !== "Collect") {
+    issues.push(`/music.html: fan reaction label ${reaction.detail?.reaction_label || "missing"} did not match Collect`);
+  }
+  if (reaction.detail?.reporting_key !== "spmvp_release_audio") {
+    issues.push(`/music.html: fan reaction reporting key ${reaction.detail?.reporting_key || "missing"} did not match active source`);
+  }
+
+  const localReaction = await page.evaluate(() => {
+    const items = JSON.parse(localStorage.getItem("luxveritas_media_events") || "[]");
+    return items.find((item) => item.event === "fan_reaction" && item.reaction === "collect") || null;
+  });
+  if (!localReaction) {
+    issues.push("/music.html: fan reaction was not saved to local signal events");
+  }
+  const reportText = await page.locator("[data-media-report]").innerText();
+  if (!/Collect saved/i.test(reportText)) {
+    issues.push(`/music.html: fan reaction did not update media report text (${reportText})`);
+  }
+}
+
 async function fanSignalPassFlow(page, baseUrl) {
   await page.goto(`${baseUrl}/music.html`, { waitUntil: "domcontentloaded" });
   await page.evaluate(() => {
@@ -634,13 +687,14 @@ async function fanSignalPassFlow(page, baseUrl) {
     delete document.documentElement.dataset.lastDownloadType;
   });
   await clickMediaAction(page, "play");
+  await page.click('[data-fan-reaction="collect"]');
   await page.waitForFunction(() => {
     const value = Number(document.querySelector('[data-fan-signal-count="media"]')?.textContent?.trim() || "0");
     return value >= 1;
   }, null, { timeout: 5000 });
   const signalList = await page.locator("[data-fan-signal-list]").innerText();
-  if (!/SPMVP play/i.test(signalList)) {
-    issues.push(`/music.html: fan signal list did not capture media play`);
+  if (!/SPMVP play/i.test(signalList) || !/SPMVP Collect/i.test(signalList)) {
+    issues.push(`/music.html: fan signal list did not capture media play and fan reaction`);
   }
 
   await page.click("[data-fan-signal-export]");
@@ -882,6 +936,7 @@ async function operatorReportFlow(page, baseUrl) {
   const playbackSummary = await page.locator('[data-private-summary="playback"]').innerText();
   const playbackSourcesSummary = await page.locator('[data-private-summary="playback-sources"]').innerText();
   const playbackMilestonesSummary = await page.locator('[data-private-summary="playback-milestones"]').innerText();
+  const reactionsSummary = await page.locator('[data-private-summary="reactions"]').innerText();
   const workflowPrimary = await page.locator('[data-private-workflow="primary"]').innerText();
   const workflowDetail = await page.locator('[data-private-workflow="detail"]').innerText();
   const workflowTargets = await page.locator('[data-private-workflow="targets"]').innerText();
@@ -928,6 +983,7 @@ async function operatorReportFlow(page, baseUrl) {
     ["playback", playbackSummary],
     ["playback-sources", playbackSourcesSummary],
     ["playback-milestones", playbackMilestonesSummary],
+    ["reactions", reactionsSummary],
     ["workflow-primary", workflowPrimary],
     ["workflow-targets", workflowTargets],
     ["workflow-queues", workflowQueues],
@@ -1012,6 +1068,16 @@ async function operatorReportFlow(page, baseUrl) {
   if (!playbackExportReady) {
     issues.push(`/portal/reporting.html: playback records were missing from private export rows`);
   }
+  const reactionExportReady = await page.evaluate(() => {
+    return privateReportRows(privateReportCache).some((row) => (
+      row.type === "fan_reaction"
+      && row.label === "Collect"
+      && /SPMVP/.test(row.detail)
+    ));
+  });
+  if (!reactionExportReady) {
+    issues.push(`/portal/reporting.html: fan reaction records were missing from private export rows`);
+  }
   if (!/media__media_action__play/.test(ctasSummary)) {
     issues.push(`/portal/reporting.html: CTA signal summary missing mocked CTA ID`);
   }
@@ -1023,6 +1089,9 @@ async function operatorReportFlow(page, baseUrl) {
   }
   if (!/25%/.test(playbackMilestonesSummary) || !/ended/.test(playbackMilestonesSummary)) {
     issues.push(`/portal/reporting.html: playback milestone summary missing mocked retention values`);
+  }
+  if (!/Collect/.test(reactionsSummary)) {
+    issues.push(`/portal/reporting.html: fan reaction summary missing mocked reaction values`);
   }
   if (!/Server captures/.test(funnelSummary) || !/Media actions/.test(funnelSummary) || !/Playback events/.test(funnelSummary)) {
     issues.push(`/portal/reporting.html: pilot funnel missing capture/media values`);
@@ -1189,6 +1258,7 @@ try {
   }
   await mediaActionMappingFlow(page, baseUrl);
   await mediaPlaybackReportingFlow(page, baseUrl);
+  await fanReactionFlow(page, baseUrl);
   await fanSignalPassFlow(page, baseUrl);
   await portalAccessFlow(page, baseUrl);
   await operatorReportFlow(page, baseUrl);

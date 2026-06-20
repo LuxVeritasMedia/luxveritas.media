@@ -9,7 +9,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Live apex: `https://luxveritas.media`
 - Firebase project: `lux-veritas-media`
 - GitHub repo: `LuxVeritasMedia/luxveritas.media`
-- Current live asset version: `20260620-queue-workbench`
+- Current live asset version: `20260620-fan-reactions`
 - Current phase: Phase 5 of 10, portal pilot prep active
 - Phase 4 closeout: legal approval remains open before full public release
 - Next major phase: authenticated portal shell with approved auth and role gates
@@ -30,6 +30,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Lux Player MVP has audio, visual, and radio slots with approved preview sources.
 - Live media-source QA verifies the exact manifest source URLs, content types, and audio/video signatures for the audio, visual, and radio slots.
 - Listen, Watch, and Radio player actions select the matching source and return stable reporting keys.
+- Media player fan reactions capture replay, invite, collect, and create intent as local signal and protected operator reporting.
 - Audio, video, and radio playback lifecycle events return play, pause, milestone, and ended reporting values.
 - Protected operator reporting summarizes playback actions, source types, reporting keys, and retention milestones.
 - Brand-house visual identity is manifest-driven and live on Home and About, with responsive QA coverage for the six public house marks.

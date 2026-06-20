@@ -68,6 +68,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Add screened intake routing fields for Phase 6 reporting and future server-side handoff.
 - [x] Add public terms version IDs to capture, reporting, and private handoff payloads.
 - [x] Add optional audience-interest paths to public capture, private reporting, and future handoff payloads.
+- [x] Add fan-reaction capture to the media player for replay, invite, collect, and create intent.
 - [x] Add private workflow-target recommendations from real capture demand to help choose GHL, Google Workspace, or CodexOps without exposing provider details.
 - [x] Add protected intake queue workbench for queue pressure, SLA, next action, delivery status, and handoff status.
 - [x] Configure signed internal Firebase private handoff endpoint `firebase_handoff`.
@@ -213,6 +214,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Map Listen, Watch, and Radio actions to the matching audio, video, and stream sources with stable reporting keys.
 - [x] Report audio, video, and radio playback lifecycle events: play, pause, milestones, and ended.
 - [x] Add protected operator summaries for playback actions, source types, reporting keys, and retention milestones.
+- [x] Add protected operator summaries for fan reactions tied to media sources.
 - [x] Add media follow-up conversion path when approved audio/video/radio sources are not yet live.
 - [x] Show queued vs source-ready media status in the private pilot report.
 - [x] Add approved media source helper for audio, video, and radio URLs.
