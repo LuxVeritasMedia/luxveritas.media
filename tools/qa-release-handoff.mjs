@@ -11,6 +11,7 @@ const buildManifest = JSON.parse(await readFile("data/lux-build-manifest.json", 
 const finalGate = await readFile("tools/qa-final-release-gate.mjs", "utf8");
 const pilotWriteGate = await readFile("tools/qa-pilot-write-gate.mjs", "utf8");
 const writeReconciliation = await readFile("tools/qa-live-write-reconciliation.mjs", "utf8");
+const activationDryRuns = await readFile("tools/qa-private-integration-activation-dry-runs.mjs", "utf8");
 
 function issue(message) {
   issues.push(message);
@@ -43,6 +44,7 @@ for (const marker of [
   "node tools/qa-launch-evidence.mjs",
   "node tools/qa-private-workflow-matrix.mjs",
   "node tools/qa-external-workflow-targets.mjs",
+  "node tools/qa-private-integration-activation-dry-runs.mjs",
   "node tools/qa-live-media-sources.mjs",
   "node tools/qa-live-operator-report.mjs",
   "LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs",
@@ -192,6 +194,21 @@ for (const marker of [
 }
 
 for (const marker of [
+  "Private integration activation dry-run QA",
+  "LUX_PRIVATE_INTEGRATION_ACTIVATION_DRY_RUN",
+  "LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE",
+  "LUX_FORM_INTEGRATION_TARGET",
+  "ghl_crm",
+  "google_workspace",
+  "codex_ops",
+  "future profile dry run passed without"
+]) {
+  if (!activationDryRuns.includes(marker)) {
+    issue(`tools/qa-private-integration-activation-dry-runs.mjs missing marker: ${marker}`);
+  }
+}
+
+for (const marker of [
   "Live write reconciliation",
   "LUX_QA_RUN_ID",
   "LV-MATRIX-",
@@ -224,6 +241,7 @@ for (const marker of [
   "Add final strict release-gate command for launch-day acceptance",
   "Add dedicated pilot write gate for TestFlight-quality live submissions",
   "Add post-write protected report reconciliation",
+  "Add private integration activation dry-run QA",
   "Require final release-gate write mode for launch-day approval",
   "Require browser and live coverage in final release-gate approval mode",
   "Add final launch runbook for DNS, inbox, legal, write tests, and gate approval",

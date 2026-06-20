@@ -20,6 +20,7 @@ const checks = [
   ["Integrations", "tools/qa-integrations.mjs"],
   ["Integration Contract", "tools/qa-integration-contract.mjs"],
   ["Integration Profiles", "tools/qa-integration-profiles.mjs"],
+  ["Private Integration Activation Dry Runs", "tools/qa-private-integration-activation-dry-runs.mjs"],
   ["Private Integration Field Map", "tools/qa-private-integration-field-map.mjs"],
   ["Private Workflow Matrix", "tools/qa-private-workflow-matrix.mjs"],
   ["External Workflow Targets", "tools/qa-external-workflow-targets.mjs"],

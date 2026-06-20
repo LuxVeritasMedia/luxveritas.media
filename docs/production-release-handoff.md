@@ -41,6 +41,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Operator reporting summarizes audience-interest demand from stored captures.
 - Operator reporting includes a protected intake queue workbench with queue pressure, SLA, next action, inbox status, and handoff status.
 - Operator reporting recommends the next private workflow target from real routing demand while keeping external provider details out of the public site.
+- Private integration activation dry-run QA verifies `firebase_handoff`, `private_workflow`, `ghl_crm`, `google_workspace`, and `codex_ops` before any real provider secret or receiver is configured.
 - Private operator reporting exists behind approved access.
 - Machine-readable phase status is deployed at `/data/lux-phase-status.json`.
 
@@ -69,6 +70,7 @@ node tools/qa-pilot-test-matrix.mjs
 firebase login --reauth
 node tools/qa-provider-readiness.mjs
 node tools/qa-private-workflow-matrix.mjs
+node tools/qa-private-integration-activation-dry-runs.mjs
 node tools/qa-external-workflow-targets.mjs
 node tools/qa-live-media-sources.mjs
 node tools/qa-live-operator-report.mjs

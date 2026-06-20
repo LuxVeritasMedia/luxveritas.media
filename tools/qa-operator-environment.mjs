@@ -68,6 +68,7 @@ for (const file of [
   "tools/build-static.mjs",
   "tools/qa-pilot-write-gate.mjs",
   "tools/qa-live-write-reconciliation.mjs",
+  "tools/qa-private-integration-activation-dry-runs.mjs",
   "tools/qa-final-release-gate.mjs",
   "docs/final-launch-runbook.md",
   "data/lux-build-manifest.json"
