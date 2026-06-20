@@ -9,7 +9,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Live apex: `https://luxveritas.media`
 - Firebase project: `lux-veritas-media`
 - GitHub repo: `LuxVeritasMedia/luxveritas.media`
-- Current live asset version: `20260620-action-coverage`
+- Current live asset version: `20260620-brand-house-rail`
 - Current phase: Phase 5 of 10, portal pilot prep active
 - Phase 4 closeout: legal approval remains open before full public release
 - Next major phase: authenticated portal shell with approved auth and role gates
@@ -42,7 +42,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Protected operator reporting now summarizes retention-path clicks across fan-flywheel and brand-house cards.
 - Pilot testing is covered by a no-secret scenario matrix for public capture, media player, portal capture, operator reporting, launch gates, and private workflow readiness.
 - A dedicated pilot write gate can send live QA submissions and event writes, require inbox delivery, verify live media/browser coverage, confirm protected operator reporting, and reconcile the exact write-run IDs back through the protected report while allowing only the known Privacy and Terms approval blockers.
-- Pilot write gate last passed on 2026-06-20 with 10 live capture-intent submissions, inbox delivery required, live event writes, live media-source checks, live browser-flow coverage, and protected operator-report verification. QA run ID: `20260620121456`. Live event matrix coverage now includes fan-reaction reporting for the media retention loop, and the gate now reconciles exact write-run IDs back through the protected report.
+- Pilot write gate last passed on 2026-06-20 with 10 live capture-intent submissions, inbox delivery required, live event writes, live media-source checks, live browser-flow coverage, and protected operator-report verification. QA run ID: `20260620140139`. Live event matrix coverage now includes fan-reaction reporting for the media retention loop, and the gate now reconciles exact write-run IDs back through the protected report.
 - No-secret pilot write evidence is tracked in `data/lux-pilot-write-evidence.json` and validated with `node tools/qa-pilot-write-evidence.mjs`.
 - Operator reporting summarizes audience-interest demand from stored captures.
 - Operator reporting includes a protected intake queue workbench with queue pressure, SLA, next action, inbox status, and handoff status.

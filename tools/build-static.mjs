@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { actionInventoryVersion } from "./lib/action-inventory.mjs";
 
-const assetVersion = "20260620-action-coverage";
+const assetVersion = "20260620-brand-house-rail";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 const brandHouse = JSON.parse(await readFile("data/lux-brand-house.json", "utf8"));
@@ -170,6 +170,7 @@ function shell({ path, title, description, eyebrow = "Lux Veritas", body, heroCl
 
 function footer() {
   return `<footer class="site-footer">
+  ${footerHouseRail()}
   <div>
     <strong>Lux Veritas</strong>
     <p>Truth, In Right Order</p>
@@ -185,6 +186,17 @@ function footer() {
     <a href="/legal/terms.html">Terms</a>
   </nav>
 </footer>`;
+}
+
+function footerHouseRail() {
+  const houseMarks = Array.isArray(brandHouse.houseMarks) ? brandHouse.houseMarks : [];
+  return `<nav class="footer-house-rail" aria-label="Lux Veritas house">
+    ${houseMarks.map((item) => `<a class="footer-house-link" href="${item.path}" data-footer-house-mark="${item.mark}" data-track-surface="footer_house" data-track-intent="footer_house_${String(item.mark || "").toLowerCase()}" data-track-label="${item.title}">
+      <img src="${item.logo}" alt="" loading="lazy" decoding="async" aria-hidden="true" />
+      <span>${item.mark}</span>
+      <strong>${item.action}</strong>
+    </a>`).join("")}
+  </nav>`;
 }
 
 function formDialog() {

@@ -10,6 +10,7 @@ const requiredMobileSelectors = [
   ".section-grid",
   ".card-grid",
   ".house-grid",
+  ".footer-house-rail",
   ".release-rail",
   ".slate",
   ".ops-grid",

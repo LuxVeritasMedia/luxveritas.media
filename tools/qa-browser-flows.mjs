@@ -1011,10 +1011,10 @@ async function operatorReportFlow(page, baseUrl) {
   if (!/2 of 4 closeout items closed/.test(closeoutSummaryBeforeLoad)) {
     issues.push(`/portal/reporting.html: expected closeout summary, found "${closeoutSummaryBeforeLoad}"`);
   }
-  if (!/1050 actions across 38 surfaces/.test(actionCoverageSummary)) {
+  if (!/1272 actions across 38 surfaces/.test(actionCoverageSummary)) {
     issues.push(`/portal/reporting.html: expected action coverage summary, found "${actionCoverageSummary}"`);
   }
-  if (!/Build 20260620-action-coverage/.test(actionCoverageDetail)) {
+  if (!/Build 20260620-brand-house-rail/.test(actionCoverageDetail)) {
     issues.push(`/portal/reporting.html: action coverage detail did not show current build, found "${actionCoverageDetail}"`);
   }
   for (const label of ["link_click", "form_open", "navigation_toggle", "consent_update"]) {

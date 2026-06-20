@@ -187,6 +187,15 @@ for (const file of htmlFiles) {
     if (footer.join("|") !== expectedFooter.join("|")) issues.push(`index.html: footer mismatch: ${footer.join(" / ")}`);
   }
 
+  if (!html.includes('class="footer-house-rail"') || !html.includes('aria-label="Lux Veritas house"')) {
+    issues.push(`${rel}: missing global footer house rail`);
+  }
+  for (const mark of ["LVR", "LVS", "LVP", "LVL", "LVC", "LVA"]) {
+    if (!html.includes(`data-footer-house-mark="${mark}"`)) {
+      issues.push(`${rel}: missing footer house mark ${mark}`);
+    }
+  }
+
   if (["index.html", "about.html"].includes(rel)) {
     if (!html.includes("data-brand-house")) {
       issues.push(`${rel}: missing public brand-house section`);
