@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 
@@ -11,6 +12,19 @@ function issue(message) {
 function secretShape(value) {
   return /re_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}/.test(value);
 }
+
+function topEntries(source = {}, limit = 8) {
+  return Object.entries(source || {})
+    .sort((a, b) => Number(b[1] || 0) - Number(a[1] || 0))
+    .slice(0, limit)
+    .map(([label, count]) => ({ label, count }));
+}
+
+function sameEntries(actual = [], expected = []) {
+  return JSON.stringify(actual) === JSON.stringify(expected);
+}
+
+const actionInventory = JSON.parse(await readFile("data/lux-action-inventory.json", "utf8"));
 
 const { stdout: markdown } = await execFileAsync(process.execPath, ["tools/export-launch-evidence.mjs"], {
   timeout: 90000,
@@ -30,8 +44,8 @@ for (const marker of [
   "Decision:",
   "Asset version:",
   "## Action Coverage",
-  "Actions: 1050",
-  "Route surfaces: 38",
+  `Actions: ${actionInventory.actionCount}`,
+  `Route surfaces: ${actionInventory.routeCount}`,
   "link_click",
   "lead_accepted",
   "## Pilot Test Matrix",
@@ -61,18 +75,27 @@ if (evidence) {
   if (evidence.currentPhase?.id !== "phase-5" || evidence.currentPhase?.status !== "active_pilot") issue("evidence current phase mismatch");
   if (!evidence.assetVersion) issue("evidence assetVersion missing");
   if (!evidence.media?.itemCount || evidence.media.itemCount < 3) issue("evidence media item count should include MVP audio/video/stream");
-  if (evidence.actionInventory?.version !== "2026-06-20-action-inventory") issue("evidence action inventory version mismatch");
+  if (evidence.actionInventory?.version !== actionInventory.version) issue("evidence action inventory version mismatch");
   if (evidence.actionInventory?.buildAssetVersion !== evidence.assetVersion) issue("evidence action inventory build version must match asset version");
-  if (evidence.actionInventory?.actionCount !== 1050) issue("evidence action inventory actionCount mismatch");
-  if (evidence.actionInventory?.routeCount !== 38) issue("evidence action inventory routeCount mismatch");
+  if (evidence.actionInventory?.actionCount !== actionInventory.actionCount) issue("evidence action inventory actionCount mismatch");
+  if (evidence.actionInventory?.routeCount !== actionInventory.routeCount) issue("evidence action inventory routeCount mismatch");
+  if (!sameEntries(evidence.actionInventory?.topActionTypes, topEntries(actionInventory.summary?.byType))) {
+    issue("evidence action inventory topActionTypes does not match source inventory");
+  }
+  if (!sameEntries(evidence.actionInventory?.topReportingEvents, topEntries(actionInventory.summary?.byReportingEvent))) {
+    issue("evidence action inventory topReportingEvents does not match source inventory");
+  }
+  if (!sameEntries(evidence.actionInventory?.topRouteSurfaces, topEntries(actionInventory.summary?.byRoute))) {
+    issue("evidence action inventory topRouteSurfaces does not match source inventory");
+  }
   for (const [field, required] of [
-    ["topActionTypes", ["link_click", "form_open", "navigation_toggle"]],
-    ["topReportingEvents", ["link_click", "lead_accepted", "media_action"]],
-    ["topRouteSurfaces", ["index.html", "music.html", "membership.html"]]
+    ["byType", ["link_click", "form_open", "media_action", "operator_report_action"]],
+    ["byReportingEvent", ["link_click", "lead_accepted", "media_action", "report_action"]],
+    ["byRoute", ["index.html", "music.html", "portal/reporting.html"]]
   ]) {
-    const labels = new Set((evidence.actionInventory?.[field] || []).map((item) => item.label));
+    const source = actionInventory.summary?.[field] || {};
     for (const label of required) {
-      if (!labels.has(label)) issue(`evidence action inventory ${field} missing ${label}`);
+      if (!source[label]) issue(`source action inventory ${field} missing ${label}`);
     }
   }
   if (evidence.pilotTestMatrix?.status !== "active") issue("evidence pilot test matrix status should be active");
