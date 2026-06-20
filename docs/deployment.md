@@ -344,6 +344,12 @@ External target selection is tracked in `docs/external-workflow-targets.json`. U
 node tools/qa-external-workflow-targets.mjs
 ```
 
+Private workflow selection readiness is tracked in `docs/private-workflow-selection.json`. It keeps `firebase_handoff` active, recommends `google_workspace` as the first external approval target for review/archive/legal-version evidence, places `ghl_crm` second for membership and event follow-up, and defers `codex_ops` until operator packet rules are approved. Validate it with:
+
+```bash
+node tools/qa-private-workflow-selection.mjs
+```
+
 Export a no-secret private integration activation request before choosing or changing the external workflow target:
 
 ```bash
@@ -352,6 +358,7 @@ LUX_PRIVATE_INTEGRATION_PACKET_OUT=/tmp/lux-private-integration-request.md node 
 LUX_PRIVATE_INTEGRATION_PACKET_FORMAT=json node tools/export-private-integration-request.mjs
 node tools/qa-private-integration-field-map.mjs
 node tools/qa-private-workflow-matrix.mjs
+node tools/qa-private-workflow-selection.mjs
 node tools/qa-private-integration-request.mjs
 ```
 

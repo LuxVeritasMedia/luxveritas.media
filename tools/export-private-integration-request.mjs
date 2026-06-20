@@ -5,13 +5,14 @@ const format = process.env.LUX_PRIVATE_INTEGRATION_PACKET_FORMAT === "json" ? "j
 const outPath = process.env.LUX_PRIVATE_INTEGRATION_PACKET_OUT || "";
 
 function secretShape(value) {
-  return /re_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}|FORM_INTEGRATION_URL=https:\/\/\S+/i.test(value);
+  return /\bre_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}|FORM_INTEGRATION_URL=https:\/\/\S+/i.test(value);
 }
 
 const [
   profilesRaw,
   fieldMapRaw,
   workflowMatrixRaw,
+  workflowSelectionRaw,
   launchRaw,
   closeoutRaw,
   buildRaw,
@@ -20,13 +21,14 @@ const [
   readFile("docs/private-integration-profiles.json", "utf8"),
   readFile("docs/private-integration-field-map.json", "utf8"),
   readFile("docs/private-workflow-matrix.json", "utf8"),
+  readFile("docs/private-workflow-selection.json", "utf8"),
   readFile("data/lux-launch-readiness.json", "utf8"),
   readFile("data/lux-launch-closeout.json", "utf8"),
   readFile("data/lux-build-manifest.json", "utf8"),
   readFile("functions/integration-contract.js", "utf8")
 ]);
 
-if (secretShape(`${profilesRaw}\n${fieldMapRaw}\n${workflowMatrixRaw}\n${launchRaw}\n${closeoutRaw}\n${buildRaw}`)) {
+if (secretShape(`${profilesRaw}\n${fieldMapRaw}\n${workflowMatrixRaw}\n${workflowSelectionRaw}\n${launchRaw}\n${closeoutRaw}\n${buildRaw}`)) {
   console.error("Private integration request input appears to contain secret-shaped data.");
   process.exit(1);
 }
@@ -34,6 +36,7 @@ if (secretShape(`${profilesRaw}\n${fieldMapRaw}\n${workflowMatrixRaw}\n${launchR
 const registry = JSON.parse(profilesRaw);
 const fieldMap = JSON.parse(fieldMapRaw);
 const workflowMatrix = JSON.parse(workflowMatrixRaw);
+const workflowSelection = JSON.parse(workflowSelectionRaw);
 const launch = JSON.parse(launchRaw);
 const closeout = JSON.parse(closeoutRaw);
 const build = JSON.parse(buildRaw);
@@ -127,6 +130,25 @@ const packet = {
         acceptance: queue.acceptance || []
       }))
       : []
+  },
+  workflowSelection: {
+    schemaVersion: workflowSelection.schemaVersion || "",
+    selectionStatus: workflowSelection.selectionStatus || "",
+    currentPrimaryTarget: workflowSelection.currentPrimaryTarget || "",
+    recommendedFirstExternalTarget: workflowSelection.recommendedFirstExternalTarget || "",
+    recommendationRationale: workflowSelection.recommendationRationale || "",
+    recommendedActivationOrder: Array.isArray(workflowSelection.recommendedActivationOrder)
+      ? workflowSelection.recommendedActivationOrder.map((item) => ({
+        rank: item.rank,
+        profile: item.profile,
+        decision: item.decision,
+        queueCoverage: item.queueCoverage || [],
+        primaryJob: item.primaryJob,
+        approvalRequired: item.approvalRequired === true
+      }))
+      : [],
+    approvalChecklist: workflowSelection.approvalChecklist || [],
+    doNotDo: workflowSelection.doNotDo || []
   },
   requiredSecrets,
   approvedProfiles: activeProfiles.map((profile) => ({
@@ -238,6 +260,16 @@ ${mappingRows || "- None"}
 - Queue count: ${packet.workflowMatrix.queueCount}
 
 ${workflowRows || "- None"}
+
+## Private Workflow Selection
+
+- Schema: ${packet.workflowSelection.schemaVersion}
+- Status: ${packet.workflowSelection.selectionStatus}
+- Current primary target: ${packet.workflowSelection.currentPrimaryTarget}
+- Recommended first external target: ${packet.workflowSelection.recommendedFirstExternalTarget}
+- Rationale: ${packet.workflowSelection.recommendationRationale}
+
+${packet.workflowSelection.recommendedActivationOrder.map((item) => `- ${item.rank}. ${item.profile}: ${item.decision}; queues: ${item.queueCoverage.join(", ")}; job: ${item.primaryJob}; approval required: ${item.approvalRequired ? "yes" : "no"}`).join("\n") || "- None"}
 
 ## Required Firebase Secrets
 

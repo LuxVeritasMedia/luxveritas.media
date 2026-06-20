@@ -24,6 +24,7 @@ for (const marker of [
   "node tools/qa-private-integration-field-map.mjs",
   "node tools/qa-private-workflow-matrix.mjs",
   "node tools/qa-external-workflow-targets.mjs",
+  "node tools/qa-private-workflow-selection.mjs",
   "node tools/qa-private-integration-request.mjs",
   "node tools/qa-legal-sync.mjs",
   "node tools/qa-release-handoff.mjs",
@@ -104,6 +105,8 @@ for (const marker of [
   "node tools/qa-live-media-sources.mjs",
   "node tools/qa-private-integration-field-map.mjs",
   "node tools/qa-private-workflow-matrix.mjs",
+  "node tools/qa-external-workflow-targets.mjs",
+  "node tools/qa-private-workflow-selection.mjs",
   "node tools/qa-private-integration-request.mjs",
   "node tools/qa-workflows.mjs",
   "LUX_FINAL_ALLOW_BLOCKERS=1 LUX_FINAL_SKIP_BROWSER=1 LUX_FINAL_SKIP_LIVE=1 node tools/qa-final-release-gate.mjs"

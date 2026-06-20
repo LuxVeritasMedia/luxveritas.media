@@ -10,7 +10,7 @@ function issue(message) {
 }
 
 function secretShape(value) {
-  return /re_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}|FORM_INTEGRATION_URL=https:\/\/\S+/i.test(value);
+  return /\bre_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}|FORM_INTEGRATION_URL=https:\/\/\S+/i.test(value);
 }
 
 const [markdownResult, jsonResult, profilesRaw, fieldMapRaw, workflowMatrixRaw] = await Promise.all([
@@ -45,6 +45,8 @@ for (const marker of [
   "Current Handoff Gate",
   "Downstream Field Map",
   "Downstream Workflow Matrix",
+  "Private Workflow Selection",
+  "Recommended first external target: google_workspace",
   "Required Firebase Secrets",
   "Active Or Ready Profiles",
   "Future Profiles",
@@ -89,6 +91,24 @@ if (packet) {
   if (packet.workflowMatrix?.currentPrimaryProfile !== "firebase_handoff") issue("workflow matrix primary profile mismatch");
   if (packet.workflowMatrix?.publicExposure !== "none") issue("workflow matrix public exposure mismatch");
   if (packet.workflowMatrix?.queueCount !== 7) issue("workflow matrix queue count mismatch");
+  if (packet.workflowSelection?.schemaVersion !== "luxveritas.private_workflow_selection.v1") issue("workflow selection schema mismatch");
+  if (packet.workflowSelection?.selectionStatus !== "recommendation_ready_approval_required") issue("workflow selection status mismatch");
+  if (packet.workflowSelection?.currentPrimaryTarget !== "firebase_handoff") issue("workflow selection current primary target mismatch");
+  if (packet.workflowSelection?.recommendedFirstExternalTarget !== "google_workspace") issue("workflow selection first target mismatch");
+  if (!packet.workflowSelection?.recommendationRationale?.includes("Google Workspace Intake")) issue("workflow selection rationale missing");
+  if (!Array.isArray(packet.workflowSelection?.recommendedActivationOrder) || packet.workflowSelection.recommendedActivationOrder.length !== 3) {
+    issue("workflow selection activation order missing");
+  } else {
+    for (const [index, expected] of ["google_workspace", "ghl_crm", "codex_ops"].entries()) {
+      const item = packet.workflowSelection.recommendedActivationOrder[index];
+      if (item?.profile !== expected || item.rank !== index + 1 || item.approvalRequired !== true) {
+        issue(`workflow selection rank ${index + 1} should be ${expected} with approval required`);
+      }
+    }
+  }
+  for (const guard of ["Set Firebase secrets only after approval.", "Run live operator report QA."]) {
+    if (!packet.workflowSelection?.approvalChecklist?.includes(guard)) issue(`workflow selection approval checklist missing ${guard}`);
+  }
   for (const queueId of ["membership_waitlist", "submission_review", "event_access", "press_contact", "partner_licensing", "strategic_access", "access_review"]) {
     const queue = packet.workflowMatrix?.queues?.find((item) => item.id === queueId);
     if (!queue) {

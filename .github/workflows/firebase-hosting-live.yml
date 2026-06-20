@@ -70,6 +70,9 @@ jobs:
       - name: QA external workflow targets
         run: node tools/qa-external-workflow-targets.mjs
 
+      - name: QA private workflow selection
+        run: node tools/qa-private-workflow-selection.mjs
+
       - name: QA private integration request
         run: node tools/qa-private-integration-request.mjs
 

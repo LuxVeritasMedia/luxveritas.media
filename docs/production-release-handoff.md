@@ -57,9 +57,9 @@ These are the known blockers before calling the site public-launch ready.
 
 1. Privacy page needs legal/business approval.
 2. Terms page needs legal/business approval.
-3. External CRM/Google workflow target may be selected after the private workflow is approved. The signed Firebase private handoff is already active for the MVP intake queue, and the private operator report now shows demand-led recommendations for the first external target.
+3. External CRM/Google workflow target may be selected after the private workflow is approved. The signed Firebase private handoff is already active for the MVP intake queue, and the private operator report now shows demand-led recommendations for the first external target. The no-secret selection packet in `docs/private-workflow-selection.json` keeps `firebase_handoff` active and recommends `google_workspace` as the first external approval target before `ghl_crm` follow-up or `codex_ops` packet routing.
 
-Before selecting the external target, review `docs/private-workflow-matrix.json` and run `node tools/qa-private-workflow-matrix.mjs`. The matrix maps every public capture queue to its owner, SLA, current `firebase_handoff` path, approved next profiles, workflow actions, and acceptance checks without storing provider details.
+Before selecting the external target, review `docs/private-workflow-matrix.json`, `docs/external-workflow-targets.json`, and `docs/private-workflow-selection.json`, then run `node tools/qa-private-workflow-matrix.mjs`, `node tools/qa-external-workflow-targets.mjs`, and `node tools/qa-private-workflow-selection.mjs`. The matrix maps every public capture queue to its owner, SLA, current `firebase_handoff` path, approved next profiles, workflow actions, and acceptance checks without storing provider details.
 
 Use `docs/launch-blocker-resolution.md` as the operational closeout packet for the remaining release blockers. Use `docs/legal-review-packet.md` for Privacy and Terms review. Use `docs/final-launch-runbook.md` for the exact final launch sequence. Use `node tools/export-launch-evidence.mjs` for a no-secret release packet that includes phase, media, action coverage, launch gates, closeout, and command summaries.
 
@@ -79,6 +79,7 @@ node tools/qa-provider-readiness.mjs
 node tools/qa-private-workflow-matrix.mjs
 node tools/qa-private-integration-activation-dry-runs.mjs
 node tools/qa-external-workflow-targets.mjs
+node tools/qa-private-workflow-selection.mjs
 node tools/qa-legal-sync.mjs
 node tools/qa-action-inventory.mjs
 node tools/qa-live-media-sources.mjs

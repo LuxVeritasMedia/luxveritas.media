@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "luxveritas.private_workflow_selection.v1",
+  "purpose": "No-secret decision record for choosing the first external workflow target after the active Firebase handoff pilot. This file must not contain provider URLs, account IDs, field IDs, private destination details, tokens, credentials, or private workspace names.",
+  "publicExposure": "none",
+  "currentPrimaryTarget": "firebase_handoff",
+  "selectionStatus": "recommendation_ready_approval_required",
+  "selectionRule": "Keep firebase_handoff active until a human-approved receiver owner, receiver location, signing material, replay owner, and rollback owner are approved outside this repo.",
+  "recommendedFirstExternalTarget": "google_workspace",
+  "recommendationRationale": "Google Workspace Intake is the safest first external target because it supports review-led intake archive, consent and legal-version evidence, submissions, press, partner, strategic access, and portal access queues before CRM nurture or build-packet routing.",
+  "activationBoundary": "Activation must be server-side only through Firebase Secret Manager. Public pages must never contain receiver locations, provider account data, provider field IDs, signing material, or workflow implementation details.",
+  "recommendedActivationOrder": [
+    {
+      "rank": 1,
+      "profile": "google_workspace",
+      "decision": "recommend_first_external_approval",
+      "queueCoverage": [
+        "submission_review",
+        "press_contact",
+        "partner_licensing",
+        "strategic_access",
+        "access_review"
+      ],
+      "primaryJob": "review archive, owner routing, consent evidence, legal-version evidence",
+      "approvalRequired": true,
+      "acceptance": [
+        "Private workflow owner accepts queue routing and retention expectations.",
+        "Dry-run activation passes with LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE=1.",
+        "Provider readiness reports the selected target active after secret setup.",
+        "Live operator report shows the selected target without exposing destination details."
+      ]
+    },
+    {
+      "rank": 2,
+      "profile": "ghl_crm",
+      "decision": "approve_for_follow_up_after_archive_path",
+      "queueCoverage": [
+        "membership_waitlist",
+        "event_access"
+      ],
+      "primaryJob": "membership follow-up, event interest follow-up, tags, screened nurture",
+      "approvalRequired": true,
+      "acceptance": [
+        "Consent language is reviewed for email and SMS paths.",
+        "Tag and pipeline naming are approved outside this repo.",
+        "Dry-run activation passes with LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE=1.",
+        "One live form matrix write reaches inbox and private handoff after activation."
+      ]
+    },
+    {
+      "rank": 3,
+      "profile": "codex_ops",
+      "decision": "defer_until_operator_packet_rules_are_approved",
+      "queueCoverage": [
+        "submission_review",
+        "partner_licensing",
+        "access_review"
+      ],
+      "primaryJob": "operator-reviewed packets, creator request summarization, future portal-to-operations handoff",
+      "approvalRequired": true,
+      "acceptance": [
+        "Packet fields are reviewed against the public product boundary.",
+        "Human review remains required before any generated action.",
+        "No private prompts, internal dashboards, financials, rights operations, or unreleased canon are routed through the public website.",
+        "Dry-run activation passes with LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE=1."
+      ]
+    }
+  ],
+  "queueDecisionSummary": [
+    {
+      "queue": "membership_waitlist",
+      "recommendedPrimary": "ghl_crm",
+      "selectionUse": "second wave follow-up after archive path is approved"
+    },
+    {
+      "queue": "submission_review",
+      "recommendedPrimary": "google_workspace",
+      "selectionUse": "first wave review and archive"
+    },
+    {
+      "queue": "event_access",
+      "recommendedPrimary": "ghl_crm",
+      "selectionUse": "second wave invite and follow-up"
+    },
+    {
+      "queue": "press_contact",
+      "recommendedPrimary": "google_workspace",
+      "selectionUse": "first wave response log and public-kit routing"
+    },
+    {
+      "queue": "partner_licensing",
+      "recommendedPrimary": "google_workspace",
+      "selectionUse": "first wave screened review before deal or packet routing"
+    },
+    {
+      "queue": "strategic_access",
+      "recommendedPrimary": "google_workspace",
+      "selectionUse": "first wave review-led access control"
+    },
+    {
+      "queue": "access_review",
+      "recommendedPrimary": "google_workspace",
+      "selectionUse": "first wave role and access review"
+    }
+  ],
+  "approvalChecklist": [
+    "Confirm Privacy and Terms legal review status before public launch.",
+    "Choose one target profile and one workflow owner.",
+    "Confirm receiver owner, replay owner, and rollback owner.",
+    "Approve receiver location and signing material outside this repo.",
+    "Export the no-secret private integration request.",
+    "Run private workflow selection QA.",
+    "Run activation dry run for the selected target.",
+    "Set Firebase secrets only after approval.",
+    "Deploy Functions and run provider readiness.",
+    "Run live operator report QA.",
+    "Run one live form matrix only when the inbox owner is ready for QA mail.",
+    "Replay pending handoffs from protected operator reporting if needed."
+  ],
+  "doNotDo": [
+    "Do not replace firebase_handoff without an approved receiver and rollback owner.",
+    "Do not store provider URLs, account IDs, field IDs, private destinations, tokens, or credentials in this repo.",
+    "Do not route internal LuxFlow logic, prompts, private dashboards, financials, rights operations, or unreleased canon through the public website.",
+    "Do not choose a CRM target before consent language and follow-up rules are approved.",
+    "Do not activate CodexOps before operator packet fields and human review rules are approved."
+  ],
+  "nextCommandPacket": [
+    "node tools/qa-private-workflow-selection.mjs",
+    "LUX_PRIVATE_INTEGRATION_PACKET_OUT=/tmp/lux-private-integration-request.md node tools/export-private-integration-request.mjs",
+    "LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE=1 LUX_PRIVATE_INTEGRATION_ACTIVATION_DRY_RUN=1 LUX_FORM_INTEGRATION_URL='approved-private-receiver' LUX_FORM_INTEGRATION_SIGNING_SECRET='approved-shared-secret' LUX_FORM_INTEGRATION_TARGET='google_workspace' node tools/activate-private-integration.mjs",
+    "node tools/qa-provider-readiness.mjs",
+    "node tools/qa-live-operator-report.mjs"
+  ],
+  "rollback": [
+    "Return FORM_INTEGRATION_TARGET to firebase_handoff.",
+    "Restore the Firebase receiver location and signing material through Firebase Secret Manager.",
+    "Redeploy submitForm, reportActivity, and receivePrivateHandoff.",
+    "Run provider readiness and live operator report QA."
+  ]
+}
