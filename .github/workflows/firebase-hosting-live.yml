@@ -43,6 +43,9 @@ jobs:
       - name: QA public buttons
         run: node tools/qa-buttons.mjs
 
+      - name: QA action inventory
+        run: node tools/qa-action-inventory.mjs
+
       - name: QA public site
         run: node tools/qa-public-site.mjs
 

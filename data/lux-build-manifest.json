@@ -1,8 +1,9 @@
 {
   "schemaVersion": "luxveritas.build_manifest.v1",
-  "version": "20260620-music-hero-player",
-  "assetVersion": "20260620-music-hero-player",
+  "version": "20260620-action-inventory",
+  "assetVersion": "20260620-action-inventory",
   "mediaManifestVersion": "2026-06-10-mvp-media-preview",
+  "actionInventoryVersion": "2026-06-20-action-inventory",
   "brandHouseVersion": "2026-06-19-brand-house",
   "fanFlywheelVersion": "2026-06-20-fan-flywheel",
   "dropRoomVersion": "2026-06-20-drop-room",
@@ -11,6 +12,6 @@
   "publicTermsVersion": "2026-06-09-public-capture",
   "routeCount": 37,
   "publicRouteCount": 20,
-  "appScript": "app.js?v=20260620-music-hero-player",
-  "stylesheet": "styles.css?v=20260620-music-hero-player"
+  "appScript": "app.js?v=20260620-action-inventory",
+  "stylesheet": "styles.css?v=20260620-action-inventory"
 }

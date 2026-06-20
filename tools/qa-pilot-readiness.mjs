@@ -14,6 +14,7 @@ const setupChecks = [
 
 const checks = [
   ["Buttons", "tools/qa-buttons.mjs"],
+  ["Action Inventory", "tools/qa-action-inventory.mjs"],
   ["Public Site", "tools/qa-public-site.mjs"],
   ["Access Model", "tools/qa-access-model.mjs"],
   ["Product Boundary", "tools/qa-product-boundary.mjs"],

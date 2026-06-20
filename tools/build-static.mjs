@@ -1,7 +1,8 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
+import { actionInventoryVersion } from "./lib/action-inventory.mjs";
 
-const assetVersion = "20260620-music-hero-player";
+const assetVersion = "20260620-action-inventory";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 const brandHouse = JSON.parse(await readFile("data/lux-brand-house.json", "utf8"));
@@ -1104,6 +1105,7 @@ await writeFile("data/lux-build-manifest.json", `${JSON.stringify({
   version: assetVersion,
   assetVersion,
   mediaManifestVersion: mediaManifest.version,
+  actionInventoryVersion,
   brandHouseVersion: brandHouse.version,
   fanFlywheelVersion: fanFlywheel.version,
   dropRoomVersion: dropRoom.version,

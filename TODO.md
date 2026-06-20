@@ -137,6 +137,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Replace automatic `mailto:` jump with visible email-draft fallback to prevent submit-page freeze.
 - [x] Remove `mailto:` form actions from generated public pages and add QA coverage to prevent regressions.
 - [x] Add deploy-artifact button QA for dead public buttons.
+- [x] Add no-secret action inventory for public links, buttons, forms, media actions, and report controls.
 - [x] Add public-site QA for internal links, nav/footer, noindex routes, banned terms, and media requirements.
 - [x] Add public-site QA for canonical, Open Graph, and Twitter share metadata.
 - [x] Add public-site QA for Organization, WebSite, WebPage, and navigation JSON-LD.

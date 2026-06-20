@@ -15,6 +15,10 @@ const checks = [
     script: "tools/qa-deploy-status.mjs"
   },
   {
+    label: "Action Inventory",
+    script: "tools/qa-action-inventory.mjs"
+  },
+  {
     label: "Launch Blockers",
     script: "tools/qa-launch-blockers.mjs"
   },

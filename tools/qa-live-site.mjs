@@ -14,7 +14,9 @@ const requiredRoutes = [
   "/portal/reporting.html"
 ];
 const buildScript = await readFile("tools/build-static.mjs", "utf8");
+const actionInventoryLib = await readFile("tools/lib/action-inventory.mjs", "utf8");
 const expectedAssetVersion = buildScript.match(/const assetVersion = "([^"]+)"/)?.[1];
+const expectedActionInventoryVersion = actionInventoryLib.match(/actionInventoryVersion = "([^"]+)"/)?.[1];
 
 if (!expectedAssetVersion) {
   issues.push("tools/build-static.mjs: missing assetVersion");
@@ -152,12 +154,38 @@ try {
     if (buildManifest.stylesheet !== `styles.css?v=${expectedAssetVersion}`) {
       issues.push("/data/lux-build-manifest.json: stylesheet does not match current asset version");
     }
-    if (!buildManifest.mediaManifestVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.phaseStatusVersion || !buildManifest.publicTermsVersion) {
-      issues.push("/data/lux-build-manifest.json: missing mediaManifestVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, phaseStatusVersion, or publicTermsVersion");
+    if (!buildManifest.mediaManifestVersion || !buildManifest.actionInventoryVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.phaseStatusVersion || !buildManifest.publicTermsVersion) {
+      issues.push("/data/lux-build-manifest.json: missing mediaManifestVersion, actionInventoryVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, phaseStatusVersion, or publicTermsVersion");
     }
   }
 } catch (error) {
   issues.push(`/data/lux-build-manifest.json: invalid response (${error.message})`);
+}
+
+try {
+  const { response, text } = await fetchWithTimeout("/data/lux-action-inventory.json");
+  if (!response.ok) {
+    issues.push(`/data/lux-action-inventory.json: expected HTTP 200, received ${response.status}`);
+  } else {
+    const inventory = JSON.parse(text);
+    if (inventory.schemaVersion !== "luxveritas.action_inventory.v1") {
+      issues.push("/data/lux-action-inventory.json: schemaVersion mismatch");
+    }
+    if (expectedActionInventoryVersion && inventory.version !== expectedActionInventoryVersion) {
+      issues.push("/data/lux-action-inventory.json: version does not match expected action inventory version");
+    }
+    if (liveBuildManifest?.actionInventoryVersion && liveBuildManifest.actionInventoryVersion !== inventory.version) {
+      issues.push("/data/lux-action-inventory.json: version does not match build manifest actionInventoryVersion");
+    }
+    if (liveBuildManifest?.assetVersion && inventory.buildAssetVersion !== liveBuildManifest.assetVersion) {
+      issues.push("/data/lux-action-inventory.json: buildAssetVersion does not match live build manifest");
+    }
+    if (!inventory.actionCount || !inventory.summary?.byType?.media_action || !inventory.summary?.byType?.form_open || !inventory.summary?.byType?.link_click) {
+      issues.push("/data/lux-action-inventory.json: missing action summary coverage");
+    }
+  }
+} catch (error) {
+  issues.push(`/data/lux-action-inventory.json: invalid response (${error.message})`);
 }
 
 try {
