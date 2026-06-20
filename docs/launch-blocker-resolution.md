@@ -1,6 +1,6 @@
 # Lux Veritas Launch Blocker Resolution
 
-Status date: 2026-06-18
+Status date: 2026-06-20
 
 This packet tracks only the remaining public-release blockers for LuxVeritas.media. Keep secrets out of this file. Use Firebase Secret Manager, provider dashboards, and approved operator tokens for private values.
 
@@ -39,13 +39,14 @@ Use `LUX_LAUNCH_DRY_RUN=1` to validate without writing. A `ready` launch gate al
 ## Current Evidence
 
 - Apex site: `https://luxveritas.media` returns HTTP 200.
-- Live build version: `20260620-drop-room`.
+- Live build version: `20260620-fan-reactions`.
 - Browser-flow pilot QA passes locally with form, media, and reporting paths.
 - Private handoff secret set is active for `firebase_handoff`.
 - Operator reporting token hash is configured.
 - Release readiness currently reports two external blockers: Privacy approval and Terms approval.
 - `www.luxveritas.media` closeout is resolved: DNS, Firebase custom-domain verification, certificate, and Hosting mapping return HTTP 200.
 - Inbox provider closeout is resolved: 2026-06-17 live form matrix confirmed 10 capture intents with inbox delivery required.
+- Pilot write gate last passed on 2026-06-20 with live form writes, event writes, inbox delivery required, fan-reaction reporting, and post-write reconciliation through the protected operator report.
 
 ## Closed - www Domain
 
@@ -194,6 +195,7 @@ node tools/qa-pilot-readiness.mjs
 LUX_PILOT_BROWSER=1 node tools/qa-pilot-readiness.mjs
 LUX_PILOT_LIVE=1 LUX_PILOT_STRICT=1 node tools/qa-pilot-readiness.mjs
 node tools/qa-release-readiness.mjs
+LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs
 LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs
 ```
 

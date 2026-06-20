@@ -92,6 +92,8 @@ for (const marker of [
   "LUX_RESEND_API_KEY=\"re_...\" node tools/activate-inbox-delivery.mjs",
   "LUX_LEGAL_REVIEW_ITEM=privacy",
   "LUX_LEGAL_REVIEW_ITEM=terms",
+  buildManifest.assetVersion,
+  "LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs",
   "LUX_PILOT_LIVE=1 LUX_PILOT_STRICT=1 node tools/qa-pilot-readiness.mjs",
   "LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs"
 ]) {
@@ -238,6 +240,11 @@ if (/re_[A-Za-z0-9_-]{8,}/.test(handoff)) {
 
 if (/REPORT_OPERATOR_TOKEN=|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}/.test(handoff)) {
   issue("production-release-handoff.md appears to contain a private report token");
+}
+
+const blockerLiveVersion = blockerResolution.match(/Live build version:\s*`([^`]+)`/)?.[1] || "";
+if (blockerLiveVersion !== buildManifest.assetVersion) {
+  issue(`docs/launch-blocker-resolution.md live build version ${blockerLiveVersion || "missing"} does not match ${buildManifest.assetVersion}`);
 }
 
 if (issues.length) {
