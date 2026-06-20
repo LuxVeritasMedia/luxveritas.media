@@ -47,6 +47,19 @@ for (const marker of [
   "Downstream Workflow Matrix",
   "Private Workflow Selection",
   "Recommended first external target: google_workspace",
+  "Recommended First External Activation",
+  "Target: google_workspace",
+  "Label: Google Workspace Intake",
+  "Provider class: workspace_automation",
+  "Target secret value: google_workspace",
+  "Required approval fields",
+  "Dry run:",
+  "Activation after approval:",
+  "Post-activation checks:",
+  "Target acceptance:",
+  "Rollback:",
+  "LUX_FORM_INTEGRATION_TARGET='google_workspace'",
+  "LUX_PILOT_WRITE_TESTS=1",
   "Required Firebase Secrets",
   "Active Or Ready Profiles",
   "Future Profiles",
@@ -108,6 +121,50 @@ if (packet) {
   }
   for (const guard of ["Set Firebase secrets only after approval.", "Run live operator report QA."]) {
     if (!packet.workflowSelection?.approvalChecklist?.includes(guard)) issue(`workflow selection approval checklist missing ${guard}`);
+  }
+  if (!packet.recommendedExternalActivation) {
+    issue("private integration request missing recommendedExternalActivation");
+  } else {
+    const activation = packet.recommendedExternalActivation;
+    if (activation.target !== "google_workspace") issue("recommended external target should be google_workspace");
+    if (activation.label !== "Google Workspace Intake") issue("recommended external label should be Google Workspace Intake");
+    if (activation.providerClass !== "workspace_automation") issue("recommended external provider class mismatch");
+    if (activation.targetSecretValue !== "google_workspace") issue("recommended external target secret value mismatch");
+    if (activation.approvalRequired !== true) issue("recommended external activation must require approval");
+    for (const queue of ["submission_review", "press_contact", "partner_licensing", "strategic_access", "access_review"]) {
+      if (!activation.queueCoverage?.includes(queue)) issue(`recommended external activation missing queue ${queue}`);
+    }
+    for (const field of ["workflow owner", "receiver owner", "replay owner", "rollback owner", "legal-version evidence owner"]) {
+      if (!activation.requiredApprovalFields?.includes(field)) issue(`recommended external activation missing approval field ${field}`);
+    }
+    for (const marker of [
+      "LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE=1",
+      "LUX_PRIVATE_INTEGRATION_ACTIVATION_DRY_RUN=1",
+      "LUX_FORM_INTEGRATION_TARGET='google_workspace'",
+      "node tools/activate-private-integration.mjs"
+    ]) {
+      if (!activation.dryRunCommand?.includes(marker)) issue(`recommended dry-run command missing ${marker}`);
+    }
+    if (!activation.activationCommand?.includes("LUX_FORM_INTEGRATION_TARGET='google_workspace'")) {
+      issue("recommended activation command missing google_workspace target");
+    }
+    for (const check of [
+      "node tools/qa-provider-readiness.mjs",
+      "node tools/qa-live-operator-report.mjs",
+      "LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.mjs",
+      "LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs"
+    ]) {
+      if (!activation.postActivationChecks?.includes(check)) issue(`recommended external activation missing check ${check}`);
+    }
+    for (const acceptance of [
+      "Firebase handoff remains the rollback path until the external receiver proves live writes and replay.",
+      "No public route exposes the receiver URL, provider account data, field IDs, tokens, or workflow implementation details."
+    ]) {
+      if (!activation.acceptance?.includes(acceptance)) issue(`recommended external activation missing acceptance ${acceptance}`);
+    }
+    if (!activation.rollback?.includes("Return FORM_INTEGRATION_TARGET to firebase_handoff.")) {
+      issue("recommended external activation missing firebase_handoff rollback");
+    }
   }
   for (const queueId of ["membership_waitlist", "submission_review", "event_access", "press_contact", "partner_licensing", "strategic_access", "access_review"]) {
     const queue = packet.workflowMatrix?.queues?.find((item) => item.id === queueId);

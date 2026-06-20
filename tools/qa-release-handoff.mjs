@@ -275,6 +275,7 @@ for (const marker of [
   "Record current live pilot write-gate evidence for the deployed asset version",
   "Add no-secret private workflow selection packet recommending Google Workspace first while Firebase handoff remains active",
   "Add private integration activation dry-run QA",
+  "Add Google Workspace first-activation packet with approval fields, dry-run command, live acceptance checks, and Firebase rollback",
   "Require final release-gate write mode for launch-day approval",
   "Require browser and live coverage in final release-gate approval mode",
   "Add final launch runbook for DNS, inbox, legal, write tests, and gate approval",

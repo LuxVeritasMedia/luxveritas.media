@@ -44,6 +44,12 @@ const profiles = Array.isArray(registry.profiles) ? registry.profiles : [];
 const activeProfiles = profiles.filter((profile) => profile.status !== "future");
 const futureProfiles = profiles.filter((profile) => profile.status === "future");
 const fieldMapProfiles = Array.isArray(fieldMap.profiles) ? fieldMap.profiles : [];
+const recommendedTarget = workflowSelection.recommendedFirstExternalTarget || "";
+const recommendedProfile = profiles.find((profile) => profile.id === recommendedTarget) || null;
+const recommendedMapping = fieldMapProfiles.find((profile) => profile.id === recommendedTarget) || null;
+const recommendedActivation = Array.isArray(workflowSelection.recommendedActivationOrder)
+  ? workflowSelection.recommendedActivationOrder.find((item) => item.profile === recommendedTarget)
+  : null;
 const privateHandoffGate = (Array.isArray(launch.gates) ? launch.gates : [])
   .find((gate) => gate.id === "private_handoff");
 const integrationContractVersion = contractJs.match(/integrationContractVersion\s*=\s*"([^"]+)"/)?.[1] || "luxveritas.form_submission.v1";
@@ -150,6 +156,50 @@ const packet = {
     approvalChecklist: workflowSelection.approvalChecklist || [],
     doNotDo: workflowSelection.doNotDo || []
   },
+  recommendedExternalActivation: recommendedProfile ? {
+    target: recommendedProfile.id,
+    label: recommendedProfile.label,
+    status: recommendedProfile.status,
+    providerClass: recommendedProfile.providerClass,
+    targetSecretValue: recommendedProfile.targetSecretValue,
+    approvalRequired: recommendedProfile.status === "future",
+    queueCoverage: recommendedActivation?.queueCoverage || [],
+    primaryJob: recommendedActivation?.primaryJob || "",
+    destinationType: recommendedMapping?.destinationType || "",
+    primaryRecord: recommendedMapping?.primaryRecord || "",
+    allowedActions: recommendedProfile.allowedActions || [],
+    requiredApprovalFields: [
+      "workflow owner",
+      "receiver owner",
+      "receiver location approved outside this repo",
+      "signing secret approved outside this repo",
+      "replay owner",
+      "rollback owner",
+      "retention expectation",
+      "legal-version evidence owner"
+    ],
+    dryRunCommand: `LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE=1 LUX_PRIVATE_INTEGRATION_ACTIVATION_DRY_RUN=1 LUX_FORM_INTEGRATION_URL='https://approved-${recommendedProfile.id.replace(/_/g, "-")}-receiver.example/intake' LUX_FORM_INTEGRATION_SIGNING_SECRET='approved-shared-secret' LUX_FORM_INTEGRATION_TARGET='${recommendedProfile.targetSecretValue}' node tools/activate-private-integration.mjs`,
+    activationCommand: `LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE=1 LUX_FORM_INTEGRATION_URL='https://approved-${recommendedProfile.id.replace(/_/g, "-")}-receiver.example/intake' LUX_FORM_INTEGRATION_SIGNING_SECRET='approved-shared-secret' LUX_FORM_INTEGRATION_TARGET='${recommendedProfile.targetSecretValue}' node tools/activate-private-integration.mjs`,
+    postActivationChecks: [
+      "node tools/qa-provider-readiness.mjs",
+      "node tools/qa-live-operator-report.mjs",
+      "LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.mjs",
+      "LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs"
+    ],
+    acceptance: [
+      "Firebase handoff remains the rollback path until the external receiver proves live writes and replay.",
+      "Provider readiness reports the recommended target active without printing destination values.",
+      "The protected operator report shows the selected target and recent accepted handoffs.",
+      "A live form matrix write reaches inbox delivery and the selected private handoff.",
+      "No public route exposes the receiver URL, provider account data, field IDs, tokens, or workflow implementation details."
+    ],
+    rollback: [
+      "Return FORM_INTEGRATION_TARGET to firebase_handoff.",
+      "Restore the Firebase receiver URL and signing material through Firebase Secret Manager.",
+      "Redeploy submitForm, reportActivity, and receivePrivateHandoff.",
+      "Run provider readiness, live operator report QA, and one no-write live matrix check."
+    ]
+  } : null,
   requiredSecrets,
   approvedProfiles: activeProfiles.map((profile) => ({
     id: profile.id,
@@ -270,6 +320,42 @@ ${workflowRows || "- None"}
 - Rationale: ${packet.workflowSelection.recommendationRationale}
 
 ${packet.workflowSelection.recommendedActivationOrder.map((item) => `- ${item.rank}. ${item.profile}: ${item.decision}; queues: ${item.queueCoverage.join(", ")}; job: ${item.primaryJob}; approval required: ${item.approvalRequired ? "yes" : "no"}`).join("\n") || "- None"}
+
+## Recommended First External Activation
+
+- Target: ${packet.recommendedExternalActivation?.target || "missing"}
+- Label: ${packet.recommendedExternalActivation?.label || "missing"}
+- Status: ${packet.recommendedExternalActivation?.status || "missing"}
+- Provider class: ${packet.recommendedExternalActivation?.providerClass || "missing"}
+- Target secret value: ${packet.recommendedExternalActivation?.targetSecretValue || "missing"}
+- Approval required: ${packet.recommendedExternalActivation?.approvalRequired ? "yes" : "no"}
+- Queue coverage: ${packet.recommendedExternalActivation?.queueCoverage?.join(", ") || "missing"}
+- Primary job: ${packet.recommendedExternalActivation?.primaryJob || "missing"}
+- Required approval fields: ${packet.recommendedExternalActivation?.requiredApprovalFields?.join(", ") || "missing"}
+
+Dry run:
+
+\`\`\`bash
+${packet.recommendedExternalActivation?.dryRunCommand || "missing"}
+\`\`\`
+
+Activation after approval:
+
+\`\`\`bash
+${packet.recommendedExternalActivation?.activationCommand || "missing"}
+\`\`\`
+
+Post-activation checks:
+
+${packet.recommendedExternalActivation?.postActivationChecks?.map((item) => `- ${item}`).join("\n") || "- None"}
+
+Target acceptance:
+
+${packet.recommendedExternalActivation?.acceptance?.map((item) => `- ${item}`).join("\n") || "- None"}
+
+Rollback:
+
+${packet.recommendedExternalActivation?.rollback?.map((item) => `- ${item}`).join("\n") || "- None"}
 
 ## Required Firebase Secrets
 
