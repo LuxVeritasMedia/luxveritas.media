@@ -24,7 +24,7 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070909'/%3E%3Cpath d='M18 48V16h6v27h18v5H18Zm21-32h7L34 48h-6l11-32Z' fill='%23c8a86a'/%3E%3C/svg%3E" />
     <link rel="manifest" href="../../site.webmanifest" />
     <link rel="apple-touch-icon" href="../../assets/luxveritas-icon.svg" />
-    <link rel="stylesheet" href="../../styles.css?v=20260620-fan-reactions" />
+    <link rel="stylesheet" href="../../styles.css?v=20260620-retention-paths" />
   </head>
   <body data-page="/portal/reporting.html">
     <a class="skip-link" href="#main">Skip to content</a>
@@ -100,6 +100,16 @@
       </div>
       <div class="report-detail">
         <div>
+          <p class="kicker">Retention Paths</p>
+          <h3 data-private-retention="summary">Load private activity.</h3>
+          <p data-private-retention="detail">Fan journey and brand-house clicks appear here after approved activity loads.</p>
+        </div>
+        <div>
+          <ul class="report-list" data-private-retention="list"><li>Load private activity to view retention paths.</li></ul>
+        </div>
+      </div>
+      <div class="report-detail">
+        <div>
           <p class="kicker">Intake Queue</p>
           <h3 data-private-queue="summary">Load private activity.</h3>
           <p data-private-queue="detail">Screened requests appear here with queue pressure, SLA, and next action.</p>
@@ -161,6 +171,14 @@
         <div>
           <p class="kicker">Destinations</p>
           <ul class="report-list" data-private-summary="destinations"><li>Load private activity to view clicked routes.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Pathway Cards</p>
+          <ul class="report-list" data-private-summary="pathways"><li>Load private activity to view retention cards.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Pathway Surfaces</p>
+          <ul class="report-list" data-private-summary="pathway-surfaces"><li>Load private activity to view pathway surfaces.</li></ul>
         </div>
         <div>
           <p class="kicker">Playback</p>
@@ -275,6 +293,6 @@
     <button class="button button-primary" type="submit" data-submit-form data-default-label="Send to Lux Veritas">Send to Lux Veritas</button>
   </form>
 </dialog>
-    <script src="../../app.js?v=20260620-fan-reactions"></script>
+    <script src="../../app.js?v=20260620-retention-paths"></script>
   </body>
 </html>

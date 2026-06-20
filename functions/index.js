@@ -773,6 +773,59 @@ function buildIntakeQueueWorkbench(submissionItems) {
   };
 }
 
+function buildRetentionPathways(eventItems) {
+  const pathwayItems = eventItems.filter((item) => {
+    if (item.event !== "link_click") return false;
+    const surface = text(item.detail?.surface, 80);
+    const intent = text(item.detail?.intent, 120);
+    const ctaId = text(item.detail?.cta_id, 180);
+    return surface === "fan_flywheel"
+      || surface === "brand_house"
+      || intent.startsWith("flywheel_")
+      || intent.startsWith("house_")
+      || ctaId.startsWith("fan_flywheel__")
+      || ctaId.startsWith("brand_house__");
+  });
+
+  const aggregate = new Map();
+  for (const item of pathwayItems) {
+    const detail = item.detail || {};
+    const surface = text(detail.surface, 80) || "pathway";
+    const intent = text(detail.intent, 120) || "pathway_click";
+    const destination = text(detail.destination, 240) || item.page || "";
+    const label = text(detail.label || detail.title || intent, 160);
+    const ctaId = text(detail.cta_id, 180) || `${surface}:${intent}:${destination}`;
+    const key = `${surface}|${intent}|${destination}|${ctaId}`;
+    const current = aggregate.get(key) || {
+      label,
+      count: 0,
+      surface,
+      intent,
+      destination,
+      cta_id: ctaId
+    };
+    current.count += 1;
+    aggregate.set(key, current);
+  }
+
+  const topPathways = [...aggregate.values()]
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
+    .slice(0, 8);
+  const fanFlywheel = pathwayItems.filter((item) => item.detail?.surface === "fan_flywheel" || text(item.detail?.intent, 120).startsWith("flywheel_"));
+  const brandHouse = pathwayItems.filter((item) => item.detail?.surface === "brand_house" || text(item.detail?.intent, 120).startsWith("house_"));
+
+  return {
+    sampleSize: eventItems.length,
+    totalClicks: pathwayItems.length,
+    fanFlywheelClicks: fanFlywheel.length,
+    brandHouseClicks: brandHouse.length,
+    topPathways,
+    bySurface: topCounts(pathwayItems, (item) => item.detail?.surface),
+    byIntent: topCounts(pathwayItems, (item) => item.detail?.intent || item.detail?.cta_id),
+    byDestination: topCounts(pathwayItems, (item) => item.detail?.destination)
+  };
+}
+
 function summarizeActivity(submissionDocs, eventDocs) {
   const submissionItems = submissionDocs.map((snapshot) => snapshot.data() || {});
   const eventItems = eventDocs.map((snapshot) => snapshot.data() || {});
@@ -808,6 +861,7 @@ function summarizeActivity(submissionDocs, eventDocs) {
       fanReactions: topCounts(reactionItems, (item) => item.detail?.reaction_label || item.detail?.reaction),
       fanReactionsBySource: topCounts(reactionItems, (item) => item.detail?.reporting_key || item.detail?.title)
     },
+    retentionPaths: buildRetentionPathways(eventItems),
     intakeQueue: buildIntakeQueueWorkbench(submissionItems),
     workflowTargets: buildWorkflowTargetRecommendations(submissionItems)
   };

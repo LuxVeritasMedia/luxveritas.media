@@ -112,7 +112,7 @@ const launchChecklistPath = "/data/lux-launch-readiness.json";
 const launchCloseoutPath = "/data/lux-launch-closeout-public.json";
 const legalReviewPath = "/data/lux-legal-review.json";
 const submitTimeoutMs = 8000;
-const publicBuildVersion = "20260620-fan-reactions";
+const publicBuildVersion = "20260620-retention-paths";
 const allowedInterestPaths = new Set(["music", "film", "events", "drops", "community", "codex", "create"]);
 let activeFormType = "request";
 let mediaManifestPromise = null;
@@ -1272,6 +1272,14 @@ function privateReportRows(report) {
       page: "/portal/reporting.html",
       label: item.recommendedLabel || item.recommendedPrimary || "",
       detail: `${item.label || item.queue || "Queue"}: ${item.count || 0} signal${item.count === 1 ? "" : "s"}`
+    })),
+    ...(report.summary?.retentionPaths?.topPathways || []).map((item) => ({
+      source: "protected",
+      type: "retention_path",
+      timestamp: report.generatedAt || "",
+      page: "/portal/reporting.html",
+      label: item.label || item.intent || item.cta_id || "",
+      detail: `${item.surface || "pathway"} · ${item.destination || "destination"} · ${item.count || 0} click${item.count === 1 ? "" : "s"}`
     }))
   ];
 }
@@ -1333,6 +1341,7 @@ function renderPrivateReport(report) {
   renderPrivateDelivery(panel, report.delivery);
   renderPrivateQueue(panel, report.summary?.intakeQueue);
   renderPrivateWorkflow(panel, report.summary?.workflowTargets);
+  renderPrivateRetention(panel, report.summary?.retentionPaths);
   renderLaunchReadinessReport(report);
   renderPrivateFunnel(panel, report.summary?.funnel || report.funnel);
   renderPrivateSummary(panel, "forms", report.summary?.submissions?.byFormType);
@@ -1345,6 +1354,8 @@ function renderPrivateReport(report) {
   renderPrivateSummary(panel, "events", report.summary?.events?.byEvent);
   renderPrivateSummary(panel, "ctas", report.summary?.events?.byCtaId || report.summary?.events?.byCtaLabel);
   renderPrivateSummary(panel, "destinations", report.summary?.events?.byDestination || report.summary?.events?.byPage);
+  renderPrivateSummary(panel, "pathways", report.summary?.retentionPaths?.topPathways);
+  renderPrivateSummary(panel, "pathway-surfaces", report.summary?.retentionPaths?.bySurface);
   renderPrivateSummary(panel, "playback", report.summary?.events?.playbackByAction);
   renderPrivateSummary(panel, "playback-sources", report.summary?.events?.playbackBySourceType || report.summary?.events?.playbackByReportingKey);
   renderPrivateSummary(panel, "playback-milestones", report.summary?.events?.playbackMilestones);
@@ -1370,6 +1381,30 @@ function renderPrivateReport(report) {
     const time = item.updatedAt || item.createdAt ? new Date(item.updatedAt || item.createdAt).toLocaleString() : "Recent";
     return `<li><strong>${escapeHtml(label)}</strong><span>${escapeHtml(detail)}</span><small>${escapeHtml(time)}</small></li>`;
   }).join("");
+}
+
+function renderPrivateRetention(panel, retention = {}) {
+  const summary = panel.querySelector('[data-private-retention="summary"]');
+  const detail = panel.querySelector('[data-private-retention="detail"]');
+  const list = panel.querySelector('[data-private-retention="list"]');
+  const total = retention.totalClicks ?? 0;
+  const flywheel = retention.fanFlywheelClicks ?? 0;
+  const brandHouse = retention.brandHouseClicks ?? 0;
+  if (summary) {
+    summary.textContent = `${total} pathway click${total === 1 ? "" : "s"}`;
+  }
+  if (detail) {
+    detail.textContent = `${flywheel} fan journey · ${brandHouse} brand house · sample ${retention.sampleSize ?? 0}`;
+  }
+  if (!list) return;
+  const items = Array.isArray(retention.topPathways) ? retention.topPathways : [];
+  if (!items.length) {
+    list.innerHTML = "<li>Load private activity to view retention paths.</li>";
+    return;
+  }
+  list.innerHTML = items.map((item) => (
+    `<li><strong>${escapeHtml(item.label || item.intent || item.cta_id || "Pathway")}</strong><span>${escapeHtml(item.count || 0)} click${item.count === 1 ? "" : "s"}</span><small>${escapeHtml(item.surface || "pathway")} · ${escapeHtml(item.destination || "")}</small></li>`
+  )).join("");
 }
 
 function renderPrivateQueue(panel, queue = {}) {

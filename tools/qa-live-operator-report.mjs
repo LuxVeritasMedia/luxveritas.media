@@ -229,6 +229,50 @@ function checkIntakeQueue(report) {
   }
 }
 
+function checkRetentionPaths(report) {
+  const retention = valueAt(report, "summary.retentionPaths");
+  if (!retention || typeof retention !== "object" || Array.isArray(retention)) {
+    issue("/api/report: summary.retentionPaths is missing or not an object");
+    return;
+  }
+
+  for (const field of ["sampleSize", "totalClicks", "fanFlywheelClicks", "brandHouseClicks"]) {
+    if (typeof retention[field] !== "number") {
+      issue(`/api/report: summary.retentionPaths.${field} is missing or not numeric`);
+    }
+  }
+
+  for (const path of [
+    "summary.retentionPaths.topPathways",
+    "summary.retentionPaths.bySurface",
+    "summary.retentionPaths.byIntent",
+    "summary.retentionPaths.byDestination"
+  ]) {
+    const items = assertArray(report, path);
+    assertSummaryArrayItems(items, path);
+  }
+
+  for (const [index, item] of (retention.topPathways || []).entries()) {
+    for (const field of ["surface", "intent", "destination", "cta_id"]) {
+      if (typeof item[field] !== "string" || !item[field]) {
+        issue(`/api/report: summary.retentionPaths.topPathways[${index}].${field} is missing`);
+      }
+    }
+  }
+
+  if (expectReady) {
+    if (retention.totalClicks < 2) {
+      issue("/api/report: summary.retentionPaths.totalClicks should include live pathway click records");
+    }
+    const surfaces = new Set((retention.bySurface || []).map((item) => item.label));
+    const topPathways = retention.topPathways || [];
+    const hasFlywheel = surfaces.has("fan_flywheel") || topPathways.some((item) => item.surface === "fan_flywheel" || item.intent === "flywheel_listen");
+    const hasBrandHouse = surfaces.has("brand_house") || topPathways.some((item) => item.surface === "brand_house" || item.intent === "house_lvr");
+    if (!hasFlywheel) issue("/api/report: retention paths missing fan_flywheel signal");
+    if (!hasBrandHouse) issue("/api/report: retention paths missing brand_house signal");
+  }
+}
+
 function scanSecretValues(value, path = "$") {
   if (Array.isArray(value)) {
     value.forEach((item, index) => scanSecretValues(item, `${path}[${index}]`));
@@ -308,6 +352,7 @@ function checkReportBody(report) {
   }
   checkIntakeQueue(report);
   checkWorkflowTargets(report);
+  checkRetentionPaths(report);
 
   scanSecretValues(report);
 }

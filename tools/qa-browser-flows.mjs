@@ -121,6 +121,33 @@ const mockReport = {
       { label: "Media actions", value: 64, detail: "Listen, watch, radio, and media queue intent" },
       { label: "Playback events", value: 30, detail: "7 ended signals" }
     ],
+    retentionPaths: {
+      sampleSize: 128,
+      totalClicks: 37,
+      fanFlywheelClicks: 23,
+      brandHouseClicks: 14,
+      topPathways: [
+        {
+          label: "Listen Start With Sound",
+          count: 23,
+          surface: "fan_flywheel",
+          intent: "flywheel_listen",
+          destination: "/music.html",
+          cta_id: "fan_flywheel__link_click__flywheel_listen"
+        },
+        {
+          label: "Lux Veritas Records",
+          count: 14,
+          surface: "brand_house",
+          intent: "house_lvr",
+          destination: "/music.html",
+          cta_id: "brand_house__link_click__house_lvr"
+        }
+      ],
+      bySurface: [{ label: "fan_flywheel", count: 23 }, { label: "brand_house", count: 14 }],
+      byIntent: [{ label: "flywheel_listen", count: 23 }, { label: "house_lvr", count: 14 }],
+      byDestination: [{ label: "/music.html", count: 37 }]
+    },
     submissions: {
       byFormType: [{ label: "fan", count: 18 }],
       byRolePath: [{ label: "Member", count: 24 }],
@@ -977,6 +1004,11 @@ async function operatorReportFlow(page, baseUrl) {
   const eventsSummary = await page.locator('[data-private-summary="events"]').innerText();
   const ctasSummary = await page.locator('[data-private-summary="ctas"]').innerText();
   const destinationsSummary = await page.locator('[data-private-summary="destinations"]').innerText();
+  const pathwaysSummary = await page.locator('[data-private-summary="pathways"]').innerText();
+  const pathwaySurfaceSummary = await page.locator('[data-private-summary="pathway-surfaces"]').innerText();
+  const retentionSummary = await page.locator('[data-private-retention="summary"]').innerText();
+  const retentionDetail = await page.locator('[data-private-retention="detail"]').innerText();
+  const retentionList = await page.locator('[data-private-retention="list"]').innerText();
   const playbackSummary = await page.locator('[data-private-summary="playback"]').innerText();
   const playbackSourcesSummary = await page.locator('[data-private-summary="playback-sources"]').innerText();
   const playbackMilestonesSummary = await page.locator('[data-private-summary="playback-milestones"]').innerText();
@@ -1024,6 +1056,11 @@ async function operatorReportFlow(page, baseUrl) {
     ["events", eventsSummary],
     ["ctas", ctasSummary],
     ["destinations", destinationsSummary],
+    ["pathways", pathwaysSummary],
+    ["pathway-surfaces", pathwaySurfaceSummary],
+    ["retention-summary", retentionSummary],
+    ["retention-detail", retentionDetail],
+    ["retention-list", retentionList],
     ["playback", playbackSummary],
     ["playback-sources", playbackSourcesSummary],
     ["playback-milestones", playbackMilestonesSummary],
@@ -1124,6 +1161,28 @@ async function operatorReportFlow(page, baseUrl) {
   }
   if (!/media__media_action__play/.test(ctasSummary)) {
     issues.push(`/portal/reporting.html: CTA signal summary missing mocked CTA ID`);
+  }
+  if (!/37 pathway clicks/.test(retentionSummary) || !/23 fan journey/.test(retentionDetail) || !/14 brand house/.test(retentionDetail)) {
+    issues.push(`/portal/reporting.html: retention path summary did not render totals`);
+  }
+  if (!/Listen Start With Sound/.test(retentionList) || !/Lux Veritas Records/.test(retentionList)) {
+    issues.push(`/portal/reporting.html: retention path list missing mocked pathway cards`);
+  }
+  if (!/fan_flywheel/.test(pathwaySurfaceSummary) || !/brand_house/.test(pathwaySurfaceSummary)) {
+    issues.push(`/portal/reporting.html: pathway surface summary missing mocked surfaces`);
+  }
+  if (!/flywheel_listen/.test(pathwaysSummary) && !/Listen Start With Sound/.test(pathwaysSummary)) {
+    issues.push(`/portal/reporting.html: pathway card summary missing mocked flywheel path`);
+  }
+  const pathwayExportReady = await page.evaluate(() => {
+    return privateReportRows(privateReportCache).some((row) => (
+      row.type === "retention_path"
+      && row.label === "Listen Start With Sound"
+      && /fan_flywheel/.test(row.detail)
+    ));
+  });
+  if (!pathwayExportReady) {
+    issues.push(`/portal/reporting.html: retention paths were missing from private export rows`);
   }
   if (!/ended/.test(playbackSummary) || !/play/.test(playbackSummary)) {
     issues.push(`/portal/reporting.html: playback action summary missing mocked lifecycle values`);

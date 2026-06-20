@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260620-fan-reactions";
+const CACHE_NAME = "luxveritas-static-20260620-retention-paths";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260620-fan-reactions",
-  "/app.js?v=20260620-fan-reactions",
+  "/styles.css?v=20260620-retention-paths",
+  "/app.js?v=20260620-retention-paths",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"

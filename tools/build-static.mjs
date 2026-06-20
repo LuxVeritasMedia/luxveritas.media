@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260620-fan-reactions";
+const assetVersion = "20260620-retention-paths";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 const brandHouse = JSON.parse(await readFile("data/lux-brand-house.json", "utf8"));
@@ -729,6 +729,16 @@ function portalReport() {
       </div>
       <div class="report-detail">
         <div>
+          <p class="kicker">Retention Paths</p>
+          <h3 data-private-retention="summary">Load private activity.</h3>
+          <p data-private-retention="detail">Fan journey and brand-house clicks appear here after approved activity loads.</p>
+        </div>
+        <div>
+          <ul class="report-list" data-private-retention="list"><li>Load private activity to view retention paths.</li></ul>
+        </div>
+      </div>
+      <div class="report-detail">
+        <div>
           <p class="kicker">Intake Queue</p>
           <h3 data-private-queue="summary">Load private activity.</h3>
           <p data-private-queue="detail">Screened requests appear here with queue pressure, SLA, and next action.</p>
@@ -790,6 +800,14 @@ function portalReport() {
         <div>
           <p class="kicker">Destinations</p>
           <ul class="report-list" data-private-summary="destinations"><li>Load private activity to view clicked routes.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Pathway Cards</p>
+          <ul class="report-list" data-private-summary="pathways"><li>Load private activity to view retention cards.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Pathway Surfaces</p>
+          <ul class="report-list" data-private-summary="pathway-surfaces"><li>Load private activity to view pathway surfaces.</li></ul>
         </div>
         <div>
           <p class="kicker">Playback</p>
