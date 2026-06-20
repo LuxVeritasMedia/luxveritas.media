@@ -48,6 +48,12 @@ if (report) {
   if (report.phaseStatus?.version !== "2026-06-20-phase-status") issue("phase status version mismatch");
   if (report.phaseStatus?.currentPhase?.id !== "phase-5") issue("phase status current phase must be phase-5");
   if (report.phaseStatus?.currentPhase?.status !== "active_pilot") issue("phase status current phase must be active_pilot");
+  if (report.phaseStatus?.pilotStatus !== "pilot_ready_with_public_launch_blockers") issue("phase status pilotStatus must be pilot_ready_with_public_launch_blockers");
+  if (report.phaseStatus?.pilotEvidence?.assetVersion !== report.build?.localAssetVersion) issue("phase status pilot evidence asset version must match local build");
+  if (report.phaseStatus?.pilotEvidence?.qaRunId !== report.pilotWriteEvidence?.qaRunId) issue("phase status pilot evidence qaRunId must match pilot write evidence");
+  for (const capability of ["live_form_writes", "live_event_writes", "inbox_delivery", "private_handoff", "operator_reporting", "post_write_reconciliation"]) {
+    if (!report.phaseStatus?.pilotEvidence?.verifiedCapabilities?.includes(capability)) issue(`phase status pilot evidence missing ${capability}`);
+  }
   if (!/Phase 5 pilot prep is active/i.test(report.phase || "")) issue(`phase summary mismatch: ${report.phase || "missing"}`);
   if (!Array.isArray(report.phaseStatus?.publicLaunchBlockers) || !report.phaseStatus.publicLaunchBlockers.includes("privacy_review") || !report.phaseStatus.publicLaunchBlockers.includes("terms_review")) {
     issue("phase status must report Privacy and Terms as public launch blockers");

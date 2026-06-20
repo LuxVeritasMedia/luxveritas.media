@@ -625,6 +625,20 @@ try {
   if (currentPhase.id !== "phase-5" || currentPhase.status !== "active_pilot") {
     issues.push("data/lux-phase-status.json: currentPhase must be phase-5 active_pilot");
   }
+  if (phaseStatus.pilotStatus !== "pilot_ready_with_public_launch_blockers") {
+    issues.push("data/lux-phase-status.json: pilotStatus must be pilot_ready_with_public_launch_blockers");
+  }
+  if (phaseStatus.pilotEvidence?.assetVersion !== "20260620-brand-house-rail") {
+    issues.push("data/lux-phase-status.json: pilotEvidence assetVersion mismatch");
+  }
+  if (!/^\d{14}$/.test(phaseStatus.pilotEvidence?.qaRunId || "")) {
+    issues.push("data/lux-phase-status.json: pilotEvidence qaRunId missing or invalid");
+  }
+  for (const capability of ["live_form_writes", "live_event_writes", "inbox_delivery", "private_handoff", "operator_reporting", "post_write_reconciliation"]) {
+    if (!phaseStatus.pilotEvidence?.verifiedCapabilities?.includes(capability)) {
+      issues.push(`data/lux-phase-status.json: missing pilot evidence capability ${capability}`);
+    }
+  }
   if (!/Full public release is still blocked by Privacy and Terms approval/i.test(currentPhase.summary || "")) {
     issues.push("data/lux-phase-status.json: current phase summary must name Privacy and Terms approval as launch blockers");
   }

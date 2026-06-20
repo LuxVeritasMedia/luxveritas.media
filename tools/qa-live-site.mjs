@@ -336,6 +336,15 @@ try {
     if (currentPhase.id !== "phase-5" || currentPhase.status !== "active_pilot") {
       issues.push("/data/lux-phase-status.json: current phase mismatch");
     }
+    if (phaseStatus.pilotStatus !== "pilot_ready_with_public_launch_blockers") {
+      issues.push("/data/lux-phase-status.json: pilotStatus mismatch");
+    }
+    if (phaseStatus.pilotEvidence?.assetVersion !== liveBuildManifest?.assetVersion) {
+      issues.push("/data/lux-phase-status.json: pilotEvidence asset version does not match live build manifest");
+    }
+    if (!phaseStatus.pilotEvidence?.verifiedCapabilities?.includes("post_write_reconciliation")) {
+      issues.push("/data/lux-phase-status.json: missing post-write reconciliation evidence");
+    }
     for (const blocker of ["privacy_review", "terms_review"]) {
       if (!phaseStatus.publicLaunchBlockers?.includes(blocker)) {
         issues.push(`/data/lux-phase-status.json: missing public launch blocker ${blocker}`);

@@ -1,16 +1,32 @@
 {
   "schemaVersion": "luxveritas.phase_status.v1",
   "version": "2026-06-20-phase-status",
-  "updatedAt": "2026-06-20T00:00:00.000Z",
+  "updatedAt": "2026-06-20T17:20:00.000Z",
   "currentPhase": {
     "id": "phase-5",
     "number": 5,
     "label": "Portal Pilot Prep",
     "status": "active_pilot",
-    "summary": "Phase 5 pilot prep is active: the public site, capture layer, media preview player, fan reactions, private access shell, operator reporting, private intake queue workbench, and pilot write gate are live. Full public release is still blocked by Privacy and Terms approval."
+    "summary": "Phase 5 pilot prep is active and technically pilot-ready: the public site, capture layer, media preview player, fan reactions, private access shell, operator reporting, private intake queue workbench, and pilot write gate are live. Full public release is still blocked by Privacy and Terms approval."
   },
   "publicLaunchStatus": "blocked_by_external_legal_approval",
-  "pilotStatus": "pilot_ready_when_live_checks_pass",
+  "pilotStatus": "pilot_ready_with_public_launch_blockers",
+  "pilotEvidence": {
+    "assetVersion": "20260620-brand-house-rail",
+    "qaRunId": "20260620140139",
+    "result": "passed",
+    "evidenceFile": "data/lux-pilot-write-evidence.json",
+    "verifiedCapabilities": [
+      "live_form_writes",
+      "live_event_writes",
+      "inbox_delivery",
+      "private_handoff",
+      "operator_reporting",
+      "post_write_reconciliation",
+      "media_playback_reporting",
+      "domain_readiness"
+    ]
+  },
   "completedPhases": [
     {
       "id": "phase-1",

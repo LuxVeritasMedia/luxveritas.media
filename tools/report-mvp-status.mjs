@@ -193,6 +193,7 @@ const report = {
     },
     publicLaunchStatus: phaseStatus.publicLaunchStatus || "",
     pilotStatus: phaseStatus.pilotStatus || "",
+    pilotEvidence: phaseStatus.pilotEvidence || null,
     completedPhases: Array.isArray(phaseStatus.completedPhases) ? phaseStatus.completedPhases : [],
     activeWorkstreams: Array.isArray(phaseStatus.activeWorkstreams) ? phaseStatus.activeWorkstreams : [],
     deferredBoundaries: Array.isArray(phaseStatus.deferredBoundaries) ? phaseStatus.deferredBoundaries : [],
