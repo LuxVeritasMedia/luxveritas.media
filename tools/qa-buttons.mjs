@@ -191,6 +191,12 @@ for (const file of files) {
     }
   }
 
+  if (rel === "music.html") {
+    if (!/<div class="hero-actions">[\s\S]*data-media-action="play"[\s\S]*data-media-action="watch"[\s\S]*data-open-form="fan"[\s\S]*<\/div>/i.test(html)) {
+      issues.push(`${rel}: hero Listen/Watch/Join CTAs must route to player play, player watch, and fan capture`);
+    }
+  }
+
   if (rel === "portal/reporting.html") {
     if (!html.includes('data-private-delivery="status"')) {
       issues.push(`${rel}: missing private delivery readiness tile`);

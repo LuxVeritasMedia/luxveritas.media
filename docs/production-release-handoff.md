@@ -9,7 +9,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Live apex: `https://luxveritas.media`
 - Firebase project: `lux-veritas-media`
 - GitHub repo: `LuxVeritasMedia/luxveritas.media`
-- Current live asset version: `20260620-retention-paths`
+- Current live asset version: `20260620-music-hero-player`
 - Current phase: Phase 5 of 10, portal pilot prep active
 - Phase 4 closeout: legal approval remains open before full public release
 - Next major phase: authenticated portal shell with approved auth and role gates
@@ -28,6 +28,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Browser-flow QA covers stored capture, email-draft fallback, rate-limit recovery, portal fallback, and submit-button reset.
 - Portal sign-in is a screened access capture, not a real account login yet.
 - Lux Player MVP has audio, visual, and radio slots with approved preview sources.
+- Music hero Listen and Watch CTAs now activate the player audio and video sources directly.
 - Live media-source QA verifies the exact manifest source URLs, content types, and audio/video signatures for the audio, visual, and radio slots.
 - Listen, Watch, and Radio player actions select the matching source and return stable reporting keys.
 - Media player fan reactions capture replay, invite, collect, and create intent as local signal and protected operator reporting.

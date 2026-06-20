@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260620-retention-paths";
+const CACHE_NAME = "luxveritas-static-20260620-music-hero-player";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260620-retention-paths",
-  "/app.js?v=20260620-retention-paths",
+  "/styles.css?v=20260620-music-hero-player",
+  "/app.js?v=20260620-music-hero-player",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"

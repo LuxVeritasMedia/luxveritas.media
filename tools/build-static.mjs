@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260620-retention-paths";
+const assetVersion = "20260620-music-hero-player";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 const brandHouse = JSON.parse(await readFile("data/lux-brand-house.json", "utf8"));
@@ -494,7 +494,7 @@ function music() {
     path: "/music.html",
     title: "Music | Lux Veritas",
     description: "Sound as signal. Lux Veritas releases music as the first doorway into a larger world.",
-    body: `${pageHero("Music", "Sound as signal.", "Lux Veritas releases music as the first doorway into a larger world: songs, visuals, live rooms, stories, and fan participation moving together.\n\nEvery release is intentional, protected, and built to last.", `<div class="hero-actions"><a class="button button-primary" href="/spmvp.html">Listen</a><button class="button button-quiet" type="button" data-open-form="fan">Watch</button><button class="button button-quiet" type="button" data-open-form="fan">Join for early access</button></div>`)}
+    body: `${pageHero("Music", "Sound as signal.", "Lux Veritas releases music as the first doorway into a larger world: songs, visuals, live rooms, stories, and fan participation moving together.\n\nEvery release is intentional, protected, and built to last.", `<div class="hero-actions"><button class="button button-primary" type="button" data-media-action="play">Listen</button><button class="button button-quiet" type="button" data-media-action="watch">Watch</button><button class="button button-quiet" type="button" data-open-form="fan">Join for early access</button></div>`)}
     ${mediaPlayerShell("music")}
     <section class="section"><div class="release-rail">${releaseCards.map(([title, type, body]) => `<article><span>${type}</span><h3>${title}</h3><p>${body}</p></article>`).join("")}</div></section>
     <section class="section split-band"><div><p class="kicker">Current Motion</p><h2>Music that arrives with atmosphere.</h2></div><div class="checklist"><p>Follow the latest release rooms, filmed sessions, and live appearances. If the work meets you, the next door is easy: listen, watch, join.</p><div class="hero-actions"><a class="button button-primary" href="/spmvp.html">Listen</a><button class="button button-quiet" data-open-form="fan">Join for early access</button></div></div></section>${fanSignalSection()}${cta()}`

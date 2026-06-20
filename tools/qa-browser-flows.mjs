@@ -585,6 +585,63 @@ async function mediaActionMappingFlow(page, baseUrl) {
   }
 }
 
+async function musicHeroMediaFlow(page, baseUrl) {
+  await page.goto(`${baseUrl}/music.html`, { waitUntil: "domcontentloaded" });
+  await page.evaluate(() => localStorage.setItem("luxveritas_consent", "accepted"));
+
+  const heroListen = page.locator("main .hero-actions [data-media-action=\"play\"]").first();
+  const heroWatch = page.locator("main .hero-actions [data-media-action=\"watch\"]").first();
+  const heroJoin = page.locator("main .hero-actions [data-open-form=\"fan\"]").first();
+  if (await heroListen.count() !== 1 || await heroWatch.count() !== 1 || await heroJoin.count() !== 1) {
+    issues.push("/music.html: hero must expose Listen player action, Watch player action, and Join fan capture");
+    return;
+  }
+
+  const beforeListenEvents = events.length;
+  await heroListen.click();
+  await page.waitForSelector("[data-media-audio]:not([hidden])", { timeout: 5000 });
+  const listenState = await page.evaluate(() => {
+    const active = document.querySelector("[data-media-player] [data-media-item].active");
+    return {
+      sourceType: active?.dataset.sourceType || "",
+      reportingKey: active?.dataset.reportingKey || "",
+      dialogOpen: Boolean(document.querySelector("[data-dialog][open]"))
+    };
+  });
+  if (listenState.sourceType !== "audio" || listenState.reportingKey !== "spmvp_release_audio") {
+    issues.push(`/music.html: hero Listen selected ${listenState.sourceType || "missing"} / ${listenState.reportingKey || "missing"}`);
+  }
+  if (listenState.dialogOpen) {
+    issues.push("/music.html: hero Listen opened the capture dialog instead of the player");
+  }
+  const listenEvent = events.slice(beforeListenEvents).find((item) => item.event === "media_action" && item.detail?.action === "play");
+  if (!listenEvent || listenEvent.detail?.reporting_key !== "spmvp_release_audio") {
+    issues.push("/music.html: hero Listen did not report the release audio media action");
+  }
+
+  const beforeWatchEvents = events.length;
+  await heroWatch.click();
+  await page.waitForSelector("[data-media-video]:not([hidden])", { timeout: 5000 });
+  const watchState = await page.evaluate(() => {
+    const active = document.querySelector("[data-media-player] [data-media-item].active");
+    return {
+      sourceType: active?.dataset.sourceType || "",
+      reportingKey: active?.dataset.reportingKey || "",
+      dialogOpen: Boolean(document.querySelector("[data-dialog][open]"))
+    };
+  });
+  if (watchState.sourceType !== "video" || watchState.reportingKey !== "spmvp_visual_world") {
+    issues.push(`/music.html: hero Watch selected ${watchState.sourceType || "missing"} / ${watchState.reportingKey || "missing"}`);
+  }
+  if (watchState.dialogOpen) {
+    issues.push("/music.html: hero Watch opened the capture dialog instead of the player");
+  }
+  const watchEvent = events.slice(beforeWatchEvents).find((item) => item.event === "media_action" && item.detail?.action === "watch");
+  if (!watchEvent || watchEvent.detail?.reporting_key !== "spmvp_visual_world") {
+    issues.push("/music.html: hero Watch did not report the visual media action");
+  }
+}
+
 async function mediaPlaybackReportingFlow(page, baseUrl) {
   const playbackExpectations = [
     { action: "play", sourceType: "audio", selector: "[data-media-audio]" },
@@ -1361,6 +1418,7 @@ try {
     await mediaFlow(page, baseUrl, path);
   }
   await mediaActionMappingFlow(page, baseUrl);
+  await musicHeroMediaFlow(page, baseUrl);
   await mediaPlaybackReportingFlow(page, baseUrl);
   await fanReactionFlow(page, baseUrl);
   await fanSignalPassFlow(page, baseUrl);

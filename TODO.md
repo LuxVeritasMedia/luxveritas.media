@@ -220,6 +220,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Report audio, video, and radio playback lifecycle events: play, pause, milestones, and ended.
 - [x] Add protected operator summaries for playback actions, source types, reporting keys, and retention milestones.
 - [x] Add protected operator summaries for fan reactions tied to media sources.
+- [x] Route Music hero Listen and Watch CTAs directly to the player audio/video sources.
 - [x] Add media follow-up conversion path when approved audio/video/radio sources are not yet live.
 - [x] Show queued vs source-ready media status in the private pilot report.
 - [x] Add approved media source helper for audio, video, and radio URLs.
