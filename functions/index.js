@@ -246,6 +246,59 @@ const routingMap = {
   }
 };
 
+const workflowTargetMap = {
+  membership_waitlist: {
+    queueLabel: "Membership Waitlist",
+    recommendedPrimary: "ghl_crm",
+    alternatives: ["google_workspace"],
+    reason: "Membership and first-access leads benefit from tags, follow-up stages, and screened nurture."
+  },
+  submission_review: {
+    queueLabel: "Submission Review",
+    recommendedPrimary: "google_workspace",
+    alternatives: ["codex_ops"],
+    reason: "Submissions need review records, legal-version context, and a rights-safe packet path before automation."
+  },
+  event_access: {
+    queueLabel: "Event Access",
+    recommendedPrimary: "ghl_crm",
+    alternatives: ["google_workspace"],
+    reason: "Event interest needs timely follow-up, invite status, and list segmentation."
+  },
+  press_contact: {
+    queueLabel: "Press Contact",
+    recommendedPrimary: "google_workspace",
+    alternatives: ["ghl_crm"],
+    reason: "Press needs a controlled response log and public-kit request routing before automated nurture."
+  },
+  partner_licensing: {
+    queueLabel: "Partner / Licensing",
+    recommendedPrimary: "google_workspace",
+    alternatives: ["ghl_crm", "codex_ops"],
+    reason: "Partner and licensing inquiries need screened review context before CRM or build-packet routing."
+  },
+  strategic_access: {
+    queueLabel: "Strategic Access",
+    recommendedPrimary: "google_workspace",
+    alternatives: [],
+    reason: "Investor and strategic access should stay review-led and should not expose data-room material."
+  },
+  access_review: {
+    queueLabel: "Access Review",
+    recommendedPrimary: "google_workspace",
+    alternatives: ["codex_ops"],
+    reason: "Portal access requests need role review before later auth, room, or internal bridge work."
+  }
+};
+
+const workflowTargetLabels = {
+  firebase_handoff: "Firebase Private Handoff",
+  ghl_crm: "GoHighLevel CRM",
+  google_workspace: "Google Workspace Intake",
+  codex_ops: "CodexOps Bridge",
+  private_workflow: "Approved Private Workflow"
+};
+
 function deriveRouting(payload = {}) {
   return routingMap[payload.inquiry_key]
     || routingMap[payload.access_path]
@@ -541,6 +594,74 @@ function buildPilotFunnel(submissionItems, eventItems) {
   ];
 }
 
+function buildWorkflowTargetRecommendations(submissionItems) {
+  const queueCounts = new Map();
+  for (const item of submissionItems) {
+    const routing = deriveRouting(item);
+    const queue = item.routing_queue || routing.routing_queue;
+    const label = item.routing_label || routing.routing_label || workflowTargetMap[queue]?.queueLabel || queue;
+    if (!queue) continue;
+    const current = queueCounts.get(queue) || {
+      queue,
+      label,
+      count: 0
+    };
+    current.count += 1;
+    queueCounts.set(queue, current);
+  }
+
+  const queueRecommendations = [...queueCounts.values()]
+    .map((item) => {
+      const recommendation = workflowTargetMap[item.queue] || workflowTargetMap.access_review;
+      return {
+        queue: item.queue,
+        label: item.label,
+        count: item.count,
+        recommendedPrimary: recommendation.recommendedPrimary,
+        recommendedLabel: workflowTargetLabels[recommendation.recommendedPrimary] || recommendation.recommendedPrimary,
+        alternatives: recommendation.alternatives,
+        reason: recommendation.reason
+      };
+    })
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
+    .slice(0, 8);
+
+  const targetCounts = new Map();
+  for (const item of queueRecommendations) {
+    targetCounts.set(item.recommendedPrimary, (targetCounts.get(item.recommendedPrimary) || 0) + item.count);
+  }
+
+  const byRecommendedTarget = [...targetCounts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([target, count]) => ({
+      target,
+      label: workflowTargetLabels[target] || target,
+      count
+    }));
+
+  const primary = byRecommendedTarget[0] || null;
+  const activeTarget = integrationTarget();
+  return {
+    activeTarget,
+    activeLabel: workflowTargetLabels[activeTarget] || activeTarget,
+    decisionStatus: primary ? "demand_signal_ready" : "awaiting_capture_volume",
+    recommendedPrimary: primary?.target || "firebase_handoff",
+    recommendedLabel: primary?.label || workflowTargetLabels.firebase_handoff,
+    recommendedSignalCount: primary?.count || 0,
+    nextAction: primary
+      ? `Review ${primary.label} as the first external workflow candidate before changing Firebase secrets.`
+      : "Keep Firebase handoff active until more capture demand is available.",
+    byRecommendedTarget,
+    queueRecommendations,
+    guardrails: [
+      "Choose one workflow owner before activation.",
+      "Keep receiver URLs and signing material in Firebase Secret Manager only.",
+      "Run activation dry-run, provider readiness, operator report QA, and one approved live write before switching targets.",
+      "Keep Firebase handoff as rollback until the external workflow is proven."
+    ]
+  };
+}
+
 function summarizeActivity(submissionDocs, eventDocs) {
   const submissionItems = submissionDocs.map((snapshot) => snapshot.data() || {});
   const eventItems = eventDocs.map((snapshot) => snapshot.data() || {});
@@ -572,7 +693,8 @@ function summarizeActivity(submissionDocs, eventDocs) {
       playbackBySourceType: topCounts(playbackItems, (item) => item.detail?.source_type),
       playbackByReportingKey: topCounts(playbackItems, (item) => item.detail?.reporting_key || item.detail?.title),
       playbackMilestones: topCounts(playbackItems, (item) => item.detail?.milestone)
-    }
+    },
+    workflowTargets: buildWorkflowTargetRecommendations(submissionItems)
   };
 }
 

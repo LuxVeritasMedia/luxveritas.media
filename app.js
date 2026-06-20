@@ -112,7 +112,7 @@ const launchChecklistPath = "/data/lux-launch-readiness.json";
 const launchCloseoutPath = "/data/lux-launch-closeout-public.json";
 const legalReviewPath = "/data/lux-legal-review.json";
 const submitTimeoutMs = 8000;
-const publicBuildVersion = "20260620-interest-paths";
+const publicBuildVersion = "20260620-workflow-targets";
 const allowedInterestPaths = new Set(["music", "film", "events", "drops", "community", "codex", "create"]);
 let activeFormType = "request";
 let mediaManifestPromise = null;
@@ -1220,6 +1220,14 @@ function privateReportRows(report) {
       page: item.sourcePage || "",
       label: item.receiptId || item.submissionId || "",
       detail: item.integrationTarget || item.routing_label || item.routing_queue || item.eventType || ""
+    })),
+    ...(report.summary?.workflowTargets?.queueRecommendations || []).map((item) => ({
+      source: "protected",
+      type: "workflow_target",
+      timestamp: report.generatedAt || "",
+      page: "/portal/reporting.html",
+      label: item.recommendedLabel || item.recommendedPrimary || "",
+      detail: `${item.label || item.queue || "Queue"}: ${item.count || 0} signal${item.count === 1 ? "" : "s"}`
     }))
   ];
 }
@@ -1279,6 +1287,7 @@ function renderPrivateReport(report) {
   if (authViewer) authViewer.textContent = report.viewer || "Approved operator";
 
   renderPrivateDelivery(panel, report.delivery);
+  renderPrivateWorkflow(panel, report.summary?.workflowTargets);
   renderLaunchReadinessReport(report);
   renderPrivateFunnel(panel, report.summary?.funnel || report.funnel);
   renderPrivateSummary(panel, "forms", report.summary?.submissions?.byFormType);
@@ -1315,6 +1324,48 @@ function renderPrivateReport(report) {
     const time = item.updatedAt || item.createdAt ? new Date(item.updatedAt || item.createdAt).toLocaleString() : "Recent";
     return `<li><strong>${escapeHtml(label)}</strong><span>${escapeHtml(detail)}</span><small>${escapeHtml(time)}</small></li>`;
   }).join("");
+}
+
+function renderPrivateWorkflow(panel, workflow = {}) {
+  const primary = panel.querySelector('[data-private-workflow="primary"]');
+  const detail = panel.querySelector('[data-private-workflow="detail"]');
+  const targets = panel.querySelector('[data-private-workflow="targets"]');
+  const queues = panel.querySelector('[data-private-workflow="queues"]');
+  const guards = panel.querySelector('[data-private-workflow="guardrails"]');
+  if (primary) {
+    primary.textContent = workflow.recommendedLabel || "Load private activity";
+  }
+  if (detail) {
+    const active = workflow.activeLabel || workflow.activeTarget || "Current private handoff";
+    detail.textContent = workflow.nextAction
+      ? `${workflow.nextAction} Active target: ${active}.`
+      : "Load private activity to view the recommended workflow target.";
+  }
+  if (targets) {
+    const items = Array.isArray(workflow.byRecommendedTarget) ? workflow.byRecommendedTarget : [];
+    targets.innerHTML = items.length
+      ? items.map((item) => (
+        `<li><strong>${escapeHtml(item.label || item.target)}</strong><span>${escapeHtml(item.count || 0)} signal${item.count === 1 ? "" : "s"}</span></li>`
+      )).join("")
+      : "<li>Load private activity to view target demand.</li>";
+  }
+  if (queues) {
+    const items = Array.isArray(workflow.queueRecommendations) ? workflow.queueRecommendations : [];
+    queues.innerHTML = items.length
+      ? items.map((item) => {
+        const alternatives = Array.isArray(item.alternatives) && item.alternatives.length
+          ? `Alt: ${item.alternatives.join(", ")}`
+          : "No alternate target";
+        return `<li><strong>${escapeHtml(item.label || item.queue)}</strong><span>${escapeHtml(item.recommendedLabel || item.recommendedPrimary)} · ${escapeHtml(item.count || 0)} signal${item.count === 1 ? "" : "s"}</span><small>${escapeHtml(alternatives)}</small></li>`;
+      }).join("")
+      : "<li>Load private activity to view queue recommendations.</li>";
+  }
+  if (guards) {
+    const items = Array.isArray(workflow.guardrails) ? workflow.guardrails : [];
+    guards.innerHTML = items.length
+      ? items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")
+      : "<li>Choose a workflow owner before activation.</li>";
+  }
 }
 
 function renderPrivateFunnel(panel, items = []) {

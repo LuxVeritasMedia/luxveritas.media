@@ -83,8 +83,8 @@
     {
       "id": "external-workflow-target",
       "label": "External Workflow Target",
-      "status": "decision_pending",
-      "summary": "Choose Google Workspace, an approved external CRM, an operator build-packet bridge, or an approved private workflow only after the receiver owner and workflow are approved."
+      "status": "decision_support_live",
+      "summary": "Private operator reporting now recommends the next target from real routing demand. Choose Google Workspace, an approved external CRM, an operator build-packet bridge, or an approved private workflow only after the receiver owner and workflow are approved."
     },
     {
       "id": "legal-approval",

@@ -9,7 +9,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Live apex: `https://luxveritas.media`
 - Firebase project: `lux-veritas-media`
 - GitHub repo: `LuxVeritasMedia/luxveritas.media`
-- Current live asset version: `20260620-interest-paths`
+- Current live asset version: `20260620-workflow-targets`
 - Current phase: Phase 5 of 10, portal pilot prep active
 - Phase 4 closeout: legal approval remains open before full public release
 - Next major phase: authenticated portal shell with approved auth and role gates
@@ -35,6 +35,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Brand-house visual identity is manifest-driven and live on Home and About, with responsive QA coverage for the six public house marks.
 - CTA, media, consented interaction, and form reporting paths have QA coverage.
 - Operator reporting summarizes audience-interest demand from stored captures.
+- Operator reporting recommends the next private workflow target from real routing demand while keeping external provider details out of the public site.
 - Private operator reporting exists behind approved access.
 - Machine-readable phase status is deployed at `/data/lux-phase-status.json`.
 
@@ -44,7 +45,7 @@ These are the known blockers before calling the site public-launch ready.
 
 1. Privacy page needs legal/business approval.
 2. Terms page needs legal/business approval.
-3. External CRM/Google workflow target may be selected after the private workflow is approved. The signed Firebase private handoff is already active for the MVP intake queue.
+3. External CRM/Google workflow target may be selected after the private workflow is approved. The signed Firebase private handoff is already active for the MVP intake queue, and the private operator report now shows demand-led recommendations for the first external target.
 
 Before selecting the external target, review `docs/private-workflow-matrix.json` and run `node tools/qa-private-workflow-matrix.mjs`. The matrix maps every public capture queue to its owner, SLA, current `firebase_handoff` path, approved next profiles, workflow actions, and acceptance checks without storing provider details.
 

@@ -149,6 +149,48 @@ function assertFunnelItems(items, path) {
   }
 }
 
+function checkWorkflowTargets(report) {
+  const workflow = valueAt(report, "summary.workflowTargets");
+  if (!workflow || typeof workflow !== "object" || Array.isArray(workflow)) {
+    issue("/api/report: summary.workflowTargets is missing or not an object");
+    return;
+  }
+
+  for (const field of ["activeTarget", "activeLabel", "decisionStatus", "recommendedPrimary", "recommendedLabel", "nextAction"]) {
+    if (typeof workflow[field] !== "string" || !workflow[field]) {
+      issue(`/api/report: summary.workflowTargets.${field} is missing`);
+    }
+  }
+  if (typeof workflow.recommendedSignalCount !== "number") {
+    issue("/api/report: summary.workflowTargets.recommendedSignalCount is missing or not numeric");
+  }
+
+  for (const path of ["summary.workflowTargets.byRecommendedTarget", "summary.workflowTargets.queueRecommendations", "summary.workflowTargets.guardrails"]) {
+    const value = valueAt(report, path);
+    if (!Array.isArray(value)) issue(`/api/report: expected ${path} to be an array`);
+  }
+
+  for (const [index, item] of (workflow.byRecommendedTarget || []).entries()) {
+    if (typeof item.label !== "string" || !item.label) issue(`/api/report: summary.workflowTargets.byRecommendedTarget[${index}] missing label`);
+    if (typeof item.target !== "string" || !item.target) issue(`/api/report: summary.workflowTargets.byRecommendedTarget[${index}] missing target`);
+    if (typeof item.count !== "number") issue(`/api/report: summary.workflowTargets.byRecommendedTarget[${index}] missing numeric count`);
+  }
+
+  for (const [index, item] of (workflow.queueRecommendations || []).entries()) {
+    for (const field of ["queue", "label", "recommendedPrimary", "recommendedLabel", "reason"]) {
+      if (typeof item[field] !== "string" || !item[field]) {
+        issue(`/api/report: summary.workflowTargets.queueRecommendations[${index}].${field} is missing`);
+      }
+    }
+    if (typeof item.count !== "number") issue(`/api/report: summary.workflowTargets.queueRecommendations[${index}] missing numeric count`);
+    if (!Array.isArray(item.alternatives)) issue(`/api/report: summary.workflowTargets.queueRecommendations[${index}].alternatives is not an array`);
+  }
+
+  for (const [index, item] of (workflow.guardrails || []).entries()) {
+    if (typeof item !== "string" || !item) issue(`/api/report: summary.workflowTargets.guardrails[${index}] is missing`);
+  }
+}
+
 function scanSecretValues(value, path = "$") {
   if (Array.isArray(value)) {
     value.forEach((item, index) => scanSecretValues(item, `${path}[${index}]`));
@@ -226,6 +268,7 @@ function checkReportBody(report) {
   for (const field of handoffSummaryFields) {
     assertSummaryArrayItems(assertArray(report, `summary.handoffs.${field}`), `summary.handoffs.${field}`);
   }
+  checkWorkflowTargets(report);
 
   scanSecretValues(report);
 }

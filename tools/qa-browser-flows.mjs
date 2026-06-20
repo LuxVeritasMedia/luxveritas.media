@@ -123,6 +123,31 @@ const mockReport = {
       bySourcePage: [{ label: "/membership.html", count: 6 }],
       byRoutingQueue: [{ label: "Membership Waitlist", count: 6 }]
     },
+    workflowTargets: {
+      activeTarget: "firebase_handoff",
+      activeLabel: "Firebase Private Handoff",
+      decisionStatus: "demand_signal_ready",
+      recommendedPrimary: "ghl_crm",
+      recommendedLabel: "GoHighLevel CRM",
+      recommendedSignalCount: 24,
+      nextAction: "Review GoHighLevel CRM as the first external workflow candidate before changing Firebase secrets.",
+      byRecommendedTarget: [{ target: "ghl_crm", label: "GoHighLevel CRM", count: 24 }],
+      queueRecommendations: [
+        {
+          queue: "membership_waitlist",
+          label: "Membership Waitlist",
+          count: 24,
+          recommendedPrimary: "ghl_crm",
+          recommendedLabel: "GoHighLevel CRM",
+          alternatives: ["google_workspace"],
+          reason: "Membership and first-access leads benefit from tags, follow-up stages, and screened nurture."
+        }
+      ],
+      guardrails: [
+        "Choose one workflow owner before activation.",
+        "Keep receiver URLs and signing material in Firebase Secret Manager only."
+      ]
+    },
     events: {
       byEvent: [{ label: "media_action", count: 64 }],
       byCtaId: [{ label: "media__media_action__play", count: 42 }],
@@ -828,6 +853,11 @@ async function operatorReportFlow(page, baseUrl) {
   const playbackSummary = await page.locator('[data-private-summary="playback"]').innerText();
   const playbackSourcesSummary = await page.locator('[data-private-summary="playback-sources"]').innerText();
   const playbackMilestonesSummary = await page.locator('[data-private-summary="playback-milestones"]').innerText();
+  const workflowPrimary = await page.locator('[data-private-workflow="primary"]').innerText();
+  const workflowDetail = await page.locator('[data-private-workflow="detail"]').innerText();
+  const workflowTargets = await page.locator('[data-private-workflow="targets"]').innerText();
+  const workflowQueues = await page.locator('[data-private-workflow="queues"]').innerText();
+  const workflowGuardrails = await page.locator('[data-private-workflow="guardrails"]').innerText();
   const funnelSummary = await page.locator("[data-private-funnel]").innerText();
   const launchSummary = await page.locator("[data-launch-readiness-summary]").innerText();
   const launchReadiness = await page.locator("[data-launch-readiness-list]").innerText();
@@ -866,6 +896,10 @@ async function operatorReportFlow(page, baseUrl) {
     ["playback", playbackSummary],
     ["playback-sources", playbackSourcesSummary],
     ["playback-milestones", playbackMilestonesSummary],
+    ["workflow-primary", workflowPrimary],
+    ["workflow-targets", workflowTargets],
+    ["workflow-queues", workflowQueues],
+    ["workflow-guardrails", workflowGuardrails],
     ["funnel", funnelSummary],
     ["latest", latest]
   ]) {
@@ -878,6 +912,15 @@ async function operatorReportFlow(page, baseUrl) {
   }
   if (!/Membership Waitlist/.test(routingSummary)) {
     issues.push(`/portal/reporting.html: screened routing summary missing mocked queue`);
+  }
+  if (!/GoHighLevel CRM/.test(workflowPrimary) || !/Firebase Private Handoff/.test(workflowDetail)) {
+    issues.push(`/portal/reporting.html: workflow target recommendation did not render primary and active target`);
+  }
+  if (!/GoHighLevel CRM/.test(workflowTargets) || !/Membership Waitlist/.test(workflowQueues)) {
+    issues.push(`/portal/reporting.html: workflow target demand did not render queue recommendations`);
+  }
+  if (!/Firebase Secret Manager/.test(workflowGuardrails)) {
+    issues.push(`/portal/reporting.html: workflow guardrails did not render`);
   }
   if (!/music/.test(interestsSummary) || !/events/.test(interestsSummary)) {
     issues.push(`/portal/reporting.html: interest summary missing mocked interest paths`);
@@ -897,6 +940,16 @@ async function operatorReportFlow(page, baseUrl) {
   });
   if (!handoffExportReady) {
     issues.push(`/portal/reporting.html: accepted handoff records were missing from private export rows`);
+  }
+  const workflowExportReady = await page.evaluate(() => {
+    return privateReportRows(privateReportCache).some((row) => (
+      row.type === "workflow_target"
+      && row.label === "GoHighLevel CRM"
+      && /Membership Waitlist/.test(row.detail)
+    ));
+  });
+  if (!workflowExportReady) {
+    issues.push(`/portal/reporting.html: workflow recommendation was missing from private export rows`);
   }
   const playbackExportReady = await page.evaluate(() => {
     return privateReportRows(privateReportCache).some((row) => (

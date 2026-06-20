@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260620-interest-paths";
+const assetVersion = "20260620-workflow-targets";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 const brandHouse = JSON.parse(await readFile("data/lux-brand-house.json", "utf8"));
@@ -718,6 +718,19 @@ function portalReport() {
           <p class="kicker">Pilot Funnel</p>
           <h3>Capture and engagement health.</h3>
           <ul class="report-list" data-private-funnel><li>Load private activity to view funnel health.</li></ul>
+        </div>
+      </div>
+      <div class="report-detail">
+        <div>
+          <p class="kicker">Workflow Target</p>
+          <h3 data-private-workflow="primary">Load private activity.</h3>
+          <p data-private-workflow="detail">The first external workflow target is chosen from real demand, not public client code.</p>
+          <ul class="report-list" data-private-workflow="targets"><li>Load private activity to view target demand.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Queue Recommendations</p>
+          <ul class="report-list" data-private-workflow="queues"><li>Load private activity to view queue recommendations.</li></ul>
+          <ul class="report-list" data-private-workflow="guardrails"><li>Choose a workflow owner before activation.</li></ul>
         </div>
       </div>
       <div class="report-detail report-summary">
