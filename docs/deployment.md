@@ -332,6 +332,12 @@ Downstream routing readiness is tracked in `docs/private-workflow-matrix.json`. 
 node tools/qa-private-workflow-matrix.mjs
 ```
 
+External target selection is tracked in `docs/external-workflow-targets.json`. Use it as the no-secret decision layer before replacing the MVP `firebase_handoff` target with GHL, Google Workspace, CodexOps, or a generic approved private workflow. Validate it with:
+
+```bash
+node tools/qa-external-workflow-targets.mjs
+```
+
 Export a no-secret private integration activation request before choosing or changing the external workflow target:
 
 ```bash

@@ -22,6 +22,7 @@ const checks = [
   ["Integration Profiles", "tools/qa-integration-profiles.mjs"],
   ["Private Integration Field Map", "tools/qa-private-integration-field-map.mjs"],
   ["Private Workflow Matrix", "tools/qa-private-workflow-matrix.mjs"],
+  ["External Workflow Targets", "tools/qa-external-workflow-targets.mjs"],
   ["Private Integration Request", "tools/qa-private-integration-request.mjs"],
   ["Legal Review Packet", "tools/qa-legal-review-packet.mjs"],
   ["Legal Review Request", "tools/qa-legal-review-request.mjs"],

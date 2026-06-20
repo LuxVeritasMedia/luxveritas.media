@@ -64,6 +64,9 @@ jobs:
       - name: QA private workflow matrix
         run: node tools/qa-private-workflow-matrix.mjs
 
+      - name: QA external workflow targets
+        run: node tools/qa-external-workflow-targets.mjs
+
       - name: QA private integration request
         run: node tools/qa-private-integration-request.mjs
 

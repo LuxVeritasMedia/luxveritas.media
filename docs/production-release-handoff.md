@@ -58,6 +58,7 @@ node tools/qa-launch-evidence.mjs
 firebase login --reauth
 node tools/qa-provider-readiness.mjs
 node tools/qa-private-workflow-matrix.mjs
+node tools/qa-external-workflow-targets.mjs
 node tools/qa-live-media-sources.mjs
 node tools/qa-live-operator-report.mjs
 node tools/qa-domain-readiness.mjs

@@ -1,0 +1,261 @@
+{
+  "schemaVersion": "luxveritas.external_workflow_targets.v1",
+  "purpose": "No-secret decision matrix for selecting the next approved private workflow target after the Firebase handoff pilot. This file must not contain provider URLs, private account details, private endpoint paths, private values, tokens, or credentials.",
+  "currentPrimaryTarget": "firebase_handoff",
+  "publicExposure": "none",
+  "decisionRequiredBefore": "Replacing firebase_handoff as the primary receiver, activating a future profile, or routing public capture records into a third-party workflow.",
+  "activationBoundary": "All external targets remain server-side only. Store receiver location and signing material in Firebase Secret Manager, never in public markup, client JavaScript, docs, or screenshots.",
+  "operatorPrinciple": "Choose the first external target by the job it must do: follow-up, archive, review packet, or operator triage. Do not choose by brand familiarity alone.",
+  "commandTemplateNote": "Command receiver placeholders are intentionally not runnable from this file. Replace them with approved private values outside the repo.",
+  "candidates": [
+    {
+      "id": "firebase_handoff",
+      "label": "Firebase Private Handoff",
+      "decisionStatus": "active_mvp",
+      "activationTarget": "firebase_handoff",
+      "bestFor": [
+        "MVP capture storage",
+        "receipt-backed intake records",
+        "protected pilot reporting",
+        "handoff replay before external workflow selection"
+      ],
+      "notFor": [
+        "long-term CRM follow-up",
+        "shared editorial review workspace",
+        "operator build-packet routing"
+      ],
+      "prerequisites": [
+        "Firebase Functions and Firestore remain active",
+        "FORM_INTEGRATION_TARGET remains firebase_handoff",
+        "Approved operator report token remains configured"
+      ],
+      "approvalGuards": [
+        "No future-profile approval required while this remains the active MVP receiver"
+      ],
+      "acceptance": [
+        "Provider readiness reports private handoff active",
+        "Live operator report shows handoff target firebase_handoff",
+        "Pending handoffs can be replayed from the private report"
+      ],
+      "commands": [
+        "node tools/qa-provider-readiness.mjs",
+        "node tools/qa-live-operator-report.mjs"
+      ]
+    },
+    {
+      "id": "private_workflow",
+      "label": "Approved Private Workflow",
+      "decisionStatus": "ready_label",
+      "activationTarget": "private_workflow",
+      "bestFor": [
+        "A human-approved receiver that is not yet provider-specific",
+        "private automation routing behind one screened endpoint",
+        "temporary bridge while GHL, Workspace, or CodexOps details are finalized"
+      ],
+      "notFor": [
+        "public client-side integrations",
+        "unreviewed provider experiments",
+        "storing private provider setup details in this repo"
+      ],
+      "prerequisites": [
+        "Human approval of the receiver owner",
+        "Signed server receiver available",
+        "Field map accepted by the workflow owner",
+        "Replay and rollback owner assigned"
+      ],
+      "approvalGuards": [
+        "Requires private receiver approval before secret update",
+        "Requires dry run before writing Firebase secrets"
+      ],
+      "acceptance": [
+        "Dry-run activation passes for private_workflow",
+        "Provider readiness reports the target active after activation",
+        "Live operator report shows the chosen target and no secret-shaped values"
+      ],
+      "commands": [
+        "LUX_PRIVATE_INTEGRATION_ACTIVATION_DRY_RUN=1 LUX_FORM_INTEGRATION_URL='approved-private-receiver' LUX_FORM_INTEGRATION_SIGNING_SECRET='approved-shared-secret' LUX_FORM_INTEGRATION_TARGET='private_workflow' node tools/activate-private-integration.mjs",
+        "node tools/qa-provider-readiness.mjs",
+        "node tools/qa-live-operator-report.mjs"
+      ]
+    },
+    {
+      "id": "ghl_crm",
+      "label": "GoHighLevel CRM",
+      "decisionStatus": "approval_required",
+      "activationTarget": "ghl_crm",
+      "bestFor": [
+        "membership follow-up",
+        "event interest follow-up",
+        "press and partner contact routing",
+        "tags and pipeline stages for screened capture"
+      ],
+      "notFor": [
+        "canonical submission archive",
+        "legal review evidence",
+        "private deck or data-room material",
+        "internal prompts or operational dashboards"
+      ],
+      "prerequisites": [
+        "Approved CRM account and operator owner",
+        "Consent language reviewed for email and SMS paths",
+        "Tag and pipeline naming approved outside this repo",
+        "Receiver confirms idempotency and replay behavior"
+      ],
+      "approvalGuards": [
+        "Requires explicit human approval",
+        "Requires LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE=1",
+        "Requires Firebase Secret Manager setup only"
+      ],
+      "acceptance": [
+        "Dry-run activation passes for ghl_crm",
+        "One live form matrix write reaches inbox and private handoff after activation",
+        "Operator report shows CRM target without exposing provider configuration"
+      ],
+      "commands": [
+        "LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE=1 LUX_PRIVATE_INTEGRATION_ACTIVATION_DRY_RUN=1 LUX_FORM_INTEGRATION_URL='approved-private-receiver' LUX_FORM_INTEGRATION_SIGNING_SECRET='approved-shared-secret' LUX_FORM_INTEGRATION_TARGET='ghl_crm' node tools/activate-private-integration.mjs",
+        "LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.mjs",
+        "node tools/qa-live-operator-report.mjs"
+      ]
+    },
+    {
+      "id": "google_workspace",
+      "label": "Google Workspace Intake",
+      "decisionStatus": "approval_required",
+      "activationTarget": "google_workspace",
+      "bestFor": [
+        "private intake archive",
+        "review rows for submissions and strategic access",
+        "press and partner owner views",
+        "consent and legal-version evidence routing"
+      ],
+      "notFor": [
+        "public accounts",
+        "fan community experience",
+        "payment or membership entitlements",
+        "private prompts or internal dashboards"
+      ],
+      "prerequisites": [
+        "Approved private Drive or Workspace destination",
+        "Access controls reviewed by the business owner",
+        "Retention and deletion expectations reviewed",
+        "Receiver confirms idempotency and replay behavior"
+      ],
+      "approvalGuards": [
+        "Requires explicit human approval",
+        "Requires LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE=1",
+        "Requires Firebase Secret Manager setup only"
+      ],
+      "acceptance": [
+        "Dry-run activation passes for google_workspace",
+        "Private workflow matrix owner accepts queue routing",
+        "Operator report shows Workspace target without exposing destination details"
+      ],
+      "commands": [
+        "LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE=1 LUX_PRIVATE_INTEGRATION_ACTIVATION_DRY_RUN=1 LUX_FORM_INTEGRATION_URL='approved-private-receiver' LUX_FORM_INTEGRATION_SIGNING_SECRET='approved-shared-secret' LUX_FORM_INTEGRATION_TARGET='google_workspace' node tools/activate-private-integration.mjs",
+        "node tools/qa-provider-readiness.mjs",
+        "node tools/qa-live-operator-report.mjs"
+      ]
+    },
+    {
+      "id": "codex_ops",
+      "label": "CodexOps Bridge",
+      "decisionStatus": "approval_required",
+      "activationTarget": "codex_ops",
+      "bestFor": [
+        "operator-reviewed build packets",
+        "submission triage packets",
+        "creator or partner request summarization",
+        "future portal-to-operations handoff"
+      ],
+      "notFor": [
+        "public portal auth",
+        "raw private prompts",
+        "internal source docs",
+        "financial, rights, or campaign dashboards"
+      ],
+      "prerequisites": [
+        "Private CodexOps workspace approved",
+        "Packet fields reviewed against the public product boundary",
+        "Human review step assigned before any generated action",
+        "Receiver confirms idempotency and replay behavior"
+      ],
+      "approvalGuards": [
+        "Requires explicit human approval",
+        "Requires LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE=1",
+        "Requires Firebase Secret Manager setup only"
+      ],
+      "acceptance": [
+        "Dry-run activation passes for codex_ops",
+        "No private prompts or internal dashboards are routed through the public site",
+        "Operator report shows CodexOps target without exposing private workspace details"
+      ],
+      "commands": [
+        "LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE=1 LUX_PRIVATE_INTEGRATION_ACTIVATION_DRY_RUN=1 LUX_FORM_INTEGRATION_URL='approved-private-receiver' LUX_FORM_INTEGRATION_SIGNING_SECRET='approved-shared-secret' LUX_FORM_INTEGRATION_TARGET='codex_ops' node tools/activate-private-integration.mjs",
+        "node tools/qa-product-boundary.mjs",
+        "node tools/qa-live-operator-report.mjs"
+      ]
+    }
+  ],
+  "queueDecisions": [
+    {
+      "queue": "membership_waitlist",
+      "recommendedPrimary": "ghl_crm",
+      "alternatives": ["google_workspace"],
+      "reason": "Membership and first-access leads benefit from tags, follow-up stages, and screened nurture."
+    },
+    {
+      "queue": "submission_review",
+      "recommendedPrimary": "google_workspace",
+      "alternatives": ["codex_ops"],
+      "reason": "Submissions need review records, legal-version context, and a rights-safe packet path before automation."
+    },
+    {
+      "queue": "event_access",
+      "recommendedPrimary": "ghl_crm",
+      "alternatives": ["google_workspace"],
+      "reason": "Event interest needs timely follow-up, invite status, and list segmentation."
+    },
+    {
+      "queue": "press_contact",
+      "recommendedPrimary": "google_workspace",
+      "alternatives": ["ghl_crm"],
+      "reason": "Press needs a controlled response log and public-kit request routing before automated nurture."
+    },
+    {
+      "queue": "partner_licensing",
+      "recommendedPrimary": "google_workspace",
+      "alternatives": ["ghl_crm", "codex_ops"],
+      "reason": "Partner and licensing inquiries need screened review context before any CRM or build-packet routing."
+    },
+    {
+      "queue": "strategic_access",
+      "recommendedPrimary": "google_workspace",
+      "alternatives": [],
+      "reason": "Investor and strategic access should stay review-led and should not expose data-room material."
+    },
+    {
+      "queue": "access_review",
+      "recommendedPrimary": "google_workspace",
+      "alternatives": ["codex_ops"],
+      "reason": "Portal access requests need role review before later auth, room, or internal bridge work."
+    }
+  ],
+  "approvalSequence": [
+    "Confirm Privacy and Terms legal review status.",
+    "Choose one target profile and one workflow owner.",
+    "Export the private integration activation request.",
+    "Approve the receiver location and signing material outside this repo.",
+    "Run activation dry run for the selected target.",
+    "Set Firebase secrets only after approval.",
+    "Deploy functions and run provider readiness.",
+    "Run live operator report QA.",
+    "Run one live form write matrix only when the inbox owner is ready for QA mail.",
+    "Replay pending handoffs from the protected operator report if needed."
+  ],
+  "rollback": [
+    "Return FORM_INTEGRATION_TARGET to firebase_handoff.",
+    "Restore the Firebase receiver location and signing material through Firebase Secret Manager.",
+    "Redeploy submitForm, reportActivity, and receivePrivateHandoff.",
+    "Run provider readiness and live operator report QA."
+  ]
+}

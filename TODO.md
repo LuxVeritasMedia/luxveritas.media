@@ -71,6 +71,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add no-secret private integration request export for future GHL, Google Workspace, and CodexOps activation.
 - [x] Add no-secret downstream field map for future GHL, Google Workspace, and CodexOps activation.
 - [x] Add no-secret private workflow matrix for capture queues, owners, SLAs, handoff profiles, and acceptance checks.
+- [x] Add no-secret external workflow target decision matrix for GHL, Google Workspace, CodexOps, and Firebase handoff selection.
 - [ ] Configure approved external CRM/Google workflow target after the private workflow is chosen.
 - [x] Reauthenticate Firebase CLI locally before provider-secret inspection.
 - [x] Configure `REPORT_OPERATOR_TOKEN_SHA256` on `reportactivity` for private pilot reporting access.
