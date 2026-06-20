@@ -75,8 +75,8 @@ LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.m
 node tools/export-legal-review-request.mjs
 LUX_LEGAL_PACKET_OUT=/tmp/lux-legal-review-request.md node tools/export-legal-review-request.mjs
 node tools/qa-legal-review-request.mjs
-LUX_LEGAL_REVIEW_ITEM=privacy LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY="Reviewer Name" node tools/set-legal-review-status.mjs
-LUX_LEGAL_REVIEW_ITEM=terms LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY="Reviewer Name" node tools/set-legal-review-status.mjs
+LUX_LEGAL_SYNC_LAUNCH=1 LUX_LEGAL_EVIDENCE="Legal review packet YYYY-MM-DD" LUX_LEGAL_REVIEW_ITEM=privacy LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY="Reviewer Name" node tools/set-legal-review-status.mjs
+LUX_LEGAL_SYNC_LAUNCH=1 LUX_LEGAL_EVIDENCE="Legal review packet YYYY-MM-DD" LUX_LEGAL_REVIEW_ITEM=terms LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY="Reviewer Name" node tools/set-legal-review-status.mjs
 node tools/build-static.mjs
 node tools/prepare-hosting.mjs
 node tools/qa-release-readiness.mjs
@@ -86,7 +86,7 @@ node tools/qa-release-readiness.mjs
 
 ```bash
 git status --short --branch
-git add data/lux-legal-review.json legal/privacy.html legal/terms.html data/lux-build-manifest.json service-worker.js
+git add data/lux-legal-review.json data/lux-launch-readiness.json data/lux-launch-closeout.json legal/privacy.html legal/terms.html data/lux-build-manifest.json service-worker.js
 git commit -m "Approve launch legal review"
 git push origin main
 node tools/qa-deploy-status.mjs

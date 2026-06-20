@@ -30,8 +30,12 @@ for (const marker of [
   "Acceptance",
   "node tools/export-legal-review-request.mjs",
   "node tools/qa-legal-review-request.mjs",
+  "LUX_LEGAL_SYNC_LAUNCH=1",
+  "LUX_LEGAL_EVIDENCE",
   "LUX_LEGAL_REVIEW_ITEM=privacy",
   "LUX_LEGAL_REVIEW_ITEM=terms",
+  "data/lux-launch-readiness.json",
+  "data/lux-launch-closeout.json",
   "node tools/qa-release-readiness.mjs"
 ]) {
   if (!packet.includes(marker)) issue(`docs/legal-review-packet.md missing marker: ${marker}`);

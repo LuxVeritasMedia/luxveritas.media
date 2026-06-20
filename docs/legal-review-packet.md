@@ -60,8 +60,8 @@ node tools/qa-legal-review-request.mjs
 Run these only after approval is real:
 
 ```bash
-LUX_LEGAL_REVIEW_ITEM=privacy LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY="Reviewer Name" node tools/set-legal-review-status.mjs
-LUX_LEGAL_REVIEW_ITEM=terms LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY="Reviewer Name" node tools/set-legal-review-status.mjs
+LUX_LEGAL_SYNC_LAUNCH=1 LUX_LEGAL_EVIDENCE="Legal review packet YYYY-MM-DD" LUX_LEGAL_REVIEW_ITEM=privacy LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY="Reviewer Name" node tools/set-legal-review-status.mjs
+LUX_LEGAL_SYNC_LAUNCH=1 LUX_LEGAL_EVIDENCE="Legal review packet YYYY-MM-DD" LUX_LEGAL_REVIEW_ITEM=terms LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY="Reviewer Name" node tools/set-legal-review-status.mjs
 node tools/build-static.mjs
 node tools/prepare-hosting.mjs
 node tools/qa-public-site.mjs
@@ -72,6 +72,8 @@ node tools/qa-release-readiness.mjs
 
 - `data/lux-legal-review.json` shows Privacy and Terms as `approved`.
 - Each approved item includes `reviewedAt` and `reviewedBy`.
+- `data/lux-launch-readiness.json` marks `privacy_review` and `terms_review` ready.
+- `data/lux-launch-closeout.json` marks `privacy_review` and `terms_review` closed with no-secret evidence.
 - `node tools/qa-release-readiness.mjs` no longer reports Privacy or Terms blockers.
 - No legal page says placeholder, template, route-ready, or future implementation.
 - Any paid membership, event ticketing, store, or creator-payment launch has matching terms before going live.

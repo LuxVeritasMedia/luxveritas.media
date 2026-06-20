@@ -45,6 +45,8 @@ for (const marker of [
   "Current Launch Blockers",
   "Reviewer Checklist",
   "Approval Commands",
+  "LUX_LEGAL_SYNC_LAUNCH=1",
+  "LUX_LEGAL_EVIDENCE",
   "LUX_LEGAL_REVIEW_ITEM=privacy",
   "LUX_LEGAL_REVIEW_ITEM=terms",
   "node tools/qa-release-readiness.mjs"
@@ -99,6 +101,8 @@ if (packet) {
     }
   }
   for (const command of [
+    "LUX_LEGAL_SYNC_LAUNCH=1 LUX_LEGAL_EVIDENCE=\"Legal review packet YYYY-MM-DD\" LUX_LEGAL_REVIEW_ITEM=privacy LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY=\"Reviewer Name\" node tools/set-legal-review-status.mjs",
+    "LUX_LEGAL_SYNC_LAUNCH=1 LUX_LEGAL_EVIDENCE=\"Legal review packet YYYY-MM-DD\" LUX_LEGAL_REVIEW_ITEM=terms LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY=\"Reviewer Name\" node tools/set-legal-review-status.mjs",
     "node tools/build-static.mjs",
     "node tools/prepare-hosting.mjs",
     "node tools/qa-release-readiness.mjs"

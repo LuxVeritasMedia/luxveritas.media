@@ -204,18 +204,22 @@ The public terms manifest uses `luxveritas.public_terms.v1`. Form submissions ca
 The legal review manifest uses `luxveritas.legal_review.v1`. Privacy and Terms remain launch blockers until each item is explicitly marked `approved` with reviewer metadata:
 
 ```bash
+LUX_LEGAL_SYNC_LAUNCH=1 \
+LUX_LEGAL_EVIDENCE="Legal review packet YYYY-MM-DD" \
 LUX_LEGAL_REVIEW_ITEM=privacy \
 LUX_LEGAL_REVIEW_STATUS=approved \
 LUX_LEGAL_REVIEWED_BY="Reviewer Name" \
 node tools/set-legal-review-status.mjs
 
+LUX_LEGAL_SYNC_LAUNCH=1 \
+LUX_LEGAL_EVIDENCE="Legal review packet YYYY-MM-DD" \
 LUX_LEGAL_REVIEW_ITEM=terms \
 LUX_LEGAL_REVIEW_STATUS=approved \
 LUX_LEGAL_REVIEWED_BY="Reviewer Name" \
 node tools/set-legal-review-status.mjs
 ```
 
-Use `LUX_LEGAL_DRY_RUN=1` to validate the command without writing. Do not mark either item approved until counsel or the responsible business reviewer has accepted the public page language.
+Use `LUX_LEGAL_DRY_RUN=1` to validate the command without writing. `LUX_LEGAL_SYNC_LAUNCH=1` keeps `data/lux-legal-review.json`, `data/lux-launch-readiness.json`, and `data/lux-launch-closeout.json` synchronized. Do not mark either item approved until counsel or the responsible business reviewer has accepted the public page language.
 
 The notification replay action:
 

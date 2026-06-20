@@ -7,6 +7,7 @@ const [closeoutRaw, readinessRaw, docs] = await Promise.all([
   readFile("docs/launch-blocker-resolution.md", "utf8")
 ]);
 const setter = await readFile("tools/set-launch-closeout-status.mjs", "utf8");
+const legalSetter = await readFile("tools/set-legal-review-status.mjs", "utf8");
 
 const closeout = JSON.parse(closeoutRaw);
 const readiness = JSON.parse(readinessRaw);
@@ -104,6 +105,17 @@ for (const marker of [
   "luxveritas.launch_closeout.v1"
 ]) {
   if (!setter.includes(marker)) issue(`set-launch-closeout-status.mjs missing marker: ${marker}`);
+}
+
+for (const marker of [
+  "LUX_LEGAL_SYNC_LAUNCH",
+  "LUX_LEGAL_EVIDENCE",
+  "data/lux-launch-readiness.json",
+  "data/lux-launch-closeout.json",
+  "privacy_review",
+  "terms_review"
+]) {
+  if (!legalSetter.includes(marker)) issue(`set-legal-review-status.mjs missing launch sync marker: ${marker}`);
 }
 
 const rawCombined = `${closeoutRaw}\n${docs}`;

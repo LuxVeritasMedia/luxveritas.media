@@ -93,6 +93,8 @@ for (const marker of [
 for (const marker of [
   "node tools/qa-domain-readiness.mjs",
   "LUX_RESEND_API_KEY=\"re_...\" node tools/activate-inbox-delivery.mjs",
+  "LUX_LEGAL_SYNC_LAUNCH=1",
+  "LUX_LEGAL_EVIDENCE",
   "LUX_LEGAL_REVIEW_ITEM=privacy",
   "LUX_LEGAL_REVIEW_ITEM=terms",
   buildManifest.assetVersion,
@@ -114,6 +116,8 @@ for (const marker of [
   "Terms Checklist",
   "node tools/export-legal-review-request.mjs",
   "node tools/qa-legal-review-request.mjs",
+  "LUX_LEGAL_SYNC_LAUNCH=1",
+  "LUX_LEGAL_EVIDENCE",
   "LUX_LEGAL_REVIEW_ITEM=privacy",
   "LUX_LEGAL_REVIEW_ITEM=terms"
 ]) {
@@ -141,6 +145,8 @@ for (const marker of [
   "node tools/qa-private-integration-field-map.mjs",
   "node tools/qa-private-workflow-matrix.mjs",
   "LUX_PRIVATE_INTEGRATION_PACKET_OUT=/tmp/lux-private-integration-request.md",
+  "LUX_LEGAL_SYNC_LAUNCH=1",
+  "LUX_LEGAL_EVIDENCE",
   "LUX_LEGAL_REVIEW_ITEM=privacy",
   "LUX_LEGAL_REVIEW_ITEM=terms",
   "LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs",
