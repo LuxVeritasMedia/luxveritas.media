@@ -177,6 +177,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Add manual GitHub final-release audit workflow for non-writing blocker review.
 - [x] Add launch-blocker sync QA for gate, TODO, handoff, and runbook drift.
 - [x] Add local operator-environment QA for launch machine readiness.
+- [x] Add no-sudo local GitHub CLI fallback for launch operators when Homebrew is unavailable.
 - [x] Add no-secret MVP status report for release operators.
 - [x] Add MVP status report QA and workflow coverage.
 - [x] Add MVP status separation for pilot readiness, public-launch approval blockers, and code/config blockers.

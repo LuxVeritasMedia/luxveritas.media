@@ -135,9 +135,38 @@ if (firebaseProjects.ok && /lux-veritas-media/.test(firebaseProjects.stdout)) {
   warn(`Firebase project metadata check unavailable: ${compactError(firebaseProjects)}`);
 }
 
-const ghVersion = await run("gh", ["--version"]);
-if (ghVersion.ok) pass(`GitHub CLI is available (${ghVersion.stdout.split("\n")[0]}).`);
-else warn("GitHub CLI `gh` is not available. This is optional because deploy status can use GitHub API reads, but install it to trigger manual workflows locally.");
+const ghCandidates = [
+  { command: "gh", label: "PATH" },
+  { command: ".codex-tools/gh-local/bin/gh", label: "repo-local" }
+];
+let ghVersion = null;
+let ghSource = "";
+let ghCommand = "";
+for (const candidate of ghCandidates) {
+  const result = await run(candidate.command, ["--version"]);
+  if (result.ok) {
+    ghVersion = result;
+    ghSource = candidate.label;
+    ghCommand = candidate.command;
+    break;
+  }
+}
+if (ghVersion) {
+  pass(`GitHub CLI is available from ${ghSource} (${ghVersion.stdout.split("\n")[0]}).`);
+  const ghAuth = await run(ghCommand, ["auth", "status"], { timeout: 15000 });
+  if (ghAuth.ok && /Logged in to github\.com account/i.test(`${ghAuth.stdout}\n${ghAuth.stderr}`)) {
+    pass("GitHub CLI is authenticated for github.com.");
+    if (/workflow/i.test(`${ghAuth.stdout}\n${ghAuth.stderr}`)) {
+      pass("GitHub CLI token includes workflow scope for manual release audits.");
+    } else {
+      warn("GitHub CLI is authenticated, but workflow scope was not visible; manual workflow dispatch may require reauth.");
+    }
+  } else {
+    warn(`GitHub CLI is installed but not authenticated for launch operations: ${compactError(ghAuth)}`);
+  }
+} else {
+  warn("GitHub CLI `gh` is not available. This is optional because deploy status can use GitHub API reads, but install it to trigger manual workflows locally.");
+}
 
 const port = await run("lsof", ["-ti", ":4173"]);
 if (port.ok && port.stdout) warn(`localhost:4173 is already in use by process ${port.stdout.split(/\s+/)[0]}.`);

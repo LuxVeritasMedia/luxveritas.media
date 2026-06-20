@@ -43,6 +43,14 @@ node tools/qa-operator-environment.mjs
 
 This no-secret check confirms the repo, Node runtime, Firebase CLI, Firebase login/project visibility, optional GitHub CLI, live asset version pointer, and local preview port. The Firebase CLI account must be `info@luxveritas.media`; a different Google account can make provider secrets look missing even when production is healthy. Use `LUX_OPERATOR_ENV_STRICT=1` only when machine setup warnings or blockers should fail the command.
 
+If Homebrew is unavailable or sudo is not approved, a no-sudo GitHub CLI can live at `.codex-tools/gh-local/bin/gh`. The operator check recognizes that repo-local path. To run `gh` manually from this shell, use:
+
+```bash
+export PATH="$PWD/.codex-tools/gh-local/bin:$PATH"
+gh --version
+gh auth status
+```
+
 For a no-secret snapshot of the MVP status, live asset version, legal status, media readiness, and active launch blockers:
 
 ```bash
