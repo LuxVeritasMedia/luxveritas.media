@@ -11,7 +11,7 @@ Use this only when moving from pilot-ready to public-release ready. Keep secrets
 - Current asset version is `20260620-fan-reactions`.
 - Current phase status is Phase 5 portal pilot prep, with Phase 4 legal closeout still open.
 - Media, fan reactions, inbox delivery, private handoff, operator reporting, private intake queue workbench, and private workflow-target recommendation reporting are ready.
-- The pilot write gate last passed on 2026-06-20 with live QA submissions, inbox delivery required, live event writes, media checks, browser-flow coverage, and protected operator-report verification.
+- The pilot write gate last passed on 2026-06-20 with live QA submissions, inbox delivery required, live event writes, media checks, browser-flow coverage, and protected operator-report verification. The live event matrix includes fan-reaction reporting for the media retention loop.
 - Pilot scenario coverage is tracked in `data/lux-pilot-test-matrix.json`.
 - Remaining blockers are Privacy approval and Terms approval.
 

@@ -55,6 +55,21 @@ const matrix = [
     }
   },
   {
+    event: "fan_reaction",
+    page: "/music.html",
+    detail: {
+      reaction: "collect",
+      reaction_label: "Collect",
+      media_id: "spmvp-release",
+      title: "SPMVP",
+      source_type: "audio",
+      source_status: "ready",
+      source_ready: true,
+      reporting_key: "spmvp_release_audio",
+      cta_id: "music__fan_reaction__collect"
+    }
+  },
+  {
     event: "lead_accepted",
     page: "/submissions.html",
     detail: { formType: "submission", delivery: "stored", surface: "form_dialog" }
@@ -69,6 +84,17 @@ const matrix = [
     page: "/portal/reporting.html",
     detail: { action: "load-private", surface: "operator_report", cta_id: "operator_report__report_action__load_private" }
   }
+];
+const expectedEvents = [
+  "view_content",
+  "form_open",
+  "link_click",
+  "media_action",
+  "media_playback",
+  "fan_reaction",
+  "lead_accepted",
+  "lead_rejected",
+  "report_action"
 ];
 
 function stamp() {
@@ -165,6 +191,19 @@ async function writeCheck(item, index) {
     console.log(`${item.event} on ${item.page}: stored ${json.id}.`);
   }
 }
+
+function matrixCoverageCheck() {
+  const events = new Set(matrix.map((item) => item.event));
+  const missing = expectedEvents.filter((event) => !events.has(event));
+  if (missing.length) {
+    issues.push(`live event matrix missing event path(s): ${missing.join(", ")}`);
+  }
+  if (matrix.length > 20) {
+    issues.push(`live event matrix has ${matrix.length} write checks; keep total comfortably under the event rate limit of 40.`);
+  }
+}
+
+matrixCoverageCheck();
 
 try {
   await validationCheck();

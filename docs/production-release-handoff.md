@@ -37,7 +37,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - CTA, media, consented interaction, and form reporting paths have QA coverage.
 - Pilot testing is covered by a no-secret scenario matrix for public capture, media player, portal capture, operator reporting, launch gates, and private workflow readiness.
 - A dedicated pilot write gate can send live QA submissions and event writes, require inbox delivery, verify live media/browser coverage, and confirm protected operator reporting while allowing only the known Privacy and Terms approval blockers.
-- Pilot write gate last passed on 2026-06-20 with 10 live capture-intent submissions, inbox delivery required, live event writes, live media-source checks, live browser-flow coverage, and protected operator-report verification.
+- Pilot write gate last passed on 2026-06-20 with 10 live capture-intent submissions, inbox delivery required, live event writes, live media-source checks, live browser-flow coverage, and protected operator-report verification. Live event matrix coverage now includes fan-reaction reporting for the media retention loop.
 - Operator reporting summarizes audience-interest demand from stored captures.
 - Operator reporting includes a protected intake queue workbench with queue pressure, SLA, next action, inbox status, and handoff status.
 - Operator reporting recommends the next private workflow target from real routing demand while keeping external provider details out of the public site.
