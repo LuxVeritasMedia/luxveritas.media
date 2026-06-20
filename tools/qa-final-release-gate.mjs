@@ -25,6 +25,11 @@ const checks = [
     env: { LUX_MVP_PREFLIGHT_STRICT: "1" }
   },
   {
+    label: "Launch Evidence",
+    script: "tools/qa-launch-evidence.mjs",
+    env: {}
+  },
+  {
     label: "Deploy Status",
     script: "tools/qa-deploy-status.mjs",
     env: { LUX_DEPLOY_STATUS_STRICT: "1" }

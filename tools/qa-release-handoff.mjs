@@ -162,6 +162,8 @@ for (const marker of [
   "tools/qa-mvp-status.mjs",
   "MVP Preflight",
   "tools/qa-mvp-preflight.mjs",
+  "Launch Evidence",
+  "tools/qa-launch-evidence.mjs",
   "Deploy Status",
   "Domain Readiness",
   "Provider Readiness",

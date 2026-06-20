@@ -101,7 +101,7 @@ node tools/qa-live-operator-report.mjs
 LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs
 ```
 
-The final gate also runs operator-environment, MVP status, and MVP preflight checks before strict deploy/domain/provider/release checks. Treat warnings from those early checks as launch-day operator cleanup, even when the formal blocker is still one of the known external gates.
+The final gate also runs operator-environment, MVP status, MVP preflight, and launch-evidence checks before strict deploy/domain/provider/release checks. Treat warnings from those early checks as launch-day operator cleanup, even when the formal blocker is still one of the known external gates.
 
 ## Do Not Ship If
 
