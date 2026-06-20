@@ -416,7 +416,7 @@ function trackEvent(name, detail = {}) {
 }
 
 function elementLabel(element) {
-  const label = element?.getAttribute("aria-label") || element?.textContent || "";
+  const label = element?.dataset?.trackLabel || element?.getAttribute("aria-label") || element?.textContent || "";
   return label.replace(/\s+/g, " ").trim().slice(0, 120) || "Unlabeled interaction";
 }
 
@@ -431,6 +431,8 @@ function slugify(value, fallback = "interaction") {
 
 function interactionSurface(element) {
   if (!element) return "site";
+  const trackedSurface = element.dataset?.trackSurface || element.closest("[data-track-surface]")?.dataset?.trackSurface;
+  if (trackedSurface) return trackedSurface;
   if (element.closest(".site-header")) return "header";
   if (element.closest(".site-footer")) return "footer";
   if (element.closest(".hero-actions")) return "hero";
@@ -443,6 +445,8 @@ function interactionSurface(element) {
 }
 
 function interactionIntent(element, detail = {}) {
+  const trackedIntent = element?.dataset?.trackIntent || element?.closest?.("[data-track-intent]")?.dataset?.trackIntent;
+  if (trackedIntent) return trackedIntent;
   if (detail.action) return detail.action;
   if (detail.formType) return `form_${detail.formType}`;
   if (detail.destination) return `link_${detail.destination}`;

@@ -40,6 +40,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Add local helper for generating the private reporting operator-token hash.
 - [x] Add stable CTA IDs and protected CTA signal summaries for real button/link reporting.
 - [x] Add stable interaction reporting for consent, dialog close, and media selection buttons.
+- [x] Add stable fan-flywheel and brand-house link tracking for retention-path reporting.
 - [x] Convert portal sign-in shell into a real screened access capture with receipt and fallback.
 - [x] Add protected pilot funnel reporting for capture and engagement health.
 - [x] Add protected form-delivery readiness reporting for stored-vs-inbox status.

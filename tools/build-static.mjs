@@ -280,7 +280,7 @@ function fanFlywheelSection() {
       <p>${fanFlywheel.summary || ""}</p>
     </div>
     <div class="flywheel-grid" aria-label="Lux Veritas fan journey">
-      ${stages.map((stage, index) => `<a class="flywheel-card" href="${stage.path}" data-fan-flywheel-stage="${stage.id}">
+      ${stages.map((stage, index) => `<a class="flywheel-card" href="${stage.path}" data-fan-flywheel-stage="${stage.id}" data-track-surface="fan_flywheel" data-track-intent="flywheel_${stage.id}" data-track-label="${stage.label} ${stage.title}">
         <span>${String(index + 1).padStart(2, "0")} · ${stage.label}</span>
         <strong>${stage.title}</strong>
         <p>${stage.body}</p>
@@ -349,7 +349,7 @@ function brandHouseSection() {
       <p>${brandHouse.summary || ""}</p>
     </div>
     <div class="house-grid" aria-label="Lux Veritas house marks">
-      ${houseMarks.map((item) => `<a class="house-card" href="${item.path}">
+      ${houseMarks.map((item) => `<a class="house-card" href="${item.path}" data-house-mark="${item.mark}" data-track-surface="brand_house" data-track-intent="house_${String(item.mark || "").toLowerCase()}" data-track-label="${item.title}">
         <span class="house-mark">${item.logo ? `<img src="${item.logo}" alt="" loading="lazy" decoding="async" aria-hidden="true" />` : ""}<span>${item.mark}</span></span>
         <strong>${item.title}</strong>
         <p>${item.body}</p>

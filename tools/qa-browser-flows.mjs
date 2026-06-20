@@ -773,6 +773,50 @@ async function interactionReportingFlow(page, baseUrl) {
   }
 }
 
+async function pathwayLinkReportingFlow(page, baseUrl) {
+  await page.goto(`${baseUrl}/index.html`, { waitUntil: "domcontentloaded" });
+  await page.evaluate(() => localStorage.setItem("luxveritas_consent", "accepted"));
+  await page.reload({ waitUntil: "domcontentloaded" });
+
+  const beforeFlywheelEvents = events.length;
+  await page.click('[data-fan-flywheel-stage="listen"]');
+  await waitForCondition(() => (
+    events.slice(beforeFlywheelEvents).some((item) => (
+      item.event === "link_click"
+      && item.detail?.surface === "fan_flywheel"
+      && item.detail?.intent === "flywheel_listen"
+      && item.detail?.destination === "/music.html"
+    ))
+  ), 6000);
+  const flywheelEvent = events.slice(beforeFlywheelEvents).find((item) => item.detail?.intent === "flywheel_listen");
+  if (!flywheelEvent) {
+    issues.push("/index.html: fan flywheel link did not report stable link_click");
+  } else if (flywheelEvent.detail?.cta_id !== "fan_flywheel__link_click__flywheel_listen") {
+    issues.push(`/index.html: fan flywheel link reported unexpected cta_id ${flywheelEvent.detail?.cta_id || "missing"}`);
+  }
+
+  await page.goto(`${baseUrl}/index.html`, { waitUntil: "domcontentloaded" });
+  await page.evaluate(() => localStorage.setItem("luxveritas_consent", "accepted"));
+  await page.reload({ waitUntil: "domcontentloaded" });
+
+  const beforeHouseEvents = events.length;
+  await page.click('[data-house-mark="LVR"]');
+  await waitForCondition(() => (
+    events.slice(beforeHouseEvents).some((item) => (
+      item.event === "link_click"
+      && item.detail?.surface === "brand_house"
+      && item.detail?.intent === "house_lvr"
+      && item.detail?.destination === "/music.html"
+    ))
+  ), 6000);
+  const houseEvent = events.slice(beforeHouseEvents).find((item) => item.detail?.intent === "house_lvr");
+  if (!houseEvent) {
+    issues.push("/index.html: brand-house link did not report stable link_click");
+  } else if (houseEvent.detail?.cta_id !== "brand_house__link_click__house_lvr") {
+    issues.push(`/index.html: brand-house link reported unexpected cta_id ${houseEvent.detail?.cta_id || "missing"}`);
+  }
+}
+
 async function portalSigninFlow(page, baseUrl) {
   const beforeSubmitCount = submissions.length;
   const beforeEventCount = events.length;
@@ -1251,6 +1295,7 @@ try {
   await formFallbackFlow(page, baseUrl);
   await formRateLimitFlow(page, baseUrl);
   await interactionReportingFlow(page, baseUrl);
+  await pathwayLinkReportingFlow(page, baseUrl);
   await portalSigninFlow(page, baseUrl);
   await portalFallbackFlow(page, baseUrl);
   for (const path of ["/music.html", "/spmvp.html"]) {
@@ -1276,4 +1321,4 @@ if (issues.length) {
   process.exit(1);
 }
 
-console.log(`Browser flow QA passed for ${flows.length} form flows, form fallback/rate-limit, portal sign-in/fallback, 2 media flows, media action/playback mapping, signal pass export, interaction reporting, and operator reporting at ${baseUrl}.`);
+console.log(`Browser flow QA passed for ${flows.length} form flows, form fallback/rate-limit, portal sign-in/fallback, 2 media flows, media action/playback mapping, signal pass export, interaction/pathway reporting, and operator reporting at ${baseUrl}.`);

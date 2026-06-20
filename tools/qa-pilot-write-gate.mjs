@@ -120,7 +120,7 @@ const checks = [
     env: {
       LUX_QA_RUN_ID: qaRunId,
       LUX_QA_EXPECT_FORM_COUNT: "10",
-      LUX_QA_EXPECT_EVENT_COUNT: "9"
+      LUX_QA_EXPECT_EVENT_COUNT: "11"
     },
     needsReportToken: true
   } : null

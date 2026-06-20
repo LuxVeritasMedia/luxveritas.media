@@ -25,6 +25,28 @@ const matrix = [
     detail: { destination: "/spmvp.html", surface: "hero", cta_id: "hero__link_click__link_spmvp_html" }
   },
   {
+    event: "link_click",
+    page: "/index.html",
+    detail: {
+      destination: "/music.html",
+      surface: "fan_flywheel",
+      intent: "flywheel_listen",
+      label: "Listen Start With Sound",
+      cta_id: "fan_flywheel__link_click__flywheel_listen"
+    }
+  },
+  {
+    event: "link_click",
+    page: "/index.html",
+    detail: {
+      destination: "/music.html",
+      surface: "brand_house",
+      intent: "house_lvr",
+      label: "Lux Veritas Records",
+      cta_id: "brand_house__link_click__house_lvr"
+    }
+  },
+  {
     event: "media_action",
     page: "/spmvp.html",
     detail: {

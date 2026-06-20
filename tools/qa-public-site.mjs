@@ -280,6 +280,21 @@ for (const file of htmlFiles) {
         issues.push(`index.html: missing interest path ${interest}`);
       }
     }
+    for (const intent of ["flywheel_listen", "flywheel_watch", "flywheel_join", "flywheel_attend", "flywheel_collect", "flywheel_create"]) {
+      if (!html.includes(`data-track-intent="${intent}"`)) {
+        issues.push(`index.html: missing fan-flywheel tracking intent ${intent}`);
+      }
+    }
+    for (const intent of ["house_lvr", "house_lvs", "house_lvp", "house_lvl", "house_lvc", "house_lva"]) {
+      if (!html.includes(`data-track-intent="${intent}"`)) {
+        issues.push(`index.html: missing brand-house tracking intent ${intent}`);
+      }
+    }
+    for (const surface of ["fan_flywheel", "brand_house"]) {
+      if (!html.includes(`data-track-surface="${surface}"`)) {
+        issues.push(`index.html: missing tracking surface ${surface}`);
+      }
+    }
   }
 }
 
@@ -289,6 +304,9 @@ for (const pattern of bannedTerms) {
 }
 for (const marker of ['"serviceWorker" in navigator', 'navigator.serviceWorker.register("/service-worker.js")']) {
   if (!appJs.includes(marker)) issues.push(`app.js: missing service worker registration marker ${marker}`);
+}
+for (const marker of ["trackSurface", "trackIntent", "trackLabel"]) {
+  if (!appJs.includes(marker)) issues.push(`app.js: missing path tracking marker ${marker}`);
 }
 
 const serviceWorkerRaw = await readFile(join(root, "service-worker.js"), "utf8");
