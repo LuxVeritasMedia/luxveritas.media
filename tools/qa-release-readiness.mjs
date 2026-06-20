@@ -223,7 +223,7 @@ add(buildManifest.schemaVersion === "luxveritas.build_manifest.v1", "Build manif
 add(Boolean(expectedAssetVersion), "Build script exposes an asset version.");
 add(buildManifest.assetVersion === expectedAssetVersion && buildManifest.version === expectedAssetVersion, "Build manifest asset version matches the generated app version.");
 add(buildManifest.appScript === `app.js?v=${expectedAssetVersion}` && buildManifest.stylesheet === `styles.css?v=${expectedAssetVersion}`, "Build manifest lists current app and stylesheet assets.");
-add(Boolean(buildManifest.mediaManifestVersion && buildManifest.brandHouseVersion && buildManifest.fanFlywheelVersion && buildManifest.publicTermsVersion), "Build manifest carries media, brand house, fan flywheel, and public terms version pointers.");
+add(Boolean(buildManifest.mediaManifestVersion && buildManifest.brandHouseVersion && buildManifest.fanFlywheelVersion && buildManifest.dropRoomVersion && buildManifest.publicTermsVersion), "Build manifest carries media, brand house, fan flywheel, drop room, and public terms version pointers.");
 add(publicTerms.schemaVersion === "luxveritas.public_terms.v1", "Public terms version manifest is current.");
 add(Boolean(publicTerms.version && publicTerms.privacyVersion && publicTerms.termsVersion && publicTerms.submissionTermsVersion), "Public terms manifest contains active legal version IDs.");
 add(launchGates.length >= 6, "Launch readiness checklist contains required launch gates.");

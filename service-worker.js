@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260620-fan-flywheel";
+const CACHE_NAME = "luxveritas-static-20260620-drop-room";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260620-fan-flywheel",
-  "/app.js?v=20260620-fan-flywheel",
+  "/styles.css?v=20260620-drop-room",
+  "/app.js?v=20260620-drop-room",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"

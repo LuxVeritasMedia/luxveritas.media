@@ -82,6 +82,7 @@ Current phase: Phase 4 of 10 - capture, legal, seed, and boundary readiness.
 - [x] Split Ledger into public Ledger-lite and private internal details.
 - [x] Works shows only published or intentionally teased works.
 - [x] Store is live products or drop waitlist only.
+- [x] Add waitlist-only public Drop Room for future owned marketplace paths.
 - [x] Brands are noindex/gated until active.
 - [x] Add manifest-driven brand-house map for public studio, publishing, live, circle, and commerce paths.
 - [x] Add public brand-house mark assets for records, studios, publishing, live, circle, and atelier paths.

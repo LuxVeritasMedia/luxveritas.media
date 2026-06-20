@@ -152,8 +152,8 @@ try {
     if (buildManifest.stylesheet !== `styles.css?v=${expectedAssetVersion}`) {
       issues.push("/data/lux-build-manifest.json: stylesheet does not match current asset version");
     }
-    if (!buildManifest.mediaManifestVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.publicTermsVersion) {
-      issues.push("/data/lux-build-manifest.json: missing mediaManifestVersion, brandHouseVersion, fanFlywheelVersion, or publicTermsVersion");
+    if (!buildManifest.mediaManifestVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.publicTermsVersion) {
+      issues.push("/data/lux-build-manifest.json: missing mediaManifestVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, or publicTermsVersion");
     }
   }
 } catch (error) {
@@ -234,6 +234,34 @@ try {
   }
 } catch (error) {
   issues.push(`/data/lux-fan-flywheel.json: invalid response (${error.message})`);
+}
+
+try {
+  const { response, text } = await fetchWithTimeout("/data/lux-drop-room.json");
+  if (!response.ok) {
+    issues.push(`/data/lux-drop-room.json: expected HTTP 200, received ${response.status}`);
+  } else {
+    const dropRoom = JSON.parse(text);
+    const drops = Array.isArray(dropRoom.drops) ? dropRoom.drops : [];
+    const expectedDrops = ["release-object", "visual-edition", "live-room-access", "atelier-piece"];
+    if (dropRoom.schemaVersion !== "luxveritas.drop_room.v1") {
+      issues.push("/data/lux-drop-room.json: schemaVersion mismatch");
+    }
+    if (liveBuildManifest?.dropRoomVersion && liveBuildManifest.dropRoomVersion !== dropRoom.version) {
+      issues.push("/data/lux-drop-room.json: version does not match build manifest dropRoomVersion");
+    }
+    if (dropRoom.commerceMode !== "waitlist_only") {
+      issues.push("/data/lux-drop-room.json: commerceMode must remain waitlist_only");
+    }
+    if (!/No purchase is accepted/i.test(dropRoom.notice || "")) {
+      issues.push("/data/lux-drop-room.json: missing no-purchase notice");
+    }
+    if (drops.map((drop) => drop.id).join("|") !== expectedDrops.join("|")) {
+      issues.push(`/data/lux-drop-room.json: expected drops ${expectedDrops.join(", ")}`);
+    }
+  }
+} catch (error) {
+  issues.push(`/data/lux-drop-room.json: invalid response (${error.message})`);
 }
 
 try {

@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "luxveritas.drop_room.v1",
+  "version": "2026-06-20-drop-room",
+  "updatedAt": "2026-06-20T00:00:00.000Z",
+  "publicPurpose": "Audience-facing waitlist map for future Lux Veritas drops and commerce windows.",
+  "commerceMode": "waitlist_only",
+  "headline": "Drops should belong to the world they come from.",
+  "summary": "The public store begins as a drop room: release-linked objects, visual editions, live-room access paths, and selected atelier pieces held until each offer is ready.",
+  "notice": "No purchase is accepted on this public page. Checkout, pricing, shipping, refunds, cancellations, and paid membership terms must be approved before commerce opens.",
+  "drops": [
+    {
+      "id": "release-object",
+      "label": "Release Object",
+      "title": "Music-Linked Pieces",
+      "body": "Physical and digital objects tied to approved releases, sessions, radio signals, and listening-room moments.",
+      "status": "waitlist",
+      "path": "/store.html",
+      "action": "Join the release-object list"
+    },
+    {
+      "id": "visual-edition",
+      "label": "Visual Edition",
+      "title": "World Artifacts",
+      "body": "Prints, visual studies, books, and editioned pieces that carry the cinematic language of Lux Veritas.",
+      "status": "waitlist",
+      "path": "/store.html",
+      "action": "Join the edition list"
+    },
+    {
+      "id": "live-room-access",
+      "label": "Live Room",
+      "title": "Room Access Paths",
+      "body": "Invitation interest for listening rooms, salons, private screenings, and destination cultural gatherings.",
+      "status": "request_access",
+      "path": "/events.html",
+      "action": "Request room access"
+    },
+    {
+      "id": "atelier-piece",
+      "label": "Atelier",
+      "title": "Selected Goods",
+      "body": "Garments, objects, and supporter pieces that should feel connected to the releases and worlds around them.",
+      "status": "waitlist",
+      "path": "/store.html",
+      "action": "Join the atelier list"
+    }
+  ]
+}

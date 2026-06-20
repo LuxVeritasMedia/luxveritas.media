@@ -1,11 +1,12 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260620-fan-flywheel";
+const assetVersion = "20260620-drop-room";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 const brandHouse = JSON.parse(await readFile("data/lux-brand-house.json", "utf8"));
 const fanFlywheel = JSON.parse(await readFile("data/lux-fan-flywheel.json", "utf8"));
+const dropRoom = JSON.parse(await readFile("data/lux-drop-room.json", "utf8"));
 
 const nav = [
   ["Home", "/index.html"],
@@ -239,13 +240,13 @@ function cta() {
   </section>`;
 }
 
-function fanConversionPage({ path, title, description, eyebrow, headline, copy, cards, closingTitle, closingCopy, primaryLabel = "Join the list" }) {
+function fanConversionPage({ path, title, description, eyebrow, headline, copy, cards, closingTitle, closingCopy, primaryLabel = "Join the list", showDrops = false }) {
   return shell({
     path,
     title: `${title} | Lux Veritas`,
     description,
     body: `${pageHero(eyebrow, headline, copy, `<div class="hero-actions"><button class="button button-primary" type="button" data-open-form="fan">${primaryLabel}</button><button class="button button-quiet" type="button" data-open-form="request">Request Access</button></div>`)}
-    ${fanFlywheelSection()}
+    ${fanFlywheelSection()}${showDrops ? `\n    ${dropRoomSection()}` : ""}
     <section class="section split-band">
       <div><p class="kicker">Fan Circle</p><h2>${closingTitle}</h2></div>
       <div><p>${closingCopy}</p><div class="hero-actions"><button class="button button-primary" type="button" data-open-form="fan">Join for first access</button></div></div>
@@ -274,6 +275,27 @@ function fanFlywheelSection() {
         <small>${stage.action}</small>
       </a>`).join("")}
     </div>
+  </section>`;
+}
+
+function dropRoomSection() {
+  const drops = Array.isArray(dropRoom.drops) ? dropRoom.drops : [];
+  return `<section class="section drop-room" data-drop-room data-drop-room-version="${dropRoom.version || ""}" data-commerce-mode="${dropRoom.commerceMode || "waitlist_only"}">
+    <div class="section-heading">
+      <p class="kicker">Drop Room</p>
+      <h2>${dropRoom.headline || "Drops should belong to the world they come from."}</h2>
+      <p>${dropRoom.summary || ""}</p>
+    </div>
+    <div class="drop-grid" aria-label="Lux Veritas drop room">
+      ${drops.map((drop) => `<article class="drop-card" data-drop-id="${drop.id}" data-drop-status="${drop.status}">
+        <span>${drop.label}</span>
+        <h3>${drop.title}</h3>
+        <p>${drop.body}</p>
+        <small>${drop.status === "request_access" ? "Request access" : "Waitlist only"}</small>
+        <button class="button button-quiet" type="button" data-open-form="${drop.status === "request_access" ? "event" : "fan"}">${drop.action}</button>
+      </article>`).join("")}
+    </div>
+    <p class="drop-notice">${dropRoom.notice || ""}</p>
   </section>`;
 }
 
@@ -944,7 +966,8 @@ const pages = [
       { label: "World", title: "Limited Pieces", copy: "Selected garments, prints, books, and objects from the Lux Veritas visual universe." },
       { label: "Access", title: "Member Windows", copy: "Early notice and selected presale paths for the people already inside the circle." }
     ],
-    primaryLabel: "Join the waitlist"
+    primaryLabel: "Join the waitlist",
+    showDrops: true
   })],
   ["/insights.html", utility("/insights.html", "Insights", "Selected Outer Codex essays and public writing from Lux Veritas.", "<p>Insights will gather public-facing essays, principles, and reflections from the Outer Codex.</p><p>Private maps, internal playbooks, and unpublished materials are not part of this public archive.</p>", "request", false)],
   ["/membership.html", fanConversionPage({
@@ -961,7 +984,8 @@ const pages = [
       { label: "Private", title: "Drops and Rooms", copy: "Waitlist paths for listening rooms, private drops, presales, and member-only invitations." },
       { label: "Deeper", title: "Codex and Community", copy: "Future access to lore, behind-the-scenes releases, community moments, and creator challenges." }
     ],
-    primaryLabel: "Join the waitlist"
+    primaryLabel: "Join the waitlist",
+    showDrops: true
   })],
   ["/investor.html", accessShell("/investor.html", "Strategic Access", "Investor, licensing, studio, and strategic partnership materials are available by screened request only.", "Use this page to request access. Public materials are intentionally limited.", "Request investor access", "Join", "investor")],
   ["/community.html", fanConversionPage({
@@ -1059,6 +1083,7 @@ await writeFile("data/lux-build-manifest.json", `${JSON.stringify({
   mediaManifestVersion: mediaManifest.version,
   brandHouseVersion: brandHouse.version,
   fanFlywheelVersion: fanFlywheel.version,
+  dropRoomVersion: dropRoom.version,
   publicTermsVersion: publicTerms.version,
   routeCount: pages.length,
   publicRouteCount: publicPaths.length,

@@ -1,13 +1,14 @@
 {
   "schemaVersion": "luxveritas.build_manifest.v1",
-  "version": "20260620-fan-flywheel",
-  "assetVersion": "20260620-fan-flywheel",
+  "version": "20260620-drop-room",
+  "assetVersion": "20260620-drop-room",
   "mediaManifestVersion": "2026-06-10-mvp-media-preview",
   "brandHouseVersion": "2026-06-19-brand-house",
   "fanFlywheelVersion": "2026-06-20-fan-flywheel",
+  "dropRoomVersion": "2026-06-20-drop-room",
   "publicTermsVersion": "2026-06-09-public-capture",
   "routeCount": 37,
   "publicRouteCount": 20,
-  "appScript": "app.js?v=20260620-fan-flywheel",
-  "stylesheet": "styles.css?v=20260620-fan-flywheel"
+  "appScript": "app.js?v=20260620-drop-room",
+  "stylesheet": "styles.css?v=20260620-drop-room"
 }

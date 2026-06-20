@@ -16,6 +16,7 @@ const requiredFiles = [
   "data/lux-launch-closeout-public.json",
   "data/lux-brand-house.json",
   "data/lux-fan-flywheel.json",
+  "data/lux-drop-room.json",
   "data/lux-media-manifest.json",
   "data/lux-build-manifest.json",
   "data/lux-legal-review.json",
@@ -292,6 +293,7 @@ for (const marker of ["luxveritas-static-", "/offline.html", "/site.webmanifest"
 
 const brandHouseRaw = await readFile(join(root, "data/lux-brand-house.json"), "utf8");
 const fanFlywheelRaw = await readFile(join(root, "data/lux-fan-flywheel.json"), "utf8");
+const dropRoomRaw = await readFile(join(root, "data/lux-drop-room.json"), "utf8");
 const mediaManifestRaw = await readFile(join(root, "data/lux-media-manifest.json"), "utf8");
 const buildManifestRaw = await readFile(join(root, "data/lux-build-manifest.json"), "utf8");
 const webManifestRaw = await readFile(join(root, "site.webmanifest"), "utf8");
@@ -307,6 +309,7 @@ for (const pattern of bannedTerms) {
   if (pattern.test(launchCloseoutRaw)) issues.push(`data/lux-launch-closeout-public.json: banned public term matched ${pattern}`);
   if (pattern.test(brandHouseRaw)) issues.push(`data/lux-brand-house.json: banned public term matched ${pattern}`);
   if (pattern.test(fanFlywheelRaw)) issues.push(`data/lux-fan-flywheel.json: banned public term matched ${pattern}`);
+  if (pattern.test(dropRoomRaw)) issues.push(`data/lux-drop-room.json: banned public term matched ${pattern}`);
   if (pattern.test(mediaManifestRaw)) issues.push(`data/lux-media-manifest.json: banned public term matched ${pattern}`);
   if (pattern.test(legalReviewRaw)) issues.push(`data/lux-legal-review.json: banned public term matched ${pattern}`);
   if (pattern.test(publicTermsRaw)) issues.push(`data/lux-public-terms.json: banned public term matched ${pattern}`);
@@ -352,8 +355,8 @@ try {
   if (buildManifest.routeCount !== htmlFiles.length) {
     issues.push(`data/lux-build-manifest.json: routeCount ${buildManifest.routeCount} does not match ${htmlFiles.length} generated HTML files`);
   }
-  if (!buildManifest.publicRouteCount || !buildManifest.mediaManifestVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.publicTermsVersion) {
-    issues.push("data/lux-build-manifest.json: missing publicRouteCount, mediaManifestVersion, brandHouseVersion, fanFlywheelVersion, or publicTermsVersion");
+  if (!buildManifest.publicRouteCount || !buildManifest.mediaManifestVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.publicTermsVersion) {
+    issues.push("data/lux-build-manifest.json: missing publicRouteCount, mediaManifestVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, or publicTermsVersion");
   }
 } catch (error) {
   issues.push(`data/lux-build-manifest.json: invalid JSON (${error.message})`);
@@ -450,6 +453,61 @@ try {
   }
 } catch (error) {
   issues.push(`data/lux-fan-flywheel.json: invalid JSON (${error.message})`);
+}
+
+try {
+  const dropRoom = JSON.parse(dropRoomRaw);
+  const drops = Array.isArray(dropRoom.drops) ? dropRoom.drops : [];
+  if (dropRoom.schemaVersion !== "luxveritas.drop_room.v1") {
+    issues.push("data/lux-drop-room.json: missing schemaVersion luxveritas.drop_room.v1");
+  }
+  if (dropRoom.commerceMode !== "waitlist_only") {
+    issues.push("data/lux-drop-room.json: commerceMode must remain waitlist_only before commerce terms are approved");
+  }
+  if (!dropRoom.version || !dropRoom.headline || !dropRoom.summary || !dropRoom.notice) {
+    issues.push("data/lux-drop-room.json: missing version, headline, summary, or notice");
+  }
+  if (!/No purchase is accepted/i.test(dropRoom.notice || "")) {
+    issues.push("data/lux-drop-room.json: notice must state no purchase is accepted");
+  }
+  const expectedDrops = ["release-object", "visual-edition", "live-room-access", "atelier-piece"];
+  const dropIds = drops.map((drop) => drop.id);
+  if (dropIds.join("|") !== expectedDrops.join("|")) {
+    issues.push(`data/lux-drop-room.json: expected drops ${expectedDrops.join(", ")}, found ${dropIds.join(", ")}`);
+  }
+  for (const drop of drops) {
+    for (const field of ["id", "label", "title", "body", "status", "path", "action"]) {
+      if (!drop[field]) issues.push(`data/lux-drop-room.json: ${drop.id || "drop"} missing ${field}`);
+    }
+    if (!["waitlist", "request_access"].includes(drop.status)) {
+      issues.push(`data/lux-drop-room.json: ${drop.id || "drop"} has invalid status`);
+    }
+    if (drop.path && (!drop.path.startsWith("/") || !drop.path.endsWith(".html"))) {
+      issues.push(`data/lux-drop-room.json: ${drop.id || "drop"} has invalid public path`);
+    }
+  }
+  for (const rel of ["store.html", "membership.html"]) {
+    const html = await readFile(join(root, rel), "utf8");
+    if (!html.includes(`data-drop-room-version="${dropRoom.version}"`)) {
+      issues.push(`${rel}: missing drop room version ${dropRoom.version}`);
+    }
+    if (!html.includes('data-commerce-mode="waitlist_only"')) {
+      issues.push(`${rel}: missing waitlist-only commerce mode`);
+    }
+    if (!html.includes(dropRoom.notice)) {
+      issues.push(`${rel}: missing drop room no-purchase notice`);
+    }
+    for (const drop of drops) {
+      if (!html.includes(`data-drop-id="${drop.id}"`)) {
+        issues.push(`${rel}: missing drop room item ${drop.id}`);
+      }
+      if (!html.includes(`data-drop-status="${drop.status}"`)) {
+        issues.push(`${rel}: missing drop room status ${drop.status}`);
+      }
+    }
+  }
+} catch (error) {
+  issues.push(`data/lux-drop-room.json: invalid JSON (${error.message})`);
 }
 
 try {
