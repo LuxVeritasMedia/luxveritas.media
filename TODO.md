@@ -222,4 +222,4 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Attach approved MVP preview audio, video, and radio sources.
 - [x] Verify approved live audio, video, and radio source URLs against the production media manifest.
 - [x] Add live approved-operator report QA for private counts, summaries, readiness, playback reporting, handoff reporting, and secret-shaped value protection.
-- [ ] Run the pilot write gate with `LUX_PILOT_WRITE_TESTS=1` before public release rehearsal so the latest live capture/reporting loop has fresh write evidence.
+- [x] Run the pilot write gate with `LUX_PILOT_WRITE_TESTS=1` before public release rehearsal so the latest live capture/reporting loop has fresh write evidence.
