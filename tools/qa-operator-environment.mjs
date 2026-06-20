@@ -66,6 +66,7 @@ for (const file of [
   "AGENTS.md",
   "firebase.json",
   "tools/build-static.mjs",
+  "tools/qa-pilot-write-gate.mjs",
   "tools/qa-final-release-gate.mjs",
   "docs/final-launch-runbook.md",
   "data/lux-build-manifest.json"

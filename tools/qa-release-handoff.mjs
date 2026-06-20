@@ -9,6 +9,7 @@ const finalLaunchRunbook = await readFile("docs/final-launch-runbook.md", "utf8"
 const todo = await readFile("TODO.md", "utf8");
 const buildManifest = JSON.parse(await readFile("data/lux-build-manifest.json", "utf8"));
 const finalGate = await readFile("tools/qa-final-release-gate.mjs", "utf8");
+const pilotWriteGate = await readFile("tools/qa-pilot-write-gate.mjs", "utf8");
 
 function issue(message) {
   issues.push(message);
@@ -32,6 +33,7 @@ for (const marker of [
   "node tools/qa-domain-readiness.mjs",
   "node tools/resolve-www-domain.mjs",
   "node tools/qa-release-readiness.mjs",
+  "LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs",
   "LUX_PILOT_BROWSER=1 LUX_PILOT_LIVE=1 node tools/qa-pilot-readiness.mjs",
   "node tools/qa-final-release-gate.mjs",
   "node tools/qa-operator-environment.mjs",
@@ -135,6 +137,8 @@ for (const marker of [
   "LUX_LEGAL_REVIEW_ITEM=privacy",
   "LUX_LEGAL_REVIEW_ITEM=terms",
   "LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs",
+  "LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs",
+  "LUX_PILOT_WRITE_DRY_RUN=1 node tools/qa-pilot-write-gate.mjs",
   "Do Not Ship If",
   "Replay pending inbox notifications"
 ]) {
@@ -164,6 +168,24 @@ for (const marker of [
 }
 
 for (const marker of [
+  "Lux Veritas pilot write gate",
+  "LUX_PILOT_WRITE_TESTS",
+  "LUX_PILOT_WRITE_DRY_RUN",
+  "Live Form Write Matrix",
+  "Live Event Write Matrix",
+  "Live Browser Flows",
+  "Live Operator Report",
+  "Release Readiness",
+  "allowLegalOnly",
+  "Privacy page legal review complete",
+  "Terms page legal review complete"
+]) {
+  if (!pilotWriteGate.includes(marker)) {
+    issue(`tools/qa-pilot-write-gate.mjs missing marker: ${marker}`);
+  }
+}
+
+for (const marker of [
   "export-launch-evidence",
   "LUX_EVIDENCE_LIVE=1",
   "LUX_EVIDENCE_OUT=/tmp/lux-launch-evidence.md"
@@ -178,6 +200,7 @@ for (const marker of [
   "Configure and verify email provider runtime secret `RESEND_API_KEY`",
   "Add legal review packet for Privacy and Terms approval",
   "Add final strict release-gate command for launch-day acceptance",
+  "Add dedicated pilot write gate for TestFlight-quality live submissions",
   "Require final release-gate write mode for launch-day approval",
   "Require browser and live coverage in final release-gate approval mode",
   "Add final launch runbook for DNS, inbox, legal, write tests, and gate approval",

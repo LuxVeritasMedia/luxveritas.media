@@ -294,6 +294,7 @@ if (jsonMode) {
   console.log("- node tools/qa-operator-environment.mjs");
   console.log("- node tools/qa-deploy-status.mjs");
   console.log("- node tools/qa-release-readiness.mjs");
+  console.log("- LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs");
   console.log("- LUX_FINAL_WRITE_TESTS=1 node tools/qa-final-release-gate.mjs");
 }
 

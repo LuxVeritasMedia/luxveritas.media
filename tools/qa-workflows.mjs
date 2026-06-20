@@ -161,6 +161,7 @@ for (const marker of [
   "node tools/resolve-www-domain.mjs",
   "node tools/qa-private-workflow-matrix.mjs",
   "node tools/qa-external-workflow-targets.mjs",
+  "LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs",
   "LUX_INBOX_ACTIVATION_WRITE_TEST=1",
   "ready to receive QA mail"
 ]) {

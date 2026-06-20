@@ -36,6 +36,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Brand-house visual identity is manifest-driven and live on Home and About, with responsive QA coverage for the six public house marks.
 - CTA, media, consented interaction, and form reporting paths have QA coverage.
 - Pilot testing is covered by a no-secret scenario matrix for public capture, media player, portal capture, operator reporting, launch gates, and private workflow readiness.
+- A dedicated pilot write gate can send live QA submissions and event writes, require inbox delivery, verify live media/browser coverage, and confirm protected operator reporting while allowing only the known Privacy and Terms approval blockers.
 - Operator reporting summarizes audience-interest demand from stored captures.
 - Operator reporting includes a protected intake queue workbench with queue pressure, SLA, next action, inbox status, and handoff status.
 - Operator reporting recommends the next private workflow target from real routing demand while keeping external provider details out of the public site.
@@ -73,6 +74,7 @@ node tools/qa-live-operator-report.mjs
 node tools/qa-domain-readiness.mjs
 node tools/resolve-www-domain.mjs
 node tools/qa-release-readiness.mjs
+LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs
 LUX_PILOT_BROWSER=1 LUX_PILOT_LIVE=1 node tools/qa-pilot-readiness.mjs
 node tools/qa-final-release-gate.mjs
 ```

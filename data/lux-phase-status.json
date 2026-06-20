@@ -7,7 +7,7 @@
     "number": 5,
     "label": "Portal Pilot Prep",
     "status": "active_pilot",
-    "summary": "Phase 5 pilot prep is active: the public site, capture layer, media preview player, fan reactions, private access shell, operator reporting, and private intake queue workbench are live. Full public release is still blocked by Privacy and Terms approval."
+    "summary": "Phase 5 pilot prep is active: the public site, capture layer, media preview player, fan reactions, private access shell, operator reporting, private intake queue workbench, and pilot write gate are live. Full public release is still blocked by Privacy and Terms approval."
   },
   "publicLaunchStatus": "blocked_by_external_legal_approval",
   "pilotStatus": "pilot_ready_when_live_checks_pass",
@@ -37,7 +37,7 @@
       "phaseNumber": 4,
       "label": "Capture, Legal, Seed, Boundary Closeout",
       "status": "external_approval_open",
-      "summary": "Capture, media, reporting, domain, inbox, and boundary work are ready. Privacy and Terms review remain open before full public release."
+      "summary": "Capture, media, reporting, domain, inbox, pilot write-gate, and boundary work are ready. Privacy and Terms review remain open before full public release."
     },
     {
       "id": "phase-5-portal-shell",

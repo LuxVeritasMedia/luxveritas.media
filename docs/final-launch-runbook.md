@@ -30,6 +30,18 @@ node tools/qa-deploy-status.mjs
 
 If the operator-environment check reports a different Firebase account, log it out and run a fresh login with `info@luxveritas.media` before checking provider secrets or deploying Functions.
 
+For pilot/TestFlight-quality proof before legal approval is closed, run the pilot write gate. This sends live QA submissions and event writes, requires inbox delivery, checks the live media sources, verifies protected operator reporting, and allows only the known Privacy and Terms review blockers:
+
+```bash
+LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs
+```
+
+For a non-writing rehearsal only:
+
+```bash
+LUX_PILOT_WRITE_DRY_RUN=1 node tools/qa-pilot-write-gate.mjs
+```
+
 2. Reconfirm `www` HTTPS:
 
 ```bash
@@ -92,6 +104,7 @@ The final gate also runs operator-environment, MVP status, and MVP preflight che
 - `LUX_FINAL_ALLOW_BLOCKERS=1` is required for the final gate to pass.
 - `LUX_FINAL_SKIP_BROWSER=1` or `LUX_FINAL_SKIP_LIVE=1` is used for final approval.
 - `LUX_FINAL_WRITE_TESTS=1` has not been run.
+- `LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs` has not passed for the current live build during the pilot release rehearsal.
 - Live form writes do not send to `info@luxveritas.media`.
 - The live operator report cannot be verified with `LUX_REPORT_TOKEN`.
 - Privacy or Terms still show `needs_review`.
@@ -100,6 +113,7 @@ The final gate also runs operator-environment, MVP status, and MVP preflight che
 ## After The Gate Passes
 
 - Replay pending inbox notifications from `/portal/reporting.html` with an approved operator token.
+- Save the passing pilot write-gate output in the private launch folder if the gate was run for release rehearsal.
 - Export the private report JSON/CSV for launch evidence.
 - Export the no-secret legal review request with `LUX_LEGAL_PACKET_OUT=/tmp/lux-legal-review-request.md node tools/export-legal-review-request.mjs`, then move it to the private launch folder with any real legal approval notes.
 - Export the no-secret private integration request with `LUX_PRIVATE_INTEGRATION_PACKET_OUT=/tmp/lux-private-integration-request.md node tools/export-private-integration-request.mjs`, run `node tools/qa-private-integration-field-map.mjs`, `node tools/qa-private-workflow-matrix.mjs`, and `node tools/qa-external-workflow-targets.mjs`, then move it to the private launch folder before adding any real provider workflow details.
