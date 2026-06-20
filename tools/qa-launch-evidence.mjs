@@ -29,6 +29,11 @@ for (const marker of [
   "# Lux Veritas Launch Evidence",
   "Decision:",
   "Asset version:",
+  "## Action Coverage",
+  "Actions: 1050",
+  "Route surfaces: 38",
+  "link_click",
+  "lead_accepted",
   "## Pilot Test Matrix",
   "## Launch Gates",
   "## Closeout",
@@ -56,6 +61,20 @@ if (evidence) {
   if (evidence.currentPhase?.id !== "phase-5" || evidence.currentPhase?.status !== "active_pilot") issue("evidence current phase mismatch");
   if (!evidence.assetVersion) issue("evidence assetVersion missing");
   if (!evidence.media?.itemCount || evidence.media.itemCount < 3) issue("evidence media item count should include MVP audio/video/stream");
+  if (evidence.actionInventory?.version !== "2026-06-20-action-inventory") issue("evidence action inventory version mismatch");
+  if (evidence.actionInventory?.buildAssetVersion !== evidence.assetVersion) issue("evidence action inventory build version must match asset version");
+  if (evidence.actionInventory?.actionCount !== 1050) issue("evidence action inventory actionCount mismatch");
+  if (evidence.actionInventory?.routeCount !== 38) issue("evidence action inventory routeCount mismatch");
+  for (const [field, required] of [
+    ["topActionTypes", ["link_click", "form_open", "navigation_toggle"]],
+    ["topReportingEvents", ["link_click", "lead_accepted", "media_action"]],
+    ["topRouteSurfaces", ["index.html", "music.html", "membership.html"]]
+  ]) {
+    const labels = new Set((evidence.actionInventory?.[field] || []).map((item) => item.label));
+    for (const label of required) {
+      if (!labels.has(label)) issue(`evidence action inventory ${field} missing ${label}`);
+    }
+  }
   if (evidence.pilotTestMatrix?.status !== "active") issue("evidence pilot test matrix status should be active");
   if (!evidence.pilotTestMatrix?.scenarioCount || evidence.pilotTestMatrix.scenarioCount < 9) {
     issue("evidence pilot test matrix should include required pilot scenarios");

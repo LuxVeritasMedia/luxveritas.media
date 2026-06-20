@@ -53,12 +53,20 @@ function summarizeOutput(output) {
     .slice(-80);
 }
 
+function topEntries(source = {}, limit = 8) {
+  return Object.entries(source || {})
+    .sort((a, b) => Number(b[1] || 0) - Number(a[1] || 0))
+    .slice(0, limit)
+    .map(([label, count]) => ({ label, count }));
+}
+
 const [
   buildManifestRaw,
   launchRaw,
   closeoutRaw,
   legalRaw,
   mediaRaw,
+  actionInventoryRaw,
   phaseStatusRaw,
   termsRaw,
   pilotMatrixRaw,
@@ -72,6 +80,7 @@ const [
   readFile("data/lux-launch-closeout.json", "utf8"),
   readFile("data/lux-legal-review.json", "utf8"),
   readFile("data/lux-media-manifest.json", "utf8"),
+  readFile("data/lux-action-inventory.json", "utf8"),
   readFile("data/lux-phase-status.json", "utf8"),
   readFile("data/lux-public-terms.json", "utf8"),
   readFile("data/lux-pilot-test-matrix.json", "utf8"),
@@ -86,6 +95,7 @@ const launch = JSON.parse(launchRaw);
 const closeout = JSON.parse(closeoutRaw);
 const legalReview = JSON.parse(legalRaw);
 const mediaManifest = JSON.parse(mediaRaw);
+const actionInventory = JSON.parse(actionInventoryRaw);
 const phaseStatus = JSON.parse(phaseStatusRaw);
 const publicTerms = JSON.parse(termsRaw);
 const pilotMatrix = JSON.parse(pilotMatrixRaw);
@@ -124,6 +134,15 @@ const evidence = {
     version: mediaManifest.version || "",
     itemCount: mediaItems.length,
     sourceTypes
+  },
+  actionInventory: {
+    version: actionInventory.version || "",
+    buildAssetVersion: actionInventory.buildAssetVersion || "",
+    routeCount: actionInventory.routeCount || 0,
+    actionCount: actionInventory.actionCount || 0,
+    topActionTypes: topEntries(actionInventory.summary?.byType),
+    topReportingEvents: topEntries(actionInventory.summary?.byReportingEvent),
+    topRouteSurfaces: topEntries(actionInventory.summary?.byRoute)
   },
   pilotTestMatrix: {
     version: pilotMatrix.version || "",
@@ -199,6 +218,16 @@ Public terms version: ${evidence.publicTermsVersion}
 - Manifest version: ${evidence.media.version}
 - Items: ${evidence.media.itemCount}
 - Source types: ${evidence.media.sourceTypes.join(", ") || "none"}
+
+## Action Coverage
+
+- Inventory version: ${evidence.actionInventory.version}
+- Build asset version: ${evidence.actionInventory.buildAssetVersion}
+- Actions: ${evidence.actionInventory.actionCount}
+- Route surfaces: ${evidence.actionInventory.routeCount}
+- Action types: ${evidence.actionInventory.topActionTypes.map((item) => `${item.label} ${item.count}`).join(", ") || "none"}
+- Reporting events: ${evidence.actionInventory.topReportingEvents.map((item) => `${item.label} ${item.count}`).join(", ") || "none"}
+- Top route surfaces: ${evidence.actionInventory.topRouteSurfaces.map((item) => `${item.label} ${item.count}`).join(", ") || "none"}
 
 ## Pilot Test Matrix
 

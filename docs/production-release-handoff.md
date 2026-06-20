@@ -60,7 +60,7 @@ These are the known blockers before calling the site public-launch ready.
 
 Before selecting the external target, review `docs/private-workflow-matrix.json` and run `node tools/qa-private-workflow-matrix.mjs`. The matrix maps every public capture queue to its owner, SLA, current `firebase_handoff` path, approved next profiles, workflow actions, and acceptance checks without storing provider details.
 
-Use `docs/launch-blocker-resolution.md` as the operational closeout packet for the remaining release blockers. Use `docs/legal-review-packet.md` for Privacy and Terms review. Use `docs/final-launch-runbook.md` for the exact final launch sequence.
+Use `docs/launch-blocker-resolution.md` as the operational closeout packet for the remaining release blockers. Use `docs/legal-review-packet.md` for Privacy and Terms review. Use `docs/final-launch-runbook.md` for the exact final launch sequence. Use `node tools/export-launch-evidence.mjs` for a no-secret release packet that includes phase, media, action coverage, launch gates, closeout, and command summaries.
 
 ## Required Commands
 

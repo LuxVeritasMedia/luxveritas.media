@@ -23,6 +23,7 @@ Use this only when moving from pilot-ready to public-release ready. Keep secrets
 node tools/qa-operator-environment.mjs
 node tools/report-mvp-status.mjs
 node tools/qa-mvp-preflight.mjs
+node tools/export-launch-evidence.mjs
 node tools/qa-launch-evidence.mjs
 node tools/qa-pilot-test-matrix.mjs
 node tools/qa-action-inventory.mjs
