@@ -77,7 +77,7 @@ const formCopy = {
     copy: "Report a bug, frozen submit, media issue, unclear page, or launch-readiness note.",
     tag: "pilot-feedback",
     rolePath: "General",
-    inquiryType: "Pilot Feedback"
+    inquiryType: "Portal"
   }
 };
 
@@ -101,7 +101,6 @@ const inquiryKeyMap = {
   Licensing: "licensing",
   Investor: "investor",
   Portal: "portal",
-  "Pilot Feedback": "pilot_feedback",
   General: "general"
 };
 

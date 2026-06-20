@@ -22,7 +22,7 @@ const matrix = [
   { sourcePage: "/codex-inner.html", formType: "codex", tag: "codex-request", rolePath: "Creator", inquiryType: "Portal" },
   { sourcePage: "/portal/releases.html", formType: "licensing", tag: "licensing-access", rolePath: "Partner", inquiryType: "Licensing" },
   { sourcePage: "/portal/library.html", formType: "creator", tag: "creator-access", rolePath: "Creator", inquiryType: "Portal" },
-  { sourcePage: "/pilot-feedback.html", formType: "feedback", tag: "pilot-feedback", rolePath: "General", inquiryType: "Pilot Feedback" },
+  { sourcePage: "/pilot-feedback.html", formType: "feedback", tag: "pilot-feedback", rolePath: "General", inquiryType: "Portal" },
   { sourcePage: "/auth/signin.html", formType: "portal_signin", tag: "portal-signin", rolePath: "General", inquiryType: "Portal" }
 ];
 const expectedFormTypes = [
