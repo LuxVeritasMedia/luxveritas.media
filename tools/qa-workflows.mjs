@@ -5,6 +5,7 @@ const hosting = await readFile(".github/workflows/firebase-hosting-live.yml", "u
 const functions = await readFile(".github/workflows/firebase-functions-manual.yml", "utf8");
 const finalAudit = await readFile(".github/workflows/final-release-audit.yml", "utf8");
 const deployStatus = await readFile("tools/qa-deploy-status.mjs", "utf8");
+const functionsDeployReadiness = await readFile("tools/qa-functions-deploy-readiness.mjs", "utf8");
 const inboxActivation = await readFile("tools/activate-inbox-delivery.mjs", "utf8");
 const privateIntegrationActivation = await readFile("tools/activate-private-integration.mjs", "utf8");
 const wwwResolver = await readFile("tools/resolve-www-domain.mjs", "utf8");
@@ -127,6 +128,19 @@ for (const marker of [
   "minutesSince"
 ]) {
   if (!deployStatus.includes(marker)) issues.push(`qa-deploy-status.mjs: missing ${marker}`);
+}
+
+for (const marker of [
+  "firebase-functions-manual.yml",
+  "workflow_dispatch",
+  "iam.serviceAccounts.ActAs",
+  "lux-veritas-media@appspot.gserviceaccount.com",
+  "GCP_SERVICE_ACCOUNT",
+  "functions:list",
+  "gh",
+  "LUX_FUNCTIONS_DEPLOY_STRICT"
+]) {
+  if (!functionsDeployReadiness.includes(marker)) issues.push(`qa-functions-deploy-readiness.mjs: missing ${marker}`);
 }
 
 for (const marker of [

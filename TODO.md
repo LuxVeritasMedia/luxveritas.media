@@ -73,7 +73,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Add fan-reaction capture to the media player for replay, invite, collect, and create intent.
 - [x] Add noindex pilot feedback capture for TestFlight-quality bug and launch-readiness notes.
 - [x] Deploy `submitForm` and `reportActivity` locally after GitHub IAM failure so the dedicated `pilot_feedback` server route is live.
-- [ ] Grant the GitHub deploy service account `iam.serviceAccounts.ActAs` / Service Account User on `lux-veritas-media@appspot.gserviceaccount.com`, then redeploy Functions so `pilot_feedback` receives its high-priority server route.
+- [ ] Grant the GitHub deploy service account `iam.serviceAccounts.ActAs` / Service Account User on `lux-veritas-media@appspot.gserviceaccount.com`, then rerun the manual Functions workflow; verify with `node tools/qa-functions-deploy-readiness.mjs`. Local Functions deploy already made the dedicated `pilot_feedback` server route live.
 - [x] Add private workflow-target recommendations from real capture demand to help choose GHL, Google Workspace, or CodexOps without exposing provider details.
 - [x] Add protected intake queue workbench for queue pressure, SLA, next action, delivery status, and handoff status.
 - [x] Configure signed internal Firebase private handoff endpoint `firebase_handoff`.
@@ -192,6 +192,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Refresh direct GitHub Actions run status in deploy-status QA to avoid stale workflow-list warnings.
 - [x] Add Firebase Hosting security/privacy header QA and live header verification.
 - [x] Add final strict release-gate command for launch-day acceptance.
+- [x] Add no-secret Functions deploy readiness QA so the GitHub manual Functions IAM blocker is visible without confusing it with live-site health.
 - [x] Add dedicated pilot write gate for TestFlight-quality live submissions, event writes, browser flows, media checks, and protected operator reporting while legal approval remains open.
 - [x] Add post-write protected report reconciliation so the pilot write gate proves live submission/event writes return through operator reporting.
 - [x] Record current live pilot write-gate evidence for the deployed asset version.

@@ -32,6 +32,7 @@ node tools/qa-action-inventory.mjs
 node tools/qa-private-integration-activation-dry-runs.mjs
 git status --short --branch
 node tools/qa-deploy-status.mjs
+node tools/qa-functions-deploy-readiness.mjs
 ```
 
 If the operator-environment check reports a different Firebase account, log it out and run a fresh login with `info@luxveritas.media` before checking provider secrets or deploying Functions.

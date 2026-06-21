@@ -35,6 +35,14 @@ This compares local `HEAD`, `origin/main`, the latest public GitHub Actions Host
 
 If the latest Hosting workflow is queued or in progress, the deploy-status check reports its age and treats it as a blocker after 30 minutes. Override the threshold for long manual audits with `LUX_DEPLOY_ACTIVE_MAX_MINUTES=60`.
 
+Check the separate manual Functions deploy path:
+
+```bash
+node tools/qa-functions-deploy-readiness.mjs
+```
+
+This no-secret check confirms the Functions workflow shape, local Firebase visibility of deployed Functions, and the latest manual GitHub Functions deploy run. If the latest manual deploy reports missing `iam.serviceAccounts.ActAs` on `lux-veritas-media@appspot.gserviceaccount.com`, grant the GitHub deploy service account the `Service Account User` role on that service account, then rerun the manual Functions workflow. Use `LUX_FUNCTIONS_DEPLOY_STRICT=1` only when that automation blocker should fail the command.
+
 Before launch-day operations, check the local operator machine:
 
 ```bash
@@ -249,13 +257,16 @@ The private handoff replay action:
 
 Cloud Firestore is enabled for `lux-veritas-media`, with the default Firestore Native database in `nam5`.
 
-This Google Workspace organization blocks public `allUsers` IAM bindings, so the public form relay uses Cloud Run's Invoker IAM check disabled setting on the generated `submitform` service. The Functions workflow validates Functions code on relevant `functions/**`, `firebase.json`, or workflow-file pushes. Actual Functions deployment is intentionally manual through `workflow_dispatch` until the GitHub deploy service account has the same proven permissions as the local Firebase CLI path. The manual deploy job reapplies the Cloud Run setting after function deploys:
+This Google Workspace organization blocks public `allUsers` IAM bindings, so the public form relay uses Cloud Run's Invoker IAM check disabled setting on the generated v2 services. The Functions workflow validates Functions code on relevant `functions/**`, `firebase.json`, or workflow-file pushes. Actual Functions deployment is intentionally manual through `workflow_dispatch` until the GitHub deploy service account has `Service Account User` / `iam.serviceAccounts.ActAs` on `lux-veritas-media@appspot.gserviceaccount.com`. The local Firebase CLI path remains the proven fallback. The manual deploy job reapplies the Cloud Run setting after function deploys:
 
 ```bash
 gcloud run services update submitform --region us-central1 --project lux-veritas-media --no-invoker-iam-check
 gcloud run services update tracksiteevent --region us-central1 --project lux-veritas-media --no-invoker-iam-check
 gcloud run services update reportactivity --region us-central1 --project lux-veritas-media --no-invoker-iam-check
+gcloud run services update receiveprivatehandoff --region us-central1 --project lux-veritas-media --no-invoker-iam-check
 ```
+
+Verify the manual Functions deploy state with `node tools/qa-functions-deploy-readiness.mjs` after any IAM repair or Functions workflow dispatch.
 
 Do not re-add `invoker: "public"` to the v2 function unless the org policy changes; Firebase deploy will try to write an `allUsers` IAM binding and fail.
 
@@ -419,6 +430,7 @@ node tools/qa-live-form-matrix.mjs
 node tools/qa-live-event-matrix.mjs
 node tools/qa-release-readiness.mjs
 node tools/qa-domain-readiness.mjs
+node tools/qa-functions-deploy-readiness.mjs
 node tools/qa-provider-readiness.mjs
 node tools/qa-live-assets.mjs
 node tools/qa-live-media-sources.mjs

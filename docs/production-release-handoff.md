@@ -75,6 +75,7 @@ node tools/qa-launch-evidence.mjs
 node tools/qa-pilot-write-evidence.mjs
 node tools/qa-pilot-test-matrix.mjs
 firebase login --reauth
+node tools/qa-functions-deploy-readiness.mjs
 node tools/qa-provider-readiness.mjs
 node tools/qa-private-workflow-matrix.mjs
 node tools/qa-private-integration-activation-dry-runs.mjs
