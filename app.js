@@ -77,7 +77,7 @@ const formCopy = {
     copy: "Report a bug, frozen submit, media issue, unclear page, or launch-readiness note.",
     tag: "pilot-feedback",
     rolePath: "General",
-    inquiryType: "Portal"
+    inquiryType: "Pilot Feedback"
   }
 };
 
@@ -101,6 +101,7 @@ const inquiryKeyMap = {
   Licensing: "licensing",
   Investor: "investor",
   Portal: "portal",
+  "Pilot Feedback": "pilot_feedback",
   General: "general"
 };
 
@@ -391,6 +392,15 @@ function setScrolledHeader() {
   header?.classList.toggle("scrolled", window.scrollY > 24);
 }
 
+function ensureSelectOption(select, value) {
+  if (!select || !value || [...select.options].some((option) => option.value === value || option.textContent === value)) return;
+  const option = document.createElement("option");
+  option.value = value;
+  option.textContent = value;
+  option.hidden = true;
+  select.append(option);
+}
+
 function openForm(type) {
   activeFormType = type in formCopy ? type : "request";
   const config = formCopy[activeFormType];
@@ -400,7 +410,10 @@ function openForm(type) {
   const rolePath = dialogForm?.elements.role_path;
   const inquiryType = dialogForm?.elements.inquiry_type;
   if (rolePath && config.rolePath) rolePath.value = config.rolePath;
-  if (inquiryType && config.inquiryType) inquiryType.value = config.inquiryType;
+  if (inquiryType && config.inquiryType) {
+    ensureSelectOption(inquiryType, config.inquiryType);
+    inquiryType.value = config.inquiryType;
+  }
   statusBox.hidden = true;
   statusBox.textContent = "";
   if (!dialog.open) dialog.showModal();
