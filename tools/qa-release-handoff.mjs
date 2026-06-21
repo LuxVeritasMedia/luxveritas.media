@@ -183,6 +183,8 @@ for (const marker of [
   "tools/qa-operator-environment.mjs",
   "MVP Status",
   "tools/qa-mvp-status.mjs",
+  "LUX_MVP_STATUS_REQUIRE_CURRENT_PILOT",
+  "LUX_PILOT_WRITE_EVIDENCE_STRICT",
   "MVP Preflight",
   "tools/qa-mvp-preflight.mjs",
   "Launch Evidence",

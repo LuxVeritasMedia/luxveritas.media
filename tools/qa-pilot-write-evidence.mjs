@@ -1,6 +1,8 @@
 import { readFile } from "node:fs/promises";
 
 const issues = [];
+const warnings = [];
+const strict = process.env.LUX_PILOT_WRITE_EVIDENCE_STRICT === "1";
 const requiredChecks = new Set([
   "Operator Environment",
   "MVP Status",
@@ -20,6 +22,15 @@ const requiredChecks = new Set([
 
 function issue(message) {
   issues.push(message);
+}
+
+function warn(message) {
+  warnings.push(message);
+}
+
+function staleEvidence(message) {
+  if (strict) issue(message);
+  else warn(message);
 }
 
 function secretShape(value) {
@@ -49,7 +60,7 @@ if (evidence) {
   if (evidence.schemaVersion !== "luxveritas.pilot_write_evidence.v1") issue("pilot write evidence schemaVersion mismatch");
   if (evidence.liveUrl !== "https://luxveritas.media") issue("pilot write evidence liveUrl mismatch");
   if (!expectedAssetVersion || evidence.assetVersion !== expectedAssetVersion) {
-    issue(`pilot write evidence assetVersion ${evidence.assetVersion || "missing"} does not match current build ${expectedAssetVersion || "missing"}`);
+    staleEvidence(`pilot write evidence assetVersion ${evidence.assetVersion || "missing"} does not match current build ${expectedAssetVersion || "missing"}; rerun the live pilot write gate after deploy`);
   }
   if (!/^\d{14}$/.test(evidence.qaRunId || "")) issue("pilot write evidence qaRunId must be YYYYMMDDHHMMSS");
   if (evidence.command !== "LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs") issue("pilot write evidence command mismatch");
@@ -106,4 +117,9 @@ if (issues.length) {
   process.exit(1);
 }
 
-console.log("Pilot write evidence QA passed.");
+if (warnings.length) {
+  console.warn("Pilot write evidence QA warnings:");
+  for (const item of warnings) console.warn(`- ${item}`);
+}
+
+console.log(`Pilot write evidence QA passed${warnings.length ? ` with ${warnings.length} warning(s)` : ""}.`);

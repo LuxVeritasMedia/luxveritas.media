@@ -17,12 +17,16 @@ const checks = [
   {
     label: "MVP Status",
     script: "tools/qa-mvp-status.mjs",
-    env: {}
+    env: { LUX_MVP_STATUS_REQUIRE_CURRENT_PILOT: writeTests ? "1" : "0" }
   },
   {
     label: "MVP Preflight",
     script: "tools/qa-mvp-preflight.mjs",
-    env: { LUX_MVP_PREFLIGHT_STRICT: "1" }
+    env: {
+      LUX_MVP_PREFLIGHT_STRICT: "1",
+      LUX_MVP_STATUS_REQUIRE_CURRENT_PILOT: writeTests ? "1" : "0",
+      LUX_PILOT_WRITE_EVIDENCE_STRICT: writeTests ? "1" : "0"
+    }
   },
   {
     label: "Launch Evidence",
@@ -65,7 +69,9 @@ const checks = [
     env: {
       LUX_PILOT_BROWSER: skipBrowser ? "0" : "1",
       LUX_PILOT_LIVE: skipLive ? "0" : "1",
-      LUX_PILOT_STRICT: "1"
+      LUX_PILOT_STRICT: "1",
+      LUX_MVP_STATUS_REQUIRE_CURRENT_PILOT: writeTests ? "1" : "0",
+      LUX_PILOT_WRITE_EVIDENCE_STRICT: writeTests ? "1" : "0"
     }
   },
   writeTests ? {

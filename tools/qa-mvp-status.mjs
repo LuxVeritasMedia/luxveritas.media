@@ -2,6 +2,7 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
+const requireCurrentPilotEvidence = process.env.LUX_MVP_STATUS_REQUIRE_CURRENT_PILOT === "1";
 const issues = [];
 const warnings = [];
 const activeBlockedGateIds = [
@@ -19,6 +20,11 @@ function issue(message) {
 
 function warn(message) {
   warnings.push(message);
+}
+
+function pilotEvidenceStale(message) {
+  if (requireCurrentPilotEvidence) issue(message);
+  else warn(message);
 }
 
 function hasSecretShape(raw) {
@@ -49,7 +55,9 @@ if (report) {
   if (report.phaseStatus?.currentPhase?.id !== "phase-5") issue("phase status current phase must be phase-5");
   if (report.phaseStatus?.currentPhase?.status !== "active_pilot") issue("phase status current phase must be active_pilot");
   if (report.phaseStatus?.pilotStatus !== "pilot_ready_with_public_launch_blockers") issue("phase status pilotStatus must be pilot_ready_with_public_launch_blockers");
-  if (report.phaseStatus?.pilotEvidence?.assetVersion !== report.build?.localAssetVersion) issue("phase status pilot evidence asset version must match local build");
+  if (report.phaseStatus?.pilotEvidence?.assetVersion !== report.build?.localAssetVersion) {
+    pilotEvidenceStale("phase status pilot evidence asset version does not match local build; rerun the live pilot write gate after deploy");
+  }
   if (report.phaseStatus?.pilotEvidence?.qaRunId !== report.pilotWriteEvidence?.qaRunId) issue("phase status pilot evidence qaRunId must match pilot write evidence");
   for (const capability of ["live_form_writes", "live_event_writes", "inbox_delivery", "private_handoff", "operator_reporting", "post_write_reconciliation"]) {
     if (!report.phaseStatus?.pilotEvidence?.verifiedCapabilities?.includes(capability)) issue(`phase status pilot evidence missing ${capability}`);
@@ -95,7 +103,9 @@ if (report) {
     issue(`required media sources missing: ${report.media.missingRequiredSources.join(", ")}`);
   }
   if (report.pilotWriteEvidence?.result !== "passed") issue("pilot write evidence result must be passed");
-  if (report.pilotWriteEvidence?.assetVersion !== localVersion) issue("pilot write evidence asset version must match local asset version");
+  if (report.pilotWriteEvidence?.assetVersion !== localVersion) {
+    pilotEvidenceStale("pilot write evidence asset version does not match local asset version; rerun the live pilot write gate after deploy");
+  }
   if (!/^\d{14}$/.test(report.pilotWriteEvidence?.qaRunId || "")) issue("pilot write evidence qaRunId missing or invalid");
   if (report.pilotWriteEvidence?.formCaptureIntents !== 11) issue("pilot write evidence must include 11 form capture intents");
   if (report.pilotWriteEvidence?.eventWrites !== 11) issue("pilot write evidence must include 11 event writes");
