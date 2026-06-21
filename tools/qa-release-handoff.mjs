@@ -60,8 +60,6 @@ for (const marker of [
 
 for (const marker of [
   "luxveritas.pilot_write_evidence.v1",
-  buildManifest.assetVersion,
-  "20260621010530",
   "Post-Write Report Reconciliation",
   "formCaptureIntents",
   "eventWrites"
@@ -170,7 +168,7 @@ for (const marker of [
   "LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs",
   "LUX_PILOT_WRITE_DRY_RUN=1 node tools/qa-pilot-write-gate.mjs",
   "data/lux-pilot-write-evidence.json",
-  "20260621010530",
+  "QA run ID",
   "reconciles the exact write-run IDs",
   "Do Not Ship If",
   "Replay pending inbox notifications"

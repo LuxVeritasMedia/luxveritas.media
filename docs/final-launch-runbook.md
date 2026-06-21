@@ -8,7 +8,7 @@ Use this only when moving from pilot-ready to public-release ready. Keep secrets
 
 - Apex site is live at `https://luxveritas.media`.
 - `www.luxveritas.media` returns HTTP 200.
-- Current asset version is `20260620-brand-house-rail`.
+- Current asset version is `20260621-media-session`.
 - Current phase status is Phase 5 portal pilot prep, with Phase 4 legal closeout still open.
 - Media, fan reactions, inbox delivery, private handoff, operator reporting, private intake queue workbench, and private workflow-target recommendation reporting are ready.
 - The pilot write gate last passed on 2026-06-21 with 11 live QA submissions, including dedicated pilot feedback routing, inbox delivery required, live event writes, media checks, browser-flow coverage, and protected operator-report verification. QA run ID: `20260621010530`. The live event matrix includes fan-reaction reporting for the media retention loop, and the gate now reconciles exact write-run IDs back through the protected report.

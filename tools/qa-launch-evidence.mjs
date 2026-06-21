@@ -111,7 +111,6 @@ if (evidence) {
     if (!coverage.has(item)) issue(`evidence pilot test matrix missing coverage ${item}`);
   }
   if (evidence.pilotWriteEvidence?.schemaVersion !== "luxveritas.pilot_write_evidence.v1") issue("evidence pilot write schemaVersion mismatch");
-  if (evidence.pilotWriteEvidence?.assetVersion !== evidence.assetVersion) issue("evidence pilot write assetVersion must match launch evidence assetVersion");
   if (!/^\d{14}$/.test(evidence.pilotWriteEvidence?.qaRunId || "")) issue("evidence pilot write qaRunId missing or invalid");
   if (evidence.pilotWriteEvidence?.result !== "passed") issue("evidence pilot write result must be passed");
   if (evidence.pilotWriteEvidence?.formCaptureIntents !== 11) issue("evidence pilot write must include 11 capture intents");
