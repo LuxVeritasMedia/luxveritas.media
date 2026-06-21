@@ -25,6 +25,7 @@ function sameEntries(actual = [], expected = []) {
 }
 
 const actionInventory = JSON.parse(await readFile("data/lux-action-inventory.json", "utf8"));
+const pilotWriteEvidence = JSON.parse(await readFile("data/lux-pilot-write-evidence.json", "utf8"));
 
 const { stdout: markdown } = await execFileAsync(process.execPath, ["tools/export-launch-evidence.mjs"], {
   timeout: 90000,
@@ -50,7 +51,7 @@ for (const marker of [
   "lead_accepted",
   "## Pilot Test Matrix",
   "## Pilot Write Evidence",
-  "QA run ID: 20260621010530",
+  `QA run ID: ${pilotWriteEvidence.qaRunId}`,
   "Form capture intents: 11",
   "Event writes: 11",
   "## Launch Gates",
