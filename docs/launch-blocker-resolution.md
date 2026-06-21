@@ -45,7 +45,7 @@ Use `LUX_LAUNCH_DRY_RUN=1` to validate without writing. A `ready` launch gate al
 - Operator reporting token hash is configured.
 - Release readiness currently reports two external blockers: Privacy approval and Terms approval.
 - `www.luxveritas.media` closeout is resolved: DNS, Firebase custom-domain verification, certificate, and Hosting mapping return HTTP 200.
-- Inbox provider closeout is resolved: 2026-06-17 live form matrix confirmed 10 capture intents with inbox delivery required.
+- Inbox provider closeout is resolved: 2026-06-20 pilot write gate confirmed 11 capture intents with inbox delivery required.
 - Pilot write gate last passed on 2026-06-20 with live form writes, event writes, inbox delivery required, fan-reaction reporting, and post-write reconciliation through the protected operator report.
 
 ## Closed - www Domain

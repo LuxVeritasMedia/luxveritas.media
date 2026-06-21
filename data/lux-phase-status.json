@@ -1,7 +1,7 @@
 {
   "schemaVersion": "luxveritas.phase_status.v1",
   "version": "2026-06-20-phase-status",
-  "updatedAt": "2026-06-20T17:20:00.000Z",
+  "updatedAt": "2026-06-20T23:59:30.000Z",
   "currentPhase": {
     "id": "phase-5",
     "number": 5,
@@ -13,7 +13,7 @@
   "pilotStatus": "pilot_ready_with_public_launch_blockers",
   "pilotEvidence": {
     "assetVersion": "20260620-brand-house-rail",
-    "qaRunId": "20260620140139",
+    "qaRunId": "20260620235930",
     "result": "passed",
     "evidenceFile": "data/lux-pilot-write-evidence.json",
     "verifiedCapabilities": [
@@ -24,7 +24,8 @@
       "operator_reporting",
       "post_write_reconciliation",
       "media_playback_reporting",
-      "domain_readiness"
+      "domain_readiness",
+      "pilot_feedback_capture"
     ]
   },
   "completedPhases": [

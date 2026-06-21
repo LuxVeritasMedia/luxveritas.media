@@ -50,8 +50,8 @@ for (const marker of [
   "lead_accepted",
   "## Pilot Test Matrix",
   "## Pilot Write Evidence",
-  "QA run ID: 20260620140139",
-  "Form capture intents: 10",
+  "QA run ID: 20260620235930",
+  "Form capture intents: 11",
   "Event writes: 11",
   "## Launch Gates",
   "## Closeout",
@@ -112,9 +112,9 @@ if (evidence) {
   }
   if (evidence.pilotWriteEvidence?.schemaVersion !== "luxveritas.pilot_write_evidence.v1") issue("evidence pilot write schemaVersion mismatch");
   if (evidence.pilotWriteEvidence?.assetVersion !== evidence.assetVersion) issue("evidence pilot write assetVersion must match launch evidence assetVersion");
-  if (evidence.pilotWriteEvidence?.qaRunId !== "20260620140139") issue("evidence pilot write qaRunId mismatch");
+  if (evidence.pilotWriteEvidence?.qaRunId !== "20260620235930") issue("evidence pilot write qaRunId mismatch");
   if (evidence.pilotWriteEvidence?.result !== "passed") issue("evidence pilot write result must be passed");
-  if (evidence.pilotWriteEvidence?.formCaptureIntents !== 10) issue("evidence pilot write must include 10 capture intents");
+  if (evidence.pilotWriteEvidence?.formCaptureIntents !== 11) issue("evidence pilot write must include 11 capture intents");
   if (evidence.pilotWriteEvidence?.eventWrites !== 11) issue("evidence pilot write must include 11 event writes");
   if (evidence.pilotWriteEvidence?.inboxDeliveryRequired !== true) issue("evidence pilot write must require inbox delivery");
   if (evidence.pilotWriteEvidence?.operatorReportVerified !== true) issue("evidence pilot write must verify operator report");

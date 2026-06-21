@@ -10,6 +10,7 @@ const baseUrl = (process.env.LUX_LIVE_URL || "https://luxveritas.media").replace
 const reportToken = process.env.LUX_REPORT_TOKEN || "";
 const strict = process.env.LUX_PROVIDER_STRICT === "1";
 const issues = [];
+const localSecretIssues = [];
 const warnings = [];
 const passed = [];
 let authUnavailable = false;
@@ -39,7 +40,9 @@ for (const name of requiredProviderSecrets) {
     pass(`${name} secret metadata exists (version ${item.versionId}, ${item.state}).`);
   } else {
     if (item.status === "auth_unavailable") authUnavailable = true;
-    issue(`${name} secret metadata missing or unavailable${item.error ? ` (${item.error})` : ""}.`);
+    const message = `${name} secret metadata missing or unavailable${item.error ? ` (${item.error})` : ""}.`;
+    if (item.status === "auth_unavailable") localSecretIssues.push(message);
+    else issue(message);
   }
 
   const status = valueStatus[name];
@@ -47,7 +50,9 @@ for (const name of requiredProviderSecrets) {
     pass(`${name} secret value is active (${status.detail}).`);
   } else {
     if (status?.status === "auth_unavailable") authUnavailable = true;
-    issue(`${name} secret value is not active${status?.detail ? ` (${status.detail})` : ""}.`);
+    const message = `${name} secret value is not active${status?.detail ? ` (${status.detail})` : ""}.`;
+    if (status?.status === "auth_unavailable") localSecretIssues.push(message);
+    else issue(message);
   }
 }
 
@@ -56,6 +61,7 @@ if (readiness.warning) warn(readiness.warning);
 if (readiness.error) issue(readiness.error);
 
 const delivery = readiness.delivery;
+let liveProviderActive = false;
 if (delivery) {
   if (delivery.emailProviderConfigured) {
     pass("Live inbox provider value is active.");
@@ -77,6 +83,22 @@ if (delivery) {
 
   if (Array.isArray(delivery.missing) && delivery.missing.length) {
     warn(`Live readiness reports missing: ${delivery.missing.join(", ")}.`);
+  }
+
+  liveProviderActive = Boolean(
+    delivery.emailProviderConfigured
+    && delivery.integrationConfigured
+    && delivery.integrationTargetConfigured
+    && delivery.operatorTokenConfigured
+  );
+}
+
+if (localSecretIssues.length) {
+  if (authUnavailable && liveProviderActive) {
+    warn("Local Firebase CLI credentials are expired, so direct secret metadata could not be inspected; protected live provider report is active.");
+    for (const item of localSecretIssues) warn(item);
+  } else {
+    for (const item of localSecretIssues) issue(item);
   }
 }
 

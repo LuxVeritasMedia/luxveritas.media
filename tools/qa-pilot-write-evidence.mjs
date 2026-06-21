@@ -57,7 +57,7 @@ if (evidence) {
   if (!Date.parse(evidence.updatedAt || "")) issue("pilot write evidence updatedAt missing or invalid");
 
   const writeEvidence = evidence.writeEvidence || {};
-  if (writeEvidence.formCaptureIntents !== 10) issue("pilot write evidence must cover 10 form capture intents");
+  if (writeEvidence.formCaptureIntents !== 11) issue("pilot write evidence must cover 11 form capture intents");
   if (writeEvidence.eventWrites !== 11) issue("pilot write evidence must cover 11 event writes");
   if (writeEvidence.inboxDeliveryRequired !== true) issue("pilot write evidence must require inbox delivery");
   if (writeEvidence.operatorReportVerified !== true) issue("pilot write evidence must verify operator reporting");

@@ -1,14 +1,14 @@
 {
   "schemaVersion": "luxveritas.pilot_write_evidence.v1",
-  "updatedAt": "2026-06-20T14:01:39Z",
+  "updatedAt": "2026-06-20T23:59:30Z",
   "liveUrl": "https://luxveritas.media",
   "assetVersion": "20260620-brand-house-rail",
-  "qaRunId": "20260620140139",
+  "qaRunId": "20260620235930",
   "command": "LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs",
   "result": "passed",
   "operatorTokenSource": "macOS Keychain",
   "writeEvidence": {
-    "formCaptureIntents": 10,
+    "formCaptureIntents": 11,
     "eventWrites": 11,
     "inboxDeliveryRequired": true,
     "operatorReportVerified": true,
@@ -44,5 +44,5 @@
     "privacy_review",
     "terms_review"
   ],
-  "notes": "No-secret receipt for the current live pilot write gate. Full public release still requires Privacy and Terms approval."
+  "notes": "No-secret receipt for the current live pilot write gate, including the noindex pilot feedback capture path. Full public release still requires Privacy and Terms approval."
 }
