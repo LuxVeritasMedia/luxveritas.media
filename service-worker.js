@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260620-brand-house-rail";
+const CACHE_NAME = "luxveritas-static-20260621-media-session";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260620-brand-house-rail",
-  "/app.js?v=20260620-brand-house-rail",
+  "/styles.css?v=20260621-media-session",
+  "/app.js?v=20260621-media-session",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"

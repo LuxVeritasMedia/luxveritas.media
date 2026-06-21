@@ -122,7 +122,7 @@ const launchChecklistPath = "/data/lux-launch-readiness.json";
 const launchCloseoutPath = "/data/lux-launch-closeout-public.json";
 const legalReviewPath = "/data/lux-legal-review.json";
 const submitTimeoutMs = 8000;
-const publicBuildVersion = "20260620-brand-house-rail";
+const publicBuildVersion = "20260621-media-session";
 const allowedInterestPaths = new Set(["music", "film", "events", "drops", "community", "codex", "create"]);
 let activeFormType = "request";
 let mediaManifestPromise = null;
@@ -643,9 +643,36 @@ function instrumentMediaElement(player, element, sourceType) {
 
 function updateMediaReport(player) {
   const report = player?.querySelector("[data-media-report]");
-  if (!report) return;
   const count = mediaEvents().filter((event) => event.source_page === window.location.pathname).length;
-  report.textContent = `${count} media signal${count === 1 ? "" : "s"} recorded from this page.`;
+  if (report) report.textContent = `${count} media signal${count === 1 ? "" : "s"} recorded from this page.`;
+  renderMediaSession(player, count);
+}
+
+function mediaSessionDepth(count, reactionCount) {
+  if (count >= 7 || reactionCount >= 3) return ["Circle ready", "You have enough local signal to join, collect, or request deeper access."];
+  if (count >= 4 || reactionCount >= 2) return ["Returning signal", "Watch the visual, save a signal pass, or join for the next room."];
+  if (count >= 2 || reactionCount >= 1) return ["Signal opened", "Add one more action: replay, collect, invite, or create from the source."];
+  return ["First listen", "Play, watch, or open radio to start this signal path."];
+}
+
+function renderMediaSession(player, knownCount) {
+  const session = player?.querySelector("[data-media-session]");
+  if (!session) return;
+  const pageEvents = mediaEvents().filter((event) => event.source_page === window.location.pathname);
+  const count = Number.isFinite(knownCount) ? knownCount : pageEvents.length;
+  const reactionCount = pageEvents.filter((event) => event.event === "fan_reaction").length;
+  const item = activeMediaItemData(player);
+  const sourceLabel = sourceTypeLabel(item.sourceType || "") || item.kind || "Signal";
+  const [depth, next] = mediaSessionDepth(count, reactionCount);
+
+  const depthNode = session.querySelector("[data-media-session-depth]");
+  const nextNode = session.querySelector("[data-media-session-next]");
+  const countNode = session.querySelector("[data-media-session-count]");
+  const sourceNode = session.querySelector("[data-media-session-source]");
+  if (depthNode) depthNode.textContent = depth;
+  if (nextNode) nextNode.textContent = next;
+  if (countNode) countNode.textContent = String(count);
+  if (sourceNode) sourceNode.textContent = sourceLabel;
 }
 
 function setMediaProgress(player, percent) {

@@ -597,6 +597,54 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
   border-color: var(--gold);
   background: rgba(200,168,106,.12);
 }
+.media-session {
+  margin-top: 1rem;
+  padding: 16px;
+  border: 1px solid rgba(243,238,228,.1);
+  background: rgba(6,8,7,.42);
+}
+.media-session span {
+  display: block;
+  color: rgba(243,238,228,.5);
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  font-size: .66rem;
+  margin-bottom: .55rem;
+}
+.media-session strong {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.35rem, 2vw, 2rem);
+  font-weight: 400;
+}
+.media-session p {
+  margin: .55rem 0 0;
+  color: rgba(243,238,228,.68);
+  font-size: .92rem;
+  line-height: 1.55;
+}
+.media-session div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem;
+  margin-top: 1rem;
+}
+.media-session small {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  border: 1px solid rgba(200,168,106,.22);
+  color: rgba(243,238,228,.62);
+  padding: .4rem .62rem;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  font-size: .62rem;
+}
+.media-session b {
+  color: var(--gold);
+  font-weight: 500;
+}
 .media-queue {
   display: grid;
   align-content: stretch;

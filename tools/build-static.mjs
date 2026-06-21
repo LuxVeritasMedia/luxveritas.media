@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { actionInventoryVersion } from "./lib/action-inventory.mjs";
 
-const assetVersion = "20260620-brand-house-rail";
+const assetVersion = "20260621-media-session";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 const brandHouse = JSON.parse(await readFile("data/lux-brand-house.json", "utf8"));
@@ -454,6 +454,15 @@ function mediaPlayerShell(context = "music") {
           <button type="button" data-fan-reaction="invite">Invite me</button>
           <button type="button" data-fan-reaction="collect">Collect</button>
           <button type="button" data-fan-reaction="create">Create</button>
+        </div>
+        <div class="media-session" data-media-session aria-label="Current media session">
+          <span>Session</span>
+          <strong data-media-session-depth>First listen</strong>
+          <p data-media-session-next>Play, watch, or open radio to start this signal path.</p>
+          <div>
+            <small><b data-media-session-count>0</b> signals</small>
+            <small><b data-media-session-source>Signal</b> active</small>
+          </div>
         </div>
       </div>
       <div class="media-queue" role="list" aria-label="Media queue">

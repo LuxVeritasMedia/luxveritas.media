@@ -10,6 +10,8 @@ const submissions = [];
 const events = [];
 const reportRequests = [];
 let submitMode = "stored";
+const buildManifest = JSON.parse(await readFile("data/lux-build-manifest.json", "utf8"));
+const expectedAssetVersion = buildManifest.assetVersion || buildManifest.version || "";
 
 const mockReport = {
   ok: true,
@@ -758,6 +760,24 @@ async function fanReactionFlow(page, baseUrl) {
   if (!/Collect saved/i.test(reportText)) {
     issues.push(`/music.html: fan reaction did not update media report text (${reportText})`);
   }
+  const sessionState = await page.evaluate(() => ({
+    depth: document.querySelector("[data-media-session-depth]")?.textContent?.trim() || "",
+    next: document.querySelector("[data-media-session-next]")?.textContent?.trim() || "",
+    count: Number(document.querySelector("[data-media-session-count]")?.textContent?.trim() || "0"),
+    source: document.querySelector("[data-media-session-source]")?.textContent?.trim() || ""
+  }));
+  if (sessionState.count < 1) {
+    issues.push(`/music.html: media session did not count fan reaction activity`);
+  }
+  if (!/Signal opened|Returning signal|Circle ready/i.test(sessionState.depth)) {
+    issues.push(`/music.html: media session depth did not advance after fan reaction (${sessionState.depth || "missing"})`);
+  }
+  if (!/replay|collect|invite|create|join|watch/i.test(sessionState.next)) {
+    issues.push(`/music.html: media session next move did not guide fan retention (${sessionState.next || "missing"})`);
+  }
+  if (!/Audio|Signal|release/i.test(sessionState.source)) {
+    issues.push(`/music.html: media session source label did not render active source (${sessionState.source || "missing"})`);
+  }
 }
 
 async function fanSignalPassFlow(page, baseUrl) {
@@ -1014,7 +1034,7 @@ async function operatorReportFlow(page, baseUrl) {
   if (!/1272 actions across 38 surfaces/.test(actionCoverageSummary)) {
     issues.push(`/portal/reporting.html: expected action coverage summary, found "${actionCoverageSummary}"`);
   }
-  if (!/Build 20260620-brand-house-rail/.test(actionCoverageDetail)) {
+  if (!new RegExp(`Build ${expectedAssetVersion.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`).test(actionCoverageDetail)) {
     issues.push(`/portal/reporting.html: action coverage detail did not show current build, found "${actionCoverageDetail}"`);
   }
   for (const label of ["link_click", "form_open", "navigation_toggle", "consent_update"]) {
