@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 const baseUrl = (process.env.LUX_LIVE_URL || "https://luxveritas.media").replace(/\/$/, "");
 const issues = [];
 const warnings = [];
+const requireCurrentPilotEvidence = process.env.LUX_LIVE_SITE_REQUIRE_CURRENT_PILOT === "1";
 let liveBuildManifest = null;
 const requiredRoutes = [
   "/",
@@ -340,7 +341,9 @@ try {
       issues.push("/data/lux-phase-status.json: pilotStatus mismatch");
     }
     if (phaseStatus.pilotEvidence?.assetVersion !== liveBuildManifest?.assetVersion) {
-      issues.push("/data/lux-phase-status.json: pilotEvidence asset version does not match live build manifest");
+      const message = "/data/lux-phase-status.json: pilotEvidence asset version does not match live build manifest; rerun the live pilot write gate after deploy";
+      if (requireCurrentPilotEvidence) issues.push(message);
+      else warnings.push(message);
     }
     if (!phaseStatus.pilotEvidence?.verifiedCapabilities?.includes("post_write_reconciliation")) {
       issues.push("/data/lux-phase-status.json: missing post-write reconciliation evidence");

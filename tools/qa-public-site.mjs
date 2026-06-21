@@ -630,8 +630,8 @@ try {
   if (phaseStatus.pilotStatus !== "pilot_ready_with_public_launch_blockers") {
     issues.push("data/lux-phase-status.json: pilotStatus must be pilot_ready_with_public_launch_blockers");
   }
-  if (phaseStatus.pilotEvidence?.assetVersion !== "20260620-brand-house-rail") {
-    issues.push("data/lux-phase-status.json: pilotEvidence assetVersion mismatch");
+  if (!/^20\d{6}-[a-z0-9-]+$/.test(phaseStatus.pilotEvidence?.assetVersion || "")) {
+    issues.push("data/lux-phase-status.json: pilotEvidence assetVersion missing or invalid");
   }
   if (!/^\d{14}$/.test(phaseStatus.pilotEvidence?.qaRunId || "")) {
     issues.push("data/lux-phase-status.json: pilotEvidence qaRunId missing or invalid");

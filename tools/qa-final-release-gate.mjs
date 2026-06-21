@@ -71,7 +71,8 @@ const checks = [
       LUX_PILOT_LIVE: skipLive ? "0" : "1",
       LUX_PILOT_STRICT: "1",
       LUX_MVP_STATUS_REQUIRE_CURRENT_PILOT: writeTests ? "1" : "0",
-      LUX_PILOT_WRITE_EVIDENCE_STRICT: writeTests ? "1" : "0"
+      LUX_PILOT_WRITE_EVIDENCE_STRICT: writeTests ? "1" : "0",
+      LUX_LIVE_SITE_REQUIRE_CURRENT_PILOT: writeTests ? "1" : "0"
     }
   },
   writeTests ? {
