@@ -1,7 +1,7 @@
 {
   "schemaVersion": "luxveritas.action_inventory.v1",
   "version": "2026-06-20-action-inventory",
-  "buildAssetVersion": "20260621-media-session",
+  "buildAssetVersion": "20260621-signal-pass",
   "routeCount": 38,
   "actionCount": 1272,
   "summary": {

@@ -323,11 +323,19 @@ async function waitForCondition(condition, timeoutMs = 3000, intervalMs = 50) {
   return condition();
 }
 
+function browserLaunchOptions() {
+  const options = { headless: true };
+  if (process.env.LUX_PLAYWRIGHT_CHANNEL) options.channel = process.env.LUX_PLAYWRIGHT_CHANNEL;
+  if (process.env.LUX_PLAYWRIGHT_EXECUTABLE) options.executablePath = process.env.LUX_PLAYWRIGHT_EXECUTABLE;
+  return options;
+}
+
 async function launchBrowserWithRetry(chromium, attempts = 3) {
   let lastError;
+  const launchOptions = browserLaunchOptions();
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
-      return await chromium.launch({ headless: true });
+      return await chromium.launch(launchOptions);
     } catch (error) {
       lastError = error;
       if (attempt < attempts) await sleep(500 * attempt);

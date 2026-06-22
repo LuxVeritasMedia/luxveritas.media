@@ -122,7 +122,7 @@ const launchChecklistPath = "/data/lux-launch-readiness.json";
 const launchCloseoutPath = "/data/lux-launch-closeout-public.json";
 const legalReviewPath = "/data/lux-legal-review.json";
 const submitTimeoutMs = 8000;
-const publicBuildVersion = "20260621-media-session";
+const publicBuildVersion = "20260621-signal-pass";
 const allowedInterestPaths = new Set(["music", "film", "events", "drops", "community", "codex", "create"]);
 let activeFormType = "request";
 let mediaManifestPromise = null;
@@ -1187,6 +1187,12 @@ function fanSignalLabel(score) {
   return ["First Signal", "Start by listening, watching, or joining for first access."];
 }
 
+function fanSignalReceiptDetail(fallback) {
+  const receipt = readJson("luxveritas_signal_pass_receipt", null);
+  if (!receipt?.savedAt) return fallback;
+  return "Signal pass saved from this device. Keep it as a local receipt of your path.";
+}
+
 function fanSignalActivityLabel(item) {
   if (item.client_submission_id) return item.formType === "portal_signin" ? "Portal access check" : "Access request prepared";
   if (item.action) return `${item.title || "Media"} ${item.action}`;
@@ -1210,7 +1216,8 @@ function fanSignalState() {
     + (report.submissions.length * 5)
     + (report.portal.length * 4)
     + engagementEvents.length;
-  const [tier, detail] = fanSignalLabel(score);
+  const [tier, baseDetail] = fanSignalLabel(score);
+  const detail = fanSignalReceiptDetail(baseDetail);
   const latest = [...report.media, ...report.submissions, ...report.portal, ...meaningfulEvents]
     .filter(Boolean)
     .sort((a, b) => String(b.timestamp || "").localeCompare(String(a.timestamp || "")))
@@ -1268,6 +1275,13 @@ function exportFanSignalPass(button) {
   const state = fanSignalState();
   const filename = `luxveritas-signal-pass-${new Date().toISOString().slice(0, 10)}.json`;
   downloadTextFile(filename, JSON.stringify(state, null, 2), "application/json");
+  writeJson("luxveritas_signal_pass_receipt", {
+    savedAt: new Date().toISOString(),
+    filename,
+    tier: state.tier,
+    score: state.score,
+    buildVersion: publicBuildVersion
+  });
   trackInteraction("fan_signal_export", button, {
     tier: state.tier,
     score: state.score,
@@ -1275,6 +1289,7 @@ function exportFanSignalPass(button) {
     submissions: state.counts.submissions,
     portal: state.counts.portal
   });
+  renderFanSignal();
   const panel = button?.closest("[data-fan-signal]");
   const detail = panel?.querySelector("[data-fan-signal-detail]");
   if (detail) detail.textContent = "Signal pass saved from this device. Keep it as a local receipt of your path.";
