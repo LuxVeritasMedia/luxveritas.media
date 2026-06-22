@@ -37,6 +37,8 @@ node tools/qa-functions-deploy-readiness.mjs
 
 If the operator-environment check reports a different Firebase account, log it out and run a fresh login with `info@luxveritas.media` before checking provider secrets or deploying Functions.
 
+If `node tools/qa-functions-deploy-readiness.mjs` reports the manual Functions deploy blocker for `iam.serviceAccounts.ActAs`, use `docs/functions-deploy-iam-repair.md` to grant the GitHub deploy service account `roles/iam.serviceAccountUser` on `lux-veritas-media@appspot.gserviceaccount.com`, then rerun the manual Functions workflow before relying on automation for future function deploys. This is an automation-hardening blocker; do not paste service-account keys or GitHub secret values into the repo.
+
 For pilot/TestFlight-quality proof before legal approval is closed, run the pilot write gate. This sends live QA submissions and event writes, requires inbox delivery, checks the live media sources, verifies protected operator reporting, reconciles the exact write-run IDs back through the protected report, and allows only the known Privacy and Terms review blockers:
 
 ```bash
