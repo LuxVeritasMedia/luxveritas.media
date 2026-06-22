@@ -1,6 +1,6 @@
 # Lux Veritas Legal Review Packet
 
-Status date: 2026-06-11
+Status date: 2026-06-22
 
 This packet is for Privacy and Terms review before public launch. It is not legal approval. Do not mark any item approved until the responsible legal or business reviewer accepts the live draft language and actual operating practices.
 
@@ -57,6 +57,8 @@ LUX_LEGAL_PACKET_FORMAT=json node tools/export-legal-review-request.mjs
 node tools/qa-legal-review-request.mjs
 node tools/qa-legal-sync.mjs
 ```
+
+The exported request includes no-secret page proof for the live Privacy and Terms routes, including titles, descriptions, placeholder-language checks, and section inventories for reviewer triage.
 
 Run these only after approval is real:
 

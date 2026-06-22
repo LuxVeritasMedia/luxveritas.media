@@ -42,6 +42,8 @@ for (const marker of [
   "https://luxveritas.media",
   "Public terms bundle",
   "Review Routes",
+  "Privacy sections:",
+  "Terms sections:",
   "Current Launch Blockers",
   "Reviewer Checklist",
   "Approval Commands",
@@ -94,6 +96,17 @@ if (packet) {
     if (requestItem.status !== manifestItem.status) issue(`${id} status mismatch`);
     if (!requestItem.liveUrl?.startsWith("https://luxveritas.media/")) issue(`${id} live URL missing`);
     if (!requestItem.page?.noPlaceholderLanguage) issue(`${id} page proof still reports placeholder language`);
+    if (!Array.isArray(requestItem.page?.sections) || requestItem.page.sections.length < 8) {
+      issue(`${id} page proof sections are incomplete`);
+    }
+  }
+  const privacySections = new Set(packet.legal?.privacy?.page?.sections || []);
+  const termsSections = new Set(packet.legal?.terms?.page?.sections || []);
+  for (const section of ["Data Collected", "Email and SMS Consent", "Analytics", "Purchases", "Events", "Submissions and User Content", "Memberships and Community", "Creator Participation and Licensing", "Contact"]) {
+    if (!privacySections.has(section)) issue(`privacy page proof missing section: ${section}`);
+  }
+  for (const section of ["Site Use", "Submissions", "User Content", "Memberships and Creator Participation", "Events", "Purchases", "Refunds and Cancellations", "Licensing and Partnerships", "Intellectual Property", "Contact"]) {
+    if (!termsSections.has(section)) issue(`terms page proof missing section: ${section}`);
   }
   for (const id of ["privacy_review", "terms_review"]) {
     if (!packet.blockedLaunchGates?.some((gate) => gate.id === id)) {

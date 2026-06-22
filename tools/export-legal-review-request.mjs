@@ -29,7 +29,31 @@ function routeProof(html) {
   const title = (html.match(/<title>([^<]+)<\/title>/i)?.[1] || "").trim();
   const description = (html.match(/<meta name="description" content="([^"]+)"/i)?.[1] || "").trim();
   const noPlaceholderLanguage = !/placeholder|template|route-ready|future implementation/i.test(html);
-  return { title, description, noPlaceholderLanguage };
+  return { title, description, noPlaceholderLanguage, sections: pageSections(html) };
+}
+
+function decodeHtml(value) {
+  return String(value || "")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+}
+
+function stripTags(value) {
+  return decodeHtml(String(value || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim());
+}
+
+function pageSections(html) {
+  const sections = [];
+  const matches = [...html.matchAll(/<h2[^>]*>([\s\S]*?)<\/h2>/gi)];
+  for (const match of matches) {
+    const label = stripTags(match[1]);
+    if (!label || /Screened Access/i.test(label)) continue;
+    sections.push(label);
+  }
+  return sections;
 }
 
 const [
@@ -161,9 +185,11 @@ ${legalRows}
 - Privacy title: ${packet.legal.privacy.page.title || "missing"}
 - Privacy description: ${packet.legal.privacy.page.description || "missing"}
 - Privacy placeholder language absent: ${packet.legal.privacy.page.noPlaceholderLanguage ? "yes" : "no"}
+- Privacy sections: ${packet.legal.privacy.page.sections.join(", ") || "missing"}
 - Terms title: ${packet.legal.terms.page.title || "missing"}
 - Terms description: ${packet.legal.terms.page.description || "missing"}
 - Terms placeholder language absent: ${packet.legal.terms.page.noPlaceholderLanguage ? "yes" : "no"}
+- Terms sections: ${packet.legal.terms.page.sections.join(", ") || "missing"}
 
 ## Current Launch Blockers
 
