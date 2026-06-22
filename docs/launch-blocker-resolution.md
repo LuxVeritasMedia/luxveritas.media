@@ -1,6 +1,6 @@
 # Lux Veritas Launch Blocker Resolution
 
-Status date: 2026-06-20
+Status date: 2026-06-22
 
 This packet tracks only the remaining public-release blockers for LuxVeritas.media. Keep secrets out of this file. Use Firebase Secret Manager, provider dashboards, and approved operator tokens for private values.
 
@@ -45,8 +45,8 @@ Use `LUX_LAUNCH_DRY_RUN=1` to validate without writing. A `ready` launch gate al
 - Operator reporting token hash is configured.
 - Release readiness currently reports two external blockers: Privacy approval and Terms approval.
 - `www.luxveritas.media` closeout is resolved: DNS, Firebase custom-domain verification, certificate, and Hosting mapping return HTTP 200.
-- Inbox provider closeout is resolved: 2026-06-21 pilot write gate confirmed 11 capture intents with inbox delivery required.
-- Pilot write gate last passed on 2026-06-21 with live form writes, event writes, inbox delivery required, dedicated pilot feedback routing, fan-reaction reporting, and post-write reconciliation through the protected operator report.
+- Inbox provider closeout is resolved: 2026-06-22 pilot write gate confirmed 11 capture intents with inbox delivery required.
+- Pilot write gate last passed on 2026-06-22 with live form writes, event writes, inbox delivery required, dedicated pilot feedback routing, fan-reaction reporting, signal-pass export coverage, and post-write reconciliation through the protected operator report. QA run ID: `20260622002939`.
 
 ## Closed - www Domain
 
