@@ -170,7 +170,7 @@ if (!gh) {
     ], { timeout: 30000, maxBuffer: 1024 * 1024 * 12 });
     const logText = `${log.stdout}\n${log.stderr}`;
     if (new RegExp(expectedIamPermission.replace(".", "\\."), "i").test(logText) && logText.includes(runtimeServiceAccount)) {
-      block(`Latest manual Functions deploy is blocked by missing ${expectedIamPermission} / Service Account User on ${runtimeServiceAccount}. Grant that role to the GitHub deploy service account, then rerun the manual Functions workflow.`);
+      block(`Latest manual Functions deploy is blocked by missing ${expectedIamPermission} / Service Account User on ${runtimeServiceAccount}. Use docs/functions-deploy-iam-repair.md to grant that role to the GitHub deploy service account, then rerun the manual Functions workflow.`);
     } else {
       block(`Latest manual Functions deploy is ${latestManualRun.status}/${latestManualRun.conclusion || "none"}: ${latestManualRun.html_url}`);
     }
@@ -180,7 +180,7 @@ if (!gh) {
 if (latestManualRun && latestManualRun.status === "completed" && latestManualRun.conclusion !== "success") {
   const alreadyRecorded = blockers.some((message) => message.includes("Latest manual Functions deploy"));
   if (!alreadyRecorded) {
-    block(`Latest manual Functions deploy failed and needs operator review: ${latestManualRun.html_url}. Known repair path is Service Account User on ${runtimeServiceAccount} when logs report missing ${expectedIamPermission}.`);
+    block(`Latest manual Functions deploy failed and needs operator review: ${latestManualRun.html_url}. Known repair path is docs/functions-deploy-iam-repair.md when logs report missing ${expectedIamPermission} on ${runtimeServiceAccount}.`);
   }
 }
 
