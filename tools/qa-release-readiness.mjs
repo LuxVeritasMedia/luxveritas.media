@@ -6,11 +6,12 @@ import {
   liveProviderDeliveryReadiness,
   providerSecretValueStatusEntries
 } from "./lib/provider-readiness.mjs";
+import { resolveReportOperatorToken } from "./lib/operator-token.mjs";
 
 const strict = process.env.LUX_RELEASE_STRICT === "1";
 const project = process.env.LUX_FIREBASE_PROJECT || "lux-veritas-media";
 const baseUrl = (process.env.LUX_LIVE_URL || "https://luxveritas.media").replace(/\/$/, "");
-const reportToken = process.env.LUX_REPORT_TOKEN || "";
+const { token: reportToken, source: reportTokenSource } = await resolveReportOperatorToken();
 const rootIp = "199.36.158.100";
 const blockers = [];
 const warnings = [];
@@ -220,6 +221,9 @@ const providerSecretValueStatus = Object.fromEntries(providerSecretValueEntries)
 
 if (providerReadiness.warning) warnings.push(providerReadiness.warning);
 if (providerReadiness.error) warnings.push(providerReadiness.error);
+if (reportTokenSource === "macOS Keychain") {
+  warnings.push("Using macOS Keychain operator token for protected live provider readiness.");
+}
 
 add(mediaItems.length > 0, "Media manifest contains release items.");
 add(mediaManifest.schemaVersion === "luxveritas.media_manifest.v1", "Media manifest schema version is current.");

@@ -1,13 +1,18 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { resolveReportOperatorToken } from "./lib/operator-token.mjs";
 
 const execFileAsync = promisify(execFile);
 const baseUrl = (process.env.LUX_LIVE_URL || "https://luxveritas.media").replace(/\/$/, "");
-const reportToken = process.env.LUX_REPORT_TOKEN || "";
+const { token: reportToken, source: reportTokenSource } = await resolveReportOperatorToken();
 const strict = process.env.LUX_OPERATOR_REPORT_STRICT === "1";
 const expectReady = process.env.LUX_OPERATOR_REPORT_EXPECT_READY !== "0";
 const issues = [];
 const warnings = [];
+
+if (reportTokenSource === "macOS Keychain") {
+  warnings.push("Using macOS Keychain operator token for approved-operator report QA.");
+}
 
 const allowedAuthModes = new Set(["operator_token", "google_oauth", "approved"]);
 const countFields = ["submissions", "events", "privateHandoffs", "pendingNotifications", "pendingIntegrations"];

@@ -1,5 +1,6 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { resolveReportOperatorToken } from "./lib/operator-token.mjs";
 
 const execFileAsync = promisify(execFile);
 const baseUrl = (process.env.LUX_LIVE_URL || "https://luxveritas.media").replace(/\/$/, "");
@@ -8,27 +9,7 @@ const expectedFormCount = Number(process.env.LUX_QA_EXPECT_FORM_COUNT || 11);
 const expectedEventCount = Number(process.env.LUX_QA_EXPECT_EVENT_COUNT || 11);
 const issues = [];
 
-async function readKeychainReportToken() {
-  if (process.platform !== "darwin") return "";
-  try {
-    const { stdout } = await execFileAsync("security", [
-      "find-generic-password",
-      "-s",
-      "Lux Veritas Report Operator Token",
-      "-a",
-      "info@luxveritas.media",
-      "-w"
-    ], {
-      timeout: 5000,
-      maxBuffer: 1024 * 16
-    });
-    return stdout.trim();
-  } catch {
-    return "";
-  }
-}
-
-const reportToken = process.env.LUX_REPORT_TOKEN || await readKeychainReportToken();
+const { token: reportToken } = await resolveReportOperatorToken();
 
 async function fetchJson(path, options = {}) {
   const controller = new AbortController();

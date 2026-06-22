@@ -4,10 +4,11 @@ import {
   providerSecretValueStatusEntries,
   requiredProviderSecrets
 } from "./lib/provider-readiness.mjs";
+import { resolveReportOperatorToken } from "./lib/operator-token.mjs";
 
 const project = process.env.LUX_FIREBASE_PROJECT || "lux-veritas-media";
 const baseUrl = (process.env.LUX_LIVE_URL || "https://luxveritas.media").replace(/\/$/, "");
-const reportToken = process.env.LUX_REPORT_TOKEN || "";
+const { token: reportToken, source: reportTokenSource } = await resolveReportOperatorToken();
 const strict = process.env.LUX_PROVIDER_STRICT === "1";
 const issues = [];
 const localSecretIssues = [];
@@ -28,6 +29,9 @@ function warn(message) {
 }
 
 console.log(`Provider readiness for project ${project}`);
+if (reportTokenSource === "macOS Keychain") {
+  warn("Using macOS Keychain operator token for protected live provider readiness.");
+}
 
 const metadataEntries = await providerSecretMetadataEntries(project);
 const metadata = Object.fromEntries(metadataEntries);

@@ -1,5 +1,6 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { resolveReportOperatorToken } from "./lib/operator-token.mjs";
 
 const execFileAsync = promisify(execFile);
 const node = process.execPath;
@@ -13,27 +14,7 @@ const qaRunId = (process.env.LUX_QA_RUN_ID || new Date().toISOString().replace(/
 const failures = [];
 const passed = [];
 
-async function readKeychainReportToken() {
-  if (process.platform !== "darwin") return "";
-  try {
-    const { stdout } = await execFileAsync("security", [
-      "find-generic-password",
-      "-s",
-      "Lux Veritas Report Operator Token",
-      "-a",
-      "info@luxveritas.media",
-      "-w"
-    ], {
-      timeout: 5000,
-      maxBuffer: 1024 * 16
-    });
-    return stdout.trim();
-  } catch {
-    return "";
-  }
-}
-
-const reportToken = process.env.LUX_REPORT_TOKEN || await readKeychainReportToken();
+const { token: reportToken, source: reportTokenSource } = await resolveReportOperatorToken();
 
 const checks = [
   {
@@ -200,7 +181,7 @@ console.log("Lux Veritas pilot write gate");
 console.log(`Live URL: ${baseUrl}`);
 console.log(`Write tests: ${writeTests ? "enabled" : dryRun ? "dry-run only" : "disabled"}`);
 console.log(`QA run ID: ${qaRunId}`);
-console.log(`Operator token source: ${reportToken ? (process.env.LUX_REPORT_TOKEN ? "environment" : "macOS Keychain") : "missing"}`);
+console.log(`Operator token source: ${reportTokenSource}`);
 
 for (const check of checks) {
   await runCheck(check);

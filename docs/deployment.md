@@ -323,7 +323,7 @@ printf "%s" "<sha256>" | firebase functions:secrets:set REPORT_OPERATOR_TOKEN_SH
 
 The report endpoint still accepts approved Google OAuth bearer tokens for `REPORT_ALLOWED_EMAILS` or `REPORT_ALLOWED_DOMAIN`. The hash token path is for controlled pilot access before full authenticated portal accounts are ready.
 
-For this pilot machine, the raw operator token is stored in macOS Keychain as `Lux Veritas Report Operator Token` for account `info@luxveritas.media`; do not export it into committed files.
+For this pilot machine, the raw operator token is stored in macOS Keychain as `Lux Veritas Report Operator Token` for account `info@luxveritas.media`; do not export it into committed files. Release-readiness, provider-readiness, live operator report, pilot write, and post-write reconciliation QA can read that Keychain item when `LUX_REPORT_TOKEN` is not set.
 
 Optional server-side integration fanout can forward validated, stored form submissions to an approved private tool such as a CRM, Google workflow, or automation router. Keep this server-side only. Do not place integration URLs in public markup or client JavaScript.
 

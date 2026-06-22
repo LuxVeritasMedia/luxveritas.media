@@ -110,7 +110,7 @@ Do not use `LUX_FINAL_SKIP_BROWSER=1` or `LUX_FINAL_SKIP_LIVE=1` for release app
 
 The final release gate includes the no-secret operator-environment, MVP status, MVP preflight, and launch-evidence checks before strict release checks. Use those sections as the launch operator's first read on local machine readiness, live asset alignment, action coverage, and known blocker status.
 
-Set `LUX_REPORT_TOKEN` before running `node tools/qa-live-operator-report.mjs` or the final write gate. The command confirms `/api/report` rejects public traffic, then verifies approved-operator counts, readiness, summaries, playback reporting, handoff reporting, and secret-shaped value protection.
+Set `LUX_REPORT_TOKEN` before running `node tools/qa-live-operator-report.mjs` or the final write gate, or store the raw token in macOS Keychain as `Lux Veritas Report Operator Token` for account `info@luxveritas.media`. The command confirms `/api/report` rejects public traffic, then verifies approved-operator counts, readiness, summaries, playback reporting, handoff reporting, and secret-shaped value protection.
 
 After legal approval:
 
