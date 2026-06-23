@@ -12,6 +12,7 @@ const inboxActivation = await readFile("tools/activate-inbox-delivery.mjs", "utf
 const privateIntegrationActivation = await readFile("tools/activate-private-integration.mjs", "utf8");
 const wwwResolver = await readFile("tools/resolve-www-domain.mjs", "utf8");
 const finalLaunchRunbook = await readFile("docs/final-launch-runbook.md", "utf8");
+const workflowBundle = `${hosting}\n${functions}\n${finalAudit}`;
 
 for (const marker of [
   "concurrency:",
@@ -59,6 +60,22 @@ for (const marker of [
   "LUX_BROWSER_BASE_URL=https://luxveritas.media node tools/qa-browser-flows.mjs"
 ]) {
   if (!hosting.includes(marker)) issues.push(`firebase-hosting-live.yml: missing ${marker}`);
+}
+
+for (const marker of [
+  "actions/checkout@v5",
+  "actions/setup-node@v5"
+]) {
+  if (!workflowBundle.includes(marker)) issues.push(`workflows: missing ${marker}`);
+}
+
+for (const deprecatedAction of [
+  "actions/checkout@v4",
+  "actions/setup-node@v4"
+]) {
+  if (workflowBundle.includes(deprecatedAction)) {
+    issues.push(`workflows: replace deprecated Node 20 action ${deprecatedAction}`);
+  }
 }
 
 for (const marker of [
