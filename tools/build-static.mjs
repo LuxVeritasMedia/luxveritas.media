@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { actionInventoryVersion } from "./lib/action-inventory.mjs";
 
-const assetVersion = "20260621-signal-pass";
+const assetVersion = "20260622-activation-readiness";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 const brandHouse = JSON.parse(await readFile("data/lux-brand-house.json", "utf8"));
@@ -799,6 +799,17 @@ function portalReport() {
           <p class="kicker">Queue Recommendations</p>
           <ul class="report-list" data-private-workflow="queues"><li>Load private activity to view queue recommendations.</li></ul>
           <ul class="report-list" data-private-workflow="guardrails"><li>Choose a workflow owner before activation.</li></ul>
+        </div>
+      </div>
+      <div class="report-detail report-summary">
+        <div>
+          <p class="kicker">Activation Readiness</p>
+          <h3 data-private-workflow="activation-summary">Load private activity.</h3>
+          <p data-private-workflow="activation-detail">Approve the receiver owner, replay owner, rollback owner, and server-side target before switching from the current handoff.</p>
+        </div>
+        <div>
+          <p class="kicker">Activation Checklist</p>
+          <ul class="report-list" data-private-workflow="activation"><li>Load private activity to view the activation checklist.</li></ul>
         </div>
       </div>
       <div class="report-detail report-summary">

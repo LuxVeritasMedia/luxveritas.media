@@ -64,6 +64,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Add operator reporting token status to launch-gate reporting.
 - [x] Add sanitized launch closeout status to private operator reporting.
 - [x] Add live QA for sanitized launch closeout endpoint.
+- [x] Add protected activation-readiness checklist for choosing the next Google Workspace/GHL/CodexOps workflow target without exposing provider details.
 - [x] Add one-command inbox provider activation path for real email delivery.
 - [x] Add www domain closeout helper for DNS/SSL evidence.
 - [x] Add profile-gated private integration activation path for future CRM/Workspace/Codex handoffs.
@@ -177,6 +178,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Add live media-source QA for manifest URLs, media content types, poster assets, and audio/video signatures.
 - [x] Bump public asset version after portal sign-in capture behavior changed.
 - [x] Bump public asset version after operator closeout reporting changed.
+- [x] Bump public asset version after activation-readiness reporting changed.
 - [x] Add release-readiness QA for launch blockers, media sources, DNS, legal, email, and integration status.
 - [x] Add dedicated domain-readiness QA for apex and www DNS/HTTPS.
 - [x] Accept Firebase-provided A or CNAME records for `www` release-readiness checks.

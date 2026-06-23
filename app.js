@@ -1407,6 +1407,14 @@ function privateReportRows(report) {
       label: item.recommendedLabel || item.recommendedPrimary || "",
       detail: `${item.label || item.queue || "Queue"}: ${item.count || 0} signal${item.count === 1 ? "" : "s"}`
     })),
+    ...activationReadinessRows(report).map((item) => ({
+      source: "protected",
+      type: "activation_readiness",
+      timestamp: report.generatedAt || "",
+      page: "/portal/reporting.html",
+      label: item.label,
+      detail: item.detail
+    })),
     ...(report.summary?.retentionPaths?.topPathways || []).map((item) => ({
       source: "protected",
       type: "retention_path",
@@ -1474,7 +1482,7 @@ function renderPrivateReport(report) {
 
   renderPrivateDelivery(panel, report.delivery);
   renderPrivateQueue(panel, report.summary?.intakeQueue);
-  renderPrivateWorkflow(panel, report.summary?.workflowTargets);
+  renderPrivateWorkflow(panel, report.summary?.workflowTargets, report.delivery);
   renderPrivateRetention(panel, report.summary?.retentionPaths);
   renderLaunchReadinessReport(report);
   renderPrivateFunnel(panel, report.summary?.funnel || report.funnel);
@@ -1567,12 +1575,46 @@ function renderPrivateQueue(panel, queue = {}) {
   }).join("");
 }
 
-function renderPrivateWorkflow(panel, workflow = {}) {
+function activationReadinessRows(report = {}) {
+  const workflow = report.summary?.workflowTargets || {};
+  const delivery = report.delivery || {};
+  const recommended = workflow.recommendedLabel || workflow.recommendedPrimary || "No external target selected";
+  const active = workflow.activeLabel || workflow.activeTarget || delivery.integrationTarget || "Current handoff";
+  const handoffReady = delivery.integrationWebhook === "ready" && delivery.integrationTargetConfigured === true;
+  const inboxReady = delivery.inboxNotification === "ready" && delivery.emailProviderConfigured === true;
+  return [
+    {
+      label: "Active handoff",
+      detail: `${active} · ${handoffReady ? "ready" : "needs setup"}`
+    },
+    {
+      label: "Recommended candidate",
+      detail: `${recommended} · ${workflow.recommendedSignalCount || 0} signal${workflow.recommendedSignalCount === 1 ? "" : "s"}`
+    },
+    {
+      label: "Inbox delivery",
+      detail: inboxReady ? "ready" : "needs provider confirmation"
+    },
+    {
+      label: "Approval gate",
+      detail: workflow.decisionStatus || "approval_required"
+    },
+    {
+      label: "Next action",
+      detail: workflow.nextAction || "Keep the current handoff active until the workflow owner approves a receiver and rollback path."
+    }
+  ];
+}
+
+function renderPrivateWorkflow(panel, workflow = {}, delivery = {}) {
   const primary = panel.querySelector('[data-private-workflow="primary"]');
   const detail = panel.querySelector('[data-private-workflow="detail"]');
   const targets = panel.querySelector('[data-private-workflow="targets"]');
   const queues = panel.querySelector('[data-private-workflow="queues"]');
   const guards = panel.querySelector('[data-private-workflow="guardrails"]');
+  const activationSummary = panel.querySelector('[data-private-workflow="activation-summary"]');
+  const activationDetail = panel.querySelector('[data-private-workflow="activation-detail"]');
+  const activation = panel.querySelector('[data-private-workflow="activation"]');
   if (primary) {
     primary.textContent = workflow.recommendedLabel || "Load private activity";
   }
@@ -1606,6 +1648,23 @@ function renderPrivateWorkflow(panel, workflow = {}) {
     guards.innerHTML = items.length
       ? items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")
       : "<li>Choose a workflow owner before activation.</li>";
+  }
+  if (activationSummary) {
+    const signalCount = workflow.recommendedSignalCount || 0;
+    activationSummary.textContent = workflow.recommendedLabel
+      ? `${workflow.recommendedLabel} · ${signalCount} signal${signalCount === 1 ? "" : "s"}`
+      : "Load private activity.";
+  }
+  if (activationDetail) {
+    const active = workflow.activeLabel || workflow.activeTarget || delivery.integrationTarget || "Current handoff";
+    const configured = delivery.integrationWebhook === "ready" && delivery.integrationTargetConfigured === true;
+    activationDetail.textContent = `${configured ? "Current handoff is ready" : "Current handoff needs setup"}: ${active}. Keep receiver details, field IDs, and signing material outside this public repo.`;
+  }
+  if (activation) {
+    const rows = activationReadinessRows({ summary: { workflowTargets: workflow }, delivery });
+    activation.innerHTML = rows.map((item) => (
+      `<li><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.detail)}</span></li>`
+    )).join("");
   }
 }
 

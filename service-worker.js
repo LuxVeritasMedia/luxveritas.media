@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260621-signal-pass";
+const CACHE_NAME = "luxveritas-static-20260622-activation-readiness";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260621-signal-pass",
-  "/app.js?v=20260621-signal-pass",
+  "/styles.css?v=20260622-activation-readiness",
+  "/app.js?v=20260622-activation-readiness",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"

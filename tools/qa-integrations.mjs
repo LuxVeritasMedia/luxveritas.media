@@ -111,6 +111,9 @@ for (const marker of [
   "data-private-summary=\"delivery\"",
   "data-private-summary=\"handoffs\"",
   "data-private-summary=\"ctas\"",
+  "data-private-workflow=\"activation\"",
+  "data-private-workflow=\"activation-summary\"",
+  "Activation Readiness",
   "Integrations"
 ]) {
   if (!buildScript.includes(marker)) issues.push(`tools/build-static.mjs: missing private integration summary marker ${marker}`);
@@ -128,11 +131,14 @@ for (const marker of [
   "renderPrivateSummary(panel, \"integrations\"",
   "renderPrivateSummary(panel, \"handoffs\"",
   "type: \"handoff\"",
+  "type: \"activation_readiness\"",
   "privateReportRows",
+  "activationReadinessRows",
   "renderPrivateFunnel",
   "integrationTargetConfigured",
   "operatorTokenConfigured",
   "data-private-delivery=\"target\"",
+  "data-private-workflow=\"activation\"",
   "data-private-auth=\"mode\"",
   "replayPendingNotifications",
   "replayPendingIntegration",

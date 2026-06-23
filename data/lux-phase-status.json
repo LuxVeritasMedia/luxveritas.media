@@ -12,7 +12,7 @@
   "publicLaunchStatus": "blocked_by_external_legal_approval",
   "pilotStatus": "pilot_ready_with_public_launch_blockers",
   "pilotEvidence": {
-    "assetVersion": "20260621-signal-pass",
+    "assetVersion": "20260622-activation-readiness",
     "qaRunId": "20260622002939",
     "result": "passed",
     "evidenceFile": "data/lux-pilot-write-evidence.json",

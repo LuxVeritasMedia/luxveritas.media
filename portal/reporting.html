@@ -24,7 +24,7 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070909'/%3E%3Cpath d='M18 48V16h6v27h18v5H18Zm21-32h7L34 48h-6l11-32Z' fill='%23c8a86a'/%3E%3C/svg%3E" />
     <link rel="manifest" href="../../site.webmanifest" />
     <link rel="apple-touch-icon" href="../../assets/luxveritas-icon.svg" />
-    <link rel="stylesheet" href="../../styles.css?v=20260621-signal-pass" />
+    <link rel="stylesheet" href="../../styles.css?v=20260622-activation-readiness" />
   </head>
   <body data-page="/portal/reporting.html">
     <a class="skip-link" href="#main">Skip to content</a>
@@ -148,6 +148,17 @@
           <p class="kicker">Queue Recommendations</p>
           <ul class="report-list" data-private-workflow="queues"><li>Load private activity to view queue recommendations.</li></ul>
           <ul class="report-list" data-private-workflow="guardrails"><li>Choose a workflow owner before activation.</li></ul>
+        </div>
+      </div>
+      <div class="report-detail report-summary">
+        <div>
+          <p class="kicker">Activation Readiness</p>
+          <h3 data-private-workflow="activation-summary">Load private activity.</h3>
+          <p data-private-workflow="activation-detail">Approve the receiver owner, replay owner, rollback owner, and server-side target before switching from the current handoff.</p>
+        </div>
+        <div>
+          <p class="kicker">Activation Checklist</p>
+          <ul class="report-list" data-private-workflow="activation"><li>Load private activity to view the activation checklist.</li></ul>
         </div>
       </div>
       <div class="report-detail report-summary">
@@ -339,6 +350,6 @@
     <button class="button button-primary" type="submit" data-submit-form data-default-label="Send to Lux Veritas">Send to Lux Veritas</button>
   </form>
 </dialog>
-    <script src="../../app.js?v=20260621-signal-pass"></script>
+    <script src="../../app.js?v=20260622-activation-readiness"></script>
   </body>
 </html>
