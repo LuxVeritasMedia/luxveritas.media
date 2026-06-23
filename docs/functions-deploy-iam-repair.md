@@ -76,6 +76,14 @@ After the grant:
 node tools/qa-functions-deploy-readiness.mjs
 ```
 
+To export a no-secret repair packet for the Google Cloud administrator:
+
+```bash
+node tools/export-functions-iam-repair-request.mjs
+LUX_FUNCTIONS_IAM_PACKET_OUT=/tmp/lux-functions-iam-repair-request.md node tools/export-functions-iam-repair-request.mjs
+node tools/qa-functions-iam-repair-request.mjs
+```
+
 Expected result:
 
 ```text

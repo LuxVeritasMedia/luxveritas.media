@@ -112,6 +112,9 @@ jobs:
       - name: QA workflows
         run: node tools/qa-workflows.mjs
 
+      - name: QA Functions IAM repair request
+        run: node tools/qa-functions-iam-repair-request.mjs
+
       - name: QA mobile layout
         run: node tools/qa-mobile-layout.mjs
 

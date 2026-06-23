@@ -30,6 +30,7 @@ node tools/qa-pilot-test-matrix.mjs
 node tools/qa-pilot-write-evidence.mjs
 node tools/qa-action-inventory.mjs
 node tools/qa-private-integration-activation-dry-runs.mjs
+node tools/qa-functions-iam-repair-request.mjs
 git status --short --branch
 node tools/qa-deploy-status.mjs
 node tools/qa-functions-deploy-readiness.mjs
@@ -38,6 +39,8 @@ node tools/qa-functions-deploy-readiness.mjs
 If the operator-environment check reports a different Firebase account, log it out and run a fresh login with `info@luxveritas.media` before checking provider secrets or deploying Functions.
 
 If `node tools/qa-functions-deploy-readiness.mjs` reports the manual Functions deploy blocker for `iam.serviceAccounts.ActAs`, use `docs/functions-deploy-iam-repair.md` to grant the GitHub deploy service account `roles/iam.serviceAccountUser` on `lux-veritas-media@appspot.gserviceaccount.com`, then rerun the manual Functions workflow before relying on automation for future function deploys. This is an automation-hardening blocker; do not paste service-account keys or GitHub secret values into the repo.
+
+Use `LUX_FUNCTIONS_IAM_PACKET_OUT=/tmp/lux-functions-iam-repair-request.md node tools/export-functions-iam-repair-request.mjs` when a Google Cloud administrator needs a clean no-secret repair packet.
 
 For pilot/TestFlight-quality proof before legal approval is closed, run the pilot write gate. This sends live QA submissions and event writes, requires inbox delivery, checks the live media sources, verifies protected operator reporting, reconciles the exact write-run IDs back through the protected report, and allows only the known Privacy and Terms review blockers:
 

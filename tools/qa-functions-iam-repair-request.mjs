@@ -1,0 +1,103 @@
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+
+const execFileAsync = promisify(execFile);
+const issues = [];
+
+function issue(message) {
+  issues.push(message);
+}
+
+function secretShape(value) {
+  return /\bre_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}|Bearer\s+[A-Za-z0-9._-]{16,}|serviceAccount:[^<\s]+@[^<\s]+\.iam\.gserviceaccount\.com/i.test(value);
+}
+
+const [markdownResult, jsonResult] = await Promise.all([
+  execFileAsync(process.execPath, ["tools/export-functions-iam-repair-request.mjs"], {
+    timeout: 30000,
+    maxBuffer: 1024 * 1024 * 2
+  }),
+  execFileAsync(process.execPath, ["tools/export-functions-iam-repair-request.mjs"], {
+    env: { ...process.env, LUX_FUNCTIONS_IAM_PACKET_FORMAT: "json" },
+    timeout: 30000,
+    maxBuffer: 1024 * 1024 * 2
+  })
+]);
+
+const markdown = markdownResult.stdout;
+const jsonRaw = jsonResult.stdout;
+
+if (secretShape(markdown) || secretShape(jsonRaw)) {
+  issue("Functions IAM repair request appears to contain secret-shaped data");
+}
+
+for (const marker of [
+  "# Lux Veritas Functions IAM Repair Request",
+  "No-secret repair request",
+  "lux-veritas-media",
+  "LuxVeritasMedia/luxveritas.media",
+  "firebase-functions-manual.yml",
+  "lux-veritas-media@appspot.gserviceaccount.com",
+  "roles/iam.serviceAccountUser",
+  "iam.serviceAccounts.ActAs",
+  "GCP_SERVICE_ACCOUNT",
+  "GCP_WORKLOAD_IDENTITY_PROVIDER",
+  "GitHub secret values cannot be read back",
+  "Cloud Console Repair",
+  "gcloud iam service-accounts add-iam-policy-binding",
+  "PASTE_GCP_SERVICE_ACCOUNT_VALUE_HERE",
+  "node tools/qa-functions-deploy-readiness.mjs",
+  "node tools/qa-provider-readiness.mjs",
+  "Do not paste service-account JSON keys"
+]) {
+  if (!markdown.includes(marker)) issue(`markdown repair request missing marker: ${marker}`);
+}
+
+let packet = null;
+try {
+  packet = JSON.parse(jsonRaw);
+} catch (error) {
+  issue(`Functions IAM repair request JSON is invalid: ${error?.message || String(error)}`);
+}
+
+if (packet) {
+  if (packet.schemaVersion !== "luxveritas.functions_iam_repair_request.v1") issue("schemaVersion mismatch");
+  if (packet.project !== "lux-veritas-media") issue("project mismatch");
+  if (packet.githubRepo !== "LuxVeritasMedia/luxveritas.media") issue("repo mismatch");
+  if (packet.workflow !== "firebase-functions-manual.yml") issue("workflow mismatch");
+  if (!packet.assetVersion) issue("assetVersion missing");
+  if (packet.blocker?.status !== "external_iam_grant_required") issue("blocker status mismatch");
+  if (packet.blocker?.requiredPermission !== "iam.serviceAccounts.ActAs") issue("required permission mismatch");
+  if (packet.blocker?.requiredRole !== "roles/iam.serviceAccountUser") issue("required role mismatch");
+  if (packet.blocker?.targetServiceAccount !== "lux-veritas-media@appspot.gserviceaccount.com") issue("target service account mismatch");
+  if (packet.blocker?.principalSecretName !== "GCP_SERVICE_ACCOUNT") issue("principal secret name mismatch");
+  if (packet.blocker?.providerSecretName !== "GCP_WORKLOAD_IDENTITY_PROVIDER") issue("provider secret name mismatch");
+  if (!packet.cloudConsole?.url?.includes("iam-admin/serviceaccounts/details/lux-veritas-media@appspot.gserviceaccount.com/permissions")) {
+    issue("cloud console URL mismatch");
+  }
+  for (const command of [
+    ".codex-tools/gh-local/bin/gh workflow run firebase-functions-manual.yml --repo LuxVeritasMedia/luxveritas.media",
+    "node tools/qa-functions-deploy-readiness.mjs",
+    "node tools/qa-provider-readiness.mjs",
+    "node tools/qa-live-site.mjs"
+  ]) {
+    if (!packet.verificationCommands?.includes(command)) issue(`verification command missing: ${command}`);
+  }
+  for (const criterion of [
+    "Latest manual Functions deploy completes successfully.",
+    "Functions deploy readiness reports 0 deploy blockers."
+  ]) {
+    if (!packet.successCriteria?.includes(criterion)) issue(`success criterion missing: ${criterion}`);
+  }
+  if (!packet.doNotInclude?.some((item) => /service-account JSON keys/i.test(item))) {
+    issue("doNotInclude missing service-account key warning");
+  }
+}
+
+if (issues.length) {
+  console.error(`Functions IAM repair request QA failed with ${issues.length} issue(s):`);
+  for (const item of issues) console.error(`- ${item}`);
+  process.exit(1);
+}
+
+console.log("Functions IAM repair request QA passed.");

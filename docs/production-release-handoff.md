@@ -65,6 +65,8 @@ Use `docs/launch-blocker-resolution.md` as the operational closeout packet for t
 
 Automation hardening note: if manual GitHub Functions deploys still fail on `iam.serviceAccounts.ActAs`, use `docs/functions-deploy-iam-repair.md` to grant the GitHub deploy service account `roles/iam.serviceAccountUser` on `lux-veritas-media@appspot.gserviceaccount.com`, then rerun `node tools/qa-functions-deploy-readiness.mjs`.
 
+For a current no-secret administrator handoff, export `LUX_FUNCTIONS_IAM_PACKET_OUT=/tmp/lux-functions-iam-repair-request.md node tools/export-functions-iam-repair-request.mjs`, then validate it with `node tools/qa-functions-iam-repair-request.mjs`.
+
 ## Required Commands
 
 Run these before launch review:
@@ -81,6 +83,7 @@ node tools/qa-functions-deploy-readiness.mjs
 node tools/qa-provider-readiness.mjs
 node tools/qa-private-workflow-matrix.mjs
 node tools/qa-private-integration-activation-dry-runs.mjs
+node tools/qa-functions-iam-repair-request.mjs
 node tools/qa-external-workflow-targets.mjs
 node tools/qa-private-workflow-selection.mjs
 node tools/qa-legal-sync.mjs
