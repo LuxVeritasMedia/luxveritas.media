@@ -1,9 +1,9 @@
 {
   "schemaVersion": "luxveritas.pilot_write_evidence.v1",
-  "updatedAt": "2026-06-22T00:29:39Z",
+  "updatedAt": "2026-06-23T03:38:16Z",
   "liveUrl": "https://luxveritas.media",
-  "assetVersion": "20260621-signal-pass",
-  "qaRunId": "20260622002939",
+  "assetVersion": "20260622-activation-readiness",
+  "qaRunId": "20260623033816",
   "command": "LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs",
   "result": "passed",
   "operatorTokenSource": "macOS Keychain",
@@ -44,5 +44,5 @@
     "privacy_review",
     "terms_review"
   ],
-  "notes": "No-secret receipt for the current live pilot write gate, including the noindex pilot feedback capture path. Full public release still requires Privacy and Terms approval."
+  "notes": "No-secret receipt for the current live pilot write gate, including the noindex pilot feedback capture path and protected activation-readiness reporting. Full public release still requires Privacy and Terms approval."
 }
