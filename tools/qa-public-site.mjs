@@ -20,6 +20,7 @@ const requiredFiles = [
   "data/lux-drop-room.json",
   "data/lux-portal-rooms.json",
   "data/lux-phase-status.json",
+  "data/lux-pilot-write-evidence.json",
   "data/lux-media-manifest.json",
   "data/lux-build-manifest.json",
   "data/lux-action-inventory.json",
@@ -334,6 +335,7 @@ const fanFlywheelRaw = await readFile(join(root, "data/lux-fan-flywheel.json"), 
 const dropRoomRaw = await readFile(join(root, "data/lux-drop-room.json"), "utf8");
 const portalRoomsRaw = await readFile(join(root, "data/lux-portal-rooms.json"), "utf8");
 const phaseStatusRaw = await readFile(join(root, "data/lux-phase-status.json"), "utf8");
+const pilotWriteEvidenceRaw = await readFile(join(root, "data/lux-pilot-write-evidence.json"), "utf8");
 const mediaManifestRaw = await readFile(join(root, "data/lux-media-manifest.json"), "utf8");
 const buildManifestRaw = await readFile(join(root, "data/lux-build-manifest.json"), "utf8");
 const actionInventoryRaw = await readFile(join(root, "data/lux-action-inventory.json"), "utf8");
@@ -354,6 +356,7 @@ for (const pattern of bannedTerms) {
   if (pattern.test(dropRoomRaw)) issues.push(`data/lux-drop-room.json: banned public term matched ${pattern}`);
   if (pattern.test(portalRoomsRaw)) issues.push(`data/lux-portal-rooms.json: banned public term matched ${pattern}`);
   if (pattern.test(phaseStatusRaw)) issues.push(`data/lux-phase-status.json: banned public term matched ${pattern}`);
+  if (pattern.test(pilotWriteEvidenceRaw)) issues.push(`data/lux-pilot-write-evidence.json: banned public term matched ${pattern}`);
   if (pattern.test(mediaManifestRaw)) issues.push(`data/lux-media-manifest.json: banned public term matched ${pattern}`);
   if (pattern.test(legalReviewRaw)) issues.push(`data/lux-legal-review.json: banned public term matched ${pattern}`);
   if (pattern.test(publicTermsRaw)) issues.push(`data/lux-public-terms.json: banned public term matched ${pattern}`);
@@ -662,6 +665,34 @@ try {
   }
 } catch (error) {
   issues.push(`data/lux-phase-status.json: invalid JSON (${error.message})`);
+}
+
+try {
+  const phaseStatus = JSON.parse(phaseStatusRaw);
+  const pilotWriteEvidence = JSON.parse(pilotWriteEvidenceRaw);
+  if (pilotWriteEvidence.schemaVersion !== "luxveritas.pilot_write_evidence.v1") {
+    issues.push("data/lux-pilot-write-evidence.json: schemaVersion mismatch");
+  }
+  if (pilotWriteEvidence.liveUrl !== "https://luxveritas.media") {
+    issues.push("data/lux-pilot-write-evidence.json: liveUrl mismatch");
+  }
+  if (pilotWriteEvidence.assetVersion !== expectedAssetVersion) {
+    issues.push("data/lux-pilot-write-evidence.json: assetVersion must match current build");
+  }
+  if (pilotWriteEvidence.qaRunId !== phaseStatus.pilotEvidence?.qaRunId) {
+    issues.push("data/lux-pilot-write-evidence.json: qaRunId must match phase status pilot evidence");
+  }
+  if (pilotWriteEvidence.result !== "passed") {
+    issues.push("data/lux-pilot-write-evidence.json: result must be passed");
+  }
+  if (pilotWriteEvidence.writeEvidence?.formCaptureIntents !== 11 || pilotWriteEvidence.writeEvidence?.eventWrites !== 11) {
+    issues.push("data/lux-pilot-write-evidence.json: write evidence must cover 11 forms and 11 events");
+  }
+  if (pilotWriteEvidence.writeEvidence?.inboxDeliveryRequired !== true || pilotWriteEvidence.writeEvidence?.postWriteReconciliation !== true) {
+    issues.push("data/lux-pilot-write-evidence.json: missing inbox delivery or reconciliation proof");
+  }
+} catch (error) {
+  issues.push(`data/lux-pilot-write-evidence.json: invalid JSON (${error.message})`);
 }
 
 try {

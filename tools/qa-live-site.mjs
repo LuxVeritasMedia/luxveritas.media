@@ -359,6 +359,37 @@ try {
 }
 
 try {
+  const { response, text } = await fetchWithTimeout("/data/lux-pilot-write-evidence.json");
+  if (!response.ok) {
+    issues.push(`/data/lux-pilot-write-evidence.json: expected HTTP 200, received ${response.status}`);
+  } else {
+    const pilotWriteEvidence = JSON.parse(text);
+    if (pilotWriteEvidence.schemaVersion !== "luxveritas.pilot_write_evidence.v1") {
+      issues.push("/data/lux-pilot-write-evidence.json: schemaVersion mismatch");
+    }
+    if (pilotWriteEvidence.assetVersion !== liveBuildManifest?.assetVersion) {
+      const message = "/data/lux-pilot-write-evidence.json: assetVersion does not match live build manifest; rerun the live pilot write gate after deploy";
+      if (requireCurrentPilotEvidence) issues.push(message);
+      else warnings.push(message);
+    }
+    if (!/^\d{14}$/.test(pilotWriteEvidence.qaRunId || "")) {
+      issues.push("/data/lux-pilot-write-evidence.json: qaRunId missing or invalid");
+    }
+    if (pilotWriteEvidence.result !== "passed") {
+      issues.push("/data/lux-pilot-write-evidence.json: result must be passed");
+    }
+    if (pilotWriteEvidence.writeEvidence?.formCaptureIntents !== 11 || pilotWriteEvidence.writeEvidence?.eventWrites !== 11) {
+      issues.push("/data/lux-pilot-write-evidence.json: write evidence must cover 11 forms and 11 events");
+    }
+    if (pilotWriteEvidence.writeEvidence?.inboxDeliveryRequired !== true || pilotWriteEvidence.writeEvidence?.postWriteReconciliation !== true) {
+      issues.push("/data/lux-pilot-write-evidence.json: missing inbox delivery or reconciliation proof");
+    }
+  }
+} catch (error) {
+  issues.push(`/data/lux-pilot-write-evidence.json: invalid response (${error.message})`);
+}
+
+try {
   const { response, text } = await fetchWithTimeout("/site.webmanifest");
   if (!response.ok) {
     issues.push(`/site.webmanifest: expected HTTP 200, received ${response.status}`);
