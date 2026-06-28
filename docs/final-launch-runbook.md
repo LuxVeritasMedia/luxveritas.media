@@ -1,6 +1,6 @@
 # Lux Veritas Final Launch Runbook
 
-Status date: 2026-06-22
+Status date: 2026-06-28
 
 Use this only when moving from pilot-ready to public-release ready. Keep secrets out of the repo and terminal history where possible. Do not call the site release-ready until the final gate passes with write tests enabled and without blocker overrides.
 
@@ -12,9 +12,9 @@ Use this only when moving from pilot-ready to public-release ready. Keep secrets
 - Current phase status is Phase 5 portal pilot prep, with Phase 4 legal closeout still open.
 - Media, fan reactions, inbox delivery, private handoff, operator reporting, private intake queue workbench, and private workflow-target recommendation reporting are ready.
 - The pilot write gate last passed on 2026-06-23 with 11 live QA submissions, including dedicated pilot feedback routing, inbox delivery required, live event writes, media checks, browser-flow coverage, signal-pass export coverage, protected activation-readiness reporting, and protected operator-report verification. QA run ID: `20260623033816`. The live event matrix includes fan-reaction reporting for the media retention loop, and the gate reconciles exact write-run IDs back through the protected report.
-- The no-secret receipt is tracked in `data/lux-pilot-write-evidence.json` and validated with `node tools/qa-pilot-write-evidence.mjs`.
+- The no-secret receipt is tracked in `data/lux-pilot-write-evidence.json` and validated with `node tools/qa-pilot-write-evidence.mjs`. Final release requires fresh pilot write evidence; the default freshness window is 72 hours and can be inspected with `LUX_PILOT_WRITE_EVIDENCE_MAX_AGE_HOURS`.
 - Pilot scenario coverage is tracked in `data/lux-pilot-test-matrix.json`.
-- Remaining blockers are Privacy approval and Terms approval.
+- Remaining public-launch blockers are Privacy approval, Terms approval, and fresh pilot write evidence for the final release window.
 
 ## Launch Order
 
@@ -41,6 +41,12 @@ If the operator-environment check reports a different Firebase account, log it o
 If `node tools/qa-functions-deploy-readiness.mjs` reports the manual Functions deploy blocker for `iam.serviceAccounts.ActAs`, use `docs/functions-deploy-iam-repair.md` to grant the GitHub deploy service account `roles/iam.serviceAccountUser` on `lux-veritas-media@appspot.gserviceaccount.com`, then rerun the manual Functions workflow before relying on automation for future function deploys. This is an automation-hardening blocker; do not paste service-account keys or GitHub secret values into the repo.
 
 Use `LUX_FUNCTIONS_IAM_PACKET_OUT=/tmp/lux-functions-iam-repair-request.md node tools/export-functions-iam-repair-request.mjs` when a Google Cloud administrator needs a clean no-secret repair packet.
+
+If `node tools/qa-pilot-write-evidence.mjs` reports stale pilot write evidence, rerun the live write gate before final release approval:
+
+```bash
+LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs
+```
 
 For pilot/TestFlight-quality proof before legal approval is closed, run the pilot write gate. This sends live QA submissions and event writes, requires inbox delivery, checks the live media sources, verifies protected operator reporting, reconciles the exact write-run IDs back through the protected report, and allows only the known Privacy and Terms review blockers:
 
@@ -118,6 +124,7 @@ The final gate also runs operator-environment, MVP status, MVP preflight, and la
 - `LUX_FINAL_SKIP_BROWSER=1` or `LUX_FINAL_SKIP_LIVE=1` is used for final approval.
 - `LUX_FINAL_WRITE_TESTS=1` has not been run.
 - `LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs` has not passed for the current live build during the pilot release rehearsal.
+- `node tools/qa-pilot-write-evidence.mjs` reports stale pilot write evidence for the final release window.
 - Live form writes do not send to `info@luxveritas.media`.
 - The live operator report cannot be verified with `LUX_REPORT_TOKEN`.
 - Privacy or Terms still show `needs_review`.

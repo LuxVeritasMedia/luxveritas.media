@@ -1,9 +1,11 @@
 import { readFile } from "node:fs/promises";
+import { pilotEvidenceFreshness, pilotEvidenceMaxAgeHours } from "./lib/pilot-evidence-freshness.mjs";
 
 const baseUrl = (process.env.LUX_LIVE_URL || "https://luxveritas.media").replace(/\/$/, "");
 const issues = [];
 const warnings = [];
 const requireCurrentPilotEvidence = process.env.LUX_LIVE_SITE_REQUIRE_CURRENT_PILOT === "1";
+const maxPilotAgeHours = pilotEvidenceMaxAgeHours();
 let liveBuildManifest = null;
 const requiredRoutes = [
   "/",
@@ -383,6 +385,12 @@ try {
     }
     if (pilotWriteEvidence.writeEvidence?.inboxDeliveryRequired !== true || pilotWriteEvidence.writeEvidence?.postWriteReconciliation !== true) {
       issues.push("/data/lux-pilot-write-evidence.json: missing inbox delivery or reconciliation proof");
+    }
+    const freshness = pilotEvidenceFreshness(pilotWriteEvidence.updatedAt, { maxAgeHours: maxPilotAgeHours });
+    if (!freshness.ok) {
+      const message = `/data/lux-pilot-write-evidence.json: ${freshness.message}`;
+      if (requireCurrentPilotEvidence) issues.push(message);
+      else warnings.push(message);
     }
   }
 } catch (error) {

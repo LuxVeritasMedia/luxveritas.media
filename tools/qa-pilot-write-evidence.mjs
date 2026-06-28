@@ -1,8 +1,10 @@
 import { readFile } from "node:fs/promises";
+import { pilotEvidenceFreshness, pilotEvidenceMaxAgeHours } from "./lib/pilot-evidence-freshness.mjs";
 
 const issues = [];
 const warnings = [];
 const strict = process.env.LUX_PILOT_WRITE_EVIDENCE_STRICT === "1";
+const maxAgeHours = pilotEvidenceMaxAgeHours();
 const requiredChecks = new Set([
   "Operator Environment",
   "MVP Status",
@@ -66,6 +68,8 @@ if (evidence) {
   if (evidence.command !== "LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs") issue("pilot write evidence command mismatch");
   if (evidence.result !== "passed") issue("pilot write evidence result must be passed");
   if (!Date.parse(evidence.updatedAt || "")) issue("pilot write evidence updatedAt missing or invalid");
+  const freshness = pilotEvidenceFreshness(evidence.updatedAt, { maxAgeHours });
+  if (!freshness.ok) staleEvidence(freshness.message);
 
   const writeEvidence = evidence.writeEvidence || {};
   if (writeEvidence.formCaptureIntents !== 11) issue("pilot write evidence must cover 11 form capture intents");

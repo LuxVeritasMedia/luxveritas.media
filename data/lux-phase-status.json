@@ -1,13 +1,13 @@
 {
   "schemaVersion": "luxveritas.phase_status.v1",
-  "version": "2026-06-20-phase-status",
-  "updatedAt": "2026-06-23T03:38:16.000Z",
+  "version": "2026-06-28-phase-status",
+  "updatedAt": "2026-06-28T16:15:00.000Z",
   "currentPhase": {
     "id": "phase-5",
     "number": 5,
     "label": "Portal Pilot Prep",
     "status": "active_pilot",
-    "summary": "Phase 5 pilot prep is active and technically pilot-ready: the public site, capture layer, media preview player, fan reactions, private access shell, operator reporting, private intake queue workbench, and pilot write gate are live. Full public release is still blocked by Privacy and Terms approval."
+    "summary": "Phase 5 pilot prep is active and technically pilot-ready: the public site, capture layer, media preview player, fan reactions, private access shell, operator reporting, private intake queue workbench, and pilot write gate are live. Full public release still requires Privacy and Terms approval plus fresh pilot write-gate evidence before final approval."
   },
   "publicLaunchStatus": "blocked_by_external_legal_approval",
   "pilotStatus": "pilot_ready_with_public_launch_blockers",
@@ -54,7 +54,7 @@
       "phaseNumber": 4,
       "label": "Capture, Legal, Seed, Boundary Closeout",
       "status": "external_approval_open",
-      "summary": "Capture, media, reporting, domain, inbox, pilot write-gate, and boundary work are ready. Privacy and Terms review remain open before full public release."
+      "summary": "Capture, media, reporting, domain, inbox, pilot write-gate, and boundary work are ready. Privacy and Terms review remain open, and final release rehearsal requires fresh pilot write evidence."
     },
     {
       "id": "phase-5-portal-shell",
@@ -94,7 +94,7 @@
       "rule": "Keep store and membership waitlist-only until purchase, refund, and membership terms are approved."
     }
   ],
-  "publicLaunchBlockers": ["privacy_review", "terms_review"],
+  "publicLaunchBlockers": ["privacy_review", "terms_review", "pilot_write_evidence_freshness"],
   "codeConfigBlockers": [],
   "nextDecisions": [
     {
@@ -108,6 +108,12 @@
       "label": "Privacy and Terms Approval",
       "status": "external_review_pending",
       "summary": "Approve legal review only after the pages match actual site practices."
+    },
+    {
+      "id": "fresh-pilot-write-evidence",
+      "label": "Fresh Pilot Write Evidence",
+      "status": "operator_rehearsal_required",
+      "summary": "Rerun the live pilot write gate within the final release freshness window before calling the MVP public-release ready."
     }
   ]
 }

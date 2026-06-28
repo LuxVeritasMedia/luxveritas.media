@@ -7,6 +7,7 @@ import {
   providerSecretValueStatusEntries
 } from "./lib/provider-readiness.mjs";
 import { resolveReportOperatorToken } from "./lib/operator-token.mjs";
+import { pilotEvidenceFreshness, pilotEvidenceMaxAgeHours } from "./lib/pilot-evidence-freshness.mjs";
 
 const strict = process.env.LUX_RELEASE_STRICT === "1";
 const project = process.env.LUX_FIREBASE_PROJECT || "lux-veritas-media";
@@ -194,6 +195,7 @@ const [todo, manifestRaw, buildManifestRaw, portalRoomsRaw, phaseStatusRaw, chec
   readFile("tools/build-static.mjs", "utf8"),
   readFile(".github/workflows/firebase-hosting-live.yml", "utf8")
 ]);
+const pilotWriteEvidenceRaw = await readFile("data/lux-pilot-write-evidence.json", "utf8");
 
 const mediaManifest = JSON.parse(manifestRaw);
 const buildManifest = JSON.parse(buildManifestRaw);
@@ -202,6 +204,7 @@ const phaseStatus = JSON.parse(phaseStatusRaw);
 const launchChecklist = JSON.parse(checklistRaw);
 const legalReview = JSON.parse(legalReviewRaw);
 const publicTerms = JSON.parse(publicTermsRaw);
+const pilotWriteEvidence = JSON.parse(pilotWriteEvidenceRaw);
 const expectedAssetVersion = buildScript.match(/const assetVersion = "([^"]+)"/)?.[1] || "";
 const mediaItems = Array.isArray(mediaManifest.items) ? mediaManifest.items : [];
 const launchGates = Array.isArray(launchChecklist.gates) ? launchChecklist.gates : [];
@@ -234,6 +237,12 @@ add(buildManifest.appScript === `app.js?v=${expectedAssetVersion}` && buildManif
 add(Boolean(buildManifest.mediaManifestVersion && buildManifest.actionInventoryVersion && buildManifest.brandHouseVersion && buildManifest.fanFlywheelVersion && buildManifest.dropRoomVersion && buildManifest.portalRoomsVersion && buildManifest.phaseStatusVersion && buildManifest.publicTermsVersion), "Build manifest carries media, action inventory, brand house, fan flywheel, drop room, portal rooms, phase status, and public terms version pointers.");
 add(portalRooms.schemaVersion === "luxveritas.portal_rooms.v1" && portalRooms.accessMode === "request_access_only", "Portal rooms manifest defines request-access-only Phase 5 shell.");
 add(phaseStatus.schemaVersion === "luxveritas.phase_status.v1" && phaseStatus.currentPhase?.id === "phase-5" && phaseStatus.currentPhase?.status === "active_pilot", "Phase status manifest reports active Phase 5 pilot prep.");
+const pilotFreshness = pilotEvidenceFreshness(pilotWriteEvidence.updatedAt, { maxAgeHours: pilotEvidenceMaxAgeHours() });
+if (pilotFreshness.ok) {
+  passed.push(`Pilot write evidence is fresh for final launch rehearsal (${pilotFreshness.message}).`);
+} else {
+  blockers.push(pilotFreshness.message);
+}
 add(publicTerms.schemaVersion === "luxveritas.public_terms.v1", "Public terms version manifest is current.");
 add(Boolean(publicTerms.version && publicTerms.privacyVersion && publicTerms.termsVersion && publicTerms.submissionTermsVersion), "Public terms manifest contains active legal version IDs.");
 add(launchGates.length >= 6, "Launch readiness checklist contains required launch gates.");

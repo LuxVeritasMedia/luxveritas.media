@@ -59,13 +59,13 @@ gh --version
 gh auth status
 ```
 
-For a no-secret snapshot of the MVP status, live asset version, legal status, media readiness, and active launch blockers:
+For a no-secret snapshot of the MVP status, live asset version, legal status, media readiness, pilot write evidence freshness, and active launch blockers:
 
 ```bash
 node tools/report-mvp-status.mjs
 ```
 
-The status report also includes the no-secret launch closeout tracker so DNS, inbox, Privacy, and Terms closeout progress appears in the same operator snapshot. Use `LUX_MVP_STATUS_JSON=1` when another operator or automation needs structured output. Use `LUX_MVP_STATUS_STRICT=1` only when active public-launch blockers should fail the command.
+The status report also includes the no-secret launch closeout tracker so DNS, inbox, Privacy, and Terms closeout progress appears in the same operator snapshot. Pilot write evidence defaults to a 72-hour freshness window; override only for investigation with `LUX_PILOT_WRITE_EVIDENCE_MAX_AGE_HOURS`. Use `LUX_MVP_STATUS_JSON=1` when another operator or automation needs structured output. Use `LUX_MVP_STATUS_STRICT=1` only when active public-launch blockers should fail the command.
 
 Validate the report contract before relying on it in a launch handoff:
 

@@ -624,7 +624,7 @@ try {
   if (phaseStatus.schemaVersion !== "luxveritas.phase_status.v1") {
     issues.push("data/lux-phase-status.json: missing schemaVersion luxveritas.phase_status.v1");
   }
-  if (phaseStatus.version !== "2026-06-20-phase-status") {
+  if (phaseStatus.version !== "2026-06-28-phase-status") {
     issues.push("data/lux-phase-status.json: version mismatch");
   }
   if (currentPhase.id !== "phase-5" || currentPhase.status !== "active_pilot") {
@@ -644,10 +644,10 @@ try {
       issues.push(`data/lux-phase-status.json: missing pilot evidence capability ${capability}`);
     }
   }
-  if (!/Full public release is still blocked by Privacy and Terms approval/i.test(currentPhase.summary || "")) {
-    issues.push("data/lux-phase-status.json: current phase summary must name Privacy and Terms approval as launch blockers");
+  if (!/Privacy and Terms approval plus fresh pilot write-gate evidence/i.test(currentPhase.summary || "")) {
+    issues.push("data/lux-phase-status.json: current phase summary must name legal approval and fresh pilot evidence as launch blockers");
   }
-  for (const blocker of ["privacy_review", "terms_review"]) {
+  for (const blocker of ["privacy_review", "terms_review", "pilot_write_evidence_freshness"]) {
     if (!phaseStatus.publicLaunchBlockers?.includes(blocker)) {
       issues.push(`data/lux-phase-status.json: missing public launch blocker ${blocker}`);
     }

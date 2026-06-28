@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { pilotEvidenceFreshness, pilotEvidenceMaxAgeHours } from "./lib/pilot-evidence-freshness.mjs";
 
 const execFileAsync = promisify(execFile);
 const baseUrl = (process.env.LUX_LIVE_URL || "https://luxveritas.media").replace(/\/$/, "");
@@ -139,6 +140,9 @@ const phaseSummary = currentPhase.summary
   || phaseLine.replace(/^Current phase:\s*/, "")
   || "";
 const media = summarizeMedia(mediaManifest);
+const pilotFreshness = pilotEvidenceFreshness(pilotWriteEvidence.updatedAt, {
+  maxAgeHours: pilotEvidenceMaxAgeHours()
+});
 const liveVersion = liveManifest.ok
   ? liveManifest.value.assetVersion || liveManifest.value.version || ""
   : "";
@@ -152,7 +156,8 @@ const operatorIssues = [
   liveManifest.ok && liveVersion !== localVersion ? `Live asset version ${liveVersion || "missing"} does not match local ${localVersion || "missing"}.` : null,
   media.missingRequiredSources.length ? `Missing required media sources: ${media.missingRequiredSources.join(", ")}.` : null,
   pilotWriteEvidence.result !== "passed" ? "Pilot write evidence is not passed." : null,
-  pilotWriteEvidence.assetVersion !== localVersion ? `Pilot write evidence asset version ${pilotWriteEvidence.assetVersion || "missing"} does not match local ${localVersion || "missing"}.` : null
+  pilotWriteEvidence.assetVersion !== localVersion ? `Pilot write evidence asset version ${pilotWriteEvidence.assetVersion || "missing"} does not match local ${localVersion || "missing"}.` : null,
+  !pilotFreshness.ok ? pilotFreshness.message : null
 ].filter(Boolean);
 const pilotStatus = operatorIssues.length || codeBlockingGates.length
   ? "operator-attention-needed"
@@ -225,6 +230,7 @@ const report = {
     qaRunId: pilotWriteEvidence.qaRunId || "",
     assetVersion: pilotWriteEvidence.assetVersion || "",
     result: pilotWriteEvidence.result || "",
+    freshness: pilotFreshness,
     formCaptureIntents: pilotWriteEvidence.writeEvidence?.formCaptureIntents || 0,
     eventWrites: pilotWriteEvidence.writeEvidence?.eventWrites || 0,
     inboxDeliveryRequired: pilotWriteEvidence.writeEvidence?.inboxDeliveryRequired === true,
@@ -263,11 +269,11 @@ const report = {
   pilotStatus,
   publicLaunchStatus,
   nextActions,
-  decision: blockedGates.length
-    ? "pilot-ready-with-public-launch-blockers"
-    : operatorIssues.length
-      ? "operator-attention-needed-before-final-gate"
-    : "ready-for-final-release-gate"
+  decision: operatorIssues.length
+    ? "operator-attention-needed-before-final-gate"
+    : blockedGates.length
+      ? "pilot-ready-with-public-launch-blockers"
+      : "ready-for-final-release-gate"
 };
 
 if (jsonMode) {
@@ -281,7 +287,7 @@ if (jsonMode) {
   line("Live", `${report.liveUrl} asset=${report.build.liveAssetVersion || "unreadable"}`);
   line("Local asset", report.build.localAssetVersion || "missing");
   line("Media", `${media.itemCount} item(s), missing required sources: ${media.missingRequiredSources.length ? media.missingRequiredSources.join(", ") : "none"}`);
-  line("Pilot write evidence", `${report.pilotWriteEvidence.result || "missing"} run=${report.pilotWriteEvidence.qaRunId || "missing"} forms=${report.pilotWriteEvidence.formCaptureIntents} events=${report.pilotWriteEvidence.eventWrites}`);
+  line("Pilot write evidence", `${report.pilotWriteEvidence.result || "missing"} run=${report.pilotWriteEvidence.qaRunId || "missing"} freshness=${report.pilotWriteEvidence.freshness.status} age=${report.pilotWriteEvidence.freshness.ageHours ?? "unknown"}h max=${report.pilotWriteEvidence.freshness.maxAgeHours}h forms=${report.pilotWriteEvidence.formCaptureIntents} events=${report.pilotWriteEvidence.eventWrites}`);
   line("Legal", `privacy=${report.legal.privacy.status}, terms=${report.legal.terms.status}`);
   line("Launch gates", `${readyGates.length} ready, ${blockedGates.length} blocked`);
   line("Pilot status", report.pilotStatus);

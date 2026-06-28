@@ -43,7 +43,7 @@ Use `LUX_LAUNCH_DRY_RUN=1` to validate without writing. A `ready` launch gate al
 - Browser-flow pilot QA passes locally with form, media, and reporting paths.
 - Private handoff secret set is active for `firebase_handoff`.
 - Operator reporting token hash is configured.
-- Release readiness currently reports two external blockers: Privacy approval and Terms approval.
+- Release readiness currently reports external legal blockers for Privacy and Terms, and strict release checks also require fresh pilot write evidence for the final release window.
 - `www.luxveritas.media` closeout is resolved: DNS, Firebase custom-domain verification, certificate, and Hosting mapping return HTTP 200.
 - Inbox provider closeout is resolved: 2026-06-22 pilot write gate confirmed 11 capture intents with inbox delivery required.
 - Pilot write gate last passed on 2026-06-23 with live form writes, event writes, inbox delivery required, dedicated pilot feedback routing, fan-reaction reporting, signal-pass export coverage, protected activation-readiness reporting, and post-write reconciliation through the protected operator report. QA run ID: `20260623033816`.

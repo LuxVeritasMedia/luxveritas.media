@@ -1,6 +1,6 @@
 # Lux Veritas Production Release Handoff
 
-Status date: 2026-06-22
+Status date: 2026-06-28
 
 This repo is the public LuxVeritas.media front door. The apex site is live and serving the current build. Do not move LuxFlow OS, private prompts, internal dashboards, finance, rights operations, or unreleased canon into this public repo.
 
@@ -13,7 +13,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Current phase: Phase 5 of 10, portal pilot prep active
 - Phase 4 closeout: legal approval remains open before full public release
 - Next major phase: authenticated portal shell with approved auth and role gates
-- Current MVP posture: pilot-ready with public launch blocked only by external Privacy and Terms approval.
+- Current MVP posture: pilot-ready with public launch blocked by external Privacy/Terms approval and a required fresh pilot write-gate rehearsal before final release.
 
 ## What Is Working
 
@@ -43,7 +43,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Pilot testing is covered by a no-secret scenario matrix for public capture, media player, portal capture, operator reporting, launch gates, and private workflow readiness.
 - A dedicated pilot write gate can send live QA submissions and event writes, require inbox delivery, verify live media/browser coverage, confirm protected operator reporting, and reconcile the exact write-run IDs back through the protected report while allowing only the known Privacy and Terms approval blockers.
 - Pilot write gate last passed on 2026-06-23 with 11 live capture-intent submissions, including dedicated pilot feedback routing, inbox delivery required, live event writes, live media-source checks, live browser-flow coverage, signal-pass export coverage, protected activation-readiness reporting, and protected operator-report verification. QA run ID: `20260623033816`. Live event matrix coverage includes fan-reaction reporting for the media retention loop, and the gate reconciles exact write-run IDs back through the protected report.
-- No-secret pilot write evidence is tracked in `data/lux-pilot-write-evidence.json` and validated with `node tools/qa-pilot-write-evidence.mjs`.
+- No-secret pilot write evidence is tracked in `data/lux-pilot-write-evidence.json` and validated with `node tools/qa-pilot-write-evidence.mjs`. Final release rehearsal requires fresh evidence, defaulting to a 72-hour max age via `LUX_PILOT_WRITE_EVIDENCE_MAX_AGE_HOURS`.
 - Operator reporting summarizes audience-interest demand from stored captures.
 - Operator reporting includes a protected intake queue workbench with queue pressure, SLA, next action, inbox status, and handoff status.
 - Operator reporting recommends the next private workflow target from real routing demand while keeping external provider details out of the public site.
@@ -57,7 +57,8 @@ These are the known blockers before calling the site public-launch ready.
 
 1. Privacy page needs legal/business approval.
 2. Terms page needs legal/business approval.
-3. External CRM/Google workflow target may be selected after the private workflow is approved. The signed Firebase private handoff is already active for the MVP intake queue, and the private operator report now shows demand-led recommendations for the first external target. The no-secret selection packet in `docs/private-workflow-selection.json` keeps `firebase_handoff` active and recommends `google_workspace` as the first external approval target before `ghl_crm` follow-up or `codex_ops` packet routing. The exported private integration request now includes a `google_workspace` first-activation packet with approval fields, dry-run command, live acceptance checks, and Firebase rollback.
+3. The pilot write gate must be rerun when `node tools/qa-pilot-write-evidence.mjs` reports stale evidence; strict release checks treat stale pilot evidence as a blocker.
+4. External CRM/Google workflow target may be selected after the private workflow is approved. The signed Firebase private handoff is already active for the MVP intake queue, and the private operator report now shows demand-led recommendations for the first external target. The no-secret selection packet in `docs/private-workflow-selection.json` keeps `firebase_handoff` active and recommends `google_workspace` as the first external approval target before `ghl_crm` follow-up or `codex_ops` packet routing. The exported private integration request now includes a `google_workspace` first-activation packet with approval fields, dry-run command, live acceptance checks, and Firebase rollback.
 
 Before selecting the external target, review `docs/private-workflow-matrix.json`, `docs/external-workflow-targets.json`, and `docs/private-workflow-selection.json`, then run `node tools/qa-private-workflow-matrix.mjs`, `node tools/qa-external-workflow-targets.mjs`, and `node tools/qa-private-workflow-selection.mjs`. The matrix maps every public capture queue to its owner, SLA, current `firebase_handoff` path, approved next profiles, workflow actions, and acceptance checks without storing provider details.
 

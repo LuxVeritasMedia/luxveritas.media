@@ -3,6 +3,7 @@ import { dirname } from "node:path";
 import { mkdir } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { pilotEvidenceFreshness, pilotEvidenceMaxAgeHours } from "./lib/pilot-evidence-freshness.mjs";
 
 const execFileAsync = promisify(execFile);
 const format = process.env.LUX_EVIDENCE_FORMAT === "json" ? "json" : "markdown";
@@ -102,6 +103,9 @@ const actionInventory = JSON.parse(actionInventoryRaw);
 const phaseStatus = JSON.parse(phaseStatusRaw);
 const publicTerms = JSON.parse(termsRaw);
 const pilotMatrix = JSON.parse(pilotMatrixRaw);
+const pilotFreshness = pilotEvidenceFreshness(pilotWriteEvidence.updatedAt, {
+  maxAgeHours: pilotEvidenceMaxAgeHours()
+});
 const gates = Array.isArray(launch.gates) ? launch.gates : [];
 const closeoutItems = Array.isArray(closeout.items) ? closeout.items : [];
 const readyGates = gates.filter((gate) => gate.status === "ready");
@@ -169,6 +173,7 @@ const evidence = {
     assetVersion: pilotWriteEvidence.assetVersion || "",
     result: pilotWriteEvidence.result || "",
     command: pilotWriteEvidence.command || "",
+    freshness: pilotFreshness,
     formCaptureIntents: pilotWriteEvidence.writeEvidence?.formCaptureIntents || 0,
     eventWrites: pilotWriteEvidence.writeEvidence?.eventWrites || 0,
     inboxDeliveryRequired: pilotWriteEvidence.writeEvidence?.inboxDeliveryRequired === true,
@@ -261,6 +266,7 @@ ${evidence.pilotTestMatrix.scenarios.map((scenario) => `- ${scenario.label} (${s
 - QA run ID: ${evidence.pilotWriteEvidence.qaRunId || "unknown"}
 - Asset version: ${evidence.pilotWriteEvidence.assetVersion || "unknown"}
 - Result: ${evidence.pilotWriteEvidence.result || "unknown"}
+- Freshness: ${evidence.pilotWriteEvidence.freshness.status} (${evidence.pilotWriteEvidence.freshness.message})
 - Command: ${evidence.pilotWriteEvidence.command || "unknown"}
 - Form capture intents: ${evidence.pilotWriteEvidence.formCaptureIntents}
 - Event writes: ${evidence.pilotWriteEvidence.eventWrites}

@@ -52,6 +52,7 @@ for (const marker of [
   "## Pilot Test Matrix",
   "## Pilot Write Evidence",
   `QA run ID: ${pilotWriteEvidence.qaRunId}`,
+  "Freshness:",
   "Form capture intents: 11",
   "Event writes: 11",
   "## Launch Gates",
@@ -76,7 +77,7 @@ if (evidence) {
   if (evidence.schemaVersion !== "luxveritas.launch_evidence.v1") issue("evidence schemaVersion mismatch");
   if (evidence.project !== "LuxVeritas.media") issue("evidence project mismatch");
   if (evidence.liveUrl !== "https://luxveritas.media") issue("evidence liveUrl mismatch");
-  if (evidence.phaseStatusVersion !== "2026-06-20-phase-status") issue("evidence phaseStatusVersion mismatch");
+  if (evidence.phaseStatusVersion !== "2026-06-28-phase-status") issue("evidence phaseStatusVersion mismatch");
   if (evidence.currentPhase?.id !== "phase-5" || evidence.currentPhase?.status !== "active_pilot") issue("evidence current phase mismatch");
   if (!evidence.assetVersion) issue("evidence assetVersion missing");
   if (!evidence.media?.itemCount || evidence.media.itemCount < 3) issue("evidence media item count should include MVP audio/video/stream");
@@ -114,6 +115,12 @@ if (evidence) {
   if (evidence.pilotWriteEvidence?.schemaVersion !== "luxveritas.pilot_write_evidence.v1") issue("evidence pilot write schemaVersion mismatch");
   if (!/^\d{14}$/.test(evidence.pilotWriteEvidence?.qaRunId || "")) issue("evidence pilot write qaRunId missing or invalid");
   if (evidence.pilotWriteEvidence?.result !== "passed") issue("evidence pilot write result must be passed");
+  if (!evidence.pilotWriteEvidence?.freshness || typeof evidence.pilotWriteEvidence.freshness !== "object") {
+    issue("evidence pilot write freshness missing");
+  }
+  if (!["fresh", "stale", "future", "invalid"].includes(evidence.pilotWriteEvidence?.freshness?.status || "")) {
+    issue("evidence pilot write freshness status invalid");
+  }
   if (evidence.pilotWriteEvidence?.formCaptureIntents !== 11) issue("evidence pilot write must include 11 capture intents");
   if (evidence.pilotWriteEvidence?.eventWrites !== 11) issue("evidence pilot write must include 11 event writes");
   if (evidence.pilotWriteEvidence?.inboxDeliveryRequired !== true) issue("evidence pilot write must require inbox delivery");

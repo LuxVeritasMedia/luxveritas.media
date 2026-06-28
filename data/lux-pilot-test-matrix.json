@@ -3,7 +3,7 @@
   "version": "2026-06-20-pilot-test-matrix",
   "status": "active",
   "purpose": "No-secret pilot acceptance matrix for exercising the public LuxVeritas.media MVP before public release.",
-  "acceptanceRule": "Every required scenario must have a route, trigger or selector, expected evidence, and at least one QA command. Final public release still requires Privacy and Terms approval.",
+  "acceptanceRule": "Every required scenario must have a route, trigger or selector, expected evidence, and at least one QA command. Final public release still requires Privacy and Terms approval plus fresh pilot write evidence.",
   "requiredCoverage": [
     "public_capture",
     "media_player",

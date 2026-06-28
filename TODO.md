@@ -200,6 +200,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Add dedicated pilot write gate for TestFlight-quality live submissions, event writes, browser flows, media checks, and protected operator reporting while legal approval remains open.
 - [x] Add post-write protected report reconciliation so the pilot write gate proves live submission/event writes return through operator reporting.
 - [x] Record current live pilot write-gate evidence for the deployed asset version.
+- [x] Add 72-hour pilot write evidence freshness checks so final release cannot rely on stale TestFlight-quality proof.
 - [x] Add operator/MVP status/preflight coverage to the final release gate.
 - [x] Add no-secret pilot test matrix for TestFlight-quality scenario coverage.
 - [x] Require final release-gate write mode for launch-day approval.
