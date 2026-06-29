@@ -321,8 +321,16 @@ if (liveDelivery) {
   );
 }
 add(legalReview.schemaVersion === "luxveritas.legal_review.v1", "Legal review manifest schema version is current.");
-add(legalItemApproved(legalReview, "privacy"), "Privacy page legal review complete.");
-add(legalItemApproved(legalReview, "terms"), "Terms page legal review complete.");
+if (legalItemApproved(legalReview, "privacy")) {
+  passed.push("Privacy page legal review is approved.");
+} else {
+  blockers.push("Privacy page legal review is not approved.");
+}
+if (legalItemApproved(legalReview, "terms")) {
+  passed.push("Terms page legal review is approved.");
+} else {
+  blockers.push("Terms page legal review is not approved.");
+}
 add(!hasUncheckedAny(todo, ["Attach approved release audio, video, and radio sources"]), "Approved release audio, video, and radio sources attached.");
 add(workflow.includes("node tools/qa-browser-flows.mjs"), "Browser-flow QA is enforced before Hosting deploy.");
 add(workflow.includes("node tools/qa-live-site.mjs"), "Live-site QA is enforced after Hosting deploy.");

@@ -140,8 +140,8 @@ function releaseBlockers(output) {
 }
 
 function isAllowedLegalBlocker(blocker) {
-  return /Privacy page legal review complete/i.test(blocker)
-    || /Terms page legal review complete/i.test(blocker);
+  return /Privacy page legal review (complete|is approved|is not approved)/i.test(blocker)
+    || /Terms page legal review (complete|is approved|is not approved)/i.test(blocker);
 }
 
 async function runCheck(check) {
