@@ -11,6 +11,7 @@ const functionsIamRepairExport = await readFile("tools/export-functions-iam-repa
 const inboxActivation = await readFile("tools/activate-inbox-delivery.mjs", "utf8");
 const privateIntegrationActivation = await readFile("tools/activate-private-integration.mjs", "utf8");
 const wwwResolver = await readFile("tools/resolve-www-domain.mjs", "utf8");
+const firebaseDeployAuth = await readFile("tools/qa-firebase-deploy-auth.mjs", "utf8");
 const finalLaunchRunbook = await readFile("docs/final-launch-runbook.md", "utf8");
 const workflowBundle = `${hosting}\n${functions}\n${finalAudit}`;
 
@@ -18,6 +19,8 @@ for (const marker of [
   "concurrency:",
   "group: firebase-hosting-live",
   "timeout-minutes: 20",
+  "Preflight Firebase deploy auth",
+  "node tools/qa-firebase-deploy-auth.mjs",
   "node tools/qa-buttons.mjs",
   "node tools/qa-action-inventory.mjs",
   "node tools/qa-public-site.mjs",
@@ -100,6 +103,8 @@ for (const marker of [
   "group: firebase-functions",
   "timeout-minutes: 10",
   "timeout-minutes: 20",
+  "Preflight Firebase deploy auth",
+  "node tools/qa-firebase-deploy-auth.mjs",
   "workflow_dispatch:",
   "push:",
   '"functions/**"',
@@ -122,6 +127,17 @@ for (const marker of [
   "receiveprivatehandoff --region us-central1 --project lux-veritas-media --no-invoker-iam-check"
 ]) {
   if (!functions.includes(marker)) issues.push(`firebase-functions-manual.yml: missing ${marker}`);
+}
+
+for (const marker of [
+  "firebase-tools@15.22.1",
+  "hosting:sites:list",
+  "FIREBASE_CI_TOKEN",
+  "LUX_FIREBASE_DEPLOY_AUTH_DRY_RUN",
+  "firebase login:ci",
+  "Google Workload Identity / ADC"
+]) {
+  if (!firebaseDeployAuth.includes(marker)) issues.push(`qa-firebase-deploy-auth.mjs: missing ${marker}`);
 }
 
 if (functions.includes('invoker: "public"') || functions.includes("invoker: 'public'")) {

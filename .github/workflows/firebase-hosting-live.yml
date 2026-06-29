@@ -34,6 +34,11 @@ jobs:
         with:
           node-version: 22
 
+      - name: Preflight Firebase deploy auth
+        run: node tools/qa-firebase-deploy-auth.mjs
+        env:
+          FIREBASE_CI_TOKEN: ${{ secrets.FIREBASE_CI_TOKEN }}
+
       - name: Build static site
         run: node tools/build-static.mjs
 
