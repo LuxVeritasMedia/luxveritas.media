@@ -1,4 +1,5 @@
 import { execFile } from "node:child_process";
+import { readFile, writeFile } from "node:fs/promises";
 import { promisify } from "node:util";
 import { resolveReportOperatorToken } from "./lib/operator-token.mjs";
 
@@ -74,7 +75,8 @@ const checks = [
     script: "tools/qa-release-readiness.mjs",
     env: {},
     needsReportToken: true,
-    allowLegalOnly: true
+    allowLegalOnly: true,
+    allowStalePilotEvidence: writeTests
   },
   (writeTests || dryRun) ? {
     label: writeTests ? "Live Form Write Matrix" : "Live Form Matrix Dry Run",
@@ -84,7 +86,8 @@ const checks = [
       LUX_EXPECT_EMAIL_SENT: writeTests ? "1" : "0",
       LUX_STRICT_LIVE_QA: "1",
       LUX_QA_RUN_ID: qaRunId
-    }
+    },
+    timeoutMs: writeTests ? 900000 : 180000
   } : null,
   (writeTests || dryRun) ? {
     label: writeTests ? "Live Event Write Matrix" : "Live Event Matrix Dry Run",
@@ -103,7 +106,8 @@ const checks = [
       LUX_QA_EXPECT_FORM_COUNT: "11",
       LUX_QA_EXPECT_EVENT_COUNT: "11"
     },
-    needsReportToken: true
+    needsReportToken: true,
+    timeoutMs: 300000
   } : null
 ].filter(Boolean);
 
@@ -144,6 +148,70 @@ function isAllowedLegalBlocker(blocker) {
     || /Terms page legal review (complete|is approved|is not approved)/i.test(blocker);
 }
 
+function isAllowedReleaseReadinessBlocker(blocker, check) {
+  if (isAllowedLegalBlocker(blocker)) return true;
+  return check.allowStalePilotEvidence === true && /pilot write evidence is stale/i.test(blocker);
+}
+
+function qaRunDateLabel() {
+  return `${qaRunId.slice(0, 4)}-${qaRunId.slice(4, 6)}-${qaRunId.slice(6, 8)}`;
+}
+
+async function refreshPilotEvidenceDocs() {
+  const replacements = [
+    "docs/final-launch-runbook.md",
+    "docs/production-release-handoff.md"
+  ];
+  for (const file of replacements) {
+    const current = await readFile(file, "utf8");
+    const next = current
+      .replace(/((?:The )?[Pp]ilot write gate last passed on )\d{4}-\d{2}-\d{2}/, `$1${qaRunDateLabel()}`)
+      .replace(/QA run ID: `[^`]+`/, `QA run ID: \`${qaRunId}\``);
+    await writeFile(file, next);
+  }
+}
+
+async function writePilotEvidence() {
+  const buildManifest = JSON.parse(await readFile("data/lux-build-manifest.json", "utf8"));
+  const evidence = {
+    schemaVersion: "luxveritas.pilot_write_evidence.v1",
+    updatedAt: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
+    liveUrl: baseUrl,
+    assetVersion: buildManifest.assetVersion || buildManifest.version || "",
+    qaRunId,
+    command: "LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs",
+    result: "passed",
+    operatorTokenSource: reportTokenSource,
+    writeEvidence: {
+      formCaptureIntents: 11,
+      eventWrites: 11,
+      inboxDeliveryRequired: true,
+      operatorReportVerified: true,
+      postWriteReconciliation: true
+    },
+    coverage: {
+      domainReadiness: true,
+      providerReadiness: true,
+      liveSite: true,
+      liveAssets: true,
+      liveMediaSources: true,
+      liveBrowserFlows: true,
+      liveOperatorReport: true,
+      releaseReadinessChecked: true
+    },
+    passedChecks: passed,
+    knownPublicLaunchBlockersAllowed: [
+      "privacy_review",
+      "terms_review"
+    ],
+    notes: "No-secret receipt for the current live pilot write gate, including the noindex pilot feedback capture path and protected activation-readiness reporting. Full public release still requires Privacy and Terms approval."
+  };
+
+  await writeFile("data/lux-pilot-write-evidence.json", `${JSON.stringify(evidence, null, 2)}\n`);
+  await refreshPilotEvidenceDocs();
+  console.log(`Updated no-secret pilot write evidence for run ${qaRunId}.`);
+}
+
 async function runCheck(check) {
   const env = { ...process.env, ...check.env };
   if (check.needsReportToken && reportToken) env.LUX_REPORT_TOKEN = reportToken;
@@ -151,12 +219,12 @@ async function runCheck(check) {
   try {
     const { stdout, stderr } = await execFileAsync(node, [check.script], {
       env,
-      timeout: 180000,
+      timeout: check.timeoutMs || 180000,
       maxBuffer: 1024 * 1024 * 14
     });
     const output = `${stdout || ""}${stderr || ""}`;
     if (check.allowLegalOnly) {
-      const unexpected = releaseBlockers(output).filter((blocker) => !isAllowedLegalBlocker(blocker));
+      const unexpected = releaseBlockers(output).filter((blocker) => !isAllowedReleaseReadinessBlocker(blocker, check));
       if (unexpected.length) {
         failures.push({
           label: check.label,
@@ -208,6 +276,10 @@ if (failures.length) {
     console.log(failure.output);
   }
   process.exit(1);
+}
+
+if (writeTests) {
+  await writePilotEvidence();
 }
 
 console.log("");

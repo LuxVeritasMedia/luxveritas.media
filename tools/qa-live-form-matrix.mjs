@@ -6,6 +6,8 @@ const writeEnabled = process.env.LUX_FORM_MATRIX_WRITE === "1";
 const expectEmailSent = process.env.LUX_EXPECT_EMAIL_SENT === "1";
 const strictLiveQa = process.env.LUX_STRICT_LIVE_QA === "1" || writeEnabled;
 const maxNetworkAttempts = Math.max(1, Math.min(Number(process.env.LUX_FORM_MATRIX_ATTEMPTS) || 3, 5));
+const writePaceMs = Math.max(0, Number(process.env.LUX_FORM_MATRIX_PACE_MS) || (writeEnabled ? 1250 : 0));
+const rateLimitBackoffMs = Math.max(0, Number(process.env.LUX_FORM_MATRIX_RATE_LIMIT_BACKOFF_MS) || (writeEnabled ? 610000 : 0));
 const issues = [];
 const warnings = [];
 const execFileAsync = promisify(execFile);
@@ -156,7 +158,12 @@ async function writeCheck(item, index) {
     company_url: ""
   };
 
-  const { response, json } = await postJson("/api/submit", payload);
+  let { response, json } = await postJson("/api/submit", payload);
+  if (response.status === 429 && rateLimitBackoffMs > 0) {
+    warnings.push(`${item.sourcePage}: live submit rate limit reached; waiting ${Math.round(rateLimitBackoffMs / 1000)}s before one retry.`);
+    await sleep(rateLimitBackoffMs);
+    ({ response, json } = await postJson("/api/submit", payload));
+  }
   if (!response.ok && response.status !== 202) {
     issues.push(`${item.sourcePage}: expected accepted response, received HTTP ${response.status}`);
     return;
@@ -208,6 +215,7 @@ try {
 if (writeEnabled) {
   for (const [index, item] of matrix.entries()) {
     await writeCheck(item, index);
+    if (writePaceMs > 0 && index < matrix.length - 1) await sleep(writePaceMs);
   }
 } else {
   warnings.push(`Skipped live matrix writes for ${matrix.length} capture intent(s). Set LUX_FORM_MATRIX_WRITE=1 to create one QA submission per intent.`);
