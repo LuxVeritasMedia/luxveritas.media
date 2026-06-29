@@ -54,13 +54,11 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Authenticate to Google Cloud
-        id: google-auth
         uses: google-github-actions/auth@v3
         with:
           project_id: lux-veritas-media
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-          token_format: access_token
 
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v3
@@ -74,9 +72,14 @@ jobs:
         run: npm --prefix functions ci
 
       - name: Deploy Firebase Functions
-        run: npx firebase-tools@15.22.1 deploy --only functions --project lux-veritas-media --non-interactive --force --token "$FIREBASE_TOKEN"
+        run: |
+          if [ -n "${FIREBASE_CI_TOKEN:-}" ]; then
+            npx firebase-tools@15.22.1 deploy --only functions --project lux-veritas-media --non-interactive --force --token "$FIREBASE_CI_TOKEN"
+          else
+            npx firebase-tools@15.22.1 deploy --only functions --project lux-veritas-media --non-interactive --force
+          fi
         env:
-          FIREBASE_TOKEN: ${{ steps.google-auth.outputs.access_token }}
+          FIREBASE_CI_TOKEN: ${{ secrets.FIREBASE_CI_TOKEN }}
 
       - name: Set public form relay access
         run: |

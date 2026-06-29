@@ -50,8 +50,10 @@ for (const marker of [
   "npx playwright install chromium",
   "node tools/qa-browser-flows.mjs",
   "npx firebase-tools@15.22.1 deploy --only hosting",
-  "--token \"$FIREBASE_TOKEN\"",
-  "FIREBASE_TOKEN: ${{ steps.google-auth.outputs.access_token }}",
+  "FIREBASE_CI_TOKEN: ${{ secrets.FIREBASE_CI_TOKEN }}",
+  "--token \"$FIREBASE_CI_TOKEN\"",
+  "else",
+  "npx firebase-tools@15.22.1 deploy --only hosting --project lux-veritas-media --non-interactive",
   "node tools/qa-live-site.mjs",
   "node tools/qa-live-operator-report.mjs",
   "node tools/qa-live-assets.mjs",
@@ -67,11 +69,17 @@ for (const marker of [
 
 for (const marker of [
   "actions/checkout@v5",
-  "actions/setup-node@v5",
-  "token_format: access_token",
-  "id: google-auth"
+  "actions/setup-node@v5"
 ]) {
   if (!workflowBundle.includes(marker)) issues.push(`workflows: missing ${marker}`);
+}
+
+if (workflowBundle.includes("token_format: access_token")) {
+  issues.push("workflows: do not pass Google access tokens to Firebase CLI --token");
+}
+
+if (workflowBundle.includes("steps.google-auth.outputs.access_token")) {
+  issues.push("workflows: Firebase CLI token fallback must use secrets.FIREBASE_CI_TOKEN, not Google auth output");
 }
 
 for (const deprecatedAction of [
@@ -105,7 +113,9 @@ for (const marker of [
   "needs: validate-functions",
   "deploy --only functions",
   "npx firebase-tools@15.22.1 deploy --only functions",
-  "FIREBASE_TOKEN: ${{ steps.google-auth.outputs.access_token }}",
+  "FIREBASE_CI_TOKEN: ${{ secrets.FIREBASE_CI_TOKEN }}",
+  "--token \"$FIREBASE_CI_TOKEN\"",
+  "npx firebase-tools@15.22.1 deploy --only functions --project lux-veritas-media --non-interactive --force",
   "submitform --region us-central1 --project lux-veritas-media --no-invoker-iam-check",
   "tracksiteevent --region us-central1 --project lux-veritas-media --no-invoker-iam-check",
   "reportactivity --region us-central1 --project lux-veritas-media --no-invoker-iam-check",
