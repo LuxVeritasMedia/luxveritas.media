@@ -1,5 +1,6 @@
 import { access, readdir, readFile } from "node:fs/promises";
 import { dirname, join, normalize, relative } from "node:path";
+import { pilotEvidenceFreshness, pilotEvidenceMaxAgeHours } from "./lib/pilot-evidence-freshness.mjs";
 
 const root = "dist";
 const issues = [];
@@ -644,13 +645,22 @@ try {
       issues.push(`data/lux-phase-status.json: missing pilot evidence capability ${capability}`);
     }
   }
-  if (!/Privacy and Terms approval plus fresh pilot write-gate evidence/i.test(currentPhase.summary || "")) {
-    issues.push("data/lux-phase-status.json: current phase summary must name legal approval and fresh pilot evidence as launch blockers");
+  if (!/Privacy and Terms approval/i.test(currentPhase.summary || "")) {
+    issues.push("data/lux-phase-status.json: current phase summary must name legal approval as a launch blocker");
   }
-  for (const blocker of ["privacy_review", "terms_review", "pilot_write_evidence_freshness"]) {
+  const evidenceFreshness = pilotEvidenceFreshness(JSON.parse(pilotWriteEvidenceRaw).updatedAt, {
+    maxAgeHours: pilotEvidenceMaxAgeHours()
+  });
+  const expectedBlockers = evidenceFreshness.ok
+    ? ["privacy_review", "terms_review"]
+    : ["privacy_review", "terms_review", "pilot_write_evidence_freshness"];
+  for (const blocker of expectedBlockers) {
     if (!phaseStatus.publicLaunchBlockers?.includes(blocker)) {
       issues.push(`data/lux-phase-status.json: missing public launch blocker ${blocker}`);
     }
+  }
+  if (evidenceFreshness.ok && phaseStatus.publicLaunchBlockers?.includes("pilot_write_evidence_freshness")) {
+    issues.push("data/lux-phase-status.json: pilot_write_evidence_freshness should not be active while evidence is fresh");
   }
   if (!Array.isArray(phaseStatus.codeConfigBlockers) || phaseStatus.codeConfigBlockers.length !== 0) {
     issues.push("data/lux-phase-status.json: codeConfigBlockers must be empty for current pilot status");

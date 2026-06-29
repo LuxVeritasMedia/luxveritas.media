@@ -65,8 +65,18 @@ if (report) {
     if (!report.phaseStatus?.pilotEvidence?.verifiedCapabilities?.includes(capability)) issue(`phase status pilot evidence missing ${capability}`);
   }
   if (!/Phase 5 pilot prep is active/i.test(report.phase || "")) issue(`phase summary mismatch: ${report.phase || "missing"}`);
-  if (!Array.isArray(report.phaseStatus?.publicLaunchBlockers) || !report.phaseStatus.publicLaunchBlockers.includes("privacy_review") || !report.phaseStatus.publicLaunchBlockers.includes("terms_review") || !report.phaseStatus.publicLaunchBlockers.includes("pilot_write_evidence_freshness")) {
-    issue("phase status must report Privacy, Terms, and pilot write freshness as public launch blockers");
+  const localFreshness = pilotEvidenceFreshness(report.pilotWriteEvidence?.updatedAt, { maxAgeHours: maxPilotAgeHours });
+  const phaseBlockers = Array.isArray(report.phaseStatus?.publicLaunchBlockers)
+    ? report.phaseStatus.publicLaunchBlockers
+    : [];
+  if (!phaseBlockers.includes("privacy_review") || !phaseBlockers.includes("terms_review")) {
+    issue("phase status must report Privacy and Terms as public launch blockers");
+  }
+  if (!localFreshness.ok && !phaseBlockers.includes("pilot_write_evidence_freshness")) {
+    issue("phase status must report pilot write freshness as a public launch blocker when evidence is stale");
+  }
+  if (localFreshness.ok && phaseBlockers.includes("pilot_write_evidence_freshness")) {
+    issue("phase status must not report pilot write freshness as active while evidence is fresh");
   }
   if (!Array.isArray(report.phaseStatus?.activeWorkstreams) || report.phaseStatus.activeWorkstreams.length < 4) {
     issue("phase status active workstreams missing");
@@ -108,7 +118,6 @@ if (report) {
   if (report.pilotWriteEvidence?.assetVersion !== localVersion) {
     pilotEvidenceStale("pilot write evidence asset version does not match local asset version; rerun the live pilot write gate after deploy");
   }
-  const localFreshness = pilotEvidenceFreshness(report.pilotWriteEvidence?.updatedAt, { maxAgeHours: maxPilotAgeHours });
   if (!localFreshness.ok) pilotEvidenceStale(localFreshness.message);
   if (report.pilotWriteEvidence?.freshness?.status !== localFreshness.status) issue("pilot write evidence freshness status mismatch");
   if (report.pilotWriteEvidence?.freshness?.maxAgeHours !== maxPilotAgeHours) issue("pilot write evidence freshness maxAgeHours mismatch");
