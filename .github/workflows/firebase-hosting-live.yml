@@ -151,7 +151,7 @@ jobs:
           if [ -n "${FIREBASE_CI_TOKEN:-}" ]; then
             npx firebase-tools@15.22.1 deploy --only hosting --project lux-veritas-media --non-interactive --token "$FIREBASE_CI_TOKEN"
           else
-            npx firebase-tools@15.22.1 deploy --only hosting --project lux-veritas-media --non-interactive
+            node tools/deploy-firebase-hosting-rest.mjs
           fi
         env:
           FIREBASE_CI_TOKEN: ${{ secrets.FIREBASE_CI_TOKEN }}

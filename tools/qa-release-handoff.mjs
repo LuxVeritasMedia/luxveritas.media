@@ -217,8 +217,8 @@ for (const marker of [
   "tools/qa-live-write-reconciliation.mjs",
   "Release Readiness",
   "allowLegalOnly",
-  "Privacy page legal review complete",
-  "Terms page legal review complete"
+  "Privacy page legal review (complete|is approved|is not approved)",
+  "Terms page legal review (complete|is approved|is not approved)"
 ]) {
   if (!pilotWriteGate.includes(marker)) {
     issue(`tools/qa-pilot-write-gate.mjs missing marker: ${marker}`);

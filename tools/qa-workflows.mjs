@@ -13,6 +13,8 @@ const privateIntegrationActivation = await readFile("tools/activate-private-inte
 const wwwResolver = await readFile("tools/resolve-www-domain.mjs", "utf8");
 const firebaseDeployAuth = await readFile("tools/qa-firebase-deploy-auth.mjs", "utf8");
 const firebaseCiTokenSetup = await readFile("tools/setup-firebase-ci-token.mjs", "utf8");
+const firebaseRestDeploy = await readFile("tools/deploy-firebase-hosting-rest.mjs", "utf8");
+const googleCloudAuth = await readFile("tools/lib/google-cloud-auth.mjs", "utf8");
 const finalLaunchRunbook = await readFile("docs/final-launch-runbook.md", "utf8");
 const workflowBundle = `${hosting}\n${functions}\n${finalAudit}`;
 
@@ -54,10 +56,10 @@ for (const marker of [
   "npx playwright install chromium",
   "node tools/qa-browser-flows.mjs",
   "npx firebase-tools@15.22.1 deploy --only hosting",
+  "node tools/deploy-firebase-hosting-rest.mjs",
   "FIREBASE_CI_TOKEN: ${{ secrets.FIREBASE_CI_TOKEN }}",
   "--token \"$FIREBASE_CI_TOKEN\"",
   "else",
-  "npx firebase-tools@15.22.1 deploy --only hosting --project lux-veritas-media --non-interactive",
   "node tools/qa-live-site.mjs",
   "node tools/qa-live-operator-report.mjs",
   "node tools/qa-live-assets.mjs",
@@ -136,9 +138,34 @@ for (const marker of [
   "FIREBASE_CI_TOKEN",
   "LUX_FIREBASE_DEPLOY_AUTH_DRY_RUN",
   "firebase login:ci",
-  "Google Workload Identity / ADC"
+  "Google Workload Identity / ADC",
+  "Firebase Hosting REST auth fallback",
+  "googleAccessToken"
 ]) {
   if (!firebaseDeployAuth.includes(marker)) issues.push(`qa-firebase-deploy-auth.mjs: missing ${marker}`);
+}
+
+for (const marker of [
+  "firebasehosting.googleapis.com/v1beta1",
+  "uploadRequiredHashes",
+  "populateFiles",
+  "updateMask=status",
+  "channels/live/releases",
+  "googleAccessToken",
+  "LUX_FIREBASE_HOSTING_REST_DRY_RUN"
+]) {
+  if (!firebaseRestDeploy.includes(marker)) issues.push(`deploy-firebase-hosting-rest.mjs: missing ${marker}`);
+}
+
+for (const marker of [
+  "external_account",
+  "service_account",
+  "sts.googleapis.com/v1/token",
+  "service_account_impersonation_url",
+  "GOOGLE_APPLICATION_CREDENTIALS",
+  "firebase.hosting"
+]) {
+  if (!googleCloudAuth.includes(marker)) issues.push(`google-cloud-auth.mjs: missing ${marker}`);
 }
 
 for (const marker of [

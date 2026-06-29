@@ -35,6 +35,14 @@ This compares local `HEAD`, `origin/main`, the latest public GitHub Actions Host
 
 If the latest Hosting workflow is queued or in progress, the deploy-status check reports its age and treats it as a blocker after 30 minutes. Override the threshold for long manual audits with `LUX_DEPLOY_ACTIVE_MAX_MINUTES=60`.
 
+The Hosting workflow has two deploy paths. If `FIREBASE_CI_TOKEN` exists, it uses the pinned Firebase CLI. If that secret is absent, it uses `tools/deploy-firebase-hosting-rest.mjs` with Google Workload Identity / ADC to create, populate, finalize, and release a Firebase Hosting version through the Hosting REST API. Validate the artifact-only path without deploying:
+
+```bash
+LUX_FIREBASE_HOSTING_REST_DRY_RUN=1 node tools/deploy-firebase-hosting-rest.mjs
+```
+
+If both deploy paths fail at auth, either grant the GitHub Workload Identity service account Firebase Hosting release permissions or add `FIREBASE_CI_TOKEN` with `node tools/setup-firebase-ci-token.mjs`.
+
 Check the separate manual Functions deploy path:
 
 ```bash
