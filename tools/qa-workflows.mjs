@@ -50,6 +50,8 @@ for (const marker of [
   "npx playwright install chromium",
   "node tools/qa-browser-flows.mjs",
   "npx firebase-tools@15.22.1 deploy --only hosting",
+  "--token \"$FIREBASE_TOKEN\"",
+  "FIREBASE_TOKEN: ${{ steps.google-auth.outputs.access_token }}",
   "node tools/qa-live-site.mjs",
   "node tools/qa-live-operator-report.mjs",
   "node tools/qa-live-assets.mjs",
@@ -65,7 +67,9 @@ for (const marker of [
 
 for (const marker of [
   "actions/checkout@v5",
-  "actions/setup-node@v5"
+  "actions/setup-node@v5",
+  "token_format: access_token",
+  "id: google-auth"
 ]) {
   if (!workflowBundle.includes(marker)) issues.push(`workflows: missing ${marker}`);
 }
@@ -101,6 +105,7 @@ for (const marker of [
   "needs: validate-functions",
   "deploy --only functions",
   "npx firebase-tools@15.22.1 deploy --only functions",
+  "FIREBASE_TOKEN: ${{ steps.google-auth.outputs.access_token }}",
   "submitform --region us-central1 --project lux-veritas-media --no-invoker-iam-check",
   "tracksiteevent --region us-central1 --project lux-veritas-media --no-invoker-iam-check",
   "reportactivity --region us-central1 --project lux-veritas-media --no-invoker-iam-check",
