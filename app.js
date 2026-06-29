@@ -1193,6 +1193,18 @@ function fanSignalReceiptDetail(fallback) {
   return "Signal pass saved from this device. Keep it as a local receipt of your path.";
 }
 
+function fanSignalReceiptSummary(state) {
+  const receipt = readJson("luxveritas_signal_pass_receipt", null);
+  if (!receipt?.savedAt) return null;
+  const counts = receipt.counts || state?.counts || {};
+  const date = new Date(receipt.savedAt);
+  const dateLabel = Number.isNaN(date.getTime()) ? "Saved locally" : `Saved ${date.toLocaleDateString()}`;
+  return {
+    tier: receipt.tier || state?.tier || "Signal pass",
+    detail: `${dateLabel} · score ${receipt.score ?? state?.score ?? 0} · media ${counts.media || 0} · access ${counts.submissions || 0} · portal ${counts.portal || 0}`
+  };
+}
+
 function fanSignalActivityLabel(item) {
   if (item.client_submission_id) return item.formType === "portal_signin" ? "Portal access check" : "Access request prepared";
   if (item.action) return `${item.title || "Media"} ${item.action}`;
@@ -1245,6 +1257,7 @@ function renderFanSignal() {
   if (!panels.length) return;
 
   const state = fanSignalState();
+  const receipt = fanSignalReceiptSummary(state);
 
   for (const panel of panels) {
     const tierNode = panel.querySelector("[data-fan-signal-tier]");
@@ -1258,16 +1271,26 @@ function renderFanSignal() {
     }
 
     const list = panel.querySelector("[data-fan-signal-list]");
-    if (!list) continue;
-    if (!state.latest.length) {
-      list.innerHTML = "<li>Your first signal will appear here.</li>";
-      continue;
+    if (list) {
+      if (!state.latest.length) {
+        list.innerHTML = "<li>Your first signal will appear here.</li>";
+      } else {
+        list.innerHTML = state.latest.map((item) => {
+          const label = item.label;
+          const time = item.timestamp ? new Date(item.timestamp).toLocaleDateString() : "Recent";
+          return `<li><strong>${escapeHtml(label)}</strong><span>${escapeHtml(time)}</span></li>`;
+        }).join("");
+      }
     }
-    list.innerHTML = state.latest.map((item) => {
-      const label = item.label;
-      const time = item.timestamp ? new Date(item.timestamp).toLocaleDateString() : "Recent";
-      return `<li><strong>${escapeHtml(label)}</strong><span>${escapeHtml(time)}</span></li>`;
-    }).join("");
+
+    const receiptNode = panel.querySelector("[data-fan-signal-receipt]");
+    if (!receiptNode) continue;
+    receiptNode.hidden = !receipt;
+    if (!receipt) continue;
+    const receiptTier = receiptNode.querySelector("[data-fan-signal-receipt-tier]");
+    const receiptDetail = receiptNode.querySelector("[data-fan-signal-receipt-detail]");
+    if (receiptTier) receiptTier.textContent = receipt.tier;
+    if (receiptDetail) receiptDetail.textContent = receipt.detail;
   }
 }
 
@@ -1280,6 +1303,8 @@ function exportFanSignalPass(button) {
     filename,
     tier: state.tier,
     score: state.score,
+    counts: state.counts,
+    latest: state.latest,
     buildVersion: publicBuildVersion
   });
   trackInteraction("fan_signal_export", button, {

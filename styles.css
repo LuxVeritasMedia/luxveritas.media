@@ -706,6 +706,7 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
 }
 .fan-signal-panel article,
 .fan-signal-latest,
+.fan-signal-receipt,
 .fan-signal-actions {
   background:
     linear-gradient(180deg, rgba(13,90,73,.16), rgba(6,8,7,.94)),
@@ -765,6 +766,19 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
   margin: 0;
   color: rgba(243,238,228,.48);
   text-align: right;
+}
+.fan-signal-receipt {
+  border: 1px solid rgba(200,168,106,.32);
+  background:
+    linear-gradient(180deg, rgba(200,168,106,.14), rgba(6,8,7,.92)),
+    #0b0f0e;
+}
+.fan-signal-receipt[hidden] {
+  display: none;
+}
+.fan-signal-receipt strong {
+  font-size: clamp(1.45rem, 2.4vw, 2.4rem);
+  line-height: 1.05;
 }
 .fan-signal-actions {
   display: grid;

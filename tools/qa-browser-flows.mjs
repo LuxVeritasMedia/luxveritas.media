@@ -817,7 +817,11 @@ async function fanSignalPassFlow(page, baseUrl) {
   const exportState = await page.evaluate(() => ({
     filename: document.documentElement.dataset.lastDownloadName || "",
     type: document.documentElement.dataset.lastDownloadType || "",
-    detail: document.querySelector("[data-fan-signal-detail]")?.textContent || ""
+    detail: document.querySelector("[data-fan-signal-detail]")?.textContent || "",
+    receiptVisible: Boolean(document.querySelector("[data-fan-signal-receipt]") && !document.querySelector("[data-fan-signal-receipt]").hidden),
+    receiptTier: document.querySelector("[data-fan-signal-receipt-tier]")?.textContent || "",
+    receiptDetail: document.querySelector("[data-fan-signal-receipt-detail]")?.textContent || "",
+    storedReceipt: JSON.parse(localStorage.getItem("luxveritas_signal_pass_receipt") || "null")
   }));
   if (!exportState.filename.startsWith("luxveritas-signal-pass-")) {
     issues.push(`/music.html: signal pass export suggested unexpected filename ${exportState.filename || "none"}`);
@@ -827,6 +831,18 @@ async function fanSignalPassFlow(page, baseUrl) {
   }
   if (!/Signal pass saved/i.test(exportState.detail)) {
     issues.push(`/music.html: signal pass export did not confirm local receipt`);
+  }
+  if (!exportState.receiptVisible) {
+    issues.push("/music.html: signal pass export did not reveal visible local receipt");
+  }
+  if (!/Listener|Circle Path|Signal Holder|First Signal/i.test(exportState.receiptTier)) {
+    issues.push(`/music.html: signal pass receipt tier was not rendered (${exportState.receiptTier || "missing"})`);
+  }
+  if (!/score/i.test(exportState.receiptDetail) || !/media/i.test(exportState.receiptDetail)) {
+    issues.push(`/music.html: signal pass receipt detail did not summarize score and media (${exportState.receiptDetail || "missing"})`);
+  }
+  if (!exportState.storedReceipt?.counts || exportState.storedReceipt.counts.media < 1) {
+    issues.push("/music.html: signal pass receipt did not persist fan signal counts");
   }
 }
 
