@@ -1,4 +1,4 @@
-import { createHash, randomUUID } from "node:crypto";
+import { createHash } from "node:crypto";
 import { readdir, readFile, stat } from "node:fs/promises";
 import { join, posix, relative, sep } from "node:path";
 import { gzipSync } from "node:zlib";
@@ -96,18 +96,14 @@ async function apiFetch(path, { method = "GET", body, token, root = apiRoot } = 
 }
 
 async function uploadFile(uploadUrl, hash, gzipped, token) {
-  const boundary = `luxveritas-${randomUUID()}`;
-  const prefix = Buffer.from(`--${boundary}\r\nContent-Type: application/octet-stream\r\n\r\n`);
-  const suffix = Buffer.from(`\r\n--${boundary}--\r\n`);
-  const body = Buffer.concat([prefix, gzipped, suffix]);
   const response = await fetch(`${uploadUrl}/${encodeURIComponent(hash)}`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": `multipart/related; boundary=${boundary}`,
-      "Content-Length": String(body.length)
+      "Content-Type": "application/octet-stream",
+      "Content-Length": String(gzipped.length)
     },
-    body
+    body: gzipped
   });
   const text = await response.text();
   if (!response.ok) {
