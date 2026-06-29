@@ -12,6 +12,7 @@ const inboxActivation = await readFile("tools/activate-inbox-delivery.mjs", "utf
 const privateIntegrationActivation = await readFile("tools/activate-private-integration.mjs", "utf8");
 const wwwResolver = await readFile("tools/resolve-www-domain.mjs", "utf8");
 const firebaseDeployAuth = await readFile("tools/qa-firebase-deploy-auth.mjs", "utf8");
+const firebaseCiTokenSetup = await readFile("tools/setup-firebase-ci-token.mjs", "utf8");
 const finalLaunchRunbook = await readFile("docs/final-launch-runbook.md", "utf8");
 const workflowBundle = `${hosting}\n${functions}\n${finalAudit}`;
 
@@ -140,6 +141,20 @@ for (const marker of [
   if (!firebaseDeployAuth.includes(marker)) issues.push(`qa-firebase-deploy-auth.mjs: missing ${marker}`);
 }
 
+for (const marker of [
+  "FIREBASE_CI_TOKEN",
+  "secret set",
+  "--app",
+  "actions",
+  "qa-firebase-deploy-auth.mjs",
+  "firebase-hosting-live.yml",
+  "LUX_FIREBASE_CI_SETUP_DRY_RUN",
+  "LUX_FIREBASE_CI_SETUP_SKIP_WORKFLOW",
+  "LUX_FIREBASE_CI_SETUP_WATCH"
+]) {
+  if (!firebaseCiTokenSetup.includes(marker)) issues.push(`setup-firebase-ci-token.mjs: missing ${marker}`);
+}
+
 if (functions.includes('invoker: "public"') || functions.includes("invoker: 'public'")) {
   issues.push("firebase-functions-manual.yml: must not re-add public invoker config");
 }
@@ -253,6 +268,7 @@ for (const marker of [
 
 for (const marker of [
   "node tools/activate-inbox-delivery.mjs",
+  "node tools/setup-firebase-ci-token.mjs",
   "node tools/resolve-www-domain.mjs",
   "node tools/qa-private-workflow-matrix.mjs",
   "node tools/qa-external-workflow-targets.mjs",

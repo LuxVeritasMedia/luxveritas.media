@@ -38,6 +38,15 @@ node tools/qa-functions-deploy-readiness.mjs
 
 If the operator-environment check reports a different Firebase account, log it out and run a fresh login with `info@luxveritas.media` before checking provider secrets or deploying Functions.
 
+If the Hosting workflow fails at `Preflight Firebase deploy auth`, generate a Firebase CLI token from the approved Firebase account and store it in GitHub Actions:
+
+```bash
+firebase login:ci --no-localhost
+node tools/setup-firebase-ci-token.mjs
+```
+
+Paste the token into the GitHub CLI prompt only. The helper sets `FIREBASE_CI_TOKEN`, triggers the Hosting workflow, and watches the run.
+
 If `node tools/qa-functions-deploy-readiness.mjs` reports the manual Functions deploy blocker for `iam.serviceAccounts.ActAs`, use `docs/functions-deploy-iam-repair.md` to grant the GitHub deploy service account `roles/iam.serviceAccountUser` on `lux-veritas-media@appspot.gserviceaccount.com`, then rerun the manual Functions workflow before relying on automation for future function deploys. This is an automation-hardening blocker; do not paste service-account keys or GitHub secret values into the repo.
 
 Use `LUX_FUNCTIONS_IAM_PACKET_OUT=/tmp/lux-functions-iam-repair-request.md node tools/export-functions-iam-repair-request.mjs` when a Google Cloud administrator needs a clean no-secret repair packet.
