@@ -9,7 +9,7 @@ This packet documents the no-secret repair path for the remaining GitHub manual 
 The latest manual Functions workflow run failed during:
 
 ```bash
-npx firebase-tools@latest deploy --only functions --project lux-veritas-media --non-interactive --force
+npx firebase-tools@15.22.1 deploy --only functions --project lux-veritas-media --non-interactive --force
 ```
 
 Failure:

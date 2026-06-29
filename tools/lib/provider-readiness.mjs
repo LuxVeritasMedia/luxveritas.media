@@ -2,6 +2,7 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
+const firebaseToolsPackage = "firebase-tools@15.22.1";
 
 export const requiredProviderSecrets = [
   "RESEND_API_KEY",
@@ -18,7 +19,7 @@ async function runFirebase(args) {
     if (error?.code !== "ENOENT") throw error;
   }
 
-  return execFileAsync("npx", ["firebase-tools@latest", ...args], { maxBuffer: 1024 * 1024 });
+  return execFileAsync("npx", [firebaseToolsPackage, ...args], { maxBuffer: 1024 * 1024 });
 }
 
 function firebaseAuthErrorDetail(error) {

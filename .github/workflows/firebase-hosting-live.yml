@@ -142,7 +142,7 @@ jobs:
         run: node tools/qa-browser-flows.mjs
 
       - name: Deploy to Firebase Hosting
-        run: npx firebase-tools@latest deploy --only hosting --project lux-veritas-media --non-interactive
+        run: npx firebase-tools@15.22.1 deploy --only hosting --project lux-veritas-media --non-interactive
 
       - name: QA live site
         run: node tools/qa-live-site.mjs

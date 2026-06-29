@@ -72,7 +72,7 @@ jobs:
         run: npm --prefix functions ci
 
       - name: Deploy Firebase Functions
-        run: npx firebase-tools@latest deploy --only functions --project lux-veritas-media --non-interactive --force
+        run: npx firebase-tools@15.22.1 deploy --only functions --project lux-veritas-media --non-interactive --force
 
       - name: Set public form relay access
         run: |

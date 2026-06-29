@@ -49,6 +49,7 @@ for (const marker of [
   "npm install --no-save playwright",
   "npx playwright install chromium",
   "node tools/qa-browser-flows.mjs",
+  "npx firebase-tools@15.22.1 deploy --only hosting",
   "node tools/qa-live-site.mjs",
   "node tools/qa-live-operator-report.mjs",
   "node tools/qa-live-assets.mjs",
@@ -78,6 +79,10 @@ for (const deprecatedAction of [
   }
 }
 
+if (hosting.includes("firebase-tools@latest") || functions.includes("firebase-tools@latest")) {
+  issues.push("workflows: pin firebase-tools to a known-good version instead of @latest");
+}
+
 for (const marker of [
   "concurrency:",
   "group: firebase-functions",
@@ -95,6 +100,7 @@ for (const marker of [
   "if: github.event_name == 'workflow_dispatch'",
   "needs: validate-functions",
   "deploy --only functions",
+  "npx firebase-tools@15.22.1 deploy --only functions",
   "submitform --region us-central1 --project lux-veritas-media --no-invoker-iam-check",
   "tracksiteevent --region us-central1 --project lux-veritas-media --no-invoker-iam-check",
   "reportactivity --region us-central1 --project lux-veritas-media --no-invoker-iam-check",
