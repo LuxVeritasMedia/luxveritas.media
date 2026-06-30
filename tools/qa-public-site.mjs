@@ -23,6 +23,7 @@ const requiredFiles = [
   "data/lux-phase-status.json",
   "data/lux-pilot-write-evidence.json",
   "data/lux-media-manifest.json",
+  "data/lux-release-room.json",
   "data/lux-radio-programming.json",
   "data/lux-pilot-bug-register.json",
   "data/lux-build-manifest.json",
@@ -284,6 +285,13 @@ for (const file of htmlFiles) {
   if (["music.html", "spmvp.html"].includes(rel)) {
     if (!html.includes("data-media-player")) issues.push(`${rel}: missing Lux Player`);
     if (!html.includes("data-media-source-shell")) issues.push(`${rel}: missing source-ready playback shell`);
+    if (!html.includes("data-release-room")) issues.push(`${rel}: missing release room`);
+    if (!html.includes("data-release-room-current")) issues.push(`${rel}: missing current release room panel`);
+    if (!html.includes("data-release-room-readiness")) issues.push(`${rel}: missing release room readiness panel`);
+    if (!html.includes('data-track-surface="release_room"')) issues.push(`${rel}: missing release room tracking surface`);
+    for (const step of ["listen", "watch", "join", "collect", "create", "return"]) {
+      if (!html.includes(`data-release-step="${step}"`)) issues.push(`${rel}: missing release room step ${step}`);
+    }
     if (!html.includes("data-radio-programming")) issues.push(`${rel}: missing Lux Radio programming panel`);
     if (!html.includes("data-radio-readiness")) issues.push(`${rel}: missing Lux Radio readiness panel`);
     if (!html.includes("data-radio-on-air")) issues.push(`${rel}: missing Lux Radio on-air state`);
@@ -349,6 +357,7 @@ const portalRoomsRaw = await readFile(join(root, "data/lux-portal-rooms.json"), 
 const phaseStatusRaw = await readFile(join(root, "data/lux-phase-status.json"), "utf8");
 const pilotWriteEvidenceRaw = await readFile(join(root, "data/lux-pilot-write-evidence.json"), "utf8");
 const mediaManifestRaw = await readFile(join(root, "data/lux-media-manifest.json"), "utf8");
+const releaseRoomRaw = await readFile(join(root, "data/lux-release-room.json"), "utf8");
 const radioProgrammingRaw = await readFile(join(root, "data/lux-radio-programming.json"), "utf8");
 const pilotBugRegisterRaw = await readFile(join(root, "data/lux-pilot-bug-register.json"), "utf8");
 const buildManifestRaw = await readFile(join(root, "data/lux-build-manifest.json"), "utf8");
@@ -372,6 +381,7 @@ for (const pattern of bannedTerms) {
   if (pattern.test(phaseStatusRaw)) issues.push(`data/lux-phase-status.json: banned public term matched ${pattern}`);
   if (pattern.test(pilotWriteEvidenceRaw)) issues.push(`data/lux-pilot-write-evidence.json: banned public term matched ${pattern}`);
   if (pattern.test(mediaManifestRaw)) issues.push(`data/lux-media-manifest.json: banned public term matched ${pattern}`);
+  if (pattern.test(releaseRoomRaw)) issues.push(`data/lux-release-room.json: banned public term matched ${pattern}`);
   if (pattern.test(radioProgrammingRaw)) issues.push(`data/lux-radio-programming.json: banned public term matched ${pattern}`);
   if (pattern.test(pilotBugRegisterRaw)) issues.push(`data/lux-pilot-bug-register.json: banned public term matched ${pattern}`);
   if (pattern.test(legalReviewRaw)) issues.push(`data/lux-legal-review.json: banned public term matched ${pattern}`);
@@ -418,8 +428,8 @@ try {
   if (buildManifest.routeCount !== htmlFiles.length) {
     issues.push(`data/lux-build-manifest.json: routeCount ${buildManifest.routeCount} does not match ${htmlFiles.length} generated HTML files`);
   }
-  if (!buildManifest.publicRouteCount || !buildManifest.mediaManifestVersion || !buildManifest.radioProgrammingVersion || !buildManifest.pilotBugRegisterVersion || !buildManifest.actionInventoryVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.phaseStatusVersion || !buildManifest.publicTermsVersion) {
-    issues.push("data/lux-build-manifest.json: missing publicRouteCount, mediaManifestVersion, radioProgrammingVersion, pilotBugRegisterVersion, actionInventoryVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, phaseStatusVersion, or publicTermsVersion");
+  if (!buildManifest.publicRouteCount || !buildManifest.mediaManifestVersion || !buildManifest.releaseRoomVersion || !buildManifest.radioProgrammingVersion || !buildManifest.pilotBugRegisterVersion || !buildManifest.actionInventoryVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.phaseStatusVersion || !buildManifest.publicTermsVersion) {
+    issues.push("data/lux-build-manifest.json: missing publicRouteCount, mediaManifestVersion, releaseRoomVersion, radioProgrammingVersion, pilotBugRegisterVersion, actionInventoryVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, phaseStatusVersion, or publicTermsVersion");
   }
 } catch (error) {
   issues.push(`data/lux-build-manifest.json: invalid JSON (${error.message})`);
@@ -781,6 +791,79 @@ try {
   }
 } catch (error) {
   issues.push(`data/lux-media-manifest.json: invalid JSON (${error.message})`);
+}
+
+try {
+  const releaseRoom = JSON.parse(releaseRoomRaw);
+  const fanPath = Array.isArray(releaseRoom.fanPath) ? releaseRoom.fanPath : [];
+  const readiness = Array.isArray(releaseRoom.readiness) ? releaseRoom.readiness : [];
+  const expectedSteps = ["listen", "watch", "join", "collect", "create", "return"];
+  const expectedReadiness = ["media", "capture", "reporting", "public-release"];
+  if (releaseRoom.schemaVersion !== "luxveritas.release_room.v1") {
+    issues.push("data/lux-release-room.json: missing schemaVersion luxveritas.release_room.v1");
+  }
+  if (!releaseRoom.version || !releaseRoom.headline || !releaseRoom.summary || !releaseRoom.publicPurpose) {
+    issues.push("data/lux-release-room.json: missing version, headline, summary, or publicPurpose");
+  }
+  if (releaseRoom.currentRelease?.id !== "spmvp" || releaseRoom.currentRelease?.title !== "SPMVP" || releaseRoom.currentRelease?.primaryPath !== "/spmvp.html") {
+    issues.push("data/lux-release-room.json: current release must point to SPMVP");
+  }
+  const releaseMediaIds = Array.isArray(releaseRoom.currentRelease?.mediaIds) ? releaseRoom.currentRelease.mediaIds : [];
+  for (const id of ["spmvp-release", "visual-world", "lux-radio"]) {
+    if (!releaseMediaIds.includes(id)) issues.push(`data/lux-release-room.json: missing media pointer ${id}`);
+  }
+  if (fanPath.map((step) => step.id).join("|") !== expectedSteps.join("|")) {
+    issues.push(`data/lux-release-room.json: expected fan path ${expectedSteps.join(", ")}, found ${fanPath.map((step) => step.id).join(", ")}`);
+  }
+  for (const step of fanPath) {
+    for (const field of ["id", "label", "title", "body", "action"]) {
+      if (!step[field]) issues.push(`data/lux-release-room.json: ${step.id || "step"} missing ${field}`);
+    }
+    if (!step.mediaAction && !step.formType && !step.path && !step.localAction) {
+      issues.push(`data/lux-release-room.json: ${step.id || "step"} missing public action target`);
+    }
+    if (step.mediaAction && !["play", "watch", "radio"].includes(step.mediaAction)) {
+      issues.push(`data/lux-release-room.json: ${step.id || "step"} has invalid mediaAction`);
+    }
+    if (step.path && (!step.path.startsWith("/") || !step.path.endsWith(".html"))) {
+      issues.push(`data/lux-release-room.json: ${step.id || "step"} has invalid path`);
+    }
+  }
+  if (readiness.map((item) => item.id).join("|") !== expectedReadiness.join("|")) {
+    issues.push(`data/lux-release-room.json: expected readiness ${expectedReadiness.join(", ")}, found ${readiness.map((item) => item.id).join(", ")}`);
+  }
+  if (!readiness.some((item) => item.status === "live")) {
+    issues.push("data/lux-release-room.json: expected at least one live readiness item");
+  }
+  if (!readiness.some((item) => item.id === "public-release" && item.status === "legal review")) {
+    issues.push("data/lux-release-room.json: public-release readiness must remain legal review");
+  }
+  for (const item of readiness) {
+    for (const field of ["id", "label", "status", "detail"]) {
+      if (!item[field]) issues.push(`data/lux-release-room.json: readiness item ${item.id || "missing"} missing ${field}`);
+    }
+  }
+  for (const rel of ["music.html", "spmvp.html"]) {
+    const html = await readFile(join(root, rel), "utf8");
+    if (!html.includes(`data-release-room-version="${releaseRoom.version}"`)) {
+      issues.push(`${rel}: missing release room version ${releaseRoom.version}`);
+    }
+    for (const step of expectedSteps) {
+      if (!html.includes(`data-release-step="${step}"`)) {
+        issues.push(`${rel}: missing release room rendered step ${step}`);
+      }
+      if (!html.includes(`data-track-intent="release_${step}"`)) {
+        issues.push(`${rel}: missing release room tracking intent ${step}`);
+      }
+    }
+    for (const item of expectedReadiness) {
+      if (!html.includes(`data-release-readiness-item="${item}"`)) {
+        issues.push(`${rel}: missing release room readiness item ${item}`);
+      }
+    }
+  }
+} catch (error) {
+  issues.push(`data/lux-release-room.json: invalid JSON (${error.message})`);
 }
 
 try {

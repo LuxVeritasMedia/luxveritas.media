@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "luxveritas.release_room.v1",
+  "version": "2026-06-30-release-room",
+  "updatedAt": "2026-06-30T11:00:00.000Z",
+  "publicPurpose": "Audience-facing release room map for the current Lux Veritas music doorway.",
+  "headline": "The release is a room.",
+  "summary": "SPMVP opens as music first, then expands into visual world, radio signal, circle access, selected drops, and creator response.",
+  "currentRelease": {
+    "id": "spmvp",
+    "title": "SPMVP",
+    "status": "Public preview live",
+    "primaryPath": "/spmvp.html",
+    "mediaIds": ["spmvp-release", "visual-world", "lux-radio"]
+  },
+  "fanPath": [
+    {
+      "id": "listen",
+      "label": "Listen",
+      "title": "Start with the signal",
+      "body": "Play the public preview and let the sound establish the room.",
+      "action": "Play Signal",
+      "mediaAction": "play"
+    },
+    {
+      "id": "watch",
+      "label": "Watch",
+      "title": "Enter the visual world",
+      "body": "Move from the record into the first visual atmosphere.",
+      "action": "Watch",
+      "mediaAction": "watch"
+    },
+    {
+      "id": "join",
+      "label": "Join",
+      "title": "Enter the circle",
+      "body": "Request first access for private drops, rooms, and member moments.",
+      "action": "Join for access",
+      "formType": "fan"
+    },
+    {
+      "id": "collect",
+      "label": "Collect",
+      "title": "Hold the object",
+      "body": "Join the drop path for music-linked goods and selected editions.",
+      "action": "Join drop waitlist",
+      "path": "/store.html"
+    },
+    {
+      "id": "create",
+      "label": "Create",
+      "title": "Respond from the source",
+      "body": "Artists and creators can enter through screened submissions.",
+      "action": "Submit for review",
+      "path": "/submissions.html"
+    },
+    {
+      "id": "return",
+      "label": "Return",
+      "title": "Come back with signal",
+      "body": "Your local signal pass remembers listening, reaction, and access intent on this device.",
+      "action": "Save signal pass",
+      "localAction": "signal_pass"
+    }
+  ],
+  "readiness": [
+    {
+      "id": "media",
+      "label": "Media",
+      "status": "live",
+      "detail": "Audio, visual, and radio preview sources are attached and monitored by live media QA."
+    },
+    {
+      "id": "capture",
+      "label": "Capture",
+      "status": "live",
+      "detail": "Join, submission, access, and drop interest paths return receipt-backed values and reporting."
+    },
+    {
+      "id": "reporting",
+      "label": "Reporting",
+      "status": "live",
+      "detail": "CTA, playback, fan reaction, form, and operator summaries are available through protected reporting."
+    },
+    {
+      "id": "public-release",
+      "label": "Public Release",
+      "status": "legal review",
+      "detail": "Full public release still waits for Privacy and Terms approval."
+    }
+  ]
+}

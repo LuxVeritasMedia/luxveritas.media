@@ -118,6 +118,9 @@ if (!assetFiles.some((asset) => asset.path === "/data/lux-build-manifest.json"))
 if (!assetFiles.some((asset) => asset.path === "/data/lux-fan-flywheel.json")) {
   issue("dist artifact missing /data/lux-fan-flywheel.json");
 }
+if (!assetFiles.some((asset) => asset.path === "/data/lux-release-room.json")) {
+  issue("dist artifact missing /data/lux-release-room.json");
+}
 if (!assetFiles.some((asset) => asset.path === "/data/lux-drop-room.json")) {
   issue("dist artifact missing /data/lux-drop-room.json");
 }

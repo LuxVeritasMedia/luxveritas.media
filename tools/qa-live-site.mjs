@@ -87,6 +87,10 @@ if (musicHtml) {
     "data-media-action=\"play\"",
     "data-media-action=\"watch\"",
     "data-media-action=\"radio\"",
+    "data-release-room",
+    "data-release-step=\"listen\"",
+    "data-release-readiness-item=\"media\"",
+    "data-track-surface=\"release_room\"",
     "data-radio-readiness",
     "data-radio-on-air",
     "data-radio-listener-path",
@@ -160,8 +164,8 @@ try {
     if (buildManifest.stylesheet !== `styles.css?v=${expectedAssetVersion}`) {
       issues.push("/data/lux-build-manifest.json: stylesheet does not match current asset version");
     }
-    if (!buildManifest.mediaManifestVersion || !buildManifest.radioProgrammingVersion || !buildManifest.pilotBugRegisterVersion || !buildManifest.actionInventoryVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.phaseStatusVersion || !buildManifest.publicTermsVersion) {
-      issues.push("/data/lux-build-manifest.json: missing mediaManifestVersion, radioProgrammingVersion, pilotBugRegisterVersion, actionInventoryVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, phaseStatusVersion, or publicTermsVersion");
+    if (!buildManifest.mediaManifestVersion || !buildManifest.releaseRoomVersion || !buildManifest.radioProgrammingVersion || !buildManifest.pilotBugRegisterVersion || !buildManifest.actionInventoryVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.phaseStatusVersion || !buildManifest.publicTermsVersion) {
+      issues.push("/data/lux-build-manifest.json: missing mediaManifestVersion, releaseRoomVersion, radioProgrammingVersion, pilotBugRegisterVersion, actionInventoryVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, phaseStatusVersion, or publicTermsVersion");
     }
   }
 } catch (error) {
@@ -494,6 +498,40 @@ try {
   }
 } catch (error) {
   issues.push(`/data/lux-media-manifest.json: invalid response (${error.message})`);
+}
+
+try {
+  const { response, text } = await fetchWithTimeout("/data/lux-release-room.json");
+  if (!response.ok) {
+    issues.push(`/data/lux-release-room.json: expected HTTP 200, received ${response.status}`);
+  } else {
+    const releaseRoom = JSON.parse(text);
+    const fanPath = Array.isArray(releaseRoom.fanPath) ? releaseRoom.fanPath : [];
+    const readiness = Array.isArray(releaseRoom.readiness) ? releaseRoom.readiness : [];
+    const mediaIds = new Set(Array.isArray(releaseRoom.currentRelease?.mediaIds) ? releaseRoom.currentRelease.mediaIds : []);
+    if (releaseRoom.schemaVersion !== "luxveritas.release_room.v1") {
+      issues.push("/data/lux-release-room.json: schemaVersion mismatch");
+    }
+    if (!releaseRoom.version || releaseRoom.version !== liveBuildManifest?.releaseRoomVersion) {
+      issues.push("/data/lux-release-room.json: version must match build manifest releaseRoomVersion");
+    }
+    if (releaseRoom.currentRelease?.id !== "spmvp" || releaseRoom.currentRelease?.primaryPath !== "/spmvp.html") {
+      issues.push("/data/lux-release-room.json: current release must point to SPMVP");
+    }
+    for (const id of ["spmvp-release", "visual-world", "lux-radio"]) {
+      if (!mediaIds.has(id)) issues.push(`/data/lux-release-room.json: missing media pointer ${id}`);
+    }
+    const expectedSteps = ["listen", "watch", "join", "collect", "create", "return"];
+    if (fanPath.map((step) => step.id).join("|") !== expectedSteps.join("|")) {
+      issues.push(`/data/lux-release-room.json: expected fan path ${expectedSteps.join(", ")}`);
+    }
+    const readinessIds = new Set(readiness.map((item) => item.id));
+    for (const id of ["media", "capture", "reporting", "public-release"]) {
+      if (!readinessIds.has(id)) issues.push(`/data/lux-release-room.json: missing readiness item ${id}`);
+    }
+  }
+} catch (error) {
+  issues.push(`/data/lux-release-room.json: invalid response (${error.message})`);
 }
 
 try {

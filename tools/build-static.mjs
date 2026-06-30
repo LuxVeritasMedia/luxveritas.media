@@ -4,6 +4,7 @@ import { actionInventoryVersion } from "./lib/action-inventory.mjs";
 
 const assetVersion = "20260622-activation-readiness";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
+const releaseRoom = JSON.parse(await readFile("data/lux-release-room.json", "utf8"));
 const radioProgramming = JSON.parse(await readFile("data/lux-radio-programming.json", "utf8"));
 const pilotBugRegister = JSON.parse(await readFile("data/lux-pilot-bug-register.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
@@ -490,6 +491,47 @@ function mediaPlayerShell(context = "music") {
   </section>`;
 }
 
+function releaseRoomSection() {
+  const fanPath = Array.isArray(releaseRoom.fanPath) ? releaseRoom.fanPath : [];
+  const readiness = Array.isArray(releaseRoom.readiness) ? releaseRoom.readiness : [];
+  return `<section class="section release-room" data-release-room data-release-room-version="${releaseRoom.version || ""}">
+    <div class="section-heading">
+      <p class="kicker">Release Room</p>
+      <h2>${releaseRoom.headline || "The release is a room."}</h2>
+      <p>${releaseRoom.summary || ""}</p>
+    </div>
+    <div class="release-room-current" data-release-room-current>
+      <span>${releaseRoom.currentRelease?.status || "Public preview live"}</span>
+      <strong>${releaseRoom.currentRelease?.title || "SPMVP"}</strong>
+      <a class="button button-quiet" href="${releaseRoom.currentRelease?.primaryPath || "/spmvp.html"}">Open release room</a>
+    </div>
+    <div class="release-room-path" aria-label="Lux Veritas release fan path">
+      ${fanPath.map((step, index) => {
+        const action = step.mediaAction
+          ? `<button class="button button-primary" type="button" data-media-action="${step.mediaAction}" data-track-surface="release_room" data-track-intent="release_${step.id}" data-track-label="${step.title}">${step.action}</button>`
+          : step.formType
+            ? `<button class="button button-quiet" type="button" data-open-form="${step.formType}" data-track-surface="release_room" data-track-intent="release_${step.id}" data-track-label="${step.title}">${step.action}</button>`
+            : step.localAction === "signal_pass"
+              ? `<button class="button button-quiet" type="button" data-fan-signal-export data-track-surface="release_room" data-track-intent="release_${step.id}" data-track-label="${step.title}">${step.action}</button>`
+              : `<a class="button button-quiet" href="${step.path || "/join.html"}" data-track-surface="release_room" data-track-intent="release_${step.id}" data-track-label="${step.title}">${step.action}</a>`;
+        return `<article data-release-step="${step.id || `step-${index + 1}`}">
+          <span>${String(index + 1).padStart(2, "0")} · ${step.label || "Signal"}</span>
+          <h3>${step.title || ""}</h3>
+          <p>${step.body || ""}</p>
+          ${action}
+        </article>`;
+      }).join("")}
+    </div>
+    <div class="release-room-readiness" data-release-room-readiness aria-label="Release room readiness">
+      ${readiness.map((item) => `<article data-release-readiness-item="${item.id || ""}" data-release-readiness-status="${item.status || ""}">
+        <span>${item.status || "ready"}</span>
+        <strong>${item.label || "Readiness"}</strong>
+        <p>${item.detail || ""}</p>
+      </article>`).join("")}
+    </div>
+  </section>`;
+}
+
 function radioProgrammingSection() {
   const slots = Array.isArray(radioProgramming.slots) ? radioProgramming.slots : [];
   const onAir = radioProgramming.onAir || {};
@@ -588,6 +630,7 @@ function music() {
     description: "Sound as signal. Lux Veritas releases music as the first doorway into a larger world.",
     body: `${pageHero("Music", "Sound as signal.", "Lux Veritas releases music as the first doorway into a larger world: songs, visuals, live rooms, stories, and fan participation moving together.\n\nEvery release is intentional, protected, and built to last.", `<div class="hero-actions"><button class="button button-primary" type="button" data-media-action="play">Listen</button><button class="button button-quiet" type="button" data-media-action="watch">Watch</button><button class="button button-quiet" type="button" data-open-form="fan">Join for early access</button></div>`)}
     ${mediaPlayerShell("music")}
+    ${releaseRoomSection()}
     ${radioProgrammingSection()}
     <section class="section"><div class="release-rail">${releaseCards.map(([title, type, body]) => `<article><span>${type}</span><h3>${title}</h3><p>${body}</p></article>`).join("")}</div></section>
     <section class="section split-band"><div><p class="kicker">Current Motion</p><h2>Music that arrives with atmosphere.</h2></div><div class="checklist"><p>Follow the latest release rooms, filmed sessions, and live appearances. If the work meets you, the next door is easy: listen, watch, join.</p><div class="hero-actions"><a class="button button-primary" href="/spmvp.html">Listen</a><button class="button button-quiet" data-open-form="fan">Join for early access</button></div></div></section>${fanSignalSection()}${cta()}`
@@ -1087,7 +1130,7 @@ const pages = [
   `, "press", true, "Contact")],
   ["/offline.html", shell({ path: "/offline.html", title: "Offline | Lux Veritas", description: "A Lux Veritas offline fallback for the public portal.", noindex: true, body: `${pageHero("Offline", "Signal Paused.", "The Lux Veritas portal could not reach the network. Reconnect and return to continue listening, watching, joining, and requesting access.", `<div class="hero-actions"><a class="button button-primary" href="/index.html">Return Home</a><a class="button button-quiet" href="/music.html">Music</a></div>`)}
     <section class="section empty-state"><p class="kicker">Saved Shell</p><h2>The door is still here.</h2><p>This fallback keeps the public entrance present while your connection returns. Forms, private reports, and fresh media actions need the live network.</p></section>` })],
-  ["/spmvp.html", shell({ path: "/spmvp.html", title: "SPMVP | Lux Veritas", description: "A release room for a new Lux Veritas music drop.", body: `${pageHero("New Drop", "SPMVP", "Start with the drop. Follow the signal. Join for the deeper version.", `<div class="hero-actions"><button class="button button-primary" type="button" data-media-action="play">Listen</button><button class="button button-quiet" type="button" data-media-action="watch">Watch</button><button class="button button-quiet" type="button" data-open-form="fan">Join for early access</button></div>`)}${mediaPlayerShell("spmvp")}${radioProgrammingSection()}<section class="section split-band"><div><p class="kicker">Context</p><h2>Enter through the work.</h2></div><div><p>Listen, watch, and enter the Lux Veritas circle for early access, private drops, and future live rooms.</p></div></section>` })],
+  ["/spmvp.html", shell({ path: "/spmvp.html", title: "SPMVP | Lux Veritas", description: "A release room for a new Lux Veritas music drop.", body: `${pageHero("New Drop", "SPMVP", "Start with the drop. Follow the signal. Join for the deeper version.", `<div class="hero-actions"><button class="button button-primary" type="button" data-media-action="play">Listen</button><button class="button button-quiet" type="button" data-media-action="watch">Watch</button><button class="button button-quiet" type="button" data-open-form="fan">Join for early access</button></div>`)}${mediaPlayerShell("spmvp")}${releaseRoomSection()}${radioProgrammingSection()}<section class="section split-band"><div><p class="kicker">Context</p><h2>Enter through the work.</h2></div><div><p>Listen, watch, and enter the Lux Veritas circle for early access, private drops, and future live rooms.</p></div></section>` })],
   ["/auth/signin.html", signInShell()],
   ["/portal/index.html", portalIndex()],
   ["/portal/library.html", accessShell("/portal/library.html", "Creator", "Private creator materials are available by screened access.", "Creator tools and private materials are not published in the public layer.", "Request Creator Access", "Join", "creator")],
@@ -1229,6 +1272,7 @@ await writeFile("data/lux-build-manifest.json", `${JSON.stringify({
   version: assetVersion,
   assetVersion,
   mediaManifestVersion: mediaManifest.version,
+  releaseRoomVersion: releaseRoom.version,
   radioProgrammingVersion: radioProgramming.version,
   pilotBugRegisterVersion: pilotBugRegister.version,
   actionInventoryVersion,
