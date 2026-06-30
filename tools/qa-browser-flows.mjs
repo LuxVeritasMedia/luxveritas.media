@@ -126,9 +126,10 @@ const mockReport = {
     ],
     retentionPaths: {
       sampleSize: 128,
-      totalClicks: 37,
+      totalClicks: 45,
       fanFlywheelClicks: 23,
       brandHouseClicks: 14,
+      releaseRoomClicks: 8,
       topPathways: [
         {
           label: "Listen Start With Sound",
@@ -145,11 +146,19 @@ const mockReport = {
           intent: "house_lvr",
           destination: "/music.html",
           cta_id: "brand_house__link_click__house_lvr"
+        },
+        {
+          label: "Hold the object",
+          count: 8,
+          surface: "release_room",
+          intent: "release_collect",
+          destination: "/store.html",
+          cta_id: "release_room__link_click__release_collect"
         }
       ],
-      bySurface: [{ label: "fan_flywheel", count: 23 }, { label: "brand_house", count: 14 }],
-      byIntent: [{ label: "flywheel_listen", count: 23 }, { label: "house_lvr", count: 14 }],
-      byDestination: [{ label: "/music.html", count: 37 }]
+      bySurface: [{ label: "fan_flywheel", count: 23 }, { label: "brand_house", count: 14 }, { label: "release_room", count: 8 }],
+      byIntent: [{ label: "flywheel_listen", count: 23 }, { label: "house_lvr", count: 14 }, { label: "release_collect", count: 8 }],
+      byDestination: [{ label: "/music.html", count: 37 }, { label: "/store.html", count: 8 }]
     },
     submissions: {
       byFormType: [{ label: "fan", count: 18 }],
@@ -1295,13 +1304,13 @@ async function operatorReportFlow(page, baseUrl) {
   if (!/media__media_action__play/.test(ctasSummary)) {
     issues.push(`/portal/reporting.html: CTA signal summary missing mocked CTA ID`);
   }
-  if (!/37 pathway clicks/.test(retentionSummary) || !/23 fan journey/.test(retentionDetail) || !/14 brand house/.test(retentionDetail)) {
+  if (!/45 pathway clicks/.test(retentionSummary) || !/23 fan journey/.test(retentionDetail) || !/14 brand house/.test(retentionDetail) || !/8 release room/.test(retentionDetail)) {
     issues.push(`/portal/reporting.html: retention path summary did not render totals`);
   }
-  if (!/Listen Start With Sound/.test(retentionList) || !/Lux Veritas Records/.test(retentionList)) {
+  if (!/Listen Start With Sound/.test(retentionList) || !/Lux Veritas Records/.test(retentionList) || !/Hold the object/.test(retentionList)) {
     issues.push(`/portal/reporting.html: retention path list missing mocked pathway cards`);
   }
-  if (!/fan_flywheel/.test(pathwaySurfaceSummary) || !/brand_house/.test(pathwaySurfaceSummary)) {
+  if (!/fan_flywheel/.test(pathwaySurfaceSummary) || !/brand_house/.test(pathwaySurfaceSummary) || !/release_room/.test(pathwaySurfaceSummary)) {
     issues.push(`/portal/reporting.html: pathway surface summary missing mocked surfaces`);
   }
   if (!/flywheel_listen/.test(pathwaysSummary) && !/Listen Start With Sound/.test(pathwaysSummary)) {

@@ -122,7 +122,7 @@ const launchChecklistPath = "/data/lux-launch-readiness.json";
 const launchCloseoutPath = "/data/lux-launch-closeout-public.json";
 const legalReviewPath = "/data/lux-legal-review.json";
 const submitTimeoutMs = 8000;
-const publicBuildVersion = "20260622-activation-readiness";
+const publicBuildVersion = "20260630-release-room-reporting";
 const allowedInterestPaths = new Set(["music", "film", "events", "drops", "community", "codex", "create"]);
 let activeFormType = "request";
 let mediaManifestPromise = null;
@@ -1557,11 +1557,12 @@ function renderPrivateRetention(panel, retention = {}) {
   const total = retention.totalClicks ?? 0;
   const flywheel = retention.fanFlywheelClicks ?? 0;
   const brandHouse = retention.brandHouseClicks ?? 0;
+  const releaseRoom = retention.releaseRoomClicks ?? 0;
   if (summary) {
     summary.textContent = `${total} pathway click${total === 1 ? "" : "s"}`;
   }
   if (detail) {
-    detail.textContent = `${flywheel} fan journey · ${brandHouse} brand house · sample ${retention.sampleSize ?? 0}`;
+    detail.textContent = `${flywheel} fan journey · ${brandHouse} brand house · ${releaseRoom} release room · sample ${retention.sampleSize ?? 0}`;
   }
   if (!list) return;
   const items = Array.isArray(retention.topPathways) ? retention.topPathways : [];
@@ -2325,6 +2326,7 @@ document.addEventListener("click", (event) => {
   const button = event.target.closest("[data-media-action]");
   if (!button) return;
   event.preventDefault();
+  trackInteraction("media_action_click", button, { action: button.dataset.mediaAction || "media" });
   handleMediaAction(button.dataset.mediaAction, button.closest("[data-media-player]"));
 });
 

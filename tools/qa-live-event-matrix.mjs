@@ -47,6 +47,17 @@ const matrix = [
     }
   },
   {
+    event: "link_click",
+    page: "/music.html",
+    detail: {
+      destination: "/store.html",
+      surface: "release_room",
+      intent: "release_collect",
+      label: "Hold the object",
+      cta_id: "release_room__link_click__release_collect"
+    }
+  },
+  {
     event: "media_action",
     page: "/spmvp.html",
     detail: {

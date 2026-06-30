@@ -1,7 +1,7 @@
 {
   "schemaVersion": "luxveritas.phase_status.v1",
   "version": "2026-06-28-phase-status",
-  "updatedAt": "2026-06-29T10:16:55.000Z",
+  "updatedAt": "2026-06-30T16:22:33Z",
   "currentPhase": {
     "id": "phase-5",
     "number": 5,
@@ -12,8 +12,8 @@
   "publicLaunchStatus": "blocked_by_external_legal_approval",
   "pilotStatus": "pilot_ready_with_public_launch_blockers",
   "pilotEvidence": {
-    "assetVersion": "20260622-activation-readiness",
-    "qaRunId": "20260629101403",
+    "assetVersion": "20260630-release-room-reporting",
+    "qaRunId": "20260630161012",
     "result": "passed",
     "evidenceFile": "data/lux-pilot-write-evidence.json",
     "verifiedCapabilities": [
@@ -25,7 +25,8 @@
       "post_write_reconciliation",
       "media_playback_reporting",
       "domain_readiness",
-      "pilot_feedback_capture"
+      "pilot_feedback_capture",
+      "release_room_reporting"
     ]
   },
   "completedPhases": [
@@ -94,7 +95,10 @@
       "rule": "Keep store and membership waitlist-only until purchase, refund, and membership terms are approved."
     }
   ],
-  "publicLaunchBlockers": ["privacy_review", "terms_review"],
+  "publicLaunchBlockers": [
+    "privacy_review",
+    "terms_review"
+  ],
   "codeConfigBlockers": [],
   "nextDecisions": [
     {

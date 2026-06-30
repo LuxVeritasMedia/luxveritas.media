@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { actionInventoryVersion } from "./lib/action-inventory.mjs";
 
-const assetVersion = "20260622-activation-readiness";
+const assetVersion = "20260630-release-room-reporting";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const releaseRoom = JSON.parse(await readFile("data/lux-release-room.json", "utf8"));
 const radioProgramming = JSON.parse(await readFile("data/lux-radio-programming.json", "utf8"));
@@ -886,7 +886,7 @@ function portalReport() {
         <div>
           <p class="kicker">Retention Paths</p>
           <h3 data-private-retention="summary">Load private activity.</h3>
-          <p data-private-retention="detail">Fan journey and brand-house clicks appear here after approved activity loads.</p>
+          <p data-private-retention="detail">Fan journey, brand-house, and release-room clicks appear here after approved activity loads.</p>
         </div>
         <div>
           <ul class="report-list" data-private-retention="list"><li>Load private activity to view retention paths.</li></ul>

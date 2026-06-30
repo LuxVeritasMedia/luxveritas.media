@@ -9,13 +9,13 @@ This packet is for Privacy and Terms review before public launch. It is not lega
 The public site is technically pilot-ready, but not cleared for unrestricted public launch until Privacy and Terms are approved.
 
 - Live URL: `https://luxveritas.media`
-- Current asset version: `20260622-activation-readiness`
+- Current asset version: `20260630-release-room-reporting`
 - Pilot write evidence file: `data/lux-pilot-write-evidence.json`
-- Latest pilot QA run: `20260629101403`
-- Pilot evidence updated: `2026-06-29T10:16:55Z`
+- Latest pilot QA run: `20260630161012`
+- Pilot evidence updated: `2026-06-30T16:22:33Z`
 - Pilot result: `passed`
 - Live capture intents written: `11`
-- Live event/reporting writes: `11`
+- Live event/reporting writes: `12`
 - Inbox delivery required: `true`
 - Operator report verified: `true`
 - Remaining public-launch blockers: `privacy_review`, `terms_review`

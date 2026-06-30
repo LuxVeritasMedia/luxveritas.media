@@ -241,7 +241,7 @@ function checkRetentionPaths(report) {
     return;
   }
 
-  for (const field of ["sampleSize", "totalClicks", "fanFlywheelClicks", "brandHouseClicks"]) {
+  for (const field of ["sampleSize", "totalClicks", "fanFlywheelClicks", "brandHouseClicks", "releaseRoomClicks"]) {
     if (typeof retention[field] !== "number") {
       issue(`/api/report: summary.retentionPaths.${field} is missing or not numeric`);
     }
