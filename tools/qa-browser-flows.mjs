@@ -230,7 +230,7 @@ const mockReport = {
       ]
     },
     events: {
-      byEvent: [{ label: "media_action", count: 64 }],
+      byEvent: [{ label: "page_view", count: 32 }, { label: "media_action", count: 64 }],
       byCtaId: [{ label: "media__media_action__play", count: 42 }],
       byDestination: [{ label: "/spmvp.html", count: 31 }],
       byPage: [{ label: "/music.html", count: 40 }],
@@ -480,6 +480,34 @@ async function portalFallbackFlow(page, baseUrl) {
   }
   await assertSubmitButtonReset(page, "[data-portal-signin]", "continue");
   submitMode = "stored";
+}
+
+async function pageViewReportingFlow(page, baseUrl) {
+  const beforeEventCount = events.length;
+  await page.goto(`${baseUrl}/join.html`, { waitUntil: "domcontentloaded" });
+  await page.evaluate(() => localStorage.setItem("luxveritas_consent", "accepted"));
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await waitForCondition(() => events.slice(beforeEventCount).some((item) => item.event === "page_view"), 6000);
+  const pageView = events.slice(beforeEventCount).find((item) => item.event === "page_view");
+  if (!pageView) {
+    issues.push("/join.html: consented page view did not report to event endpoint");
+    return;
+  }
+  if (pageView.page !== "/join.html") issues.push(`/join.html: page_view page mismatch ${pageView.page || "missing"}`);
+  if (pageView.consent !== "accepted") issues.push("/join.html: page_view did not include accepted consent state");
+  for (const [field, expected] of [
+    ["surface", "page"],
+    ["intent", "view"],
+    ["source", "load"],
+    ["buildVersion", expectedAssetVersion]
+  ]) {
+    if (pageView.detail?.[field] !== expected) {
+      issues.push(`/join.html: page_view detail.${field} expected ${expected}, found ${pageView.detail?.[field] || "missing"}`);
+    }
+  }
+  if (!pageView.detail?.title || !pageView.detail?.cta_id?.includes("page_view")) {
+    issues.push("/join.html: page_view missing title or cta_id");
+  }
 }
 
 async function clickMediaAction(page, action) {
@@ -1490,6 +1518,7 @@ try {
     });
   });
 
+  await pageViewReportingFlow(page, baseUrl);
   for (const flow of flows) {
     await openFlow(page, baseUrl, flow);
   }
@@ -1523,4 +1552,4 @@ if (issues.length) {
   process.exit(1);
 }
 
-console.log(`Browser flow QA passed for ${flows.length} form flows, form fallback/rate-limit, portal sign-in/fallback, 2 media flows, media action/playback mapping, signal pass export, interaction/pathway reporting, and operator reporting at ${baseUrl}.`);
+console.log(`Browser flow QA passed for consented page-view reporting, ${flows.length} form flows, form fallback/rate-limit, portal sign-in/fallback, 2 media flows, media action/playback mapping, signal pass export, interaction/pathway reporting, and operator reporting at ${baseUrl}.`);

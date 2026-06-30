@@ -574,7 +574,7 @@ function ageDays(value) {
 }
 
 function buildPilotFunnel(submissionItems, eventItems) {
-  const views = countWhere(eventItems, (item) => item.event === "view_content");
+  const views = countWhere(eventItems, (item) => item.event === "page_view" || item.event === "view_content");
   const formOpens = countWhere(eventItems, (item) => item.event === "form_open");
   const mediaActions = countWhere(eventItems, (item) => item.event === "media_action");
   const fanReactions = countWhere(eventItems, (item) => item.event === "fan_reaction");

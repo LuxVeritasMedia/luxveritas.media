@@ -1,7 +1,7 @@
 {
   "schemaVersion": "luxveritas.phase_status.v1",
   "version": "2026-06-28-phase-status",
-  "updatedAt": "2026-06-30T16:22:33Z",
+  "updatedAt": "2026-06-30T17:17:10Z",
   "currentPhase": {
     "id": "phase-5",
     "number": 5,
@@ -12,8 +12,8 @@
   "publicLaunchStatus": "blocked_by_external_legal_approval",
   "pilotStatus": "pilot_ready_with_public_launch_blockers",
   "pilotEvidence": {
-    "assetVersion": "20260630-release-room-reporting",
-    "qaRunId": "20260630161012",
+    "assetVersion": "20260630-page-view-reporting",
+    "qaRunId": "20260630170452",
     "result": "passed",
     "evidenceFile": "data/lux-pilot-write-evidence.json",
     "verifiedCapabilities": [

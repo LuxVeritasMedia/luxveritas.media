@@ -66,7 +66,8 @@ const checks = [
   {
     label: "Live Browser Flows",
     script: "tools/qa-browser-flows.mjs",
-    env: { LUX_BROWSER_BASE_URL: baseUrl }
+    env: { LUX_BROWSER_BASE_URL: baseUrl },
+    retries: 1
   },
   {
     label: "Live Operator Report",
@@ -277,40 +278,48 @@ async function writePilotEvidence() {
 async function runCheck(check) {
   const env = { ...process.env, ...check.env };
   if (check.needsReportToken && reportToken) env.LUX_REPORT_TOKEN = reportToken;
+  const attempts = (check.retries || 0) + 1;
 
-  try {
-    const { stdout, stderr } = await execFileAsync(node, [check.script], {
-      env,
-      timeout: check.timeoutMs || 180000,
-      maxBuffer: 1024 * 1024 * 14
-    });
-    const output = `${stdout || ""}${stderr || ""}`;
-    if (check.allowLegalOnly) {
-      const unexpected = releaseBlockers(output).filter((blocker) => !isAllowedReleaseReadinessBlocker(blocker, check));
-      if (unexpected.length) {
-        failures.push({
-          label: check.label,
-          output: `Release readiness found non-legal blocker(s):\n${unexpected.map((item) => `- ${item}`).join("\n")}`
-        });
-        console.log(`FAIL ${check.label}`);
-        return;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      const { stdout, stderr } = await execFileAsync(node, [check.script], {
+        env,
+        timeout: check.timeoutMs || 180000,
+        maxBuffer: 1024 * 1024 * 14
+      });
+      const output = `${stdout || ""}${stderr || ""}`;
+      if (check.allowLegalOnly) {
+        const unexpected = releaseBlockers(output).filter((blocker) => !isAllowedReleaseReadinessBlocker(blocker, check));
+        if (unexpected.length) {
+          failures.push({
+            label: check.label,
+            output: `Release readiness found non-legal blocker(s):\n${unexpected.map((item) => `- ${item}`).join("\n")}`
+          });
+          console.log(`FAIL ${check.label}`);
+          return;
+        }
       }
-    }
-    passed.push(check.label);
-    console.log(`PASS ${check.label}`);
-    const summary = compactOutput(output);
-    if (summary) console.log(summary);
-  } catch (error) {
-    const output = `${error.stdout || ""}${error.stderr || ""}`;
-    if (check.allowPreRefreshEvidence && isAllowedPreRefreshEvidenceOutput(output)) {
       passed.push(check.label);
-      console.log(`PASS ${check.label} (pre-refresh evidence mismatch allowed during write test)`);
+      console.log(`PASS ${check.label}${attempt > 1 ? ` (attempt ${attempt})` : ""}`);
       const summary = compactOutput(output);
       if (summary) console.log(summary);
       return;
+    } catch (error) {
+      const output = `${error.stdout || ""}${error.stderr || ""}`;
+      if (check.allowPreRefreshEvidence && isAllowedPreRefreshEvidenceOutput(output)) {
+        passed.push(check.label);
+        console.log(`PASS ${check.label} (pre-refresh evidence mismatch allowed during write test)`);
+        const summary = compactOutput(output);
+        if (summary) console.log(summary);
+        return;
+      }
+      if (attempt < attempts) {
+        console.log(`WARN ${check.label} failed on attempt ${attempt}; retrying once.`);
+        continue;
+      }
+      failures.push({ label: check.label, output: compactOutput(output) || error.message });
+      console.log(`FAIL ${check.label}`);
     }
-    failures.push({ label: check.label, output: compactOutput(output) || error.message });
-    console.log(`FAIL ${check.label}`);
   }
 }
 

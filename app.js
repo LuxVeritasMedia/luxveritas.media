@@ -122,7 +122,7 @@ const launchChecklistPath = "/data/lux-launch-readiness.json";
 const launchCloseoutPath = "/data/lux-launch-closeout-public.json";
 const legalReviewPath = "/data/lux-legal-review.json";
 const submitTimeoutMs = 8000;
-const publicBuildVersion = "20260630-release-room-reporting";
+const publicBuildVersion = "20260630-page-view-reporting";
 const allowedInterestPaths = new Set(["music", "film", "events", "drops", "community", "codex", "create"]);
 let activeFormType = "request";
 let mediaManifestPromise = null;
@@ -131,6 +131,7 @@ let launchChecklistPromise = null;
 let launchCloseoutPromise = null;
 let legalReviewPromise = null;
 let privateReportCache = null;
+let pageViewTracked = false;
 
 function readJson(key, fallback) {
   try {
@@ -436,6 +437,19 @@ function trackEvent(name, detail = {}) {
     window.dataLayer.push(payload);
     sendEventToServer(payload);
   }
+}
+
+function trackPageView(source = "load") {
+  if (pageViewTracked || getStoredValue("luxveritas_consent") !== "accepted") return;
+  pageViewTracked = true;
+  trackEvent("page_view", {
+    cta_id: `${slugify(document.body.dataset.page || "site", "page")}__page_view__${slugify(source, "load")}`,
+    title: document.title || "Lux Veritas",
+    surface: "page",
+    intent: "view",
+    source,
+    buildVersion: publicBuildVersion
+  });
 }
 
 function elementLabel(element) {
@@ -2269,6 +2283,7 @@ function mountConsentBanner() {
     setStoredValue("luxveritas_consent", button.dataset.consent);
     banner.remove();
     trackInteraction("consent_update", button, { value: button.dataset.consent });
+    if (button.dataset.consent === "accepted") trackPageView("consent_accept");
   });
 }
 
@@ -2278,7 +2293,7 @@ document.querySelectorAll("button:not([type])").forEach((button) => {
 });
 setScrolledHeader();
 mountConsentBanner();
-trackEvent("view_content");
+trackPageView("load");
 
 navToggle?.addEventListener("click", () => {
   const isOpen = nav.classList.toggle("open");

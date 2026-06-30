@@ -154,6 +154,9 @@ function assertFunnelItems(items, path) {
     if (typeof item.value !== "number") issue(`/api/report: ${path}[${index}] missing numeric value`);
     if (typeof item.detail !== "string") issue(`/api/report: ${path}[${index}] missing detail`);
   }
+  if (!items.some((item) => item.label === "Tracked views")) {
+    issue(`/api/report: ${path} missing Tracked views funnel item`);
+  }
 }
 
 function checkWorkflowTargets(report) {
