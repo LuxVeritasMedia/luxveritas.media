@@ -11,6 +11,12 @@ node tools/serve-preview.mjs
 
 The preview helper serves `dist`, verifies `/data/lux-build-manifest.json`, and automatically moves to the next open port if `4173` is already occupied. Use `LUX_PREVIEW_PORT=4180 node tools/serve-preview.mjs` when you need a specific alternate port.
 
+Validate the preview helper without leaving a server running:
+
+```bash
+node tools/qa-preview-helper.mjs
+```
+
 Run the pilot readiness gate before release checks or deploys:
 
 ```bash
@@ -91,7 +97,7 @@ Run the local MVP preflight when you want one no-secret command for operator env
 node tools/qa-mvp-preflight.mjs
 ```
 
-Use `LUX_MVP_PREFLIGHT_STRICT=1` only when known launch blockers should fail the command.
+This includes a preview-helper smoke test so operators know local browser QA has a working fallback when the default preview port is occupied. Use `LUX_MVP_PREFLIGHT_STRICT=1` only when known launch blockers should fail the command.
 
 Export a no-secret launch evidence packet for the private launch folder:
 

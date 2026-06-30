@@ -11,6 +11,10 @@ const checks = [
     script: "tools/qa-operator-environment.mjs"
   },
   {
+    label: "Preview Helper",
+    script: "tools/qa-preview-helper.mjs"
+  },
+  {
     label: "Deploy Status",
     script: "tools/qa-deploy-status.mjs"
   },
