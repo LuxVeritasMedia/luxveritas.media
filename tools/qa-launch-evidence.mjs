@@ -26,6 +26,12 @@ function sameEntries(actual = [], expected = []) {
 
 const actionInventory = JSON.parse(await readFile("data/lux-action-inventory.json", "utf8"));
 const pilotWriteEvidence = JSON.parse(await readFile("data/lux-pilot-write-evidence.json", "utf8"));
+const { stdout: openApprovalsRaw } = await execFileAsync(process.execPath, ["tools/report-open-approvals.mjs"], {
+  env: { ...process.env, LUX_OPEN_APPROVALS_JSON: "1" },
+  timeout: 30000,
+  maxBuffer: 1024 * 1024 * 4
+});
+const openApprovals = JSON.parse(openApprovalsRaw);
 
 const { stdout: markdown } = await execFileAsync(process.execPath, ["tools/export-launch-evidence.mjs"], {
   timeout: 90000,
@@ -56,6 +62,11 @@ for (const marker of [
   "Form capture intents: 11",
   "Event writes: 11",
   "## Launch Gates",
+  "## Open Approvals",
+  "Decision: external_approvals_pending",
+  "Public launch blockers: 2",
+  "Functions Deploy IAM",
+  "External Workflow Target",
   "## Closeout",
   "## Command Summaries",
   "Inbox Notifications",
@@ -129,6 +140,25 @@ if (evidence) {
   const blocked = Array.isArray(evidence.launchGates?.blocked) ? evidence.launchGates.blocked : [];
   for (const id of ["privacy_review", "terms_review"]) {
     if (!blocked.some((gate) => gate.id === id)) issue(`evidence missing current blocked gate ${id}`);
+  }
+  if (evidence.openApprovals?.decision !== openApprovals.decision) issue("evidence open approvals decision mismatch");
+  if (evidence.openApprovals?.counts?.publicLaunchBlockers !== openApprovals.counts?.publicLaunchBlockers) {
+    issue("evidence open approvals publicLaunchBlockers mismatch");
+  }
+  if (evidence.openApprovals?.counts?.totalOpenOrConditional !== openApprovals.counts?.totalOpenOrConditional) {
+    issue("evidence open approvals totalOpenOrConditional mismatch");
+  }
+  const approvalItems = Array.isArray(evidence.openApprovals?.approvals) ? evidence.openApprovals.approvals : [];
+  for (const id of ["privacy_review", "terms_review", "functions_deploy_iam", "external_workflow_target"]) {
+    if (!approvalItems.some((item) => item.id === id)) issue(`evidence missing open approval ${id}`);
+  }
+  for (const id of ["privacy_review", "terms_review"]) {
+    const item = approvalItems.find((entry) => entry.id === id);
+    if (item && item.blocksPublicLaunch !== true) issue(`evidence open approval ${id} should block public launch`);
+  }
+  for (const id of ["functions_deploy_iam", "external_workflow_target"]) {
+    const item = approvalItems.find((entry) => entry.id === id);
+    if (item && item.blocksPublicLaunch !== false) issue(`evidence open approval ${id} should not block public launch`);
   }
   const closeoutItems = Array.isArray(evidence.closeout?.items) ? evidence.closeout.items : [];
   if (!evidence.closeout?.updatedAt) issue("evidence closeout updatedAt missing");

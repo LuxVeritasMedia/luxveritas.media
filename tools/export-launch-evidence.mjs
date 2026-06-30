@@ -75,7 +75,8 @@ const [
   todo,
   mvpStatus,
   deployStatus,
-  preflight
+  preflight,
+  openApprovalsResult
 ] = await Promise.all([
   readFile("data/lux-build-manifest.json", "utf8"),
   readFile("data/lux-launch-readiness.json", "utf8"),
@@ -90,7 +91,8 @@ const [
   readFile("TODO.md", "utf8"),
   run("tools/report-mvp-status.mjs", includeLive ? {} : { LUX_LIVE_URL: "https://luxveritas.media" }),
   includeLive ? run("tools/qa-deploy-status.mjs") : Promise.resolve({ ok: false, output: "Skipped. Set LUX_EVIDENCE_LIVE=1 to include live deploy-status output." }),
-  includeLive ? run("tools/qa-mvp-preflight.mjs") : Promise.resolve({ ok: false, output: "Skipped. Set LUX_EVIDENCE_LIVE=1 to include preflight output." })
+  includeLive ? run("tools/qa-mvp-preflight.mjs") : Promise.resolve({ ok: false, output: "Skipped. Set LUX_EVIDENCE_LIVE=1 to include preflight output." }),
+  run("tools/report-open-approvals.mjs", { LUX_OPEN_APPROVALS_JSON: "1" })
 ]);
 
 const buildManifest = JSON.parse(buildManifestRaw);
@@ -103,6 +105,13 @@ const actionInventory = JSON.parse(actionInventoryRaw);
 const phaseStatus = JSON.parse(phaseStatusRaw);
 const publicTerms = JSON.parse(termsRaw);
 const pilotMatrix = JSON.parse(pilotMatrixRaw);
+let openApprovals = null;
+let openApprovalsOk = openApprovalsResult.ok;
+try {
+  openApprovals = JSON.parse(openApprovalsResult.output || "{}");
+} catch {
+  openApprovalsOk = false;
+}
 const pilotFreshness = pilotEvidenceFreshness(pilotWriteEvidence.updatedAt, {
   maxAgeHours: pilotEvidenceMaxAgeHours()
 });
@@ -193,6 +202,25 @@ const evidence = {
       nextAction: gate.nextAction,
       verification: gate.verification
     }))
+  },
+  openApprovals: {
+    ok: openApprovalsOk,
+    decision: openApprovals?.decision || "unavailable",
+    counts: openApprovals?.counts || {},
+    approvals: Array.isArray(openApprovals?.approvals)
+      ? openApprovals.approvals.map((item) => ({
+        id: item.id,
+        label: item.label,
+        category: item.category,
+        status: item.status,
+        blocksPublicLaunch: item.blocksPublicLaunch === true,
+        owner: item.owner,
+        source: item.source,
+        nextAction: item.nextAction,
+        verification: item.verification
+      }))
+      : [],
+    error: openApprovalsOk ? "" : openApprovalsResult.output || "open approvals report unavailable"
   },
   closeout: {
     updatedAt: closeout.updatedAt || "",
@@ -287,6 +315,14 @@ ${evidence.launchGates.ready.map((gate) => `- ${gate.label} (${gate.id})`).join(
 
 Blocked:
 ${evidence.launchGates.blocked.map((gate) => `- ${gate.label} (${gate.id}): ${gate.nextAction}`).join("\n") || "- none"}
+
+## Open Approvals
+
+- Decision: ${evidence.openApprovals.decision}
+- Open/conditional approvals: ${evidence.openApprovals.counts.totalOpenOrConditional ?? "unknown"}
+- Public launch blockers: ${evidence.openApprovals.counts.publicLaunchBlockers ?? "unknown"}
+
+${evidence.openApprovals.approvals.map((item) => `- ${item.label} (${item.id}) [${item.category}]: ${item.status}${item.blocksPublicLaunch ? " - blocks public launch" : ""}`).join("\n") || "- none"}
 
 ## Closeout
 
