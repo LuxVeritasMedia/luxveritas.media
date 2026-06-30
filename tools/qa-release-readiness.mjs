@@ -183,7 +183,7 @@ function legalItemApproved(legalReview, id) {
   return Boolean(item?.status === "approved" && item.reviewedAt && item.reviewedBy);
 }
 
-const [todo, manifestRaw, buildManifestRaw, portalRoomsRaw, phaseStatusRaw, checklistRaw, legalReviewRaw, publicTermsRaw, buildScript, workflow] = await Promise.all([
+const [todo, manifestRaw, buildManifestRaw, portalRoomsRaw, phaseStatusRaw, checklistRaw, legalReviewRaw, publicTermsRaw, pilotBugRegisterRaw, buildScript, workflow] = await Promise.all([
   readFile("TODO.md", "utf8"),
   readFile("data/lux-media-manifest.json", "utf8"),
   readFile("data/lux-build-manifest.json", "utf8"),
@@ -192,6 +192,7 @@ const [todo, manifestRaw, buildManifestRaw, portalRoomsRaw, phaseStatusRaw, chec
   readFile("data/lux-launch-readiness.json", "utf8"),
   readFile("data/lux-legal-review.json", "utf8"),
   readFile("data/lux-public-terms.json", "utf8"),
+  readFile("data/lux-pilot-bug-register.json", "utf8"),
   readFile("tools/build-static.mjs", "utf8"),
   readFile(".github/workflows/firebase-hosting-live.yml", "utf8")
 ]);
@@ -204,6 +205,7 @@ const phaseStatus = JSON.parse(phaseStatusRaw);
 const launchChecklist = JSON.parse(checklistRaw);
 const legalReview = JSON.parse(legalReviewRaw);
 const publicTerms = JSON.parse(publicTermsRaw);
+const pilotBugRegister = JSON.parse(pilotBugRegisterRaw);
 const pilotWriteEvidence = JSON.parse(pilotWriteEvidenceRaw);
 const expectedAssetVersion = buildScript.match(/const assetVersion = "([^"]+)"/)?.[1] || "";
 const mediaItems = Array.isArray(mediaManifest.items) ? mediaManifest.items : [];
@@ -215,6 +217,15 @@ const missingSources = mediaItems.filter((item) => sourceRequiredTypes.has(item.
 const invalidPosters = mediaItems.filter((item) => !validPoster(item.posterUrl));
 const missingMediaContract = mediaItems.filter((item) => !item.sourceStatus || !item.reportingKey || item.sourceRequired !== true);
 const sourceTypes = new Set(mediaItems.map((item) => item.sourceType));
+const pilotBugItems = Array.isArray(pilotBugRegister.items) ? pilotBugRegister.items : [];
+const openPilotBlockingBugs = pilotBugItems.filter((item) => (
+  ["blocking", "critical"].includes(item.severity || "")
+  && !["fixed", "closed", "resolved"].includes(item.status || "")
+));
+const openPilotHighBugs = pilotBugItems.filter((item) => (
+  item.severity === "high"
+  && !["fixed", "closed", "resolved"].includes(item.status || "")
+));
 const [providerReadiness, providerSecretValueEntries] = await Promise.all([
   liveProviderDeliveryReadiness({ baseUrl, reportToken }),
   providerSecretValueStatusEntries(project)
@@ -234,7 +245,7 @@ add(buildManifest.schemaVersion === "luxveritas.build_manifest.v1", "Build manif
 add(Boolean(expectedAssetVersion), "Build script exposes an asset version.");
 add(buildManifest.assetVersion === expectedAssetVersion && buildManifest.version === expectedAssetVersion, "Build manifest asset version matches the generated app version.");
 add(buildManifest.appScript === `app.js?v=${expectedAssetVersion}` && buildManifest.stylesheet === `styles.css?v=${expectedAssetVersion}`, "Build manifest lists current app and stylesheet assets.");
-add(Boolean(buildManifest.mediaManifestVersion && buildManifest.actionInventoryVersion && buildManifest.brandHouseVersion && buildManifest.fanFlywheelVersion && buildManifest.dropRoomVersion && buildManifest.portalRoomsVersion && buildManifest.phaseStatusVersion && buildManifest.publicTermsVersion), "Build manifest carries media, action inventory, brand house, fan flywheel, drop room, portal rooms, phase status, and public terms version pointers.");
+add(Boolean(buildManifest.mediaManifestVersion && buildManifest.radioProgrammingVersion && buildManifest.pilotBugRegisterVersion && buildManifest.actionInventoryVersion && buildManifest.brandHouseVersion && buildManifest.fanFlywheelVersion && buildManifest.dropRoomVersion && buildManifest.portalRoomsVersion && buildManifest.phaseStatusVersion && buildManifest.publicTermsVersion), "Build manifest carries media, radio programming, pilot bug register, action inventory, brand house, fan flywheel, drop room, portal rooms, phase status, and public terms version pointers.");
 add(portalRooms.schemaVersion === "luxveritas.portal_rooms.v1" && portalRooms.accessMode === "request_access_only", "Portal rooms manifest defines request-access-only Phase 5 shell.");
 add(phaseStatus.schemaVersion === "luxveritas.phase_status.v1" && phaseStatus.currentPhase?.id === "phase-5" && phaseStatus.currentPhase?.status === "active_pilot", "Phase status manifest reports active Phase 5 pilot prep.");
 const pilotFreshness = pilotEvidenceFreshness(pilotWriteEvidence.updatedAt, { maxAgeHours: pilotEvidenceMaxAgeHours() });
@@ -245,6 +256,13 @@ if (pilotFreshness.ok) {
 }
 add(publicTerms.schemaVersion === "luxveritas.public_terms.v1", "Public terms version manifest is current.");
 add(Boolean(publicTerms.version && publicTerms.privacyVersion && publicTerms.termsVersion && publicTerms.submissionTermsVersion), "Public terms manifest contains active legal version IDs.");
+add(pilotBugRegister.schemaVersion === "luxveritas.pilot_bug_register.v1", "Pilot bug register schema version is current.");
+add(pilotBugRegister.version === buildManifest.pilotBugRegisterVersion, "Pilot bug register version matches build manifest.");
+add(pilotBugRegister.evidence?.assetVersion === expectedAssetVersion, "Pilot bug register asset version matches generated build.");
+add(pilotBugRegister.evidence?.pilotWriteQaRunId === pilotWriteEvidence.qaRunId, "Pilot bug register references current pilot write evidence.");
+add(pilotBugRegister.status === "no_known_blocking_bugs" && pilotBugRegister.decision === "pilot_can_continue", "Pilot bug register reports no known blocking bugs.");
+add((pilotBugRegister.summary?.openBlockingBugs || 0) === 0 && openPilotBlockingBugs.length === 0, `No open pilot blocking bugs. Open: ${openPilotBlockingBugs.map((item) => item.id || item.label || "unknown").join(", ") || "none"}`);
+add((pilotBugRegister.summary?.openHighBugs || 0) === openPilotHighBugs.length, "Pilot bug register high-severity count matches items.", "warning");
 add(launchGates.length >= 6, "Launch readiness checklist contains required launch gates.");
 for (const gateId of ["media_sources", "inbox_notifications", "private_handoff", "operator_reporting", "privacy_review", "terms_review", "www_redirect"]) {
   add(launchGateIds.has(gateId), `Launch readiness checklist includes ${gateId}.`);
@@ -333,6 +351,7 @@ if (legalItemApproved(legalReview, "terms")) {
 }
 add(!hasUncheckedAny(todo, ["Attach approved release audio, video, and radio sources"]), "Approved release audio, video, and radio sources attached.");
 add(workflow.includes("node tools/qa-browser-flows.mjs"), "Browser-flow QA is enforced before Hosting deploy.");
+add(workflow.includes("node tools/qa-pilot-bug-register.mjs"), "Pilot bug register QA is enforced before Hosting deploy.");
 add(workflow.includes("node tools/qa-live-site.mjs"), "Live-site QA is enforced after Hosting deploy.");
 add(workflow.includes("node tools/qa-live-assets.mjs"), "Live asset QA is enforced after Hosting deploy.");
 add(workflow.includes("node tools/qa-live-media-sources.mjs"), "Live media-source QA is enforced after Hosting deploy.");

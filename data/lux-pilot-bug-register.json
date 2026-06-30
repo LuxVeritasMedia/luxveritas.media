@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "luxveritas.pilot_bug_register.v1",
+  "version": "2026-06-30-pilot-bug-register",
+  "updatedAt": "2026-06-30T10:20:00.000Z",
+  "status": "no_known_blocking_bugs",
+  "decision": "pilot_can_continue",
+  "summary": {
+    "openBlockingBugs": 0,
+    "openHighBugs": 0,
+    "openTotalBugs": 0,
+    "knownIssues": 0
+  },
+  "evidence": {
+    "assetVersion": "20260622-activation-readiness",
+    "pilotWriteQaRunId": "20260629101403",
+    "pilotWriteEvidenceFile": "data/lux-pilot-write-evidence.json",
+    "pilotFeedbackRoute": "/pilot-feedback.html",
+    "latestDeployWorkflow": "Deploy Firebase Hosting",
+    "latestDeployRun": "28436917346"
+  },
+  "triageRules": [
+    {
+      "severity": "blocking",
+      "definition": "Prevents public capture, media playback, access request, protected reporting, deploy, or legal gate verification from completing.",
+      "releaseRule": "No open blocking bug may remain before pilot approval or public release."
+    },
+    {
+      "severity": "high",
+      "definition": "Affects a core path but has a verified workaround and does not block capture, media, reporting, or launch-gate verification.",
+      "releaseRule": "Must be reviewed by the release operator before final launch."
+    },
+    {
+      "severity": "standard",
+      "definition": "Usability, copy, layout, or follow-up polish that does not block a core path.",
+      "releaseRule": "May be queued if it has an owner and does not affect release acceptance."
+    }
+  ],
+  "coverageEvidence": [
+    {
+      "coverage": "public_capture",
+      "status": "passed",
+      "evidence": "Live form matrix and browser-flow QA cover public capture paths, submit reset, fallback handling, and inbox delivery."
+    },
+    {
+      "coverage": "media_player",
+      "status": "passed",
+      "evidence": "Media contract, live media-source QA, and browser-flow QA cover audio, video, radio, playback mapping, and follow-up routing."
+    },
+    {
+      "coverage": "fan_reaction",
+      "status": "passed",
+      "evidence": "Browser-flow QA and protected operator summaries cover replay, invite, collect, and create reaction signals."
+    },
+    {
+      "coverage": "portal_capture",
+      "status": "passed",
+      "evidence": "Browser-flow QA covers private access shell capture and fallback reset."
+    },
+    {
+      "coverage": "operator_reporting",
+      "status": "passed",
+      "evidence": "Live operator report QA covers protected counts, summaries, readiness, exports, and secret-shaped value protection."
+    },
+    {
+      "coverage": "launch_gates",
+      "status": "passed_with_external_legal_blockers",
+      "evidence": "Release readiness and open-approvals QA keep Privacy and Terms as the remaining public-launch blockers."
+    },
+    {
+      "coverage": "private_workflow_readiness",
+      "status": "passed",
+      "evidence": "Private workflow matrix, field map, selection, and integration request QA cover future handoff readiness without exposing secrets."
+    }
+  ],
+  "checks": [
+    {
+      "id": "submit_freeze_regression",
+      "label": "Form submits resolve without frozen pages",
+      "status": "passed",
+      "command": "node tools/qa-browser-flows.mjs"
+    },
+    {
+      "id": "dead_button_regression",
+      "label": "Public buttons have a clear action, destination, or capture path",
+      "status": "passed",
+      "command": "node tools/qa-buttons.mjs"
+    },
+    {
+      "id": "live_capture_regression",
+      "label": "Live capture intents return accepted values and reporting evidence",
+      "status": "passed",
+      "command": "node tools/qa-live-form-matrix.mjs"
+    },
+    {
+      "id": "live_event_regression",
+      "label": "Live CTA, media, playback, and reporting events return accepted values",
+      "status": "passed",
+      "command": "node tools/qa-live-event-matrix.mjs"
+    },
+    {
+      "id": "media_regression",
+      "label": "Approved music, visual, and radio sources are playable and reportable",
+      "status": "passed",
+      "command": "node tools/qa-live-media-sources.mjs"
+    },
+    {
+      "id": "operator_report_regression",
+      "label": "Approved operator reporting returns protected pilot evidence",
+      "status": "passed",
+      "command": "node tools/qa-live-operator-report.mjs"
+    }
+  ],
+  "items": []
+}

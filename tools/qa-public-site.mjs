@@ -24,6 +24,7 @@ const requiredFiles = [
   "data/lux-pilot-write-evidence.json",
   "data/lux-media-manifest.json",
   "data/lux-radio-programming.json",
+  "data/lux-pilot-bug-register.json",
   "data/lux-build-manifest.json",
   "data/lux-action-inventory.json",
   "data/lux-legal-review.json",
@@ -342,6 +343,7 @@ const phaseStatusRaw = await readFile(join(root, "data/lux-phase-status.json"), 
 const pilotWriteEvidenceRaw = await readFile(join(root, "data/lux-pilot-write-evidence.json"), "utf8");
 const mediaManifestRaw = await readFile(join(root, "data/lux-media-manifest.json"), "utf8");
 const radioProgrammingRaw = await readFile(join(root, "data/lux-radio-programming.json"), "utf8");
+const pilotBugRegisterRaw = await readFile(join(root, "data/lux-pilot-bug-register.json"), "utf8");
 const buildManifestRaw = await readFile(join(root, "data/lux-build-manifest.json"), "utf8");
 const actionInventoryRaw = await readFile(join(root, "data/lux-action-inventory.json"), "utf8");
 const webManifestRaw = await readFile(join(root, "site.webmanifest"), "utf8");
@@ -364,6 +366,7 @@ for (const pattern of bannedTerms) {
   if (pattern.test(pilotWriteEvidenceRaw)) issues.push(`data/lux-pilot-write-evidence.json: banned public term matched ${pattern}`);
   if (pattern.test(mediaManifestRaw)) issues.push(`data/lux-media-manifest.json: banned public term matched ${pattern}`);
   if (pattern.test(radioProgrammingRaw)) issues.push(`data/lux-radio-programming.json: banned public term matched ${pattern}`);
+  if (pattern.test(pilotBugRegisterRaw)) issues.push(`data/lux-pilot-bug-register.json: banned public term matched ${pattern}`);
   if (pattern.test(legalReviewRaw)) issues.push(`data/lux-legal-review.json: banned public term matched ${pattern}`);
   if (pattern.test(publicTermsRaw)) issues.push(`data/lux-public-terms.json: banned public term matched ${pattern}`);
 }
@@ -408,8 +411,8 @@ try {
   if (buildManifest.routeCount !== htmlFiles.length) {
     issues.push(`data/lux-build-manifest.json: routeCount ${buildManifest.routeCount} does not match ${htmlFiles.length} generated HTML files`);
   }
-  if (!buildManifest.publicRouteCount || !buildManifest.mediaManifestVersion || !buildManifest.radioProgrammingVersion || !buildManifest.actionInventoryVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.phaseStatusVersion || !buildManifest.publicTermsVersion) {
-    issues.push("data/lux-build-manifest.json: missing publicRouteCount, mediaManifestVersion, radioProgrammingVersion, actionInventoryVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, phaseStatusVersion, or publicTermsVersion");
+  if (!buildManifest.publicRouteCount || !buildManifest.mediaManifestVersion || !buildManifest.radioProgrammingVersion || !buildManifest.pilotBugRegisterVersion || !buildManifest.actionInventoryVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.phaseStatusVersion || !buildManifest.publicTermsVersion) {
+    issues.push("data/lux-build-manifest.json: missing publicRouteCount, mediaManifestVersion, radioProgrammingVersion, pilotBugRegisterVersion, actionInventoryVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, phaseStatusVersion, or publicTermsVersion");
   }
 } catch (error) {
   issues.push(`data/lux-build-manifest.json: invalid JSON (${error.message})`);
@@ -768,6 +771,40 @@ try {
   }
 } catch (error) {
   issues.push(`data/lux-radio-programming.json: invalid JSON (${error.message})`);
+}
+
+try {
+  const pilotBugRegister = JSON.parse(pilotBugRegisterRaw);
+  const coverageEvidence = Array.isArray(pilotBugRegister.coverageEvidence) ? pilotBugRegister.coverageEvidence : [];
+  const checks = Array.isArray(pilotBugRegister.checks) ? pilotBugRegister.checks : [];
+  const items = Array.isArray(pilotBugRegister.items) ? pilotBugRegister.items : [];
+  if (pilotBugRegister.schemaVersion !== "luxveritas.pilot_bug_register.v1") {
+    issues.push("data/lux-pilot-bug-register.json: missing schemaVersion luxveritas.pilot_bug_register.v1");
+  }
+  if (pilotBugRegister.status !== "no_known_blocking_bugs" || pilotBugRegister.decision !== "pilot_can_continue") {
+    issues.push("data/lux-pilot-bug-register.json: pilot bug register must show no known blocking bugs and pilot_can_continue");
+  }
+  if (pilotBugRegister.summary?.openBlockingBugs !== 0 || pilotBugRegister.summary?.openHighBugs !== 0 || pilotBugRegister.summary?.openTotalBugs !== 0) {
+    issues.push("data/lux-pilot-bug-register.json: open bug counts must be zero for current pilot evidence");
+  }
+  if (pilotBugRegister.evidence?.pilotFeedbackRoute !== "/pilot-feedback.html") {
+    issues.push("data/lux-pilot-bug-register.json: missing pilot feedback route evidence");
+  }
+  for (const coverage of ["public_capture", "media_player", "fan_reaction", "portal_capture", "operator_reporting", "launch_gates", "private_workflow_readiness"]) {
+    if (!coverageEvidence.some((item) => item.coverage === coverage && item.status)) {
+      issues.push(`data/lux-pilot-bug-register.json: missing coverage evidence ${coverage}`);
+    }
+  }
+  for (const check of ["submit_freeze_regression", "dead_button_regression", "live_capture_regression", "live_event_regression", "media_regression", "operator_report_regression"]) {
+    if (!checks.some((item) => item.id === check && item.status === "passed")) {
+      issues.push(`data/lux-pilot-bug-register.json: missing passed check ${check}`);
+    }
+  }
+  if (items.some((item) => ["blocking", "critical"].includes(item.severity) && !["fixed", "closed", "resolved"].includes(item.status))) {
+    issues.push("data/lux-pilot-bug-register.json: contains open blocking or critical bug");
+  }
+} catch (error) {
+  issues.push(`data/lux-pilot-bug-register.json: invalid JSON (${error.message})`);
 }
 
 try {

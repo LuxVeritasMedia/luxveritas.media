@@ -5,6 +5,7 @@ import { actionInventoryVersion } from "./lib/action-inventory.mjs";
 const assetVersion = "20260622-activation-readiness";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const radioProgramming = JSON.parse(await readFile("data/lux-radio-programming.json", "utf8"));
+const pilotBugRegister = JSON.parse(await readFile("data/lux-pilot-bug-register.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 const brandHouse = JSON.parse(await readFile("data/lux-brand-house.json", "utf8"));
 const fanFlywheel = JSON.parse(await readFile("data/lux-fan-flywheel.json", "utf8"));
@@ -1192,6 +1193,7 @@ await writeFile("data/lux-build-manifest.json", `${JSON.stringify({
   assetVersion,
   mediaManifestVersion: mediaManifest.version,
   radioProgrammingVersion: radioProgramming.version,
+  pilotBugRegisterVersion: pilotBugRegister.version,
   actionInventoryVersion,
   brandHouseVersion: brandHouse.version,
   fanFlywheelVersion: fanFlywheel.version,

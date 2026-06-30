@@ -34,6 +34,11 @@ const checks = [
     env: {}
   },
   {
+    label: "Pilot Bug Register",
+    script: "tools/qa-pilot-bug-register.mjs",
+    env: {}
+  },
+  {
     label: "Open Approvals",
     script: "tools/qa-open-approvals.mjs",
     env: {}

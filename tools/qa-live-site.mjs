@@ -157,8 +157,8 @@ try {
     if (buildManifest.stylesheet !== `styles.css?v=${expectedAssetVersion}`) {
       issues.push("/data/lux-build-manifest.json: stylesheet does not match current asset version");
     }
-    if (!buildManifest.mediaManifestVersion || !buildManifest.actionInventoryVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.phaseStatusVersion || !buildManifest.publicTermsVersion) {
-      issues.push("/data/lux-build-manifest.json: missing mediaManifestVersion, actionInventoryVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, phaseStatusVersion, or publicTermsVersion");
+    if (!buildManifest.mediaManifestVersion || !buildManifest.radioProgrammingVersion || !buildManifest.pilotBugRegisterVersion || !buildManifest.actionInventoryVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.phaseStatusVersion || !buildManifest.publicTermsVersion) {
+      issues.push("/data/lux-build-manifest.json: missing mediaManifestVersion, radioProgrammingVersion, pilotBugRegisterVersion, actionInventoryVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, phaseStatusVersion, or publicTermsVersion");
     }
   }
 } catch (error) {
@@ -395,6 +395,44 @@ try {
   }
 } catch (error) {
   issues.push(`/data/lux-pilot-write-evidence.json: invalid response (${error.message})`);
+}
+
+try {
+  const { response, text } = await fetchWithTimeout("/data/lux-pilot-bug-register.json");
+  if (!response.ok) {
+    issues.push(`/data/lux-pilot-bug-register.json: expected HTTP 200, received ${response.status}`);
+  } else {
+    const bugRegister = JSON.parse(text);
+    const coverageEvidence = Array.isArray(bugRegister.coverageEvidence) ? bugRegister.coverageEvidence : [];
+    const checks = Array.isArray(bugRegister.checks) ? bugRegister.checks : [];
+    const items = Array.isArray(bugRegister.items) ? bugRegister.items : [];
+    if (bugRegister.schemaVersion !== "luxveritas.pilot_bug_register.v1") {
+      issues.push("/data/lux-pilot-bug-register.json: schemaVersion mismatch");
+    }
+    if (liveBuildManifest?.pilotBugRegisterVersion && liveBuildManifest.pilotBugRegisterVersion !== bugRegister.version) {
+      issues.push("/data/lux-pilot-bug-register.json: version does not match build manifest pilotBugRegisterVersion");
+    }
+    if (bugRegister.evidence?.assetVersion !== liveBuildManifest?.assetVersion) {
+      issues.push("/data/lux-pilot-bug-register.json: assetVersion does not match live build manifest");
+    }
+    if (bugRegister.status !== "no_known_blocking_bugs" || bugRegister.decision !== "pilot_can_continue") {
+      issues.push("/data/lux-pilot-bug-register.json: expected no known blocking bugs and pilot_can_continue");
+    }
+    if (bugRegister.summary?.openBlockingBugs !== 0 || bugRegister.summary?.openHighBugs !== 0 || bugRegister.summary?.openTotalBugs !== 0) {
+      issues.push("/data/lux-pilot-bug-register.json: open bug counts must be zero for current pilot evidence");
+    }
+    if (!coverageEvidence.some((item) => item.coverage === "public_capture") || !coverageEvidence.some((item) => item.coverage === "media_player")) {
+      issues.push("/data/lux-pilot-bug-register.json: missing public capture or media-player coverage evidence");
+    }
+    if (!checks.some((item) => item.id === "submit_freeze_regression" && item.status === "passed")) {
+      issues.push("/data/lux-pilot-bug-register.json: missing submit freeze regression check");
+    }
+    if (items.some((item) => ["blocking", "critical"].includes(item.severity) && !["fixed", "closed", "resolved"].includes(item.status))) {
+      issues.push("/data/lux-pilot-bug-register.json: contains open blocking or critical bug");
+    }
+  }
+} catch (error) {
+  issues.push(`/data/lux-pilot-bug-register.json: invalid response (${error.message})`);
 }
 
 try {

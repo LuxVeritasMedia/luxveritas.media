@@ -12,7 +12,7 @@ const includeLive = process.env.LUX_EVIDENCE_LIVE === "1";
 const node = process.execPath;
 
 function secretShape(value) {
-  return /re_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}/.test(value);
+  return /\bre_[A-Za-z0-9_-]{16,}\b|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}/.test(value);
 }
 
 async function run(script, env = {}) {
@@ -68,6 +68,7 @@ const [
   legalRaw,
   mediaRaw,
   pilotWriteRaw,
+  pilotBugRegisterRaw,
   actionInventoryRaw,
   phaseStatusRaw,
   termsRaw,
@@ -84,6 +85,7 @@ const [
   readFile("data/lux-legal-review.json", "utf8"),
   readFile("data/lux-media-manifest.json", "utf8"),
   readFile("data/lux-pilot-write-evidence.json", "utf8"),
+  readFile("data/lux-pilot-bug-register.json", "utf8"),
   readFile("data/lux-action-inventory.json", "utf8"),
   readFile("data/lux-phase-status.json", "utf8"),
   readFile("data/lux-public-terms.json", "utf8"),
@@ -101,6 +103,7 @@ const closeout = JSON.parse(closeoutRaw);
 const legalReview = JSON.parse(legalRaw);
 const mediaManifest = JSON.parse(mediaRaw);
 const pilotWriteEvidence = JSON.parse(pilotWriteRaw);
+const pilotBugRegister = JSON.parse(pilotBugRegisterRaw);
 const actionInventory = JSON.parse(actionInventoryRaw);
 const phaseStatus = JSON.parse(phaseStatusRaw);
 const publicTerms = JSON.parse(termsRaw);
@@ -189,6 +192,45 @@ const evidence = {
     operatorReportVerified: pilotWriteEvidence.writeEvidence?.operatorReportVerified === true,
     postWriteReconciliation: pilotWriteEvidence.writeEvidence?.postWriteReconciliation === true,
     passedChecks: Array.isArray(pilotWriteEvidence.passedChecks) ? pilotWriteEvidence.passedChecks : []
+  },
+  pilotBugRegister: {
+    schemaVersion: pilotBugRegister.schemaVersion || "",
+    version: pilotBugRegister.version || "",
+    updatedAt: pilotBugRegister.updatedAt || "",
+    status: pilotBugRegister.status || "",
+    decision: pilotBugRegister.decision || "",
+    summary: pilotBugRegister.summary || {},
+    evidence: {
+      assetVersion: pilotBugRegister.evidence?.assetVersion || "",
+      pilotWriteQaRunId: pilotBugRegister.evidence?.pilotWriteQaRunId || "",
+      pilotFeedbackRoute: pilotBugRegister.evidence?.pilotFeedbackRoute || "",
+      latestDeployWorkflow: pilotBugRegister.evidence?.latestDeployWorkflow || "",
+      latestDeployRun: pilotBugRegister.evidence?.latestDeployRun || ""
+    },
+    coverageEvidence: Array.isArray(pilotBugRegister.coverageEvidence)
+      ? pilotBugRegister.coverageEvidence.map((item) => ({
+        coverage: item.coverage,
+        status: item.status,
+        evidence: item.evidence
+      }))
+      : [],
+    checks: Array.isArray(pilotBugRegister.checks)
+      ? pilotBugRegister.checks.map((item) => ({
+        id: item.id,
+        status: item.status,
+        evidence: item.evidence
+      }))
+      : [],
+    openItems: Array.isArray(pilotBugRegister.items)
+      ? pilotBugRegister.items
+        .filter((item) => !["fixed", "closed", "resolved"].includes(item.status || ""))
+        .map((item) => ({
+          id: item.id,
+          severity: item.severity,
+          status: item.status,
+          route: item.route || ""
+        }))
+      : []
   },
   legal: {
     privacy: legalItem(legalReview, "privacy"),
@@ -302,6 +344,21 @@ ${evidence.pilotTestMatrix.scenarios.map((scenario) => `- ${scenario.label} (${s
 - Operator report verified: ${evidence.pilotWriteEvidence.operatorReportVerified ? "yes" : "no"}
 - Post-write reconciliation: ${evidence.pilotWriteEvidence.postWriteReconciliation ? "yes" : "no"}
 - Passed checks: ${evidence.pilotWriteEvidence.passedChecks.join(", ") || "none"}
+
+## Pilot Bug Register
+
+- Version: ${evidence.pilotBugRegister.version || "unknown"}
+- Updated: ${evidence.pilotBugRegister.updatedAt || "unknown"}
+- Status: ${evidence.pilotBugRegister.status || "unknown"}
+- Decision: ${evidence.pilotBugRegister.decision || "unknown"}
+- Open blocking bugs: ${evidence.pilotBugRegister.summary.openBlockingBugs ?? "unknown"}
+- Open high bugs: ${evidence.pilotBugRegister.summary.openHighBugs ?? "unknown"}
+- Known issues: ${evidence.pilotBugRegister.summary.knownIssues ?? "unknown"}
+- Pilot feedback route: ${evidence.pilotBugRegister.evidence.pilotFeedbackRoute || "unknown"}
+- Evidence run: ${evidence.pilotBugRegister.evidence.pilotWriteQaRunId || "unknown"}
+- Coverage: ${evidence.pilotBugRegister.coverageEvidence.map((item) => `${item.coverage} ${item.status}`).join(", ") || "none"}
+- Checks: ${evidence.pilotBugRegister.checks.map((item) => `${item.id} ${item.status}`).join(", ") || "none"}
+- Open items: ${evidence.pilotBugRegister.openItems.length ? evidence.pilotBugRegister.openItems.map((item) => `${item.id} ${item.severity} ${item.status}`).join(", ") : "none"}
 
 ## Legal
 

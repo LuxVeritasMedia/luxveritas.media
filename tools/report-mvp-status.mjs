@@ -84,6 +84,7 @@ const [
   legalRaw,
   mediaRaw,
   pilotWriteRaw,
+  pilotBugRegisterRaw,
   phaseStatusRaw,
   publicTermsRaw,
   todo,
@@ -99,6 +100,7 @@ const [
   readFile("data/lux-legal-review.json", "utf8"),
   readFile("data/lux-media-manifest.json", "utf8"),
   readFile("data/lux-pilot-write-evidence.json", "utf8"),
+  readFile("data/lux-pilot-bug-register.json", "utf8"),
   readFile("data/lux-phase-status.json", "utf8"),
   readFile("data/lux-public-terms.json", "utf8"),
   readFile("TODO.md", "utf8"),
@@ -115,6 +117,7 @@ const closeout = JSON.parse(closeoutRaw);
 const legalReview = JSON.parse(legalRaw);
 const mediaManifest = JSON.parse(mediaRaw);
 const pilotWriteEvidence = JSON.parse(pilotWriteRaw);
+const pilotBugRegister = JSON.parse(pilotBugRegisterRaw);
 const phaseStatus = JSON.parse(phaseStatusRaw);
 const publicTerms = JSON.parse(publicTermsRaw);
 const gates = Array.isArray(launch.gates) ? launch.gates : [];
@@ -143,6 +146,15 @@ const media = summarizeMedia(mediaManifest);
 const pilotFreshness = pilotEvidenceFreshness(pilotWriteEvidence.updatedAt, {
   maxAgeHours: pilotEvidenceMaxAgeHours()
 });
+const pilotBugItems = Array.isArray(pilotBugRegister.items) ? pilotBugRegister.items : [];
+const openPilotBlockingBugs = pilotBugItems.filter((item) => (
+  ["blocking", "critical"].includes(item.severity || "")
+  && !["fixed", "closed", "resolved"].includes(item.status || "")
+));
+const openPilotHighBugs = pilotBugItems.filter((item) => (
+  item.severity === "high"
+  && !["fixed", "closed", "resolved"].includes(item.status || "")
+));
 const liveVersion = liveManifest.ok
   ? liveManifest.value.assetVersion || liveManifest.value.version || ""
   : "";
@@ -157,7 +169,12 @@ const operatorIssues = [
   media.missingRequiredSources.length ? `Missing required media sources: ${media.missingRequiredSources.join(", ")}.` : null,
   pilotWriteEvidence.result !== "passed" ? "Pilot write evidence is not passed." : null,
   pilotWriteEvidence.assetVersion !== localVersion ? `Pilot write evidence asset version ${pilotWriteEvidence.assetVersion || "missing"} does not match local ${localVersion || "missing"}.` : null,
-  !pilotFreshness.ok ? pilotFreshness.message : null
+  !pilotFreshness.ok ? pilotFreshness.message : null,
+  pilotBugRegister.status !== "no_known_blocking_bugs" ? `Pilot bug register status is ${pilotBugRegister.status || "missing"}.` : null,
+  pilotBugRegister.decision !== "pilot_can_continue" ? `Pilot bug register decision is ${pilotBugRegister.decision || "missing"}.` : null,
+  openPilotBlockingBugs.length ? `Open pilot blocking bugs: ${openPilotBlockingBugs.map((item) => item.id || item.label || "unknown").join(", ")}.` : null,
+  pilotBugRegister.evidence?.assetVersion !== localVersion ? `Pilot bug register asset version ${pilotBugRegister.evidence?.assetVersion || "missing"} does not match local ${localVersion || "missing"}.` : null,
+  pilotBugRegister.evidence?.pilotWriteQaRunId !== pilotWriteEvidence.qaRunId ? `Pilot bug register evidence run ${pilotBugRegister.evidence?.pilotWriteQaRunId || "missing"} does not match pilot write run ${pilotWriteEvidence.qaRunId || "missing"}.` : null
 ].filter(Boolean);
 const pilotStatus = operatorIssues.length || codeBlockingGates.length
   ? "operator-attention-needed"
@@ -237,6 +254,33 @@ const report = {
     operatorReportVerified: pilotWriteEvidence.writeEvidence?.operatorReportVerified === true,
     postWriteReconciliation: pilotWriteEvidence.writeEvidence?.postWriteReconciliation === true
   },
+  pilotBugRegister: {
+    version: pilotBugRegister.version || "",
+    updatedAt: pilotBugRegister.updatedAt || "",
+    status: pilotBugRegister.status || "",
+    decision: pilotBugRegister.decision || "",
+    summary: pilotBugRegister.summary || {},
+    evidence: {
+      assetVersion: pilotBugRegister.evidence?.assetVersion || "",
+      pilotWriteQaRunId: pilotBugRegister.evidence?.pilotWriteQaRunId || "",
+      pilotFeedbackRoute: pilotBugRegister.evidence?.pilotFeedbackRoute || "",
+      latestDeployRun: pilotBugRegister.evidence?.latestDeployRun || ""
+    },
+    coverageCount: Array.isArray(pilotBugRegister.coverageEvidence) ? pilotBugRegister.coverageEvidence.length : 0,
+    checkCount: Array.isArray(pilotBugRegister.checks) ? pilotBugRegister.checks.length : 0,
+    openBlockingBugs: openPilotBlockingBugs.map((item) => ({
+      id: item.id || "",
+      severity: item.severity || "",
+      status: item.status || "",
+      route: item.route || ""
+    })),
+    openHighBugs: openPilotHighBugs.map((item) => ({
+      id: item.id || "",
+      severity: item.severity || "",
+      status: item.status || "",
+      route: item.route || ""
+    }))
+  },
   launchGates: {
     ready: readyGates.map((gate) => gate.id),
     blockedByCategory,
@@ -288,6 +332,7 @@ if (jsonMode) {
   line("Local asset", report.build.localAssetVersion || "missing");
   line("Media", `${media.itemCount} item(s), missing required sources: ${media.missingRequiredSources.length ? media.missingRequiredSources.join(", ") : "none"}`);
   line("Pilot write evidence", `${report.pilotWriteEvidence.result || "missing"} run=${report.pilotWriteEvidence.qaRunId || "missing"} freshness=${report.pilotWriteEvidence.freshness.status} age=${report.pilotWriteEvidence.freshness.ageHours ?? "unknown"}h max=${report.pilotWriteEvidence.freshness.maxAgeHours}h forms=${report.pilotWriteEvidence.formCaptureIntents} events=${report.pilotWriteEvidence.eventWrites}`);
+  line("Pilot bugs", `${report.pilotBugRegister.summary.openBlockingBugs || 0} blocking, ${report.pilotBugRegister.summary.openHighBugs || 0} high, known=${report.pilotBugRegister.summary.knownIssues || 0}, decision=${report.pilotBugRegister.decision || "missing"}`);
   line("Legal", `privacy=${report.legal.privacy.status}, terms=${report.legal.terms.status}`);
   line("Launch gates", `${readyGates.length} ready, ${blockedGates.length} blocked`);
   line("Pilot status", report.pilotStatus);

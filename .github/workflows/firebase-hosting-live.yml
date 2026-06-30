@@ -111,6 +111,9 @@ jobs:
       - name: QA pilot write evidence
         run: node tools/qa-pilot-write-evidence.mjs
 
+      - name: QA pilot bug register
+        run: node tools/qa-pilot-bug-register.mjs
+
       - name: QA media contract
         run: node tools/qa-media-contract.mjs
 

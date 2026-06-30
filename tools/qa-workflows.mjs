@@ -47,6 +47,7 @@ for (const marker of [
   "node tools/qa-mvp-status.mjs",
   "node tools/qa-launch-evidence.mjs",
   "node tools/qa-pilot-write-evidence.mjs",
+  "node tools/qa-pilot-bug-register.mjs",
   "node tools/qa-media-contract.mjs",
   "node tools/qa-fan-signal.mjs",
   "node tools/qa-mobile-layout.mjs",
@@ -205,6 +206,7 @@ for (const marker of [
   "node tools/qa-mvp-status.mjs",
   "node tools/qa-launch-evidence.mjs",
   "node tools/qa-pilot-write-evidence.mjs",
+  "node tools/qa-pilot-bug-register.mjs",
   "node tools/qa-live-media-sources.mjs",
   "node tools/qa-private-integration-field-map.mjs",
   "node tools/qa-private-workflow-matrix.mjs",
@@ -323,6 +325,7 @@ for (const marker of [
   "node tools/qa-private-workflow-matrix.mjs",
   "node tools/qa-external-workflow-targets.mjs",
   "LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs",
+  "node tools/qa-pilot-bug-register.mjs",
   "reconciles the exact write-run IDs",
   "LUX_INBOX_ACTIVATION_WRITE_TEST=1",
   "ready to receive QA mail"

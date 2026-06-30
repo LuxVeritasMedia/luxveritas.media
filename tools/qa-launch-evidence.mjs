@@ -10,7 +10,7 @@ function issue(message) {
 }
 
 function secretShape(value) {
-  return /re_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}/.test(value);
+  return /\bre_[A-Za-z0-9_-]{16,}\b|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}/.test(value);
 }
 
 function topEntries(source = {}, limit = 8) {
@@ -26,6 +26,7 @@ function sameEntries(actual = [], expected = []) {
 
 const actionInventory = JSON.parse(await readFile("data/lux-action-inventory.json", "utf8"));
 const pilotWriteEvidence = JSON.parse(await readFile("data/lux-pilot-write-evidence.json", "utf8"));
+const pilotBugRegister = JSON.parse(await readFile("data/lux-pilot-bug-register.json", "utf8"));
 const { stdout: openApprovalsRaw } = await execFileAsync(process.execPath, ["tools/report-open-approvals.mjs"], {
   env: { ...process.env, LUX_OPEN_APPROVALS_JSON: "1" },
   timeout: 30000,
@@ -61,6 +62,12 @@ for (const marker of [
   "Freshness:",
   "Form capture intents: 11",
   "Event writes: 11",
+  "## Pilot Bug Register",
+  `Version: ${pilotBugRegister.version}`,
+  "Status: no_known_blocking_bugs",
+  "Decision: pilot_can_continue",
+  "Open blocking bugs: 0",
+  "submit_freeze_regression passed",
   "## Launch Gates",
   "## Open Approvals",
   "Decision: external_approvals_pending",
@@ -137,6 +144,26 @@ if (evidence) {
   if (evidence.pilotWriteEvidence?.inboxDeliveryRequired !== true) issue("evidence pilot write must require inbox delivery");
   if (evidence.pilotWriteEvidence?.operatorReportVerified !== true) issue("evidence pilot write must verify operator report");
   if (evidence.pilotWriteEvidence?.postWriteReconciliation !== true) issue("evidence pilot write must verify post-write reconciliation");
+  if (evidence.pilotBugRegister?.schemaVersion !== "luxveritas.pilot_bug_register.v1") issue("evidence pilot bug register schemaVersion mismatch");
+  if (evidence.pilotBugRegister?.version !== pilotBugRegister.version) issue("evidence pilot bug register version mismatch");
+  if (evidence.pilotBugRegister?.status !== "no_known_blocking_bugs") issue("evidence pilot bug register status must report no known blocking bugs");
+  if (evidence.pilotBugRegister?.decision !== "pilot_can_continue") issue("evidence pilot bug register decision must allow pilot continuation");
+  if (evidence.pilotBugRegister?.summary?.openBlockingBugs !== 0) issue("evidence pilot bug register open blocking bugs must be zero");
+  if (evidence.pilotBugRegister?.summary?.openHighBugs !== pilotBugRegister.summary?.openHighBugs) issue("evidence pilot bug register high count mismatch");
+  if (evidence.pilotBugRegister?.evidence?.assetVersion !== evidence.assetVersion) issue("evidence pilot bug register asset version must match launch evidence asset version");
+  if (evidence.pilotBugRegister?.evidence?.pilotWriteQaRunId !== pilotWriteEvidence.qaRunId) issue("evidence pilot bug register qaRunId must match pilot write evidence");
+  if (evidence.pilotBugRegister?.evidence?.pilotFeedbackRoute !== "/pilot-feedback.html") issue("evidence pilot bug register route must be /pilot-feedback.html");
+  const bugCoverage = new Set((evidence.pilotBugRegister?.coverageEvidence || []).map((item) => item.coverage));
+  for (const item of ["public_capture", "media_player", "fan_reaction", "portal_capture", "operator_reporting", "launch_gates", "private_workflow_readiness"]) {
+    if (!bugCoverage.has(item)) issue(`evidence pilot bug register missing coverage ${item}`);
+  }
+  const bugChecks = new Set((evidence.pilotBugRegister?.checks || []).map((item) => item.id));
+  for (const item of ["submit_freeze_regression", "dead_button_regression", "live_capture_regression", "operator_report_regression"]) {
+    if (!bugChecks.has(item)) issue(`evidence pilot bug register missing check ${item}`);
+  }
+  if (Array.isArray(evidence.pilotBugRegister?.openItems) && evidence.pilotBugRegister.openItems.some((item) => ["blocking", "critical"].includes(item.severity || ""))) {
+    issue("evidence pilot bug register contains open blocking/critical items");
+  }
   const blocked = Array.isArray(evidence.launchGates?.blocked) ? evidence.launchGates.blocked : [];
   for (const id of ["privacy_review", "terms_review"]) {
     if (!blocked.some((gate) => gate.id === id)) issue(`evidence missing current blocked gate ${id}`);

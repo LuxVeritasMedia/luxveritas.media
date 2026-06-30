@@ -204,6 +204,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Add 72-hour pilot write evidence freshness checks so final release cannot rely on stale TestFlight-quality proof.
 - [x] Add operator/MVP status/preflight coverage to the final release gate.
 - [x] Add no-secret pilot test matrix for TestFlight-quality scenario coverage.
+- [x] Add no-secret pilot bug register for TestFlight-quality blocking-bug evidence.
 - [x] Require final release-gate write mode for launch-day approval.
 - [x] Require browser and live coverage in final release-gate approval mode.
 - [x] Add final launch runbook for DNS, inbox, legal, write tests, and gate approval.

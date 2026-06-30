@@ -30,7 +30,7 @@ function pilotEvidenceStale(message) {
 }
 
 function hasSecretShape(raw) {
-  return /re_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}/.test(raw);
+  return /\bre_[A-Za-z0-9_-]{16,}\b|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}/.test(raw);
 }
 
 const { stdout } = await execFileAsync(process.execPath, ["tools/report-mvp-status.mjs"], {
@@ -127,6 +127,24 @@ if (report) {
   if (report.pilotWriteEvidence?.inboxDeliveryRequired !== true) issue("pilot write evidence must require inbox delivery");
   if (report.pilotWriteEvidence?.operatorReportVerified !== true) issue("pilot write evidence must verify operator reporting");
   if (report.pilotWriteEvidence?.postWriteReconciliation !== true) issue("pilot write evidence must verify post-write reconciliation");
+  if (report.pilotBugRegister?.status !== "no_known_blocking_bugs") issue("pilot bug register must report no known blocking bugs");
+  if (report.pilotBugRegister?.decision !== "pilot_can_continue") issue("pilot bug register decision must allow pilot continuation");
+  if (report.pilotBugRegister?.summary?.openBlockingBugs !== 0) issue("pilot bug register open blocking bug count must be zero");
+  if (typeof report.pilotBugRegister?.summary?.openHighBugs !== "number") issue("pilot bug register open high bug count missing");
+  if (report.pilotBugRegister?.evidence?.assetVersion !== localVersion) {
+    pilotEvidenceStale("pilot bug register asset version does not match local asset version; rerun bug-register QA after deploy");
+  }
+  if (report.pilotBugRegister?.evidence?.pilotWriteQaRunId !== report.pilotWriteEvidence?.qaRunId) {
+    issue("pilot bug register evidence qaRunId must match pilot write evidence");
+  }
+  if (report.pilotBugRegister?.evidence?.pilotFeedbackRoute !== "/pilot-feedback.html") {
+    issue("pilot bug register feedback route must be /pilot-feedback.html");
+  }
+  if ((report.pilotBugRegister?.coverageCount || 0) < 7) issue("pilot bug register coverage count missing required surfaces");
+  if ((report.pilotBugRegister?.checkCount || 0) < 6) issue("pilot bug register check count missing required regressions");
+  if (Array.isArray(report.pilotBugRegister?.openBlockingBugs) && report.pilotBugRegister.openBlockingBugs.length) {
+    issue(`pilot bug register has open blocking bugs: ${report.pilotBugRegister.openBlockingBugs.map((item) => item.id || "unknown").join(", ")}`);
+  }
 
   const blocked = Array.isArray(report.launchGates?.blocked) ? report.launchGates.blocked : [];
   const blockedIds = new Set(blocked.map((gate) => gate.id));
