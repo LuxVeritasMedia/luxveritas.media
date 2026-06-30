@@ -27,6 +27,7 @@ function sameEntries(actual = [], expected = []) {
 const actionInventory = JSON.parse(await readFile("data/lux-action-inventory.json", "utf8"));
 const pilotWriteEvidence = JSON.parse(await readFile("data/lux-pilot-write-evidence.json", "utf8"));
 const pilotBugRegister = JSON.parse(await readFile("data/lux-pilot-bug-register.json", "utf8"));
+const privateWorkflowSelection = JSON.parse(await readFile("docs/private-workflow-selection.json", "utf8"));
 const { stdout: openApprovalsRaw } = await execFileAsync(process.execPath, ["tools/report-open-approvals.mjs"], {
   env: { ...process.env, LUX_OPEN_APPROVALS_JSON: "1" },
   timeout: 30000,
@@ -75,6 +76,10 @@ for (const marker of [
   "Decision: pilot_can_continue",
   "Open blocking bugs: 0",
   "submit_freeze_regression passed",
+  "## External Workflow Readiness",
+  "Current target: firebase_handoff",
+  "Recommended first external target: google_workspace",
+  "approval required: yes",
   "## Launch Gates",
   "## Open Approvals",
   "Decision: external_approvals_pending",
@@ -181,6 +186,48 @@ if (evidence) {
   }
   if (Array.isArray(evidence.pilotBugRegister?.openItems) && evidence.pilotBugRegister.openItems.some((item) => ["blocking", "critical"].includes(item.severity || ""))) {
     issue("evidence pilot bug register contains open blocking/critical items");
+  }
+  if (evidence.externalWorkflowReadiness?.schemaVersion !== "luxveritas.private_workflow_selection.v1") {
+    issue("evidence external workflow readiness schemaVersion mismatch");
+  }
+  if (evidence.externalWorkflowReadiness?.currentPrimaryTarget !== "firebase_handoff") {
+    issue("evidence external workflow readiness must keep firebase_handoff active");
+  }
+  if (evidence.externalWorkflowReadiness?.selectionStatus !== "recommendation_ready_approval_required") {
+    issue("evidence external workflow readiness status must require approval");
+  }
+  if (evidence.externalWorkflowReadiness?.recommendedFirstExternalTarget !== "google_workspace") {
+    issue("evidence external workflow readiness should recommend google_workspace first");
+  }
+  if (evidence.externalWorkflowReadiness?.selectionRule !== privateWorkflowSelection.selectionRule) {
+    issue("evidence external workflow readiness selectionRule mismatch");
+  }
+  if (!/Firebase Secret Manager/i.test(evidence.externalWorkflowReadiness?.activationBoundary || "")) {
+    issue("evidence external workflow readiness activation boundary must mention Firebase Secret Manager");
+  }
+  const activationOrder = Array.isArray(evidence.externalWorkflowReadiness?.recommendedActivationOrder)
+    ? evidence.externalWorkflowReadiness.recommendedActivationOrder
+    : [];
+  for (const [index, profile] of ["google_workspace", "ghl_crm", "codex_ops"].entries()) {
+    const item = activationOrder[index];
+    if (!item || item.rank !== index + 1 || item.profile !== profile || item.approvalRequired !== true) {
+      issue(`evidence external workflow activation rank ${index + 1} should be ${profile} with approval required`);
+    }
+  }
+  const queueSummary = Array.isArray(evidence.externalWorkflowReadiness?.queueDecisionSummary)
+    ? evidence.externalWorkflowReadiness.queueDecisionSummary
+    : [];
+  if (queueSummary.length !== privateWorkflowSelection.queueDecisionSummary.length) {
+    issue("evidence external workflow queueDecisionSummary length mismatch");
+  }
+  for (const queue of ["submission_review", "press_contact", "partner_licensing", "strategic_access", "access_review"]) {
+    const item = queueSummary.find((entry) => entry.queue === queue);
+    if (!item || item.recommendedPrimary !== "google_workspace") {
+      issue(`evidence external workflow queue ${queue} should recommend google_workspace`);
+    }
+  }
+  if (!evidence.externalWorkflowReadiness?.nextCommandPacket?.some((item) => item.includes("activate-private-integration.mjs"))) {
+    issue("evidence external workflow readiness missing activation command packet");
   }
   const blocked = Array.isArray(evidence.launchGates?.blocked) ? evidence.launchGates.blocked : [];
   for (const id of ["privacy_review", "terms_review"]) {

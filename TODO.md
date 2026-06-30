@@ -88,6 +88,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Add no-secret private workflow selection packet recommending Google Workspace first while Firebase handoff remains active.
 - [x] Add private integration activation dry-run QA so Firebase, GHL, Google Workspace, and CodexOps profiles prove their approval gates before real secrets are configured.
 - [x] Add Google Workspace first-activation packet with approval fields, dry-run command, live acceptance checks, and Firebase rollback.
+- [x] Include no-secret external workflow readiness in launch evidence exports.
 - [x] Add no-secret Functions IAM repair request export and QA for the remaining GitHub manual Functions deploy grant.
 - [ ] Configure approved external CRM/Google workflow target after the private workflow is chosen.
 - [x] Reauthenticate Firebase CLI locally before provider-secret inspection.

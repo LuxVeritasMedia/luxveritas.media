@@ -73,6 +73,7 @@ const [
   phaseStatusRaw,
   termsRaw,
   pilotMatrixRaw,
+  privateWorkflowSelectionRaw,
   todo,
   mvpStatus,
   previewHelper,
@@ -91,6 +92,7 @@ const [
   readFile("data/lux-phase-status.json", "utf8"),
   readFile("data/lux-public-terms.json", "utf8"),
   readFile("data/lux-pilot-test-matrix.json", "utf8"),
+  readFile("docs/private-workflow-selection.json", "utf8"),
   readFile("TODO.md", "utf8"),
   run("tools/report-mvp-status.mjs", includeLive ? {} : { LUX_LIVE_URL: "https://luxveritas.media" }),
   run("tools/qa-preview-helper.mjs"),
@@ -110,6 +112,7 @@ const actionInventory = JSON.parse(actionInventoryRaw);
 const phaseStatus = JSON.parse(phaseStatusRaw);
 const publicTerms = JSON.parse(termsRaw);
 const pilotMatrix = JSON.parse(pilotMatrixRaw);
+const privateWorkflowSelection = JSON.parse(privateWorkflowSelectionRaw);
 let openApprovals = null;
 let openApprovalsOk = openApprovalsResult.ok;
 try {
@@ -234,6 +237,34 @@ const evidence = {
           status: item.status,
           route: item.route || ""
         }))
+      : []
+  },
+  externalWorkflowReadiness: {
+    schemaVersion: privateWorkflowSelection.schemaVersion || "",
+    currentPrimaryTarget: privateWorkflowSelection.currentPrimaryTarget || "",
+    selectionStatus: privateWorkflowSelection.selectionStatus || "",
+    recommendedFirstExternalTarget: privateWorkflowSelection.recommendedFirstExternalTarget || "",
+    selectionRule: privateWorkflowSelection.selectionRule || "",
+    activationBoundary: privateWorkflowSelection.activationBoundary || "",
+    recommendedActivationOrder: Array.isArray(privateWorkflowSelection.recommendedActivationOrder)
+      ? privateWorkflowSelection.recommendedActivationOrder.map((item) => ({
+        rank: item.rank,
+        profile: item.profile,
+        decision: item.decision,
+        primaryJob: item.primaryJob,
+        approvalRequired: item.approvalRequired === true,
+        queueCoverage: item.queueCoverage || []
+      }))
+      : [],
+    queueDecisionSummary: Array.isArray(privateWorkflowSelection.queueDecisionSummary)
+      ? privateWorkflowSelection.queueDecisionSummary.map((item) => ({
+        queue: item.queue,
+        recommendedPrimary: item.recommendedPrimary,
+        selectionUse: item.selectionUse
+      }))
+      : [],
+    nextCommandPacket: Array.isArray(privateWorkflowSelection.nextCommandPacket)
+      ? privateWorkflowSelection.nextCommandPacket
       : []
   },
   legal: {
@@ -366,6 +397,17 @@ ${evidence.pilotTestMatrix.scenarios.map((scenario) => `- ${scenario.label} (${s
 - Coverage: ${evidence.pilotBugRegister.coverageEvidence.map((item) => `${item.coverage} ${item.status}`).join(", ") || "none"}
 - Checks: ${evidence.pilotBugRegister.checks.map((item) => `${item.id} ${item.status}`).join(", ") || "none"}
 - Open items: ${evidence.pilotBugRegister.openItems.length ? evidence.pilotBugRegister.openItems.map((item) => `${item.id} ${item.severity} ${item.status}`).join(", ") : "none"}
+
+## External Workflow Readiness
+
+- Current target: ${evidence.externalWorkflowReadiness.currentPrimaryTarget || "unknown"}
+- Selection status: ${evidence.externalWorkflowReadiness.selectionStatus || "unknown"}
+- Recommended first external target: ${evidence.externalWorkflowReadiness.recommendedFirstExternalTarget || "unknown"}
+- Boundary: ${evidence.externalWorkflowReadiness.activationBoundary || "unknown"}
+- Rule: ${evidence.externalWorkflowReadiness.selectionRule || "unknown"}
+- Activation order: ${evidence.externalWorkflowReadiness.recommendedActivationOrder.map((item) => `${item.rank}. ${item.profile} (${item.decision}) - ${item.primaryJob}; approval required: ${item.approvalRequired ? "yes" : "no"}`).join("; ") || "none"}
+- Queue decisions: ${evidence.externalWorkflowReadiness.queueDecisionSummary.map((item) => `${item.queue}->${item.recommendedPrimary}`).join(", ") || "none"}
+- Next commands: ${evidence.externalWorkflowReadiness.nextCommandPacket.join(" | ") || "none"}
 
 ## Legal
 
