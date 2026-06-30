@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "luxveritas.radio_programming.v1",
+  "version": "2026-06-30-radio-signal",
+  "updatedAt": "2026-06-30T10:10:00.000Z",
+  "headline": "Lux Radio begins as a signal room.",
+  "summary": "A preview rotation for release energy, visual-world notes, listening-room atmosphere, and future member programming.",
+  "notice": "Public radio is preview-only until the first approved programming window opens.",
+  "slots": [
+    {
+      "id": "signal-rotation",
+      "label": "Now",
+      "title": "Signal Rotation",
+      "body": "A short preview loop for the current release room and the first sound of the larger Lux Veritas world.",
+      "status": "Preview live",
+      "action": "Tune in",
+      "mediaAction": "radio"
+    },
+    {
+      "id": "visual-notes",
+      "label": "Next",
+      "title": "Visual Notes",
+      "body": "A holding lane for director notes, visual-world cues, and story fragments released only when the chapter is ready.",
+      "status": "Access opens by request",
+      "action": "Join for radio access",
+      "formType": "fan"
+    },
+    {
+      "id": "room-afterglow",
+      "label": "Later",
+      "title": "Room Afterglow",
+      "body": "A future path for listening-room recaps, salon fragments, and member-only follow-up after selected gatherings.",
+      "status": "Members first",
+      "action": "Join the circle",
+      "formType": "fan"
+    }
+  ]
+}

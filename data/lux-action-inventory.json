@@ -3,17 +3,17 @@
   "version": "2026-06-20-action-inventory",
   "buildAssetVersion": "20260622-activation-readiness",
   "routeCount": 38,
-  "actionCount": 1272,
+  "actionCount": 1278,
   "summary": {
     "byType": {
       "navigation_toggle": 37,
-      "form_open": 121,
+      "form_open": 125,
       "dialog_close": 37,
       "form_submit": 37,
       "link_click": 997,
       "portal_signin": 1,
       "fan_signal_export": 6,
-      "media_action": 10,
+      "media_action": 12,
       "fan_reaction": 8,
       "media_select": 6,
       "operator_report_action": 10,
@@ -42,7 +42,7 @@
       "legal/privacy.html": 30,
       "legal/terms.html": 30,
       "membership.html": 47,
-      "music.html": 50,
+      "music.html": 53,
       "offline.html": 31,
       "portal/admin.html": 31,
       "portal/admin/users.html": 31,
@@ -52,7 +52,7 @@
       "portal/reporting.html": 39,
       "press.html": 30,
       "private-steward.html": 31,
-      "spmvp.html": 43,
+      "spmvp.html": 46,
       "store.html": 47,
       "submissions.html": 30,
       "works/index.html": 30,
@@ -61,13 +61,13 @@
     },
     "byReportingEvent": {
       "navigation_toggle": 37,
-      "form_open": 121,
+      "form_open": 125,
       "dialog_close": 37,
       "lead_accepted": 37,
       "link_click": 997,
       "portal_signin_capture": 1,
       "local_export": 6,
-      "media_action": 10,
+      "media_action": 12,
       "fan_reaction": 8,
       "media_select": 6,
       "report_action": 10,
@@ -12300,7 +12300,55 @@
       "expectedOutcome": "Selects media queue item"
     },
     {
-      "id": "music_html__16__form_open__fan",
+      "id": "music_html__16__media_action__radio",
+      "route": "music.html",
+      "element": "button",
+      "label": "Signal Rotation",
+      "actionType": "media_action",
+      "actionValue": "radio",
+      "target": "",
+      "formType": "",
+      "mediaAction": "radio",
+      "reportAction": "",
+      "surface": "radio_programming",
+      "intent": "radio_signal-rotation",
+      "reportingEvent": "media_action",
+      "expectedOutcome": "Activates Lux Player source"
+    },
+    {
+      "id": "music_html__17__form_open__fan",
+      "route": "music.html",
+      "element": "button",
+      "label": "Visual Notes",
+      "actionType": "form_open",
+      "actionValue": "fan",
+      "target": "",
+      "formType": "fan",
+      "mediaAction": "",
+      "reportAction": "",
+      "surface": "radio_programming",
+      "intent": "radio_visual-notes",
+      "reportingEvent": "form_open",
+      "expectedOutcome": "Opens screened capture form"
+    },
+    {
+      "id": "music_html__18__form_open__fan",
+      "route": "music.html",
+      "element": "button",
+      "label": "Room Afterglow",
+      "actionType": "form_open",
+      "actionValue": "fan",
+      "target": "",
+      "formType": "fan",
+      "mediaAction": "",
+      "reportAction": "",
+      "surface": "radio_programming",
+      "intent": "radio_room-afterglow",
+      "reportingEvent": "form_open",
+      "expectedOutcome": "Opens screened capture form"
+    },
+    {
+      "id": "music_html__19__form_open__fan",
       "route": "music.html",
       "element": "button",
       "label": "Join for early access",
@@ -12316,7 +12364,7 @@
       "expectedOutcome": "Opens screened capture form"
     },
     {
-      "id": "music_html__17__form_open__fan",
+      "id": "music_html__20__form_open__fan",
       "route": "music.html",
       "element": "button",
       "label": "Join for first access",
@@ -12332,7 +12380,7 @@
       "expectedOutcome": "Opens screened capture form"
     },
     {
-      "id": "music_html__18__fan_signal_export__save-signal-pass",
+      "id": "music_html__21__fan_signal_export__save-signal-pass",
       "route": "music.html",
       "element": "button",
       "label": "Save signal pass",
@@ -12348,7 +12396,7 @@
       "expectedOutcome": "Exports local signal pass"
     },
     {
-      "id": "music_html__19__form_open__request",
+      "id": "music_html__22__form_open__request",
       "route": "music.html",
       "element": "button",
       "label": "Request Access",
@@ -12364,7 +12412,7 @@
       "expectedOutcome": "Opens screened capture form"
     },
     {
-      "id": "music_html__20__form_open__submission",
+      "id": "music_html__23__form_open__submission",
       "route": "music.html",
       "element": "button",
       "label": "Submissions",
@@ -12380,7 +12428,7 @@
       "expectedOutcome": "Opens screened capture form"
     },
     {
-      "id": "music_html__21__dialog_close__action",
+      "id": "music_html__24__dialog_close__action",
       "route": "music.html",
       "element": "button",
       "label": "×",
@@ -12396,7 +12444,7 @@
       "expectedOutcome": "Closes capture dialog"
     },
     {
-      "id": "music_html__22__form_submit__send-to-lux-veritas",
+      "id": "music_html__25__form_submit__send-to-lux-veritas",
       "route": "music.html",
       "element": "button",
       "label": "Send to Lux Veritas",
@@ -12412,7 +12460,7 @@
       "expectedOutcome": "Submits current capture form"
     },
     {
-      "id": "music_html__23__link_click__main",
+      "id": "music_html__26__link_click__main",
       "route": "music.html",
       "element": "a",
       "label": "Skip to content",
@@ -12428,7 +12476,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__24__link_click__index-html",
+      "id": "music_html__27__link_click__index-html",
       "route": "music.html",
       "element": "a",
       "label": "LV Lux Veritas",
@@ -12444,7 +12492,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__25__link_click__index-html",
+      "id": "music_html__28__link_click__index-html",
       "route": "music.html",
       "element": "a",
       "label": "Home",
@@ -12460,7 +12508,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__26__link_click__music-html",
+      "id": "music_html__29__link_click__music-html",
       "route": "music.html",
       "element": "a",
       "label": "Music",
@@ -12476,7 +12524,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__27__link_click__film-html",
+      "id": "music_html__30__link_click__film-html",
       "route": "music.html",
       "element": "a",
       "label": "Film",
@@ -12492,7 +12540,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__28__link_click__events-html",
+      "id": "music_html__31__link_click__events-html",
       "route": "music.html",
       "element": "a",
       "label": "Events",
@@ -12508,7 +12556,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__29__link_click__codex-html",
+      "id": "music_html__32__link_click__codex-html",
       "route": "music.html",
       "element": "a",
       "label": "Codex",
@@ -12524,7 +12572,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__30__link_click__about-html",
+      "id": "music_html__33__link_click__about-html",
       "route": "music.html",
       "element": "a",
       "label": "About",
@@ -12540,7 +12588,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__31__link_click__join-html",
+      "id": "music_html__34__link_click__join-html",
       "route": "music.html",
       "element": "a",
       "label": "Join",
@@ -12556,7 +12604,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__32__link_click__spmvp-html",
+      "id": "music_html__35__link_click__spmvp-html",
       "route": "music.html",
       "element": "a",
       "label": "Listen",
@@ -12572,7 +12620,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__33__link_click__music-html",
+      "id": "music_html__36__link_click__music-html",
       "route": "music.html",
       "element": "a",
       "label": "Play the signal",
@@ -12588,7 +12636,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__34__link_click__music-html",
+      "id": "music_html__37__link_click__music-html",
       "route": "music.html",
       "element": "a",
       "label": "Lux Veritas Records",
@@ -12604,7 +12652,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__35__link_click__film-html",
+      "id": "music_html__38__link_click__film-html",
       "route": "music.html",
       "element": "a",
       "label": "Lux Veritas Studios",
@@ -12620,7 +12668,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__36__link_click__codex-html",
+      "id": "music_html__39__link_click__codex-html",
       "route": "music.html",
       "element": "a",
       "label": "Lux Veritas Publishing",
@@ -12636,7 +12684,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__37__link_click__events-html",
+      "id": "music_html__40__link_click__events-html",
       "route": "music.html",
       "element": "a",
       "label": "Lux Veritas Live",
@@ -12652,7 +12700,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__38__link_click__membership-html",
+      "id": "music_html__41__link_click__membership-html",
       "route": "music.html",
       "element": "a",
       "label": "Lux Circle",
@@ -12668,7 +12716,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__39__link_click__store-html",
+      "id": "music_html__42__link_click__store-html",
       "route": "music.html",
       "element": "a",
       "label": "Lux Atelier",
@@ -12684,7 +12732,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__40__link_click__works-index-html",
+      "id": "music_html__43__link_click__works-index-html",
       "route": "music.html",
       "element": "a",
       "label": "Works",
@@ -12700,7 +12748,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__41__link_click__store-html",
+      "id": "music_html__44__link_click__store-html",
       "route": "music.html",
       "element": "a",
       "label": "Store",
@@ -12716,7 +12764,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__42__link_click__membership-html",
+      "id": "music_html__45__link_click__membership-html",
       "route": "music.html",
       "element": "a",
       "label": "Membership",
@@ -12732,7 +12780,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__43__link_click__submissions-html",
+      "id": "music_html__46__link_click__submissions-html",
       "route": "music.html",
       "element": "a",
       "label": "Submissions",
@@ -12748,7 +12796,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__44__link_click__press-html",
+      "id": "music_html__47__link_click__press-html",
       "route": "music.html",
       "element": "a",
       "label": "Press",
@@ -12764,7 +12812,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__45__link_click__contact-html",
+      "id": "music_html__48__link_click__contact-html",
       "route": "music.html",
       "element": "a",
       "label": "Contact",
@@ -12780,7 +12828,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__46__link_click__legal-privacy-html",
+      "id": "music_html__49__link_click__legal-privacy-html",
       "route": "music.html",
       "element": "a",
       "label": "Privacy",
@@ -12796,7 +12844,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__47__link_click__legal-terms-html",
+      "id": "music_html__50__link_click__legal-terms-html",
       "route": "music.html",
       "element": "a",
       "label": "Terms",
@@ -12812,7 +12860,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__48__link_click__legal-privacy-html",
+      "id": "music_html__51__link_click__legal-privacy-html",
       "route": "music.html",
       "element": "a",
       "label": "Privacy",
@@ -12828,7 +12876,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "music_html__49__link_click__legal-terms-html",
+      "id": "music_html__52__link_click__legal-terms-html",
       "route": "music.html",
       "element": "a",
       "label": "Terms",
@@ -17788,7 +17836,55 @@
       "expectedOutcome": "Selects media queue item"
     },
     {
-      "id": "spmvp_html__16__dialog_close__action",
+      "id": "spmvp_html__16__media_action__radio",
+      "route": "spmvp.html",
+      "element": "button",
+      "label": "Signal Rotation",
+      "actionType": "media_action",
+      "actionValue": "radio",
+      "target": "",
+      "formType": "",
+      "mediaAction": "radio",
+      "reportAction": "",
+      "surface": "radio_programming",
+      "intent": "radio_signal-rotation",
+      "reportingEvent": "media_action",
+      "expectedOutcome": "Activates Lux Player source"
+    },
+    {
+      "id": "spmvp_html__17__form_open__fan",
+      "route": "spmvp.html",
+      "element": "button",
+      "label": "Visual Notes",
+      "actionType": "form_open",
+      "actionValue": "fan",
+      "target": "",
+      "formType": "fan",
+      "mediaAction": "",
+      "reportAction": "",
+      "surface": "radio_programming",
+      "intent": "radio_visual-notes",
+      "reportingEvent": "form_open",
+      "expectedOutcome": "Opens screened capture form"
+    },
+    {
+      "id": "spmvp_html__18__form_open__fan",
+      "route": "spmvp.html",
+      "element": "button",
+      "label": "Room Afterglow",
+      "actionType": "form_open",
+      "actionValue": "fan",
+      "target": "",
+      "formType": "fan",
+      "mediaAction": "",
+      "reportAction": "",
+      "surface": "radio_programming",
+      "intent": "radio_room-afterglow",
+      "reportingEvent": "form_open",
+      "expectedOutcome": "Opens screened capture form"
+    },
+    {
+      "id": "spmvp_html__19__dialog_close__action",
       "route": "spmvp.html",
       "element": "button",
       "label": "×",
@@ -17804,7 +17900,7 @@
       "expectedOutcome": "Closes capture dialog"
     },
     {
-      "id": "spmvp_html__17__form_submit__send-to-lux-veritas",
+      "id": "spmvp_html__20__form_submit__send-to-lux-veritas",
       "route": "spmvp.html",
       "element": "button",
       "label": "Send to Lux Veritas",
@@ -17820,7 +17916,7 @@
       "expectedOutcome": "Submits current capture form"
     },
     {
-      "id": "spmvp_html__18__link_click__main",
+      "id": "spmvp_html__21__link_click__main",
       "route": "spmvp.html",
       "element": "a",
       "label": "Skip to content",
@@ -17836,7 +17932,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__19__link_click__index-html",
+      "id": "spmvp_html__22__link_click__index-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "LV Lux Veritas",
@@ -17852,7 +17948,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__20__link_click__index-html",
+      "id": "spmvp_html__23__link_click__index-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Home",
@@ -17868,7 +17964,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__21__link_click__music-html",
+      "id": "spmvp_html__24__link_click__music-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Music",
@@ -17884,7 +17980,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__22__link_click__film-html",
+      "id": "spmvp_html__25__link_click__film-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Film",
@@ -17900,7 +17996,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__23__link_click__events-html",
+      "id": "spmvp_html__26__link_click__events-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Events",
@@ -17916,7 +18012,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__24__link_click__codex-html",
+      "id": "spmvp_html__27__link_click__codex-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Codex",
@@ -17932,7 +18028,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__25__link_click__about-html",
+      "id": "spmvp_html__28__link_click__about-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "About",
@@ -17948,7 +18044,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__26__link_click__join-html",
+      "id": "spmvp_html__29__link_click__join-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Join",
@@ -17964,7 +18060,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__27__link_click__music-html",
+      "id": "spmvp_html__30__link_click__music-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Lux Veritas Records",
@@ -17980,7 +18076,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__28__link_click__film-html",
+      "id": "spmvp_html__31__link_click__film-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Lux Veritas Studios",
@@ -17996,7 +18092,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__29__link_click__codex-html",
+      "id": "spmvp_html__32__link_click__codex-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Lux Veritas Publishing",
@@ -18012,7 +18108,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__30__link_click__events-html",
+      "id": "spmvp_html__33__link_click__events-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Lux Veritas Live",
@@ -18028,7 +18124,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__31__link_click__membership-html",
+      "id": "spmvp_html__34__link_click__membership-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Lux Circle",
@@ -18044,7 +18140,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__32__link_click__store-html",
+      "id": "spmvp_html__35__link_click__store-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Lux Atelier",
@@ -18060,7 +18156,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__33__link_click__works-index-html",
+      "id": "spmvp_html__36__link_click__works-index-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Works",
@@ -18076,7 +18172,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__34__link_click__store-html",
+      "id": "spmvp_html__37__link_click__store-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Store",
@@ -18092,7 +18188,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__35__link_click__membership-html",
+      "id": "spmvp_html__38__link_click__membership-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Membership",
@@ -18108,7 +18204,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__36__link_click__submissions-html",
+      "id": "spmvp_html__39__link_click__submissions-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Submissions",
@@ -18124,7 +18220,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__37__link_click__press-html",
+      "id": "spmvp_html__40__link_click__press-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Press",
@@ -18140,7 +18236,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__38__link_click__contact-html",
+      "id": "spmvp_html__41__link_click__contact-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Contact",
@@ -18156,7 +18252,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__39__link_click__legal-privacy-html",
+      "id": "spmvp_html__42__link_click__legal-privacy-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Privacy",
@@ -18172,7 +18268,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__40__link_click__legal-terms-html",
+      "id": "spmvp_html__43__link_click__legal-terms-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Terms",
@@ -18188,7 +18284,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__41__link_click__legal-privacy-html",
+      "id": "spmvp_html__44__link_click__legal-privacy-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Privacy",
@@ -18204,7 +18300,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "spmvp_html__42__link_click__legal-terms-html",
+      "id": "spmvp_html__45__link_click__legal-terms-html",
       "route": "spmvp.html",
       "element": "a",
       "label": "Terms",

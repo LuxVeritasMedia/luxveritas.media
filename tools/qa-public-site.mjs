@@ -23,6 +23,7 @@ const requiredFiles = [
   "data/lux-phase-status.json",
   "data/lux-pilot-write-evidence.json",
   "data/lux-media-manifest.json",
+  "data/lux-radio-programming.json",
   "data/lux-build-manifest.json",
   "data/lux-action-inventory.json",
   "data/lux-legal-review.json",
@@ -279,6 +280,8 @@ for (const file of htmlFiles) {
   if (["music.html", "spmvp.html"].includes(rel)) {
     if (!html.includes("data-media-player")) issues.push(`${rel}: missing Lux Player`);
     if (!html.includes("data-media-source-shell")) issues.push(`${rel}: missing source-ready playback shell`);
+    if (!html.includes("data-radio-programming")) issues.push(`${rel}: missing Lux Radio programming panel`);
+    if (!html.includes('data-track-surface="radio_programming"')) issues.push(`${rel}: missing radio programming tracking surface`);
     for (const action of ["play", "watch", "radio"]) {
       if (!html.includes(`data-media-action="${action}"`)) issues.push(`${rel}: missing media action ${action}`);
     }
@@ -338,6 +341,7 @@ const portalRoomsRaw = await readFile(join(root, "data/lux-portal-rooms.json"), 
 const phaseStatusRaw = await readFile(join(root, "data/lux-phase-status.json"), "utf8");
 const pilotWriteEvidenceRaw = await readFile(join(root, "data/lux-pilot-write-evidence.json"), "utf8");
 const mediaManifestRaw = await readFile(join(root, "data/lux-media-manifest.json"), "utf8");
+const radioProgrammingRaw = await readFile(join(root, "data/lux-radio-programming.json"), "utf8");
 const buildManifestRaw = await readFile(join(root, "data/lux-build-manifest.json"), "utf8");
 const actionInventoryRaw = await readFile(join(root, "data/lux-action-inventory.json"), "utf8");
 const webManifestRaw = await readFile(join(root, "site.webmanifest"), "utf8");
@@ -359,6 +363,7 @@ for (const pattern of bannedTerms) {
   if (pattern.test(phaseStatusRaw)) issues.push(`data/lux-phase-status.json: banned public term matched ${pattern}`);
   if (pattern.test(pilotWriteEvidenceRaw)) issues.push(`data/lux-pilot-write-evidence.json: banned public term matched ${pattern}`);
   if (pattern.test(mediaManifestRaw)) issues.push(`data/lux-media-manifest.json: banned public term matched ${pattern}`);
+  if (pattern.test(radioProgrammingRaw)) issues.push(`data/lux-radio-programming.json: banned public term matched ${pattern}`);
   if (pattern.test(legalReviewRaw)) issues.push(`data/lux-legal-review.json: banned public term matched ${pattern}`);
   if (pattern.test(publicTermsRaw)) issues.push(`data/lux-public-terms.json: banned public term matched ${pattern}`);
 }
@@ -403,8 +408,8 @@ try {
   if (buildManifest.routeCount !== htmlFiles.length) {
     issues.push(`data/lux-build-manifest.json: routeCount ${buildManifest.routeCount} does not match ${htmlFiles.length} generated HTML files`);
   }
-  if (!buildManifest.publicRouteCount || !buildManifest.mediaManifestVersion || !buildManifest.actionInventoryVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.phaseStatusVersion || !buildManifest.publicTermsVersion) {
-    issues.push("data/lux-build-manifest.json: missing publicRouteCount, mediaManifestVersion, actionInventoryVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, phaseStatusVersion, or publicTermsVersion");
+  if (!buildManifest.publicRouteCount || !buildManifest.mediaManifestVersion || !buildManifest.radioProgrammingVersion || !buildManifest.actionInventoryVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.phaseStatusVersion || !buildManifest.publicTermsVersion) {
+    issues.push("data/lux-build-manifest.json: missing publicRouteCount, mediaManifestVersion, radioProgrammingVersion, actionInventoryVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, phaseStatusVersion, or publicTermsVersion");
   }
 } catch (error) {
   issues.push(`data/lux-build-manifest.json: invalid JSON (${error.message})`);
@@ -737,6 +742,32 @@ try {
   }
 } catch (error) {
   issues.push(`data/lux-media-manifest.json: invalid JSON (${error.message})`);
+}
+
+try {
+  const radioProgramming = JSON.parse(radioProgrammingRaw);
+  const slots = Array.isArray(radioProgramming.slots) ? radioProgramming.slots : [];
+  if (radioProgramming.schemaVersion !== "luxveritas.radio_programming.v1") {
+    issues.push("data/lux-radio-programming.json: missing schemaVersion luxveritas.radio_programming.v1");
+  }
+  if (!radioProgramming.version || !radioProgramming.headline || !radioProgramming.summary || !radioProgramming.notice) {
+    issues.push("data/lux-radio-programming.json: missing version, headline, summary, or notice");
+  }
+  if (slots.length < 3) {
+    issues.push("data/lux-radio-programming.json: expected at least 3 public programming slots");
+  }
+  const requiredSlots = new Set(["signal-rotation", "visual-notes", "room-afterglow"]);
+  for (const slot of slots) {
+    if (!requiredSlots.has(slot.id)) issues.push(`data/lux-radio-programming.json: unexpected or missing required slot ${slot.id || "missing"}`);
+    for (const field of ["label", "title", "body", "status", "action"]) {
+      if (!slot[field]) issues.push(`data/lux-radio-programming.json: ${slot.id || "slot"} missing ${field}`);
+    }
+    if (!slot.mediaAction && !slot.formType) {
+      issues.push(`data/lux-radio-programming.json: ${slot.id || "slot"} missing mediaAction or formType`);
+    }
+  }
+} catch (error) {
+  issues.push(`data/lux-radio-programming.json: invalid JSON (${error.message})`);
 }
 
 try {

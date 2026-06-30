@@ -11,6 +11,7 @@ const events = [];
 const reportRequests = [];
 let submitMode = "stored";
 const buildManifest = JSON.parse(await readFile("data/lux-build-manifest.json", "utf8"));
+const actionInventory = JSON.parse(await readFile("data/lux-action-inventory.json", "utf8"));
 const expectedAssetVersion = buildManifest.assetVersion || buildManifest.version || "";
 
 const mockReport = {
@@ -1055,8 +1056,9 @@ async function operatorReportFlow(page, baseUrl) {
   if (!/2 of 4 closeout items closed/.test(closeoutSummaryBeforeLoad)) {
     issues.push(`/portal/reporting.html: expected closeout summary, found "${closeoutSummaryBeforeLoad}"`);
   }
-  if (!/1272 actions across 38 surfaces/.test(actionCoverageSummary)) {
-    issues.push(`/portal/reporting.html: expected action coverage summary, found "${actionCoverageSummary}"`);
+  const expectedActionSummary = `${actionInventory.actionCount} actions across ${actionInventory.routeCount} surfaces`;
+  if (!actionCoverageSummary.includes(expectedActionSummary)) {
+    issues.push(`/portal/reporting.html: expected action coverage summary "${expectedActionSummary}", found "${actionCoverageSummary}"`);
   }
   if (!new RegExp(`Build ${expectedAssetVersion.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`).test(actionCoverageDetail)) {
     issues.push(`/portal/reporting.html: action coverage detail did not show current build, found "${actionCoverageDetail}"`);

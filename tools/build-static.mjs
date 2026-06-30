@@ -4,6 +4,7 @@ import { actionInventoryVersion } from "./lib/action-inventory.mjs";
 
 const assetVersion = "20260622-activation-readiness";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
+const radioProgramming = JSON.parse(await readFile("data/lux-radio-programming.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 const brandHouse = JSON.parse(await readFile("data/lux-brand-house.json", "utf8"));
 const fanFlywheel = JSON.parse(await readFile("data/lux-fan-flywheel.json", "utf8"));
@@ -480,6 +481,32 @@ function mediaPlayerShell(context = "music") {
   </section>`;
 }
 
+function radioProgrammingSection() {
+  const slots = Array.isArray(radioProgramming.slots) ? radioProgramming.slots : [];
+  return `<section class="section" data-radio-programming data-radio-programming-version="${radioProgramming.version || ""}">
+    <div class="section-heading">
+      <p class="kicker">Lux Radio</p>
+      <h2>${radioProgramming.headline || "Lux Radio begins as a signal room."}</h2>
+      <p>${radioProgramming.summary || ""}</p>
+    </div>
+    <div class="release-rail" aria-label="Lux Radio programming">
+      ${slots.map((slot) => {
+        const action = slot.mediaAction
+          ? `<button class="button button-primary" type="button" data-media-action="${slot.mediaAction}" data-track-surface="radio_programming" data-track-intent="radio_${slot.id}" data-track-label="${slot.title}">${slot.action || "Tune in"}</button>`
+          : `<button class="button button-quiet" type="button" data-open-form="${slot.formType || "fan"}" data-track-surface="radio_programming" data-track-intent="radio_${slot.id}" data-track-label="${slot.title}">${slot.action || "Join for radio access"}</button>`;
+        return `<article data-radio-slot="${slot.id}">
+          <span>${slot.label || "Radio"}</span>
+          <h3>${slot.title || "Signal"}</h3>
+          <p>${slot.body || ""}</p>
+          <small>${slot.status || "Preview"}</small>
+          ${action}
+        </article>`;
+      }).join("")}
+    </div>
+    <p class="drop-notice">${radioProgramming.notice || ""}</p>
+  </section>`;
+}
+
 function home() {
   return shell({
     path: "/index.html",
@@ -523,6 +550,7 @@ function music() {
     description: "Sound as signal. Lux Veritas releases music as the first doorway into a larger world.",
     body: `${pageHero("Music", "Sound as signal.", "Lux Veritas releases music as the first doorway into a larger world: songs, visuals, live rooms, stories, and fan participation moving together.\n\nEvery release is intentional, protected, and built to last.", `<div class="hero-actions"><button class="button button-primary" type="button" data-media-action="play">Listen</button><button class="button button-quiet" type="button" data-media-action="watch">Watch</button><button class="button button-quiet" type="button" data-open-form="fan">Join for early access</button></div>`)}
     ${mediaPlayerShell("music")}
+    ${radioProgrammingSection()}
     <section class="section"><div class="release-rail">${releaseCards.map(([title, type, body]) => `<article><span>${type}</span><h3>${title}</h3><p>${body}</p></article>`).join("")}</div></section>
     <section class="section split-band"><div><p class="kicker">Current Motion</p><h2>Music that arrives with atmosphere.</h2></div><div class="checklist"><p>Follow the latest release rooms, filmed sessions, and live appearances. If the work meets you, the next door is easy: listen, watch, join.</p><div class="hero-actions"><a class="button button-primary" href="/spmvp.html">Listen</a><button class="button button-quiet" data-open-form="fan">Join for early access</button></div></div></section>${fanSignalSection()}${cta()}`
   });
@@ -1021,7 +1049,7 @@ const pages = [
   `, "press", true, "Contact")],
   ["/offline.html", shell({ path: "/offline.html", title: "Offline | Lux Veritas", description: "A Lux Veritas offline fallback for the public portal.", noindex: true, body: `${pageHero("Offline", "Signal Paused.", "The Lux Veritas portal could not reach the network. Reconnect and return to continue listening, watching, joining, and requesting access.", `<div class="hero-actions"><a class="button button-primary" href="/index.html">Return Home</a><a class="button button-quiet" href="/music.html">Music</a></div>`)}
     <section class="section empty-state"><p class="kicker">Saved Shell</p><h2>The door is still here.</h2><p>This fallback keeps the public entrance present while your connection returns. Forms, private reports, and fresh media actions need the live network.</p></section>` })],
-  ["/spmvp.html", shell({ path: "/spmvp.html", title: "SPMVP | Lux Veritas", description: "A release room for a new Lux Veritas music drop.", body: `${pageHero("New Drop", "SPMVP", "Start with the drop. Follow the signal. Join for the deeper version.", `<div class="hero-actions"><button class="button button-primary" type="button" data-media-action="play">Listen</button><button class="button button-quiet" type="button" data-media-action="watch">Watch</button><button class="button button-quiet" type="button" data-open-form="fan">Join for early access</button></div>`)}${mediaPlayerShell("spmvp")}<section class="section split-band"><div><p class="kicker">Context</p><h2>Enter through the work.</h2></div><div><p>Listen, watch, and enter the Lux Veritas circle for early access, private drops, and future live rooms.</p></div></section>` })],
+  ["/spmvp.html", shell({ path: "/spmvp.html", title: "SPMVP | Lux Veritas", description: "A release room for a new Lux Veritas music drop.", body: `${pageHero("New Drop", "SPMVP", "Start with the drop. Follow the signal. Join for the deeper version.", `<div class="hero-actions"><button class="button button-primary" type="button" data-media-action="play">Listen</button><button class="button button-quiet" type="button" data-media-action="watch">Watch</button><button class="button button-quiet" type="button" data-open-form="fan">Join for early access</button></div>`)}${mediaPlayerShell("spmvp")}${radioProgrammingSection()}<section class="section split-band"><div><p class="kicker">Context</p><h2>Enter through the work.</h2></div><div><p>Listen, watch, and enter the Lux Veritas circle for early access, private drops, and future live rooms.</p></div></section>` })],
   ["/auth/signin.html", signInShell()],
   ["/portal/index.html", portalIndex()],
   ["/portal/library.html", accessShell("/portal/library.html", "Creator", "Private creator materials are available by screened access.", "Creator tools and private materials are not published in the public layer.", "Request Creator Access", "Join", "creator")],
@@ -1163,6 +1191,7 @@ await writeFile("data/lux-build-manifest.json", `${JSON.stringify({
   version: assetVersion,
   assetVersion,
   mediaManifestVersion: mediaManifest.version,
+  radioProgrammingVersion: radioProgramming.version,
   actionInventoryVersion,
   brandHouseVersion: brandHouse.version,
   fanFlywheelVersion: fanFlywheel.version,

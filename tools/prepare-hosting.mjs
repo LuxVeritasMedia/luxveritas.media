@@ -83,6 +83,7 @@ await cp("data/lux-drop-room.json", join(dist, "data/lux-drop-room.json"));
 await cp("data/lux-portal-rooms.json", join(dist, "data/lux-portal-rooms.json"));
 await cp("data/lux-phase-status.json", join(dist, "data/lux-phase-status.json"));
 await cp("data/lux-media-manifest.json", join(dist, "data/lux-media-manifest.json"));
+await cp("data/lux-radio-programming.json", join(dist, "data/lux-radio-programming.json"));
 await cp("data/lux-build-manifest.json", join(dist, "data/lux-build-manifest.json"));
 await cp("data/lux-action-inventory.json", join(dist, "data/lux-action-inventory.json"));
 await cp("data/lux-launch-readiness.json", join(dist, "data/lux-launch-readiness.json"));
@@ -119,6 +120,7 @@ const requiredNonEmpty = [
   "data/lux-build-manifest.json",
   "data/lux-action-inventory.json",
   "data/lux-media-manifest.json",
+  "data/lux-radio-programming.json",
   "data/lux-launch-readiness.json",
   "data/lux-pilot-write-evidence.json",
   "data/lux-launch-closeout-public.json",
@@ -133,4 +135,4 @@ for (const file of requiredNonEmpty) {
   }
 }
 
-console.log(`Prepared Firebase Hosting artifact with ${files.length + assetFiles.length + 13} files.`);
+console.log(`Prepared Firebase Hosting artifact with ${files.length + assetFiles.length + 14} files.`);
