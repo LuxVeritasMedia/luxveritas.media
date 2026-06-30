@@ -157,7 +157,8 @@ Ask Arie to open these files in this order:
 2. [docs/arie-handoff-website-build.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/arie-handoff-website-build.md)
 3. [AGENTS.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/AGENTS.md)
 4. [tools/build-static.mjs](/Users/frederickparent/Documents/Codex/LuxVeritas-website/tools/build-static.mjs)
-5. [TODO.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/TODO.md)
+5. [tools/serve-preview.mjs](/Users/frederickparent/Documents/Codex/LuxVeritas-website/tools/serve-preview.mjs)
+6. [TODO.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/TODO.md)
 
 ## What Arie Should Run First
 
@@ -165,13 +166,13 @@ From the project root:
 
 ```bash
 node tools/build-static.mjs
-python3 -m http.server 4173
+node tools/serve-preview.mjs
 ```
 
 Then open:
 
 ```text
-http://localhost:4173/index.html
+Use the Local URL printed by `node tools/serve-preview.mjs`.
 ```
 
 ## Upload Steps

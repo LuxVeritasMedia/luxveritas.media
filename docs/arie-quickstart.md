@@ -35,19 +35,19 @@ From the project root:
 
 ```bash
 node tools/build-static.mjs
-python3 -m http.server 4173
+node tools/serve-preview.mjs
 ```
 
 Preview locally:
 
 ```text
-http://localhost:4173/index.html
+Use the Local URL printed by `node tools/serve-preview.mjs`.
 ```
 
 If testing on phone on same Wi-Fi, use the host machine IP:
 
 ```text
-http://YOUR-LAN-IP:4173/index.html
+http://YOUR-LAN-IP:PRINTED-PORT/index.html
 ```
 
 ## What To Understand Before Editing
@@ -196,4 +196,3 @@ Current known open items include:
 - mobile QA
 - CTA QA
 - final verification that public copy stays clean of internal/ops language
-

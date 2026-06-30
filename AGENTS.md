@@ -54,7 +54,7 @@ Run:
 
 ```bash
 node tools/build-static.mjs
-python3 -m http.server 4173
+node tools/serve-preview.mjs
 ```
 
 ## Target Production Stack

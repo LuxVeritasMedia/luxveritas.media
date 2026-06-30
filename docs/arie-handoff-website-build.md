@@ -65,13 +65,13 @@ Run locally:
 
 ```bash
 node tools/build-static.mjs
-python3 -m http.server 4173
+node tools/serve-preview.mjs
 ```
 
 Local preview:
 
 ```text
-http://localhost:4173/index.html
+Use the Local URL printed by `node tools/serve-preview.mjs`.
 ```
 
 ## Long-Term Production Direction
@@ -533,4 +533,3 @@ What I can do:
 - prepare the handoff files locally
 - help you choose the exact folder structure to upload
 - prepare a second short `README` specifically for Arie if you want a tighter version than this full handoff
-

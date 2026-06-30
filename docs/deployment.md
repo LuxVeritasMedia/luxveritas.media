@@ -6,8 +6,10 @@ Preview locally:
 
 ```bash
 node tools/build-static.mjs
-python3 -m http.server 4173
+node tools/serve-preview.mjs
 ```
+
+The preview helper serves `dist`, verifies `/data/lux-build-manifest.json`, and automatically moves to the next open port if `4173` is already occupied. Use `LUX_PREVIEW_PORT=4180 node tools/serve-preview.mjs` when you need a specific alternate port.
 
 Run the pilot readiness gate before release checks or deploys:
 
@@ -57,7 +59,7 @@ Before launch-day operations, check the local operator machine:
 node tools/qa-operator-environment.mjs
 ```
 
-This no-secret check confirms the repo, Node runtime, Firebase CLI, Firebase login/project visibility, optional GitHub CLI, live asset version pointer, and local preview port. The Firebase CLI account must be `info@luxveritas.media`; a different Google account can make provider secrets look missing even when production is healthy. Use `LUX_OPERATOR_ENV_STRICT=1` only when machine setup warnings or blockers should fail the command.
+This no-secret check confirms the repo, Node runtime, Firebase CLI, Firebase login/project visibility, optional GitHub CLI, live asset version pointer, and local preview port. If `4173` is occupied, the check distinguishes a current Lux Veritas preview from another local app; use `node tools/serve-preview.mjs` to start the preview on the next open port without stopping unrelated work. The Firebase CLI account must be `info@luxveritas.media`; a different Google account can make provider secrets look missing even when production is healthy. Use `LUX_OPERATOR_ENV_STRICT=1` only when machine setup warnings or blockers should fail the command.
 
 If Homebrew is unavailable or sudo is not approved, a no-sudo GitHub CLI can live at `.codex-tools/gh-local/bin/gh`. The operator check recognizes that repo-local path. To run `gh` manually from this shell, use:
 

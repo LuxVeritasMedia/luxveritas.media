@@ -83,6 +83,7 @@ for (const file of [
   "AGENTS.md",
   "firebase.json",
   "tools/build-static.mjs",
+  "tools/serve-preview.mjs",
   "tools/qa-pilot-write-gate.mjs",
   "tools/qa-live-write-reconciliation.mjs",
   "tools/qa-functions-deploy-readiness.mjs",
@@ -201,7 +202,7 @@ if (port.ok && port.stdout) {
   } else if (previewManifest.ok) {
     warn(`localhost:4173 is serving a Lux Veritas preview with asset ${previewManifest.json?.assetVersion || "missing"}, expected ${buildManifest.assetVersion}.`);
   } else {
-    warn(`localhost:4173 is occupied by process ${processId}, but it is not serving the Lux Veritas build manifest; stop that process or use another preview port before local browser QA.`);
+    warn(`localhost:4173 is occupied by process ${processId}, but it is not serving the Lux Veritas build manifest; run node tools/serve-preview.mjs to auto-select a safe preview port before local browser QA.`);
   }
 } else {
   pass("localhost:4173 is free for the documented static preview server.");
