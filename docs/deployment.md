@@ -392,7 +392,7 @@ node tools/qa-private-workflow-selection.mjs
 node tools/qa-private-integration-request.mjs
 ```
 
-The exported request lists the active and future profile labels, required Firebase secret names, handoff contract, dry-run command, approval guard for future profiles, and acceptance checks. It also renders a focused `google_workspace` first-activation section with required approval fields, queue coverage, dry-run command, post-activation checks, acceptance criteria, and Firebase rollback. Move the generated file to the private launch folder before storing real provider URLs, workflow notes, or approval records.
+The exported request lists the active and future profile labels, required Firebase secret names, handoff contract, current pilot-write evidence, a sanitized receiver implementation sample, dry-run command, approval guard for future profiles, and acceptance checks. It also renders a focused `google_workspace` first-activation section with required approval fields, queue coverage, dry-run command, post-activation checks, acceptance criteria, and Firebase rollback. Move the generated file to the private launch folder before storing real provider URLs, workflow notes, or approval records.
 
 The private operator report includes accepted handoff counts, recent handoff receipts, and handoff summaries by target, event type, source page, and routing queue. Pending handoffs still come from submission records whose `integrationStatus` has not reached `sent`; accepted handoffs come from the protected `private_handoffs` collection.
 

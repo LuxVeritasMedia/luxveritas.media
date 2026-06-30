@@ -1,5 +1,12 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { dirname } from "node:path";
+import {
+  buildIntegrationPayload,
+  integrationBaseHeaders,
+  integrationSignature,
+  integrationContractVersion,
+  integrationEventType
+} from "../functions/integration-contract.js";
 
 const format = process.env.LUX_PRIVATE_INTEGRATION_PACKET_FORMAT === "json" ? "json" : "markdown";
 const outPath = process.env.LUX_PRIVATE_INTEGRATION_PACKET_OUT || "";
@@ -13,22 +20,22 @@ const [
   fieldMapRaw,
   workflowMatrixRaw,
   workflowSelectionRaw,
+  pilotEvidenceRaw,
   launchRaw,
   closeoutRaw,
-  buildRaw,
-  contractJs
+  buildRaw
 ] = await Promise.all([
   readFile("docs/private-integration-profiles.json", "utf8"),
   readFile("docs/private-integration-field-map.json", "utf8"),
   readFile("docs/private-workflow-matrix.json", "utf8"),
   readFile("docs/private-workflow-selection.json", "utf8"),
+  readFile("data/lux-pilot-write-evidence.json", "utf8"),
   readFile("data/lux-launch-readiness.json", "utf8"),
   readFile("data/lux-launch-closeout.json", "utf8"),
-  readFile("data/lux-build-manifest.json", "utf8"),
-  readFile("functions/integration-contract.js", "utf8")
+  readFile("data/lux-build-manifest.json", "utf8")
 ]);
 
-if (secretShape(`${profilesRaw}\n${fieldMapRaw}\n${workflowMatrixRaw}\n${workflowSelectionRaw}\n${launchRaw}\n${closeoutRaw}\n${buildRaw}`)) {
+if (secretShape(`${profilesRaw}\n${fieldMapRaw}\n${workflowMatrixRaw}\n${workflowSelectionRaw}\n${pilotEvidenceRaw}\n${launchRaw}\n${closeoutRaw}\n${buildRaw}`)) {
   console.error("Private integration request input appears to contain secret-shaped data.");
   process.exit(1);
 }
@@ -37,6 +44,7 @@ const registry = JSON.parse(profilesRaw);
 const fieldMap = JSON.parse(fieldMapRaw);
 const workflowMatrix = JSON.parse(workflowMatrixRaw);
 const workflowSelection = JSON.parse(workflowSelectionRaw);
+const pilotEvidence = JSON.parse(pilotEvidenceRaw);
 const launch = JSON.parse(launchRaw);
 const closeout = JSON.parse(closeoutRaw);
 const build = JSON.parse(buildRaw);
@@ -52,9 +60,45 @@ const recommendedActivation = Array.isArray(workflowSelection.recommendedActivat
   : null;
 const privateHandoffGate = (Array.isArray(launch.gates) ? launch.gates : [])
   .find((gate) => gate.id === "private_handoff");
-const integrationContractVersion = contractJs.match(/integrationContractVersion\s*=\s*"([^"]+)"/)?.[1] || "luxveritas.form_submission.v1";
-const integrationEventType = contractJs.match(/integrationEventType\s*=\s*"([^"]+)"/)?.[1] || "form.submission.received";
 const requiredSecrets = [...new Set(profiles.flatMap((profile) => profile.requiredSecrets || []))].sort();
+const sampleSubmissionId = "sample-submission-id";
+const sampleReceivedAt = "2026-06-30T00:00:00.000Z";
+const samplePayload = buildIntegrationPayload({
+  client_submission_id: "sample-receipt-id",
+  source: "luxveritas.media",
+  source_page: "/membership.html",
+  formType: "membership",
+  tag: "membership_waitlist",
+  inquiry_type: "membership",
+  inquiry_key: "membership",
+  interest_paths: ["music", "events", "drops", "community"],
+  role_path: "member",
+  access_path: "first_access",
+  portal_role_target: "member",
+  routing_queue: "membership_waitlist",
+  routing_label: "Membership Waitlist",
+  routing_priority: "standard",
+  routing_next_action: "send_first_access_follow_up",
+  routing_sla: "3 business days",
+  name: "Sample Reviewer",
+  email: "integration-review@example.com",
+  phone: "",
+  consent_email: true,
+  consent_sms: false,
+  public_terms_version: "2026-06-09-public-capture",
+  privacy_version: "privacy-draft-2026-06-09",
+  terms_version: "terms-draft-2026-06-09",
+  submission_terms_version: "submission-draft-2026-06-09",
+  message: "Sample private handoff payload for receiver implementation."
+}, sampleSubmissionId, {
+  receivedAt: sampleReceivedAt,
+  integrationTarget: recommendedTarget || "google_workspace"
+});
+const sampleBody = JSON.stringify(samplePayload);
+const sampleHeaders = {
+  ...integrationBaseHeaders(sampleSubmissionId, { integrationTarget: recommendedTarget || "google_workspace" }),
+  "X-Lux-Signature": integrationSignature(sampleBody, "sample-shared-secret-not-production")
+};
 
 function fieldBuckets(profile = {}) {
   return Object.fromEntries(
@@ -96,6 +140,18 @@ const packet = {
     nextAction: privateHandoffGate.nextAction,
     verification: privateHandoffGate.verification
   } : null,
+  pilotEvidence: {
+    source: "data/lux-pilot-write-evidence.json",
+    updatedAt: pilotEvidence.updatedAt || "",
+    result: pilotEvidence.result || "",
+    qaRunId: pilotEvidence.qaRunId || "",
+    assetVersion: pilotEvidence.assetVersion || "",
+    formCaptureIntents: pilotEvidence.writeEvidence?.formCaptureIntents ?? null,
+    eventWrites: pilotEvidence.writeEvidence?.eventWrites ?? null,
+    inboxDeliveryRequired: pilotEvidence.writeEvidence?.inboxDeliveryRequired === true,
+    operatorReportVerified: pilotEvidence.writeEvidence?.operatorReportVerified === true,
+    postWriteReconciliation: pilotEvidence.writeEvidence?.postWriteReconciliation === true
+  },
   contract: {
     schemaVersion: integrationContractVersion,
     eventType: integrationEventType,
@@ -107,6 +163,18 @@ const packet = {
       "X-Lux-Target",
       "X-Lux-Signature"
     ]
+  },
+  receiverImplementation: {
+    method: "POST",
+    contentType: "application/json",
+    timeoutMs: 6000,
+    expectedSuccess: "Any 2xx response marks the private handoff delivered.",
+    expectedFailure: "Non-2xx, timeout, or request errors keep the record replayable from protected operator reporting.",
+    idempotency: "Receiver should dedupe by X-Lux-Idempotency-Key and payload.idempotencyKey.",
+    signature: "When a signing secret is configured, verify X-Lux-Signature as HMAC-SHA256 over the raw request body.",
+    sampleSigningSecret: "sample-shared-secret-not-production",
+    sampleHeaders,
+    samplePayload
   },
   fieldMap: {
     schemaVersion: fieldMap.schemaVersion || "",
@@ -285,6 +353,19 @@ Asset version: ${packet.assetVersion}
 - Next action: ${packet.handoffGate?.nextAction || "missing"}
 - Verification: ${packet.handoffGate?.verification || "missing"}
 
+## Current Pilot Evidence
+
+- Source: ${packet.pilotEvidence.source}
+- Result: ${packet.pilotEvidence.result}
+- QA run ID: ${packet.pilotEvidence.qaRunId}
+- Asset version: ${packet.pilotEvidence.assetVersion}
+- Updated: ${packet.pilotEvidence.updatedAt}
+- Live capture intents: ${packet.pilotEvidence.formCaptureIntents}
+- Live event writes: ${packet.pilotEvidence.eventWrites}
+- Inbox delivery required: ${packet.pilotEvidence.inboxDeliveryRequired ? "yes" : "no"}
+- Operator report verified: ${packet.pilotEvidence.operatorReportVerified ? "yes" : "no"}
+- Post-write reconciliation: ${packet.pilotEvidence.postWriteReconciliation ? "yes" : "no"}
+
 ## Contract
 
 - Schema: ${packet.contract.schemaVersion}
@@ -292,6 +373,29 @@ Asset version: ${packet.assetVersion}
 - Replay safe: ${packet.contract.replaySafe ? "yes" : "no"}
 - Idempotency key: ${packet.contract.idempotencyKeyShape}
 - Headers: ${packet.contract.headers.join(", ")}
+
+## Receiver Implementation Sample
+
+- Method: ${packet.receiverImplementation.method}
+- Content type: ${packet.receiverImplementation.contentType}
+- Timeout: ${packet.receiverImplementation.timeoutMs}ms
+- Success: ${packet.receiverImplementation.expectedSuccess}
+- Failure: ${packet.receiverImplementation.expectedFailure}
+- Idempotency: ${packet.receiverImplementation.idempotency}
+- Signature: ${packet.receiverImplementation.signature}
+- Sample signing secret: ${packet.receiverImplementation.sampleSigningSecret}
+
+Sample headers:
+
+\`\`\`json
+${JSON.stringify(packet.receiverImplementation.sampleHeaders, null, 2)}
+\`\`\`
+
+Sample payload:
+
+\`\`\`json
+${JSON.stringify(packet.receiverImplementation.samplePayload, null, 2)}
+\`\`\`
 
 ## Downstream Field Map
 

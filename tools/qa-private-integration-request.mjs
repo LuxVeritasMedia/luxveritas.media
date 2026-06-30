@@ -13,7 +13,7 @@ function secretShape(value) {
   return /\bre_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}|FORM_INTEGRATION_URL=https:\/\/\S+/i.test(value);
 }
 
-const [markdownResult, jsonResult, profilesRaw, fieldMapRaw, workflowMatrixRaw] = await Promise.all([
+const [markdownResult, jsonResult, profilesRaw, fieldMapRaw, workflowMatrixRaw, pilotEvidenceRaw] = await Promise.all([
   execFileAsync(process.execPath, ["tools/export-private-integration-request.mjs"], {
     timeout: 30000,
     maxBuffer: 1024 * 1024 * 4
@@ -25,7 +25,8 @@ const [markdownResult, jsonResult, profilesRaw, fieldMapRaw, workflowMatrixRaw] 
   }),
   readFile("docs/private-integration-profiles.json", "utf8"),
   readFile("docs/private-integration-field-map.json", "utf8"),
-  readFile("docs/private-workflow-matrix.json", "utf8")
+  readFile("docs/private-workflow-matrix.json", "utf8"),
+  readFile("data/lux-pilot-write-evidence.json", "utf8")
 ]);
 
 const markdown = markdownResult.stdout;
@@ -33,6 +34,7 @@ const jsonRaw = jsonResult.stdout;
 const registry = JSON.parse(profilesRaw);
 const fieldMap = JSON.parse(fieldMapRaw);
 const workflowMatrix = JSON.parse(workflowMatrixRaw);
+const pilotEvidence = JSON.parse(pilotEvidenceRaw);
 const profiles = Array.isArray(registry.profiles) ? registry.profiles : [];
 
 if (secretShape(markdown) || secretShape(jsonRaw)) {
@@ -43,9 +45,18 @@ for (const marker of [
   "# Lux Veritas Private Integration Activation Request",
   "No-secret private handoff activation request",
   "Current Handoff Gate",
+  "Current Pilot Evidence",
+  "Live capture intents: 11",
+  "Live event writes: 12",
   "Downstream Field Map",
   "Downstream Workflow Matrix",
   "Private Workflow Selection",
+  "Receiver Implementation Sample",
+  "Sample headers:",
+  "Sample payload:",
+  "sample-shared-secret-not-production",
+  "integration-review@example.com",
+  "membership_waitlist",
   "Recommended first external target: google_workspace",
   "Recommended First External Activation",
   "Target: google_workspace",
@@ -90,6 +101,14 @@ if (packet) {
   if (packet.liveUrl !== "https://luxveritas.media") issue("private integration request liveUrl mismatch");
   if (!packet.assetVersion) issue("private integration request assetVersion missing");
   if (packet.registry?.schemaVersion !== registry.schemaVersion) issue("profile registry schema mismatch");
+  if (packet.pilotEvidence?.source !== "data/lux-pilot-write-evidence.json") issue("pilot evidence source mismatch");
+  if (packet.pilotEvidence?.qaRunId !== pilotEvidence.qaRunId) issue("pilot evidence QA run mismatch");
+  if (packet.pilotEvidence?.assetVersion !== pilotEvidence.assetVersion) issue("pilot evidence asset version mismatch");
+  if (packet.pilotEvidence?.formCaptureIntents !== pilotEvidence.writeEvidence?.formCaptureIntents) issue("pilot evidence form count mismatch");
+  if (packet.pilotEvidence?.eventWrites !== pilotEvidence.writeEvidence?.eventWrites) issue("pilot evidence event count mismatch");
+  if (packet.pilotEvidence?.inboxDeliveryRequired !== true) issue("pilot evidence inbox flag missing");
+  if (packet.pilotEvidence?.operatorReportVerified !== true) issue("pilot evidence operator report flag missing");
+  if (packet.pilotEvidence?.postWriteReconciliation !== true) issue("pilot evidence reconciliation flag missing");
   if (packet.fieldMap?.schemaVersion !== fieldMap.schemaVersion) issue("field map schema mismatch");
   if (packet.fieldMap?.contract !== "luxveritas.form_submission.v1") issue("field map contract mismatch");
   if (packet.fieldMap?.eventType !== "form.submission.received") issue("field map event mismatch");
@@ -180,6 +199,21 @@ if (packet) {
   for (const header of ["X-Lux-Event", "X-Lux-Idempotency-Key", "X-Lux-Target", "X-Lux-Signature"]) {
     if (!packet.contract?.headers?.includes(header)) issue(`contract missing header ${header}`);
   }
+  if (packet.receiverImplementation?.method !== "POST") issue("receiver implementation method mismatch");
+  if (packet.receiverImplementation?.contentType !== "application/json") issue("receiver implementation content type mismatch");
+  if (packet.receiverImplementation?.timeoutMs !== 6000) issue("receiver implementation timeout mismatch");
+  if (!packet.receiverImplementation?.expectedSuccess?.includes("2xx")) issue("receiver implementation missing 2xx success rule");
+  if (!packet.receiverImplementation?.expectedFailure?.includes("replayable")) issue("receiver implementation missing replayable failure rule");
+  if (!packet.receiverImplementation?.idempotency?.includes("X-Lux-Idempotency-Key")) issue("receiver implementation missing idempotency guidance");
+  if (!packet.receiverImplementation?.signature?.includes("HMAC-SHA256")) issue("receiver implementation missing signature guidance");
+  if (packet.receiverImplementation?.sampleSigningSecret !== "sample-shared-secret-not-production") issue("receiver implementation sample secret mismatch");
+  if (packet.receiverImplementation?.sampleHeaders?.["X-Lux-Target"] !== "google_workspace") issue("receiver sample headers target mismatch");
+  if (!/^[a-f0-9]{64}$/.test(packet.receiverImplementation?.sampleHeaders?.["X-Lux-Signature"] || "")) issue("receiver sample signature shape mismatch");
+  if (packet.receiverImplementation?.samplePayload?.schemaVersion !== "luxveritas.form_submission.v1") issue("receiver sample payload schema mismatch");
+  if (packet.receiverImplementation?.samplePayload?.eventType !== "form.submission.received") issue("receiver sample payload event mismatch");
+  if (packet.receiverImplementation?.samplePayload?.integrationTarget !== "google_workspace") issue("receiver sample payload target mismatch");
+  if (packet.receiverImplementation?.samplePayload?.routing?.queue !== "membership_waitlist") issue("receiver sample payload routing mismatch");
+  if (packet.receiverImplementation?.samplePayload?.contact?.email !== "integration-review@example.com") issue("receiver sample payload email mismatch");
   for (const secret of ["FORM_INTEGRATION_URL", "FORM_INTEGRATION_SIGNING_SECRET", "FORM_INTEGRATION_TARGET"]) {
     if (!packet.requiredSecrets?.includes(secret)) issue(`private integration request missing secret ${secret}`);
   }
