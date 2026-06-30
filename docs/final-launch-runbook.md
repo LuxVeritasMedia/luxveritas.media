@@ -28,6 +28,8 @@ node tools/export-launch-evidence.mjs
 node tools/qa-launch-evidence.mjs
 node tools/qa-pilot-test-matrix.mjs
 node tools/qa-pilot-write-evidence.mjs
+node tools/report-open-approvals.mjs
+node tools/qa-open-approvals.mjs
 node tools/qa-action-inventory.mjs
 node tools/qa-private-integration-activation-dry-runs.mjs
 node tools/qa-functions-iam-repair-request.mjs

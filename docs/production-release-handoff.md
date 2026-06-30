@@ -64,6 +64,8 @@ Before selecting the external target, review `docs/private-workflow-matrix.json`
 
 Use `docs/launch-blocker-resolution.md` as the operational closeout packet for the remaining release blockers. Use `docs/legal-review-packet.md` for Privacy and Terms review. Use `docs/final-launch-runbook.md` for the exact final launch sequence. Use `node tools/export-launch-evidence.mjs` for a no-secret release packet that includes phase, media, action coverage, launch gates, closeout, and command summaries.
 
+Use `node tools/report-open-approvals.mjs` for a no-secret live operator view of every remaining approval, including whether each item blocks public launch or is automation/private workflow follow-up. Validate the approval view with `node tools/qa-open-approvals.mjs`.
+
 Automation hardening note: if manual GitHub Functions deploys still fail on `iam.serviceAccounts.ActAs`, use `docs/functions-deploy-iam-repair.md` to grant the GitHub deploy service account `roles/iam.serviceAccountUser` on `lux-veritas-media@appspot.gserviceaccount.com`, then rerun `node tools/qa-functions-deploy-readiness.mjs`. This IAM change requires explicit project-owner approval before any agent, local command, or GitHub workflow mutates Google Cloud IAM.
 
 For a current no-secret administrator handoff, export `LUX_FUNCTIONS_IAM_PACKET_OUT=/tmp/lux-functions-iam-repair-request.md node tools/export-functions-iam-repair-request.mjs`, then validate it with `node tools/qa-functions-iam-repair-request.mjs`.

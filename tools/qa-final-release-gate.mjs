@@ -34,6 +34,11 @@ const checks = [
     env: {}
   },
   {
+    label: "Open Approvals",
+    script: "tools/qa-open-approvals.mjs",
+    env: {}
+  },
+  {
     label: "Legal Sync",
     script: "tools/qa-legal-sync.mjs",
     env: {}

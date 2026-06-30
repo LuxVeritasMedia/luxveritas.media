@@ -8,6 +8,8 @@ const deployStatus = await readFile("tools/qa-deploy-status.mjs", "utf8");
 const functionsDeployReadiness = await readFile("tools/qa-functions-deploy-readiness.mjs", "utf8");
 const functionsIamRepairRequest = await readFile("tools/qa-functions-iam-repair-request.mjs", "utf8");
 const functionsIamRepairExport = await readFile("tools/export-functions-iam-repair-request.mjs", "utf8");
+const openApprovals = await readFile("tools/report-open-approvals.mjs", "utf8");
+const openApprovalsQa = await readFile("tools/qa-open-approvals.mjs", "utf8");
 const inboxActivation = await readFile("tools/activate-inbox-delivery.mjs", "utf8");
 const privateIntegrationActivation = await readFile("tools/activate-private-integration.mjs", "utf8");
 const wwwResolver = await readFile("tools/resolve-www-domain.mjs", "utf8");
@@ -41,6 +43,7 @@ for (const marker of [
   "node tools/qa-action-inventory.mjs",
   "node tools/qa-launch-closeout.mjs",
   "node tools/qa-launch-blockers.mjs",
+  "node tools/qa-open-approvals.mjs",
   "node tools/qa-mvp-status.mjs",
   "node tools/qa-launch-evidence.mjs",
   "node tools/qa-pilot-write-evidence.mjs",
@@ -198,6 +201,7 @@ for (const marker of [
   "node tools/qa-launch-closeout.mjs",
   "node tools/qa-legal-sync.mjs",
   "node tools/qa-launch-blockers.mjs",
+  "node tools/qa-open-approvals.mjs",
   "node tools/qa-mvp-status.mjs",
   "node tools/qa-launch-evidence.mjs",
   "node tools/qa-pilot-write-evidence.mjs",
@@ -253,6 +257,25 @@ for (const marker of [
 ]) {
   if (!functionsIamRepairRequest.includes(marker) && !functionsIamRepairExport.includes(marker)) {
     issues.push(`Functions IAM repair tooling missing ${marker}`);
+  }
+}
+
+for (const marker of [
+  "luxveritas.open_approvals_report.v1",
+  "LUX_OPEN_APPROVALS_JSON",
+  "external_approvals_pending",
+  "privacy_review",
+  "terms_review",
+  "functions_deploy_iam",
+  "external_workflow_target",
+  "seed_binder_private_upload",
+  "blocksPublicLaunch",
+  "node tools/qa-release-readiness.mjs",
+  "node tools/qa-functions-deploy-readiness.mjs",
+  "node tools/qa-private-workflow-selection.mjs"
+]) {
+  if (!openApprovals.includes(marker) && !openApprovalsQa.includes(marker)) {
+    issues.push(`open approvals tooling missing ${marker}`);
   }
 }
 
