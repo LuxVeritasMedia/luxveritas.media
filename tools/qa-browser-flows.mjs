@@ -46,6 +46,25 @@ const mockReport = {
         deliveryStatus: "stored",
         integrationStatus: "sent",
         client_submission_id: "LV-QA-REPORT"
+      },
+      {
+        id: "sub_qa_feedback",
+        createdAt: "2026-06-09T00:04:00.000Z",
+        formType: "feedback",
+        inquiry_type: "Pilot Feedback",
+        role_path: "General",
+        access_path: "general",
+        portal_role_target: "visitor",
+        inquiry_key: "pilot_feedback",
+        interest_paths: ["music"],
+        routing_queue: "access_review",
+        routing_label: "Pilot Feedback",
+        routing_priority: "high",
+        routing_next_action: "Review tester issue and update release QA notes",
+        deliveryStatus: "sent",
+        integrationStatus: "sent",
+        source_page: "/pilot-feedback.html",
+        client_submission_id: "LV-QA-FEEDBACK"
       }
     ],
     events: [
@@ -169,6 +188,28 @@ const mockReport = {
       byRoutingPriority: [{ label: "standard", count: 24 }],
       byDeliveryStatus: [{ label: "stored", count: 35 }, { label: "email_provider_not_configured", count: 7 }],
       byIntegrationStatus: [{ label: "sent", count: 42 }]
+    },
+    pilotFeedback: {
+      total: 3,
+      highPriority: 3,
+      pendingInbox: 0,
+      pendingHandoff: 0,
+      latestAt: "2026-06-09T00:04:00.000Z",
+      oldestAgeDays: 0,
+      bySourcePage: [{ label: "/pilot-feedback.html", count: 3 }],
+      byDeliveryStatus: [{ label: "sent", count: 3 }],
+      byIntegrationStatus: [{ label: "sent", count: 3 }],
+      latest: [
+        {
+          receiptId: "LV-QA-FEEDBACK",
+          sourcePage: "/pilot-feedback.html",
+          routingPriority: "high",
+          deliveryStatus: "sent",
+          integrationStatus: "sent",
+          nextAction: "Review tester issue and update release QA notes",
+          createdAt: "2026-06-09T00:04:00.000Z"
+        }
+      ]
     },
     handoffs: {
       byTarget: [{ label: "firebase_handoff", count: 9 }],
@@ -1214,6 +1255,9 @@ async function operatorReportFlow(page, baseUrl) {
   const queueDetail = await page.locator('[data-private-queue="detail"]').innerText();
   const queueList = await page.locator('[data-private-queue="list"]').innerText();
   const funnelSummary = await page.locator("[data-private-funnel]").innerText();
+  const feedbackSummary = await page.locator('[data-private-feedback="summary"]').innerText();
+  const feedbackDetail = await page.locator('[data-private-feedback="detail"]').innerText();
+  const feedbackList = await page.locator('[data-private-feedback="list"]').innerText();
   const launchSummary = await page.locator("[data-launch-readiness-summary]").innerText();
   const launchReadiness = await page.locator("[data-launch-readiness-list]").innerText();
   const closeoutSummary = await page.locator("[data-launch-closeout-summary]").innerText();
@@ -1265,6 +1309,9 @@ async function operatorReportFlow(page, baseUrl) {
     ["queue-detail", queueDetail],
     ["queue-list", queueList],
     ["funnel", funnelSummary],
+    ["feedback-summary", feedbackSummary],
+    ["feedback-detail", feedbackDetail],
+    ["feedback-list", feedbackList],
     ["latest", latest]
   ]) {
     if (!text || /Load private activity|No records found/i.test(text)) {
@@ -1273,6 +1320,9 @@ async function operatorReportFlow(page, baseUrl) {
   }
   if (!/LV-QA-REPORT/.test(latest) || !/media_action/.test(latest) || !/media_playback/.test(latest)) {
     issues.push(`/portal/reporting.html: latest protected activity missing mocked records`);
+  }
+  if (!/3 pilot notes/.test(feedbackSummary) || !/3 high priority/.test(feedbackSummary) || !/LV-QA-FEEDBACK/.test(feedbackList)) {
+    issues.push(`/portal/reporting.html: pilot feedback summary did not render mocked triage values`);
   }
   if (!/Membership Waitlist/.test(routingSummary)) {
     issues.push(`/portal/reporting.html: screened routing summary missing mocked queue`);
@@ -1330,6 +1380,16 @@ async function operatorReportFlow(page, baseUrl) {
   });
   if (!queueExportReady) {
     issues.push(`/portal/reporting.html: intake queue records were missing from private export rows`);
+  }
+  const feedbackExportReady = await page.evaluate(() => {
+    return privateReportRows(privateReportCache).some((row) => (
+      row.type === "pilot_feedback"
+      && row.label === "LV-QA-FEEDBACK"
+      && /Review tester issue/.test(row.detail)
+    ));
+  });
+  if (!feedbackExportReady) {
+    issues.push(`/portal/reporting.html: pilot feedback records were missing from private export rows`);
   }
   const playbackExportReady = await page.evaluate(() => {
     return privateReportRows(privateReportCache).some((row) => (

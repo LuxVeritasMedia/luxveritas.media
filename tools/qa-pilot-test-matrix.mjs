@@ -7,6 +7,7 @@ const requiredCoverage = new Set([
   "public_capture",
   "media_player",
   "fan_reaction",
+  "pilot_feedback_triage",
   "portal_capture",
   "operator_reporting",
   "launch_gates",
@@ -22,6 +23,7 @@ const allowedFormTypes = new Set([
   "investor",
   "licensing",
   "creator",
+  "feedback",
   "portal_signin"
 ]);
 const allowedMediaActions = new Set(["play", "watch", "radio"]);
@@ -32,6 +34,7 @@ const requiredScenarioIds = new Set([
   "music_player",
   "spmvp_release_hub",
   "fan_reactions",
+  "pilot_feedback_triage",
   "event_access",
   "portal_signin_capture",
   "operator_reporting",

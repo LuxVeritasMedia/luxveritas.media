@@ -8,6 +8,7 @@
     "public_capture",
     "media_player",
     "fan_reaction",
+    "pilot_feedback_triage",
     "portal_capture",
     "operator_reporting",
     "launch_gates",
@@ -103,6 +104,28 @@
         "Media player reaction buttons record what fans want after listening or watching.",
         "Local signal pass includes reaction history on this device.",
         "Protected operator reporting summarizes fan reaction demand."
+      ],
+      "qaCommands": ["node tools/qa-browser-flows.mjs", "node tools/qa-live-operator-report.mjs"]
+    },
+    {
+      "id": "pilot_feedback_triage",
+      "label": "Pilot feedback triage",
+      "coverage": ["pilot_feedback_triage", "operator_reporting"],
+      "route": "/pilot-feedback.html",
+      "selector": "button[data-open-form=\"feedback\"]",
+      "formType": "feedback",
+      "expectedRolePath": "General",
+      "expectedInquiryType": "Pilot Feedback",
+      "expectedQueue": "access_review",
+      "reportSurfaces": [
+        "data-private-feedback=\"summary\"",
+        "data-private-feedback=\"detail\"",
+        "data-private-feedback=\"list\""
+      ],
+      "evidence": [
+        "Pilot feedback capture stores release-readiness notes through the screened intake path.",
+        "Protected operator reporting summarizes pilot feedback count, priority, delivery status, and latest receipt IDs.",
+        "Private report exports include pilot feedback rows without exposing secret-shaped values."
       ],
       "qaCommands": ["node tools/qa-browser-flows.mjs", "node tools/qa-live-operator-report.mjs"]
     },

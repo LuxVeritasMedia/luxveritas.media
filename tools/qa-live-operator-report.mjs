@@ -281,6 +281,47 @@ function checkRetentionPaths(report) {
   }
 }
 
+function checkPilotFeedback(report) {
+  const feedback = valueAt(report, "summary.pilotFeedback");
+  if (!feedback || typeof feedback !== "object" || Array.isArray(feedback)) {
+    issue("/api/report: summary.pilotFeedback is missing or not an object");
+    return;
+  }
+
+  for (const field of ["total", "highPriority", "pendingInbox", "pendingHandoff", "oldestAgeDays"]) {
+    if (typeof feedback[field] !== "number") {
+      issue(`/api/report: summary.pilotFeedback.${field} is missing or not numeric`);
+    }
+  }
+  if (typeof feedback.latestAt !== "string") {
+    issue("/api/report: summary.pilotFeedback.latestAt is missing");
+  }
+  for (const path of [
+    "summary.pilotFeedback.bySourcePage",
+    "summary.pilotFeedback.byDeliveryStatus",
+    "summary.pilotFeedback.byIntegrationStatus"
+  ]) {
+    const items = assertArray(report, path);
+    assertSummaryArrayItems(items, path);
+  }
+  const latest = assertArray(report, "summary.pilotFeedback.latest");
+  for (const [index, item] of latest.entries()) {
+    for (const field of ["receiptId", "sourcePage", "routingPriority", "deliveryStatus", "integrationStatus", "nextAction", "createdAt"]) {
+      if (typeof item[field] !== "string") {
+        issue(`/api/report: summary.pilotFeedback.latest[${index}].${field} is missing`);
+      }
+    }
+  }
+
+  if (expectReady) {
+    if (feedback.total < 1) issue("/api/report: summary.pilotFeedback.total should include live pilot feedback records");
+    const pages = new Set((feedback.bySourcePage || []).map((item) => item.label));
+    if (!pages.has("/pilot-feedback.html")) {
+      issue("/api/report: summary.pilotFeedback.bySourcePage missing /pilot-feedback.html");
+    }
+  }
+}
+
 function scanSecretValues(value, path = "$") {
   if (Array.isArray(value)) {
     value.forEach((item, index) => scanSecretValues(item, `${path}[${index}]`));
@@ -361,6 +402,7 @@ function checkReportBody(report) {
   checkIntakeQueue(report);
   checkWorkflowTargets(report);
   checkRetentionPaths(report);
+  checkPilotFeedback(report);
 
   scanSecretValues(report);
 }

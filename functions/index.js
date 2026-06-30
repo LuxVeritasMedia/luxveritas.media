@@ -838,6 +838,43 @@ function buildRetentionPathways(eventItems) {
   };
 }
 
+function isPilotFeedback(item) {
+  return item.formType === "feedback"
+    || item.inquiry_key === "pilot_feedback"
+    || item.inquiry_type === "Pilot Feedback"
+    || item.routing_label === "Pilot Feedback"
+    || item.source_page === "/pilot-feedback.html";
+}
+
+function buildPilotFeedbackSummary(submissionItems) {
+  const feedbackItems = submissionItems
+    .filter(isPilotFeedback)
+    .sort((a, b) => String(timestampIso(b.createdAt) || "").localeCompare(String(timestampIso(a.createdAt) || "")));
+  const latestAt = timestampIso(feedbackItems[0]?.createdAt) || "";
+  const latest = feedbackItems.slice(0, 8).map((item) => ({
+    receiptId: text(item.client_submission_id || item.id, 120),
+    sourcePage: text(item.source_page, 160) || "/pilot-feedback.html",
+    routingPriority: text(item.routing_priority, 80) || "high",
+    deliveryStatus: text(item.deliveryStatus, 80),
+    integrationStatus: text(item.integrationStatus, 80),
+    nextAction: text(item.routing_next_action, 240) || "Review tester issue and update release QA notes",
+    createdAt: timestampIso(item.createdAt) || ""
+  }));
+
+  return {
+    total: feedbackItems.length,
+    highPriority: countWhere(feedbackItems, (item) => (item.routing_priority || "") === "high"),
+    pendingInbox: countWhere(feedbackItems, (item) => pendingDeliveryStatuses.includes(item.deliveryStatus)),
+    pendingHandoff: countWhere(feedbackItems, (item) => pendingIntegrationStatuses.includes(item.integrationStatus)),
+    latestAt,
+    oldestAgeDays: feedbackItems.reduce((age, item) => Math.max(age, ageDays(item.createdAt)), 0),
+    bySourcePage: topCounts(feedbackItems, (item) => item.source_page || "/pilot-feedback.html"),
+    byDeliveryStatus: topCounts(feedbackItems, (item) => item.deliveryStatus),
+    byIntegrationStatus: topCounts(feedbackItems, (item) => item.integrationStatus),
+    latest
+  };
+}
+
 function summarizeActivity(submissionDocs, eventDocs) {
   const submissionItems = submissionDocs.map((snapshot) => snapshot.data() || {});
   const eventItems = eventDocs.map((snapshot) => snapshot.data() || {});
@@ -874,6 +911,7 @@ function summarizeActivity(submissionDocs, eventDocs) {
       fanReactionsBySource: topCounts(reactionItems, (item) => item.detail?.reporting_key || item.detail?.title)
     },
     retentionPaths: buildRetentionPathways(eventItems),
+    pilotFeedback: buildPilotFeedbackSummary(submissionItems),
     intakeQueue: buildIntakeQueueWorkbench(submissionItems),
     workflowTargets: buildWorkflowTargetRecommendations(submissionItems)
   };

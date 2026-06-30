@@ -39,14 +39,14 @@ Use `LUX_LAUNCH_DRY_RUN=1` to validate without writing. A `ready` launch gate al
 ## Current Evidence
 
 - Apex site: `https://luxveritas.media` returns HTTP 200.
-- Live build version: `20260630-open-approvals-report`.
+- Live build version: `20260630-pilot-feedback-report`.
 - Browser-flow pilot QA passes locally with form, media, and reporting paths.
 - Private handoff secret set is active for `firebase_handoff`.
 - Operator reporting token hash is configured.
 - Release readiness currently reports external legal blockers for Privacy and Terms. Strict release checks also require pilot write evidence to remain fresh for the final release window.
 - `www.luxveritas.media` closeout is resolved: DNS, Firebase custom-domain verification, certificate, and Hosting mapping return HTTP 200.
 - Inbox provider closeout is resolved: the 2026-06-30 pilot write gate confirmed 11 capture intents with inbox delivery required.
-- Pilot write gate last passed on 2026-06-30 with live form writes, 13 event writes, inbox delivery required, dedicated pilot feedback routing, fan-reaction reporting, release-room retention reporting, consented page-view reporting, signal-pass export coverage, protected activation-readiness reporting, and post-write reconciliation through the protected operator report. QA run ID: `20260630181531`. Asset version: `20260630-open-approvals-report`.
+- Pilot write gate last passed on 2026-06-30 with live form writes, 13 event writes, inbox delivery required, dedicated pilot feedback routing, fan-reaction reporting, release-room retention reporting, consented page-view reporting, signal-pass export coverage, protected activation-readiness reporting, and post-write reconciliation through the protected operator report. QA run ID: `20260630193913`. Asset version: `20260630-pilot-feedback-report`.
 
 ## Closed - www Domain
 

@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260630-open-approvals-report";
+const CACHE_NAME = "luxveritas-static-20260630-pilot-feedback-report";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260630-open-approvals-report",
-  "/app.js?v=20260630-open-approvals-report",
+  "/styles.css?v=20260630-pilot-feedback-report",
+  "/app.js?v=20260630-pilot-feedback-report",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"

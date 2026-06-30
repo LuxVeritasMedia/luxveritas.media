@@ -74,6 +74,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Add fan-reaction capture to the media player for replay, invite, collect, and create intent.
 - [x] Add manifest-driven Lux Radio programming panel with tune-in and first-access capture paths.
 - [x] Add noindex pilot feedback capture for TestFlight-quality bug and launch-readiness notes.
+- [x] Add protected pilot feedback triage reporting for TestFlight-quality release notes.
 - [x] Deploy `submitForm` and `reportActivity` locally after GitHub IAM failure so the dedicated `pilot_feedback` server route is live.
 - [ ] Grant the GitHub deploy service account `iam.serviceAccounts.ActAs` / Service Account User on `lux-veritas-media@appspot.gserviceaccount.com` using `docs/functions-deploy-iam-repair.md`, then rerun the manual Functions workflow; verify with `node tools/qa-functions-deploy-readiness.mjs`. Local Functions deploy already made the dedicated `pilot_feedback` server route live.
 - [x] Add private workflow-target recommendations from real capture demand to help choose GHL, Google Workspace, or CodexOps without exposing provider details.

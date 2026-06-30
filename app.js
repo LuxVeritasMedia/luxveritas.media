@@ -123,7 +123,7 @@ const launchChecklistPath = "/data/lux-launch-readiness.json";
 const launchCloseoutPath = "/data/lux-launch-closeout-public.json";
 const legalReviewPath = "/data/lux-legal-review.json";
 const submitTimeoutMs = 8000;
-const publicBuildVersion = "20260630-open-approvals-report";
+const publicBuildVersion = "20260630-pilot-feedback-report";
 const allowedInterestPaths = new Set(["music", "film", "events", "drops", "community", "codex", "create"]);
 let activeFormType = "request";
 let mediaManifestPromise = null;
@@ -1524,6 +1524,14 @@ function privateReportRows(report) {
       label: item.label,
       detail: item.detail
     })),
+    ...(report.summary?.pilotFeedback?.latest || []).map((item) => ({
+      source: "protected",
+      type: "pilot_feedback",
+      timestamp: item.createdAt || report.generatedAt || "",
+      page: item.sourcePage || "/pilot-feedback.html",
+      label: item.receiptId || "pilot feedback",
+      detail: `${item.routingPriority || "review"} · ${item.deliveryStatus || "delivery"} · ${item.nextAction || ""}`
+    })),
     ...(report.summary?.retentionPaths?.topPathways || []).map((item) => ({
       source: "protected",
       type: "retention_path",
@@ -1593,6 +1601,7 @@ function renderPrivateReport(report) {
   renderPrivateQueue(panel, report.summary?.intakeQueue);
   renderPrivateWorkflow(panel, report.summary?.workflowTargets, report.delivery);
   renderPrivateRetention(panel, report.summary?.retentionPaths);
+  renderPilotFeedback(panel, report.summary?.pilotFeedback);
   renderLaunchReadinessReport(report);
   renderPrivateFunnel(panel, report.summary?.funnel || report.funnel);
   renderPrivateSummary(panel, "forms", report.summary?.submissions?.byFormType);
@@ -1656,6 +1665,34 @@ function renderPrivateRetention(panel, retention = {}) {
   }
   list.innerHTML = items.map((item) => (
     `<li><strong>${escapeHtml(item.label || item.intent || item.cta_id || "Pathway")}</strong><span>${escapeHtml(item.count || 0)} click${item.count === 1 ? "" : "s"}</span><small>${escapeHtml(item.surface || "pathway")} · ${escapeHtml(item.destination || "")}</small></li>`
+  )).join("");
+}
+
+function renderPilotFeedback(panel, feedback = {}) {
+  const summary = panel.querySelector('[data-private-feedback="summary"]');
+  const detail = panel.querySelector('[data-private-feedback="detail"]');
+  const list = panel.querySelector('[data-private-feedback="list"]');
+  const total = feedback.total ?? 0;
+  const highPriority = feedback.highPriority ?? 0;
+  const pendingInbox = feedback.pendingInbox ?? 0;
+  const pendingHandoff = feedback.pendingHandoff ?? 0;
+  if (summary) {
+    summary.textContent = `${total} pilot note${total === 1 ? "" : "s"} · ${highPriority} high priority`;
+  }
+  if (detail) {
+    const oldest = feedback.oldestAgeDays
+      ? `Oldest: ${feedback.oldestAgeDays} day${feedback.oldestAgeDays === 1 ? "" : "s"}.`
+      : "No aging feedback.";
+    detail.textContent = `${pendingInbox} pending inbox · ${pendingHandoff} pending handoff. ${oldest}`;
+  }
+  if (!list) return;
+  const latest = Array.isArray(feedback.latest) ? feedback.latest : [];
+  if (!latest.length) {
+    list.innerHTML = "<li>No pilot feedback records found yet.</li>";
+    return;
+  }
+  list.innerHTML = latest.map((item) => (
+    `<li><strong>${escapeHtml(item.receiptId || "Pilot feedback")}</strong><span>${escapeHtml(item.routingPriority || "review")} · ${escapeHtml(item.deliveryStatus || "delivery")}</span><small>${escapeHtml(item.sourcePage || "/pilot-feedback.html")} · ${escapeHtml(item.nextAction || "Review tester issue")}</small></li>`
   )).join("");
 }
 

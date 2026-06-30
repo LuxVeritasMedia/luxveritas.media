@@ -1,7 +1,7 @@
 {
   "schemaVersion": "luxveritas.pilot_bug_register.v1",
   "version": "2026-06-30-pilot-bug-register",
-  "updatedAt": "2026-06-30T18:17:55Z",
+  "updatedAt": "2026-06-30T19:43:48Z",
   "status": "no_known_blocking_bugs",
   "decision": "pilot_can_continue",
   "summary": {
@@ -11,8 +11,8 @@
     "knownIssues": 0
   },
   "evidence": {
-    "assetVersion": "20260630-open-approvals-report",
-    "pilotWriteQaRunId": "20260630181531",
+    "assetVersion": "20260630-pilot-feedback-report",
+    "pilotWriteQaRunId": "20260630193913",
     "pilotWriteEvidenceFile": "data/lux-pilot-write-evidence.json",
     "pilotFeedbackRoute": "/pilot-feedback.html",
     "latestDeployWorkflow": "Deploy Firebase Hosting",
@@ -50,6 +50,11 @@
       "coverage": "fan_reaction",
       "status": "passed",
       "evidence": "Browser-flow QA and protected operator summaries cover replay, invite, collect, and create reaction signals."
+    },
+    {
+      "coverage": "pilot_feedback_triage",
+      "status": "passed",
+      "evidence": "Browser-flow QA and live operator report QA cover pilot feedback capture, protected triage summaries, and private export rows."
     },
     {
       "coverage": "portal_capture",

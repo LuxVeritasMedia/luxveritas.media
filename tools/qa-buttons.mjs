@@ -213,6 +213,11 @@ for (const file of files) {
     if (!html.includes("data-private-funnel")) {
       issues.push(`${rel}: missing private pilot funnel report`);
     }
+    for (const marker of ['data-private-feedback="summary"', 'data-private-feedback="detail"', 'data-private-feedback="list"']) {
+      if (!html.includes(marker)) {
+        issues.push(`${rel}: missing pilot feedback report marker ${marker}`);
+      }
+    }
     if (!html.includes('data-private-count="pendingIntegrations"')) {
       issues.push(`${rel}: missing pending handoff count`);
     }

@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { actionInventoryVersion } from "./lib/action-inventory.mjs";
 import "./export-open-approvals.mjs";
 
-const assetVersion = "20260630-open-approvals-report";
+const assetVersion = "20260630-pilot-feedback-report";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const releaseRoom = JSON.parse(await readFile("data/lux-release-room.json", "utf8"));
 const radioProgramming = JSON.parse(await readFile("data/lux-radio-programming.json", "utf8"));
@@ -893,6 +893,16 @@ function portalReport() {
           <p class="kicker">Pilot Funnel</p>
           <h3>Capture and engagement health.</h3>
           <ul class="report-list" data-private-funnel><li>Load private activity to view funnel health.</li></ul>
+        </div>
+      </div>
+      <div class="report-detail">
+        <div>
+          <p class="kicker">Pilot Feedback</p>
+          <h3 data-private-feedback="summary">Load private activity.</h3>
+          <p data-private-feedback="detail">Tester notes appear here as release-readiness triage signals.</p>
+        </div>
+        <div>
+          <ul class="report-list" data-private-feedback="list"><li>Load private activity to view pilot feedback.</li></ul>
         </div>
       </div>
       <div class="report-detail">
