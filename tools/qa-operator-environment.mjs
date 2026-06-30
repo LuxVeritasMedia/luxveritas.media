@@ -55,6 +55,23 @@ async function run(command, args = [], options = {}) {
   }
 }
 
+async function fetchJson(url, timeout = 5000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    const text = await response.text();
+    if (!response.ok) {
+      return { ok: false, status: response.status, text };
+    }
+    return { ok: true, status: response.status, json: JSON.parse(text), text };
+  } catch (error) {
+    return { ok: false, status: 0, text: error.message };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 function compactError(result) {
   const text = [result.stderr, result.stdout, result.message].filter(Boolean).join(" ");
   return text.replace(/\s+/g, " ").slice(0, 260) || "unavailable";
@@ -176,8 +193,19 @@ if (ghVersion) {
 }
 
 const port = await run("lsof", ["-ti", ":4173"]);
-if (port.ok && port.stdout) warn(`localhost:4173 is already in use by process ${port.stdout.split(/\s+/)[0]}.`);
-else pass("localhost:4173 is free for the documented static preview server.");
+if (port.ok && port.stdout) {
+  const previewManifest = await fetchJson("http://localhost:4173/data/lux-build-manifest.json");
+  const processId = port.stdout.split(/\s+/)[0];
+  if (previewManifest.ok && previewManifest.json?.assetVersion === buildManifest.assetVersion) {
+    pass(`localhost:4173 is already serving the current Lux Veritas preview (${buildManifest.assetVersion}).`);
+  } else if (previewManifest.ok) {
+    warn(`localhost:4173 is serving a Lux Veritas preview with asset ${previewManifest.json?.assetVersion || "missing"}, expected ${buildManifest.assetVersion}.`);
+  } else {
+    warn(`localhost:4173 is occupied by process ${processId}, but it is not serving the Lux Veritas build manifest; stop that process or use another preview port before local browser QA.`);
+  }
+} else {
+  pass("localhost:4173 is free for the documented static preview server.");
+}
 
 console.log("");
 console.log(`Operator environment checked: ${passed.length} passed, ${warnings.length} warning(s), ${issues.length} blocker(s).`);
