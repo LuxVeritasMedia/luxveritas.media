@@ -64,6 +64,8 @@ const packet = {
   knownFacts: [
     "GitHub Actions uses Workload Identity, not a committed service-account key.",
     "GitHub secret values cannot be read back after creation.",
+    "Recent workflow logs mask the GitHub deploy service account value, so the principal cannot be safely recovered from logs.",
+    "Security approval is required before any agent, local command, or GitHub workflow mutates Google Cloud IAM.",
     `The principal value is stored as GitHub secret ${principalSecretName}.`,
     `The Workload Identity provider value is stored as GitHub secret ${providerSecretName}.`,
     "The public site, form relay, inbox delivery, private handoff, and operator reporting are live; this blocker is automation hardening for future Functions deploys."
@@ -100,6 +102,7 @@ const packet = {
   doNotInclude: [
     "Do not paste service-account JSON keys into chat, docs, GitHub, or this repo.",
     "Do not commit receiver URLs, tokens, provider account IDs, private keys, or workflow destinations.",
+    "Do not add a self-repair IAM workflow or run IAM mutation commands without explicit project-owner approval.",
     "Do not expose the actual GitHub secret values in public docs or screenshots."
   ]
 };

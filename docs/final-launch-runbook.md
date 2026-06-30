@@ -53,7 +53,7 @@ The Hosting workflow also has a no-token fallback: when `FIREBASE_CI_TOKEN` is a
 LUX_FIREBASE_HOSTING_REST_DRY_RUN=1 node tools/deploy-firebase-hosting-rest.mjs
 ```
 
-If `node tools/qa-functions-deploy-readiness.mjs` reports the manual Functions deploy blocker for `iam.serviceAccounts.ActAs`, use `docs/functions-deploy-iam-repair.md` to grant the GitHub deploy service account `roles/iam.serviceAccountUser` on `lux-veritas-media@appspot.gserviceaccount.com`, then rerun the manual Functions workflow before relying on automation for future function deploys. This is an automation-hardening blocker; do not paste service-account keys or GitHub secret values into the repo.
+If `node tools/qa-functions-deploy-readiness.mjs` reports the manual Functions deploy blocker for `iam.serviceAccounts.ActAs`, use `docs/functions-deploy-iam-repair.md` to grant the GitHub deploy service account `roles/iam.serviceAccountUser` on `lux-veritas-media@appspot.gserviceaccount.com`, then rerun the manual Functions workflow before relying on automation for future function deploys. This is an automation-hardening blocker and requires explicit project-owner approval before any IAM policy is changed; do not paste service-account keys or GitHub secret values into the repo.
 
 Use `LUX_FUNCTIONS_IAM_PACKET_OUT=/tmp/lux-functions-iam-repair-request.md node tools/export-functions-iam-repair-request.mjs` when a Google Cloud administrator needs a clean no-secret repair packet.
 

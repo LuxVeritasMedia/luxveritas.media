@@ -1,8 +1,19 @@
 # Firebase Functions Deploy IAM Repair
 
-Status date: 2026-06-22
+Status date: 2026-06-30
 
 This packet documents the no-secret repair path for the remaining GitHub manual Functions deployment blocker.
+
+## Current Operator Findings
+
+- Firebase CLI can read the deployed `submitForm` and `reportActivity` Functions from the current launch machine.
+- GitHub CLI is authenticated and can inspect workflow status.
+- GitHub Actions secrets `GCP_SERVICE_ACCOUNT` and `GCP_WORKLOAD_IDENTITY_PROVIDER` exist, but their values cannot be read back.
+- Recent workflow logs mask the GitHub deploy service account value as `***`, so the principal cannot be safely recovered from logs.
+- `gcloud` is not installed on the current launch machine, so the CLI grant path requires Google Cloud SDK setup or Cloud Console.
+- The latest manual `workflow_dispatch` Functions deploy evidence is still the failed run below.
+
+Security approval is required before any agent, local command, or GitHub workflow mutates Google Cloud IAM. Do not add a self-repair workflow or run the `gcloud` policy-binding command until the project owner explicitly approves granting `roles/iam.serviceAccountUser` on the target service account to the GitHub deploy service account.
 
 ## Current Blocker
 

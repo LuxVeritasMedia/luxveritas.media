@@ -43,12 +43,15 @@ for (const marker of [
   "GCP_SERVICE_ACCOUNT",
   "GCP_WORKLOAD_IDENTITY_PROVIDER",
   "GitHub secret values cannot be read back",
+  "Recent workflow logs mask the GitHub deploy service account value",
+  "Security approval is required before any agent",
   "Cloud Console Repair",
   "gcloud iam service-accounts add-iam-policy-binding",
   "PASTE_GCP_SERVICE_ACCOUNT_VALUE_HERE",
   "node tools/qa-functions-deploy-readiness.mjs",
   "node tools/qa-provider-readiness.mjs",
-  "Do not paste service-account JSON keys"
+  "Do not paste service-account JSON keys",
+  "Do not add a self-repair IAM workflow"
 ]) {
   if (!markdown.includes(marker)) issue(`markdown repair request missing marker: ${marker}`);
 }
@@ -72,6 +75,9 @@ if (packet) {
   if (packet.blocker?.targetServiceAccount !== "lux-veritas-media@appspot.gserviceaccount.com") issue("target service account mismatch");
   if (packet.blocker?.principalSecretName !== "GCP_SERVICE_ACCOUNT") issue("principal secret name mismatch");
   if (packet.blocker?.providerSecretName !== "GCP_WORKLOAD_IDENTITY_PROVIDER") issue("provider secret name mismatch");
+  if (!packet.knownFacts?.some((item) => /Security approval is required/i.test(item))) {
+    issue("knownFacts missing security approval requirement");
+  }
   if (!packet.cloudConsole?.url?.includes("iam-admin/serviceaccounts/details/lux-veritas-media@appspot.gserviceaccount.com/permissions")) {
     issue("cloud console URL mismatch");
   }
@@ -91,6 +97,9 @@ if (packet) {
   }
   if (!packet.doNotInclude?.some((item) => /service-account JSON keys/i.test(item))) {
     issue("doNotInclude missing service-account key warning");
+  }
+  if (!packet.doNotInclude?.some((item) => /self-repair IAM workflow/i.test(item))) {
+    issue("doNotInclude missing self-repair IAM workflow approval warning");
   }
 }
 
