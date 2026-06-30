@@ -122,7 +122,7 @@ const launchChecklistPath = "/data/lux-launch-readiness.json";
 const launchCloseoutPath = "/data/lux-launch-closeout-public.json";
 const legalReviewPath = "/data/lux-legal-review.json";
 const submitTimeoutMs = 8000;
-const publicBuildVersion = "20260630-page-view-reporting";
+const publicBuildVersion = "20260630-action-reporting-keys";
 const allowedInterestPaths = new Set(["music", "film", "events", "drops", "community", "codex", "create"]);
 let activeFormType = "request";
 let mediaManifestPromise = null;
@@ -1140,6 +1140,7 @@ async function renderActionInventoryReport() {
   const typeList = panel.querySelector('[data-action-inventory="types"]');
   const eventList = panel.querySelector('[data-action-inventory="events"]');
   const routeList = panel.querySelector('[data-action-inventory="routes"]');
+  const statusList = panel.querySelector('[data-action-inventory="status"]');
 
   try {
     const inventory = await loadActionInventory();
@@ -1154,10 +1155,12 @@ async function renderActionInventoryReport() {
     renderActionInventoryList(typeList, actionInventoryEntries(inventory.summary?.byType), "No action types found.");
     renderActionInventoryList(eventList, actionInventoryEntries(inventory.summary?.byReportingEvent), "No report events found.");
     renderActionInventoryList(routeList, actionInventoryEntries(inventory.summary?.byRoute), "No route coverage found.");
+    renderActionInventoryList(statusList, actionInventoryEntries(inventory.summary?.byReportingChannel), "No reporting channels found.");
     trackEvent("action_inventory_view", {
       actions,
       routes,
-      version: inventory.version || null
+      version: inventory.version || null,
+      reportingStatus: inventory.summary?.byReportingStatus || null
     });
   } catch {
     if (summary) summary.textContent = "Action coverage unavailable";
@@ -1165,6 +1168,7 @@ async function renderActionInventoryReport() {
     renderActionInventoryList(typeList, [], "Action types unavailable.");
     renderActionInventoryList(eventList, [], "Report events unavailable.");
     renderActionInventoryList(routeList, [], "Route coverage unavailable.");
+    renderActionInventoryList(statusList, [], "Reporting channels unavailable.");
   }
 }
 

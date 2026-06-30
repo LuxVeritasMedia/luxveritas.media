@@ -56,6 +56,13 @@ for (const marker of [
   `Route surfaces: ${actionInventory.routeCount}`,
   "link_click",
   "lead_accepted",
+  "Reporting channels:",
+  "consented_event",
+  "server_capture",
+  "protected_operator",
+  "local_receipt",
+  "Reporting status:",
+  "declared",
   "## Pilot Test Matrix",
   "## Pilot Write Evidence",
   `QA run ID: ${pilotWriteEvidence.qaRunId}`,
@@ -108,6 +115,15 @@ if (evidence) {
   }
   if (!sameEntries(evidence.actionInventory?.topReportingEvents, topEntries(actionInventory.summary?.byReportingEvent))) {
     issue("evidence action inventory topReportingEvents does not match source inventory");
+  }
+  if (!sameEntries(evidence.actionInventory?.topReportingChannels, topEntries(actionInventory.summary?.byReportingChannel))) {
+    issue("evidence action inventory topReportingChannels does not match source inventory");
+  }
+  if (JSON.stringify(evidence.actionInventory?.reportingStatus || {}) !== JSON.stringify(actionInventory.summary?.byReportingStatus || {})) {
+    issue("evidence action inventory reportingStatus does not match source inventory");
+  }
+  if (evidence.actionInventory?.reportingStatus?.declared !== actionInventory.actionCount) {
+    issue("evidence action inventory declared reporting status must match action count");
   }
   if (!sameEntries(evidence.actionInventory?.topRouteSurfaces, topEntries(actionInventory.summary?.byRoute))) {
     issue("evidence action inventory topRouteSurfaces does not match source inventory");

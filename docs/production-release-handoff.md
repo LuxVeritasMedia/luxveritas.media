@@ -9,7 +9,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Live apex: `https://luxveritas.media`
 - Firebase project: `lux-veritas-media`
 - GitHub repo: `LuxVeritasMedia/luxveritas.media`
-- Current live asset version: `20260630-page-view-reporting`
+- Current live asset version: `20260630-action-reporting-keys`
 - Current phase: Phase 5 of 10, portal pilot prep active
 - Phase 4 closeout: legal approval remains open before full public release
 - Next major phase: authenticated portal shell with approved auth and role gates
@@ -42,7 +42,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Protected operator reporting now summarizes retention-path clicks across fan-flywheel, brand-house, and release-room cards.
 - Pilot testing is covered by a no-secret scenario matrix for public capture, media player, portal capture, operator reporting, launch gates, and private workflow readiness.
 - A dedicated pilot write gate can send live QA submissions and event writes, require inbox delivery, verify live media/browser coverage, confirm protected operator reporting, and reconcile the exact write-run IDs back through the protected report while allowing only the known Privacy and Terms approval blockers.
-- Pilot write gate last passed on 2026-06-30 with 11 live capture-intent submissions, including dedicated pilot feedback routing, inbox delivery required, 13 live event writes, live media-source checks, live browser-flow coverage, signal-pass export coverage, consented page-view reporting, protected activation-readiness reporting, and protected operator-report verification. QA run ID: `20260630173018`. Asset version: `20260630-page-view-reporting`. Live event matrix coverage includes fan-reaction and release-room retention reporting for the media retention loop, and the gate reconciles exact write-run IDs back through the protected report.
+- Pilot write gate last passed on 2026-06-30 with 11 live capture-intent submissions, including dedicated pilot feedback routing, inbox delivery required, 13 live event writes, live media-source checks, live browser-flow coverage, signal-pass export coverage, consented page-view reporting, protected activation-readiness reporting, and protected operator-report verification. QA run ID: `20260630175030`. Asset version: `20260630-action-reporting-keys`. Live event matrix coverage includes fan-reaction and release-room retention reporting for the media retention loop, and the gate reconciles exact write-run IDs back through the protected report.
 - No-secret pilot write evidence is tracked in `data/lux-pilot-write-evidence.json` and validated with `node tools/qa-pilot-write-evidence.mjs`. Final release rehearsal requires fresh evidence, defaulting to a 72-hour max age via `LUX_PILOT_WRITE_EVIDENCE_MAX_AGE_HOURS`.
 - Operator reporting summarizes audience-interest demand from stored captures.
 - Operator reporting includes a protected intake queue workbench with queue pressure, SLA, next action, inbox status, and handoff status.
@@ -101,7 +101,7 @@ LUX_PILOT_BROWSER=1 LUX_PILOT_LIVE=1 node tools/qa-pilot-readiness.mjs
 node tools/qa-final-release-gate.mjs
 ```
 
-Inbox delivery was confirmed by the 2026-06-30 pilot write gate, QA run ID `20260630173018`, with 11 live capture intents, 13 event writes, and inbox delivery required. Current pilot evidence asset version: `20260630-page-view-reporting`. Re-run this only if the sender domain, provider secret, Functions deployment, or final release evidence freshness changes:
+Inbox delivery was confirmed by the 2026-06-30 pilot write gate, QA run ID `20260630175030`, with 11 live capture intents, 13 event writes, and inbox delivery required. Current pilot evidence asset version: `20260630-action-reporting-keys`. Re-run this only if the sender domain, provider secret, Functions deployment, or final release evidence freshness changes:
 
 ```bash
 LUX_RESEND_API_KEY="re_..." node tools/activate-inbox-delivery.mjs

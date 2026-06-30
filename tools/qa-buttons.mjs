@@ -224,7 +224,8 @@ for (const file of files) {
       'data-action-inventory="detail"',
       'data-action-inventory="types"',
       'data-action-inventory="events"',
-      'data-action-inventory="routes"'
+      'data-action-inventory="routes"',
+      'data-action-inventory="status"'
     ]) {
       if (!html.includes(marker)) {
         issues.push(`${rel}: missing action inventory report marker ${marker}`);

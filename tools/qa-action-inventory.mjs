@@ -32,6 +32,12 @@ const requiredReportingEvents = [
   "navigation_toggle",
   "consent_update"
 ];
+const requiredReportingChannels = [
+  "consented_event",
+  "server_capture",
+  "protected_operator",
+  "local_receipt"
+];
 
 function issue(message) {
   issues.push(message);
@@ -92,6 +98,17 @@ for (const event of requiredReportingEvents) {
     issue(`summary missing reporting event ${event}`);
   }
 }
+for (const channel of requiredReportingChannels) {
+  if (!inventory.summary?.byReportingChannel?.[channel]) {
+    issue(`summary missing reporting channel ${channel}`);
+  }
+}
+if (inventory.summary?.byReportingStatus?.missing) {
+  issue(`summary reports ${inventory.summary.byReportingStatus.missing} missing reporting path(s)`);
+}
+if (inventory.summary?.byReportingStatus?.declared !== inventory.actionCount) {
+  issue(`summary declared reporting count ${inventory.summary?.byReportingStatus?.declared || 0} does not match actionCount ${inventory.actionCount}`);
+}
 for (const route of ["index.html", "music.html", "spmvp.html", "portal/reporting.html", "auth/signin.html"]) {
   if (!inventory.summary?.byRoute?.[route]) {
     issue(`summary missing route ${route}`);
@@ -101,6 +118,15 @@ for (const route of ["index.html", "music.html", "spmvp.html", "portal/reporting
 for (const action of inventory.actions || []) {
   if (!action.id || !action.route || !action.actionType || !action.reportingEvent || !action.expectedOutcome) {
     issue(`action record is missing required fields: ${JSON.stringify(action)}`);
+  }
+  if (!action.reportingKey || !/^[a-z0-9-]+__[a-z0-9-]+__[a-z0-9-]+$/.test(action.reportingKey)) {
+    issue(`${action.id}: action record is missing stable reportingKey`);
+  }
+  if (action.reportingStatus !== "declared") {
+    issue(`${action.id}: reportingStatus expected declared, found ${action.reportingStatus || "missing"}`);
+  }
+  if (!requiredReportingChannels.includes(action.reportingChannel)) {
+    issue(`${action.id}: unexpected reportingChannel ${action.reportingChannel || "missing"}`);
   }
   if (/secret|token|api key|private key/i.test(`${action.label} ${action.expectedOutcome}`)) {
     issue(`${action.id}: inventory appears to expose private implementation language`);

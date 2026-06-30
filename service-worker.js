@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260630-page-view-reporting";
+const CACHE_NAME = "luxveritas-static-20260630-action-reporting-keys";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260630-page-view-reporting",
-  "/app.js?v=20260630-page-view-reporting",
+  "/styles.css?v=20260630-action-reporting-keys",
+  "/app.js?v=20260630-action-reporting-keys",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"

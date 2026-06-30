@@ -1,7 +1,7 @@
 import { readFile, readdir } from "node:fs/promises";
 import { join, normalize, relative } from "node:path";
 
-export const actionInventoryVersion = "2026-06-20-action-inventory";
+export const actionInventoryVersion = "2026-06-30-action-reporting-keys";
 export const actionInventoryHtmlFiles = [
   "about.html",
   "auth/signin.html",
@@ -75,6 +75,13 @@ export function slug(value, fallback = "action") {
   return clean || fallback;
 }
 
+function reportingChannel(actionType, reportingEvent) {
+  if (actionType === "operator_report_action") return "protected_operator";
+  if (actionType === "form_submit" || actionType === "portal_signin") return "server_capture";
+  if (reportingEvent === "local_export") return "local_receipt";
+  return "consented_event";
+}
+
 function actionFromButton(attrs, label) {
   const actionAttributes = [
     ["data-open-form", "form_open", "Opens screened capture form", "form_open"],
@@ -133,6 +140,7 @@ function recordFor({ route, index, element, attrs, label, action }) {
   const ctaLabel = attrValue(attrs, "data-track-label");
   const actionValue = action.actionValue || href || formType || mediaAction || reportAction || label;
   const id = `${route.replace(/[^a-z0-9]+/gi, "_")}__${index}__${action.actionType}__${slug(actionValue || label)}`;
+  const reportingKey = `${slug(route, "route")}__${slug(action.reportingEvent, "event")}__${slug(actionValue || label, "action")}`;
   return {
     id,
     route,
@@ -146,7 +154,10 @@ function recordFor({ route, index, element, attrs, label, action }) {
     reportAction,
     surface,
     intent,
+    reportingKey,
     reportingEvent: action.reportingEvent,
+    reportingStatus: action.reportingEvent ? "declared" : "missing",
+    reportingChannel: reportingChannel(action.actionType, action.reportingEvent),
     expectedOutcome: action.expectedOutcome
   };
 }
@@ -193,7 +204,10 @@ export async function extractActionInventory(root = ".", files = actionInventory
       reportAction: "",
       surface: "consent_banner",
       intent: "accept_optional_analytics",
+      reportingKey: "app-js__consent-update__accepted",
       reportingEvent: "consent_update",
+      reportingStatus: "declared",
+      reportingChannel: "consented_event",
       expectedOutcome: "Accepts optional analytics and enables consented reporting"
     },
     {
@@ -209,7 +223,10 @@ export async function extractActionInventory(root = ".", files = actionInventory
       reportAction: "",
       surface: "consent_banner",
       intent: "reject_optional_analytics",
+      reportingKey: "app-js__consent-update__rejected",
       reportingEvent: "consent_update",
+      reportingStatus: "declared",
+      reportingChannel: "consented_event",
       expectedOutcome: "Rejects optional analytics while preserving essential site function"
     }
   );
@@ -221,10 +238,16 @@ export function summarizeActions(actions) {
   const byType = {};
   const byRoute = {};
   const byReportingEvent = {};
+  const byReportingStatus = {};
+  const byReportingChannel = {};
+  const bySurface = {};
   for (const action of actions) {
     byType[action.actionType] = (byType[action.actionType] || 0) + 1;
     byRoute[action.route] = (byRoute[action.route] || 0) + 1;
     byReportingEvent[action.reportingEvent] = (byReportingEvent[action.reportingEvent] || 0) + 1;
+    byReportingStatus[action.reportingStatus || "missing"] = (byReportingStatus[action.reportingStatus || "missing"] || 0) + 1;
+    byReportingChannel[action.reportingChannel || "unknown"] = (byReportingChannel[action.reportingChannel || "unknown"] || 0) + 1;
+    bySurface[action.surface || "implicit_surface"] = (bySurface[action.surface || "implicit_surface"] || 0) + 1;
   }
-  return { byType, byRoute, byReportingEvent };
+  return { byType, byRoute, byReportingEvent, byReportingStatus, byReportingChannel, bySurface };
 }

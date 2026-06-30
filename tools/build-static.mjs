@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { actionInventoryVersion } from "./lib/action-inventory.mjs";
 
-const assetVersion = "20260630-page-view-reporting";
+const assetVersion = "20260630-action-reporting-keys";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const releaseRoom = JSON.parse(await readFile("data/lux-release-room.json", "utf8"));
 const radioProgramming = JSON.parse(await readFile("data/lux-radio-programming.json", "utf8"));
@@ -873,6 +873,10 @@ function portalReport() {
         <div>
           <p class="kicker">Top Surfaces</p>
           <ul class="report-list" data-action-inventory="routes"><li>Checking route coverage.</li></ul>
+        </div>
+        <div>
+          <p class="kicker">Reporting Channels</p>
+          <ul class="report-list" data-action-inventory="status"><li>Checking reporting channels.</li></ul>
         </div>
       </div>
       <div class="report-detail">

@@ -1084,6 +1084,7 @@ async function operatorReportFlow(page, baseUrl) {
   const actionCoverageTypes = await page.locator('[data-action-inventory="types"]').innerText();
   const actionCoverageEvents = await page.locator('[data-action-inventory="events"]').innerText();
   const actionCoverageRoutes = await page.locator('[data-action-inventory="routes"]').innerText();
+  const actionCoverageStatus = await page.locator('[data-action-inventory="status"]').innerText();
   if (!/3 of 3 source-ready/.test(mediaSummary)) {
     issues.push(`/portal/reporting.html: expected media readiness summary, found "${mediaSummary}"`);
   }
@@ -1113,6 +1114,11 @@ async function operatorReportFlow(page, baseUrl) {
   for (const label of ["index.html", "music.html", "portal/reporting.html"]) {
     if (!actionCoverageRoutes.includes(label)) {
       issues.push(`/portal/reporting.html: action coverage routes missing ${label}`);
+    }
+  }
+  for (const label of ["consented_event", "server_capture", "protected_operator", "local_receipt"]) {
+    if (!actionCoverageStatus.includes(label)) {
+      issues.push(`/portal/reporting.html: action coverage reporting channels missing ${label}`);
     }
   }
   for (const label of ["SPMVP", "Visual World", "Lux Radio"]) {

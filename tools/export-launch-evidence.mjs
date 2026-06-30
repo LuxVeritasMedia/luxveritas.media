@@ -161,6 +161,8 @@ const evidence = {
     actionCount: actionInventory.actionCount || 0,
     topActionTypes: topEntries(actionInventory.summary?.byType),
     topReportingEvents: topEntries(actionInventory.summary?.byReportingEvent),
+    topReportingChannels: topEntries(actionInventory.summary?.byReportingChannel),
+    reportingStatus: actionInventory.summary?.byReportingStatus || {},
     topRouteSurfaces: topEntries(actionInventory.summary?.byRoute)
   },
   pilotTestMatrix: {
@@ -319,6 +321,8 @@ Public terms version: ${evidence.publicTermsVersion}
 - Route surfaces: ${evidence.actionInventory.routeCount}
 - Action types: ${evidence.actionInventory.topActionTypes.map((item) => `${item.label} ${item.count}`).join(", ") || "none"}
 - Reporting events: ${evidence.actionInventory.topReportingEvents.map((item) => `${item.label} ${item.count}`).join(", ") || "none"}
+- Reporting channels: ${evidence.actionInventory.topReportingChannels.map((item) => `${item.label} ${item.count}`).join(", ") || "none"}
+- Reporting status: ${Object.entries(evidence.actionInventory.reportingStatus).map(([label, count]) => `${label} ${count}`).join(", ") || "none"}
 - Top route surfaces: ${evidence.actionInventory.topRouteSurfaces.map((item) => `${item.label} ${item.count}`).join(", ") || "none"}
 
 ## Pilot Test Matrix
