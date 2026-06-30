@@ -484,11 +484,40 @@ function mediaPlayerShell(context = "music") {
 
 function radioProgrammingSection() {
   const slots = Array.isArray(radioProgramming.slots) ? radioProgramming.slots : [];
+  const onAir = radioProgramming.onAir || {};
+  const listenerPath = Array.isArray(radioProgramming.listenerPath) ? radioProgramming.listenerPath : [];
+  const readiness = Array.isArray(radioProgramming.readiness) ? radioProgramming.readiness : [];
   return `<section class="section" data-radio-programming data-radio-programming-version="${radioProgramming.version || ""}">
     <div class="section-heading">
       <p class="kicker">Lux Radio</p>
       <h2>${radioProgramming.headline || "Lux Radio begins as a signal room."}</h2>
       <p>${radioProgramming.summary || ""}</p>
+    </div>
+    <div class="radio-signal-panel" data-radio-readiness data-radio-mode="${radioProgramming.mode || "preview_signal_room"}" data-radio-status="${onAir.status || "Preview"}">
+      <article class="radio-on-air" data-radio-on-air>
+        <span>${onAir.label || "On Air"}</span>
+        <h3>${onAir.title || "Signal Rotation"}</h3>
+        <p>${onAir.source || "Lux Radio Preview"} · ${onAir.window || "Open now"}</p>
+        <small>${onAir.status || "Preview live"} · Next: ${onAir.nextWindow || "First approved programming window"}</small>
+        <div class="radio-actions">
+          <button class="button button-primary" type="button" data-media-action="radio" data-track-surface="radio_readiness" data-track-intent="radio_on_air" data-track-label="${onAir.title || "Signal Rotation"}">Tune in</button>
+          <button class="button button-quiet" type="button" data-open-form="fan" data-track-surface="radio_readiness" data-track-intent="radio_first_access" data-track-label="Join for radio access">Join for radio access</button>
+        </div>
+      </article>
+      <div class="radio-listener-path" data-radio-listener-path aria-label="Lux Radio listener path">
+        ${listenerPath.map((step, index) => `<article data-radio-path="${step.id || `step-${index + 1}`}">
+          <span>${String(index + 1).padStart(2, "0")}</span>
+          <strong>${step.label || "Signal"}</strong>
+          <p>${step.body || ""}</p>
+        </article>`).join("")}
+      </div>
+      <div class="radio-readiness-list" data-radio-readiness-list aria-label="Lux Radio readiness">
+        ${readiness.map((item) => `<article data-radio-readiness-item="${item.id || ""}" data-radio-readiness-status="${item.status || ""}">
+          <span>${item.status || "ready"}</span>
+          <strong>${item.label || "Readiness"}</strong>
+          <p>${item.detail || ""}</p>
+        </article>`).join("")}
+      </div>
     </div>
     <div class="release-rail" aria-label="Lux Radio programming">
       ${slots.map((slot) => {

@@ -685,6 +685,83 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
   font-size: .82rem;
   padding: 14px 18px;
 }
+.radio-signal-panel {
+  max-width: var(--wide);
+  margin: 0 auto clamp(22px, 3vw, 34px);
+  display: grid;
+  grid-template-columns: minmax(260px, 1.05fr) 1fr;
+  gap: 1px;
+  background: rgba(200,168,106,.24);
+  border: 1px solid rgba(200,168,106,.22);
+}
+.radio-on-air,
+.radio-listener-path,
+.radio-readiness-list {
+  background:
+    linear-gradient(180deg, rgba(13,90,73,.18), rgba(6,8,7,.95)),
+    #0b0f0e;
+  padding: clamp(22px, 3vw, 34px);
+}
+.radio-on-air {
+  min-height: 300px;
+  display: grid;
+  align-content: end;
+}
+.radio-on-air > span,
+.radio-listener-path article span,
+.radio-readiness-list article span {
+  display: block;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  font-size: .68rem;
+  margin-bottom: .7rem;
+}
+.radio-on-air h3 {
+  font-size: clamp(2.2rem, 5vw, 5.2rem);
+}
+.radio-on-air p,
+.radio-on-air small,
+.radio-listener-path p,
+.radio-readiness-list p {
+  color: rgba(243,238,228,.64);
+}
+.radio-on-air small {
+  display: block;
+  margin-top: .65rem;
+}
+.radio-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .7rem;
+  margin-top: 1.4rem;
+}
+.radio-listener-path,
+.radio-readiness-list {
+  display: grid;
+  gap: 1px;
+  padding: 0;
+}
+.radio-listener-path article,
+.radio-readiness-list article {
+  min-height: 116px;
+  background: rgba(6,8,7,.46);
+  padding: 22px;
+}
+.radio-listener-path strong,
+.radio-readiness-list strong {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.28rem;
+  font-weight: 400;
+}
+.radio-readiness-list {
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.radio-readiness-list article[data-radio-readiness-status="live"] span {
+  color: var(--emerald);
+}
 .fan-signal-section {
   max-width: var(--wide);
   margin-inline: auto;
@@ -1091,7 +1168,7 @@ select option { color: var(--ink); }
     justify-content: flex-start;
   }
   .primary-nav.open { display: flex; }
-  .section-grid, .card-grid, .house-grid, .flywheel-grid, .drop-grid, .release-rail, .slate, .ops-grid, .portal-grid, .event-grid, .codex-list, .split-band, .cta-band, .site-footer, .consent-banner, .media-player-section, .media-player, .fan-signal-section, .fan-signal-panel, .interest-paths, .report-grid, .report-detail, .report-list li {
+  .section-grid, .card-grid, .house-grid, .flywheel-grid, .drop-grid, .release-rail, .slate, .ops-grid, .portal-grid, .event-grid, .codex-list, .split-band, .cta-band, .site-footer, .consent-banner, .media-player-section, .media-player, .radio-signal-panel, .radio-readiness-list, .fan-signal-section, .fan-signal-panel, .interest-paths, .report-grid, .report-detail, .report-list li {
     grid-template-columns: 1fr;
   }
   .fan-signal-tier, .fan-signal-latest {

@@ -87,6 +87,9 @@ if (musicHtml) {
     "data-media-action=\"play\"",
     "data-media-action=\"watch\"",
     "data-media-action=\"radio\"",
+    "data-radio-readiness",
+    "data-radio-on-air",
+    "data-radio-listener-path",
     "data-source-type=\"audio\"",
     "data-source-type=\"video\"",
     "data-source-type=\"stream\""
@@ -476,6 +479,38 @@ try {
   }
 } catch (error) {
   issues.push(`/data/lux-media-manifest.json: invalid response (${error.message})`);
+}
+
+try {
+  const { response, text } = await fetchWithTimeout("/data/lux-radio-programming.json");
+  if (!response.ok) {
+    issues.push(`/data/lux-radio-programming.json: expected HTTP 200, received ${response.status}`);
+  } else {
+    const radio = JSON.parse(text);
+    const readiness = Array.isArray(radio.readiness) ? radio.readiness : [];
+    const listenerPath = Array.isArray(radio.listenerPath) ? radio.listenerPath : [];
+    if (radio.schemaVersion !== "luxveritas.radio_programming.v1") {
+      issues.push("/data/lux-radio-programming.json: schemaVersion mismatch");
+    }
+    if (radio.mode !== "preview_signal_room") {
+      issues.push("/data/lux-radio-programming.json: mode must be preview_signal_room");
+    }
+    if (!radio.version || radio.version !== liveBuildManifest?.radioProgrammingVersion) {
+      issues.push("/data/lux-radio-programming.json: version must match build manifest radioProgrammingVersion");
+    }
+    if (!/Preview/i.test(radio.onAir?.status || "")) {
+      issues.push("/data/lux-radio-programming.json: onAir status must disclose preview state");
+    }
+    if (listenerPath.length < 3) {
+      issues.push("/data/lux-radio-programming.json: listener path needs at least 3 steps");
+    }
+    const readinessIds = new Set(readiness.map((item) => item.id));
+    for (const id of ["preview-source", "playback-reporting", "full-programming"]) {
+      if (!readinessIds.has(id)) issues.push(`/data/lux-radio-programming.json: missing readiness item ${id}`);
+    }
+  }
+} catch (error) {
+  issues.push(`/data/lux-radio-programming.json: invalid response (${error.message})`);
 }
 
 try {

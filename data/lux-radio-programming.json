@@ -1,10 +1,61 @@
 {
   "schemaVersion": "luxveritas.radio_programming.v1",
-  "version": "2026-06-30-radio-signal",
-  "updatedAt": "2026-06-30T10:10:00.000Z",
+  "version": "2026-06-30-radio-readiness",
+  "updatedAt": "2026-06-30T10:40:00.000Z",
+  "mode": "preview_signal_room",
   "headline": "Lux Radio begins as a signal room.",
   "summary": "A preview rotation for release energy, visual-world notes, listening-room atmosphere, and future member programming.",
   "notice": "Public radio is preview-only until the first approved programming window opens.",
+  "onAir": {
+    "label": "On Air",
+    "title": "Signal Rotation",
+    "status": "Preview live",
+    "window": "Open now",
+    "source": "Lux Radio Preview",
+    "nextWindow": "First approved programming window"
+  },
+  "listenerPath": [
+    {
+      "id": "tune",
+      "label": "Tune",
+      "body": "Start with the public preview loop."
+    },
+    {
+      "id": "signal",
+      "label": "Signal",
+      "body": "Replay, collect, invite, or create from the source."
+    },
+    {
+      "id": "circle",
+      "label": "Circle",
+      "body": "Join for first access when full programming opens."
+    }
+  ],
+  "readiness": [
+    {
+      "id": "preview-source",
+      "label": "Preview source",
+      "status": "live",
+      "detail": "The public preview loop is attached to the media player and live media-source QA."
+    },
+    {
+      "id": "playback-reporting",
+      "label": "Playback reporting",
+      "status": "live",
+      "detail": "Tune-in, playback, fan reaction, and radio programming clicks report through protected operator summaries."
+    },
+    {
+      "id": "full-programming",
+      "label": "Full programming",
+      "status": "screened",
+      "detail": "Member episodes, live rooms, and guest programming open only after approval."
+    }
+  ],
+  "publicRules": [
+    "Do not publish exact private room details before approval.",
+    "Do not imply a continuous live broadcast until the first programming window is approved.",
+    "Route fan interest through first-access capture."
+  ],
   "slots": [
     {
       "id": "signal-rotation",

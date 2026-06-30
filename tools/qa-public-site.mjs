@@ -282,7 +282,11 @@ for (const file of htmlFiles) {
     if (!html.includes("data-media-player")) issues.push(`${rel}: missing Lux Player`);
     if (!html.includes("data-media-source-shell")) issues.push(`${rel}: missing source-ready playback shell`);
     if (!html.includes("data-radio-programming")) issues.push(`${rel}: missing Lux Radio programming panel`);
+    if (!html.includes("data-radio-readiness")) issues.push(`${rel}: missing Lux Radio readiness panel`);
+    if (!html.includes("data-radio-on-air")) issues.push(`${rel}: missing Lux Radio on-air state`);
+    if (!html.includes("data-radio-listener-path")) issues.push(`${rel}: missing Lux Radio listener path`);
     if (!html.includes('data-track-surface="radio_programming"')) issues.push(`${rel}: missing radio programming tracking surface`);
+    if (!html.includes('data-track-surface="radio_readiness"')) issues.push(`${rel}: missing radio readiness tracking surface`);
     for (const action of ["play", "watch", "radio"]) {
       if (!html.includes(`data-media-action="${action}"`)) issues.push(`${rel}: missing media action ${action}`);
     }
@@ -750,14 +754,48 @@ try {
 try {
   const radioProgramming = JSON.parse(radioProgrammingRaw);
   const slots = Array.isArray(radioProgramming.slots) ? radioProgramming.slots : [];
+  const listenerPath = Array.isArray(radioProgramming.listenerPath) ? radioProgramming.listenerPath : [];
+  const readiness = Array.isArray(radioProgramming.readiness) ? radioProgramming.readiness : [];
   if (radioProgramming.schemaVersion !== "luxveritas.radio_programming.v1") {
     issues.push("data/lux-radio-programming.json: missing schemaVersion luxveritas.radio_programming.v1");
   }
-  if (!radioProgramming.version || !radioProgramming.headline || !radioProgramming.summary || !radioProgramming.notice) {
-    issues.push("data/lux-radio-programming.json: missing version, headline, summary, or notice");
+  if (!radioProgramming.version || !radioProgramming.mode || !radioProgramming.headline || !radioProgramming.summary || !radioProgramming.notice) {
+    issues.push("data/lux-radio-programming.json: missing version, mode, headline, summary, or notice");
+  }
+  if (radioProgramming.mode !== "preview_signal_room") {
+    issues.push("data/lux-radio-programming.json: mode must remain preview_signal_room before full programming approval");
+  }
+  if (!radioProgramming.onAir?.label || !radioProgramming.onAir?.title || !radioProgramming.onAir?.status || !radioProgramming.onAir?.window || !radioProgramming.onAir?.nextWindow) {
+    issues.push("data/lux-radio-programming.json: missing onAir label, title, status, window, or nextWindow");
+  }
+  if (!/Preview/i.test(radioProgramming.onAir?.status || "")) {
+    issues.push("data/lux-radio-programming.json: onAir status must disclose preview state");
   }
   if (slots.length < 3) {
     issues.push("data/lux-radio-programming.json: expected at least 3 public programming slots");
+  }
+  if (listenerPath.length < 3) {
+    issues.push("data/lux-radio-programming.json: expected at least 3 listener path steps");
+  }
+  for (const step of listenerPath) {
+    if (!step.id || !step.label || !step.body) {
+      issues.push(`data/lux-radio-programming.json: listener path step ${step.id || "missing"} missing id, label, or body`);
+    }
+  }
+  if (readiness.length < 3) {
+    issues.push("data/lux-radio-programming.json: expected at least 3 readiness items");
+  }
+  const readinessIds = new Set(readiness.map((item) => item.id));
+  for (const id of ["preview-source", "playback-reporting", "full-programming"]) {
+    if (!readinessIds.has(id)) issues.push(`data/lux-radio-programming.json: missing readiness item ${id}`);
+  }
+  for (const item of readiness) {
+    if (!item.id || !item.label || !item.status || !item.detail) {
+      issues.push(`data/lux-radio-programming.json: readiness item ${item.id || "missing"} missing id, label, status, or detail`);
+    }
+  }
+  if (!Array.isArray(radioProgramming.publicRules) || radioProgramming.publicRules.length < 3) {
+    issues.push("data/lux-radio-programming.json: expected at least 3 public radio rules");
   }
   const requiredSlots = new Set(["signal-rotation", "visual-notes", "room-afterglow"]);
   for (const slot of slots) {
