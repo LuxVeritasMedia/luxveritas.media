@@ -26,20 +26,33 @@ if (!expectedAssetVersion) {
 }
 
 async function fetchWithTimeout(path, options = {}) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), options.timeoutMs || 12000);
-  try {
-    const response = await fetch(`${baseUrl}${path}`, {
-      method: options.method || "GET",
-      headers: options.headers,
-      body: options.body,
-      signal: controller.signal
-    });
-    const text = options.readBody === false ? "" : await response.text();
-    return { response, text };
-  } finally {
-    clearTimeout(timeout);
+  const method = options.method || "GET";
+  const retries = Number.isInteger(options.retries)
+    ? options.retries
+    : method === "GET" ? 2 : 0;
+  let lastError = null;
+
+  for (let attempt = 0; attempt <= retries; attempt += 1) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), options.timeoutMs || 12000);
+    try {
+      const response = await fetch(`${baseUrl}${path}`, {
+        method,
+        headers: options.headers,
+        body: options.body,
+        signal: controller.signal
+      });
+      const text = options.readBody === false ? "" : await response.text();
+      return { response, text };
+    } catch (error) {
+      lastError = error;
+      if (attempt >= retries) break;
+      await new Promise((resolve) => setTimeout(resolve, 300 * (attempt + 1)));
+    } finally {
+      clearTimeout(timeout);
+    }
   }
+  throw lastError || new Error("request failed");
 }
 
 async function checkRoute(path) {
