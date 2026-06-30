@@ -49,7 +49,7 @@ function summarizeOutput(output) {
     .map((line) => line.trimEnd())
     .filter((line) => (
       line
-      && /^(PASS|WARN|BLOCK|FAIL|- |Lux Veritas|Decision|Repo|Live|Local asset|Media|Legal|Launch gates|Closeout|Deploy status checked|MVP preflight checked|Release readiness checked)/i.test(line)
+      && /^(PASS|WARN|BLOCK|FAIL|- |Lux Veritas|Decision|Repo|Live|Local asset|Media|Legal|Launch gates|Closeout|Deploy status checked|MVP preflight checked|Preview helper QA checked|Release readiness checked)/i.test(line)
     ))
     .slice(-80);
 }
@@ -75,6 +75,7 @@ const [
   pilotMatrixRaw,
   todo,
   mvpStatus,
+  previewHelper,
   deployStatus,
   preflight,
   openApprovalsResult
@@ -92,6 +93,7 @@ const [
   readFile("data/lux-pilot-test-matrix.json", "utf8"),
   readFile("TODO.md", "utf8"),
   run("tools/report-mvp-status.mjs", includeLive ? {} : { LUX_LIVE_URL: "https://luxveritas.media" }),
+  run("tools/qa-preview-helper.mjs"),
   includeLive ? run("tools/qa-deploy-status.mjs") : Promise.resolve({ ok: false, output: "Skipped. Set LUX_EVIDENCE_LIVE=1 to include live deploy-status output." }),
   includeLive ? run("tools/qa-mvp-preflight.mjs") : Promise.resolve({ ok: false, output: "Skipped. Set LUX_EVIDENCE_LIVE=1 to include preflight output." }),
   run("tools/report-open-approvals.mjs", { LUX_OPEN_APPROVALS_JSON: "1" })
@@ -282,6 +284,7 @@ const evidence = {
   },
   commandSummaries: {
     mvpStatus: { ok: mvpStatus.ok, lines: summarizeOutput(mvpStatus.output) },
+    previewHelper: { ok: previewHelper.ok, lines: summarizeOutput(previewHelper.output) },
     deployStatus: { ok: deployStatus.ok, lines: summarizeOutput(deployStatus.output) },
     preflight: { ok: preflight.ok, lines: summarizeOutput(preflight.output) }
   },
@@ -397,6 +400,10 @@ ${evidence.closeout.items.map((item) => `- ${item.label} (${item.id}): ${item.st
 ### MVP Status
 
 ${evidence.commandSummaries.mvpStatus.lines.map((line) => `- ${line}`).join("\n") || "- no summary"}
+
+### Preview Helper
+
+${evidence.commandSummaries.previewHelper.lines.map((line) => `- ${line}`).join("\n") || "- no summary"}
 
 ### Deploy Status
 

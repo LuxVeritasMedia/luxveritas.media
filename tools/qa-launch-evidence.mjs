@@ -83,6 +83,8 @@ for (const marker of [
   "External Workflow Target",
   "## Closeout",
   "## Command Summaries",
+  "### Preview Helper",
+  "Preview helper QA checked:",
   "Inbox Notifications",
   "Privacy Review",
   "Terms Review",
@@ -210,6 +212,10 @@ if (evidence) {
     if (!closeoutItems.some((item) => item.id === id)) issue(`evidence missing closeout item ${id}`);
   }
   if (!evidence.commandSummaries?.mvpStatus?.lines?.length) issue("evidence missing MVP status summary lines");
+  if (evidence.commandSummaries?.previewHelper?.ok !== true) issue("evidence preview-helper summary should pass");
+  if (!evidence.commandSummaries?.previewHelper?.lines?.some((line) => /Preview helper QA checked: 4 passed, 0 blocker/i.test(line))) {
+    issue("evidence missing passed preview-helper QA summary line");
+  }
 }
 
 if (issues.length) {

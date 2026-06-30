@@ -214,6 +214,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Add local operator-environment QA for launch machine readiness.
 - [x] Add resilient local preview helper that serves `dist` and auto-selects a safe port when `4173` is occupied.
 - [x] Add preview-helper QA coverage to pilot readiness and MVP preflight.
+- [x] Include preview-helper QA proof in launch evidence exports.
 - [x] Add no-sudo local GitHub CLI fallback for launch operators when Homebrew is unavailable.
 - [x] Upgrade GitHub Actions checkout/setup-node steps to Node 24 action majors and guard against deprecated v4 regressions.
 - [x] Add no-secret MVP status report for release operators.
