@@ -123,7 +123,7 @@ if (report) {
   if (report.pilotWriteEvidence?.freshness?.maxAgeHours !== maxPilotAgeHours) issue("pilot write evidence freshness maxAgeHours mismatch");
   if (!/^\d{14}$/.test(report.pilotWriteEvidence?.qaRunId || "")) issue("pilot write evidence qaRunId missing or invalid");
   if (report.pilotWriteEvidence?.formCaptureIntents !== 11) issue("pilot write evidence must include 11 form capture intents");
-  if (report.pilotWriteEvidence?.eventWrites !== 12) issue("pilot write evidence must include 12 event writes");
+  if (report.pilotWriteEvidence?.eventWrites !== 13) issue("pilot write evidence must include 13 event writes");
   if (report.pilotWriteEvidence?.inboxDeliveryRequired !== true) issue("pilot write evidence must require inbox delivery");
   if (report.pilotWriteEvidence?.operatorReportVerified !== true) issue("pilot write evidence must verify operator reporting");
   if (report.pilotWriteEvidence?.postWriteReconciliation !== true) issue("pilot write evidence must verify post-write reconciliation");

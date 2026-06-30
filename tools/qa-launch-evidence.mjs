@@ -61,7 +61,7 @@ for (const marker of [
   `QA run ID: ${pilotWriteEvidence.qaRunId}`,
   "Freshness:",
   "Form capture intents: 11",
-  "Event writes: 12",
+  "Event writes: 13",
   "## Pilot Bug Register",
   `Version: ${pilotBugRegister.version}`,
   "Status: no_known_blocking_bugs",
@@ -140,7 +140,7 @@ if (evidence) {
     issue("evidence pilot write freshness status invalid");
   }
   if (evidence.pilotWriteEvidence?.formCaptureIntents !== 11) issue("evidence pilot write must include 11 capture intents");
-  if (evidence.pilotWriteEvidence?.eventWrites !== 12) issue("evidence pilot write must include 12 event writes");
+  if (evidence.pilotWriteEvidence?.eventWrites !== 13) issue("evidence pilot write must include 13 event writes");
   if (evidence.pilotWriteEvidence?.inboxDeliveryRequired !== true) issue("evidence pilot write must require inbox delivery");
   if (evidence.pilotWriteEvidence?.operatorReportVerified !== true) issue("evidence pilot write must verify operator report");
   if (evidence.pilotWriteEvidence?.postWriteReconciliation !== true) issue("evidence pilot write must verify post-write reconciliation");

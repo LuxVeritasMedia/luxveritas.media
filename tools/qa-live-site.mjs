@@ -415,8 +415,8 @@ try {
     if (pilotWriteEvidence.result !== "passed") {
       issues.push("/data/lux-pilot-write-evidence.json: result must be passed");
     }
-    if (pilotWriteEvidence.writeEvidence?.formCaptureIntents !== 11 || pilotWriteEvidence.writeEvidence?.eventWrites !== 12) {
-      issues.push("/data/lux-pilot-write-evidence.json: write evidence must cover 11 forms and 12 events");
+    if (pilotWriteEvidence.writeEvidence?.formCaptureIntents !== 11 || pilotWriteEvidence.writeEvidence?.eventWrites !== 13) {
+      issues.push("/data/lux-pilot-write-evidence.json: write evidence must cover 11 forms and 13 events");
     }
     if (pilotWriteEvidence.writeEvidence?.inboxDeliveryRequired !== true || pilotWriteEvidence.writeEvidence?.postWriteReconciliation !== true) {
       issues.push("/data/lux-pilot-write-evidence.json: missing inbox delivery or reconciliation proof");

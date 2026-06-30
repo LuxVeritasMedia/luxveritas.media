@@ -47,7 +47,7 @@ for (const marker of [
   "Current Handoff Gate",
   "Current Pilot Evidence",
   "Live capture intents: 11",
-  "Live event writes: 12",
+  "Live event writes: 13",
   "Downstream Field Map",
   "Downstream Workflow Matrix",
   "Private Workflow Selection",

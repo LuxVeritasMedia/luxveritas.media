@@ -9,7 +9,7 @@ const baseUrl = (process.env.LUX_LIVE_URL || "https://luxveritas.media").replace
 const writeTests = process.env.LUX_PILOT_WRITE_TESTS === "1";
 const dryRun = process.env.LUX_PILOT_WRITE_DRY_RUN === "1";
 const expectedFormCaptureIntents = 11;
-const expectedEventWrites = 12;
+const expectedEventWrites = 13;
 const qaRunId = (process.env.LUX_QA_RUN_ID || new Date().toISOString().replace(/[-:.TZ]/g, "").slice(0, 14))
   .replace(/[^A-Za-z0-9_-]+/g, "")
   .slice(0, 48);
@@ -170,9 +170,9 @@ function isAllowedPreRefreshEvidenceOutput(output) {
     .map((line) => line.replace(/^- /, ""));
   if (!issueLines.length) return false;
   return issueLines.every((line) => (
-    /pilot write evidence must include 12 event writes/i.test(line)
+    /pilot write evidence must include \d+ event writes/i.test(line)
     || /pilot write evidence assetVersion .* does not match current build/i.test(line)
-    || /write evidence must cover 11 forms and 12 events/i.test(line)
+    || /write evidence must cover 11 forms and \d+ events/i.test(line)
     || /assetVersion does not match live build manifest/i.test(line)
     || /asset version does not match live build manifest/i.test(line)
     || /assetVersion must match current build/i.test(line)
@@ -183,16 +183,34 @@ function qaRunDateLabel() {
   return `${qaRunId.slice(0, 4)}-${qaRunId.slice(4, 6)}-${qaRunId.slice(6, 8)}`;
 }
 
-async function refreshPilotEvidenceDocs() {
+function replacePilotEvidenceMarkers(current, evidence) {
+  return current
+    .replace(/((?:The )?[Pp]ilot write gate last passed on )\d{4}-\d{2}-\d{2}/, `$1${qaRunDateLabel()}`)
+    .replace(/(Inbox delivery was (?:last )?confirmed by the \d{4}-\d{2}-\d{2} pilot write gate, QA run ID `)[^`]+(`)/, `$1${qaRunId}$2`)
+    .replace(/QA run ID: `[^`]+`/g, `QA run ID: \`${qaRunId}\``)
+    .replace(/Asset version: `[^`]+`/g, `Asset version: \`${evidence.assetVersion}\``)
+    .replace(/Current pilot evidence asset version: `[^`]+`/g, `Current pilot evidence asset version: \`${evidence.assetVersion}\``)
+    .replace(/Current asset version: `[^`]+`/g, `Current asset version: \`${evidence.assetVersion}\``)
+    .replace(/Current live asset version: `[^`]+`/g, `Current live asset version: \`${evidence.assetVersion}\``)
+    .replace(/Live build version: `[^`]+`/g, `Live build version: \`${evidence.assetVersion}\``)
+    .replace(/Latest pilot QA run: `[^`]+`/g, `Latest pilot QA run: \`${qaRunId}\``)
+    .replace(/Pilot evidence updated: `[^`]+`/g, `Pilot evidence updated: \`${evidence.updatedAt}\``)
+    .replace(/\b12 live event writes\b/g, `${expectedEventWrites} live event writes`)
+    .replace(/\b12 event writes\b/g, `${expectedEventWrites} event writes`)
+    .replace(/\bLive event\/reporting writes: `?\d+`?/g, `Live event/reporting writes: \`${expectedEventWrites}\``)
+    .replace(/\bEvent\/reporting writes: `?12`?/g, `Event/reporting writes: \`${expectedEventWrites}\``);
+}
+
+async function refreshPilotEvidenceDocs(evidence) {
   const replacements = [
     "docs/final-launch-runbook.md",
-    "docs/production-release-handoff.md"
+    "docs/production-release-handoff.md",
+    "docs/launch-blocker-resolution.md",
+    "docs/legal-review-packet.md"
   ];
   for (const file of replacements) {
     const current = await readFile(file, "utf8");
-    const next = current
-      .replace(/((?:The )?[Pp]ilot write gate last passed on )\d{4}-\d{2}-\d{2}/, `$1${qaRunDateLabel()}`)
-      .replace(/QA run ID: `[^`]+`/, `QA run ID: \`${qaRunId}\``);
+    const next = replacePilotEvidenceMarkers(current, evidence);
     await writeFile(file, next);
   }
 }
@@ -206,7 +224,8 @@ async function refreshPilotEvidenceState(evidence) {
   const bugRegister = JSON.parse(bugRaw);
   const capabilities = new Set([
     ...(Array.isArray(phaseStatus.pilotEvidence?.verifiedCapabilities) ? phaseStatus.pilotEvidence.verifiedCapabilities : []),
-    "release_room_reporting"
+    "release_room_reporting",
+    "page_view_reporting"
   ]);
 
   phaseStatus.updatedAt = evidence.updatedAt;
@@ -271,7 +290,7 @@ async function writePilotEvidence() {
 
   await writeFile("data/lux-pilot-write-evidence.json", `${JSON.stringify(evidence, null, 2)}\n`);
   await refreshPilotEvidenceState(evidence);
-  await refreshPilotEvidenceDocs();
+  await refreshPilotEvidenceDocs(evidence);
   console.log(`Updated no-secret pilot write evidence for run ${qaRunId}.`);
 }
 

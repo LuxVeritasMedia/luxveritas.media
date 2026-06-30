@@ -6,7 +6,7 @@ const execFileAsync = promisify(execFile);
 const baseUrl = (process.env.LUX_LIVE_URL || "https://luxveritas.media").replace(/\/$/, "");
 const runId = (process.env.LUX_QA_RUN_ID || "").replace(/[^A-Za-z0-9_-]+/g, "").slice(0, 48);
 const expectedFormCount = Number(process.env.LUX_QA_EXPECT_FORM_COUNT || 11);
-const expectedEventCount = Number(process.env.LUX_QA_EXPECT_EVENT_COUNT || 12);
+const expectedEventCount = Number(process.env.LUX_QA_EXPECT_EVENT_COUNT || 13);
 const issues = [];
 
 const { token: reportToken } = await resolveReportOperatorToken();

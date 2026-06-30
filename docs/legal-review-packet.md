@@ -11,11 +11,11 @@ The public site is technically pilot-ready, but not cleared for unrestricted pub
 - Live URL: `https://luxveritas.media`
 - Current asset version: `20260630-page-view-reporting`
 - Pilot write evidence file: `data/lux-pilot-write-evidence.json`
-- Latest pilot QA run: `20260630170452`
-- Pilot evidence updated: `2026-06-30T17:17:10Z`
+- Latest pilot QA run: `20260630173018`
+- Pilot evidence updated: `2026-06-30T17:33:05Z`
 - Pilot result: `passed`
 - Live capture intents written: `11`
-- Live event/reporting writes: `12`
+- Live event/reporting writes: `13`
 - Inbox delivery required: `true`
 - Operator report verified: `true`
 - Remaining public-launch blockers: `privacy_review`, `terms_review`

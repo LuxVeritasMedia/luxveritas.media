@@ -33,7 +33,7 @@ You must have permission iam.serviceAccounts.ActAs on service account lux-verita
 Failed run:
 
 ```text
-https://github.com/LuxVeritasMedia/luxveritas.media/actions/runs/27887395119
+https://github.com/LuxVeritasMedia/luxveritas.media/actions/runs/28463324534
 ```
 
 ## Required Grant

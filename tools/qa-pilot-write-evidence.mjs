@@ -73,7 +73,7 @@ if (evidence) {
 
   const writeEvidence = evidence.writeEvidence || {};
   if (writeEvidence.formCaptureIntents !== 11) issue("pilot write evidence must cover 11 form capture intents");
-  if (writeEvidence.eventWrites !== 12) issue("pilot write evidence must cover 12 event writes");
+  if (writeEvidence.eventWrites !== 13) issue("pilot write evidence must cover 13 event writes");
   if (writeEvidence.inboxDeliveryRequired !== true) issue("pilot write evidence must require inbox delivery");
   if (writeEvidence.operatorReportVerified !== true) issue("pilot write evidence must verify operator reporting");
   if (writeEvidence.postWriteReconciliation !== true) issue("pilot write evidence must verify post-write reconciliation");

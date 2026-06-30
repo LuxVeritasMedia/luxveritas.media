@@ -10,6 +10,17 @@ const execFileAsync = promisify(execFile);
 
 const matrix = [
   {
+    event: "page_view",
+    page: "/join.html",
+    detail: {
+      surface: "page",
+      intent: "view",
+      source: "live_event_matrix",
+      title: "Join",
+      cta_id: "join__page_view__live_event_matrix"
+    }
+  },
+  {
     event: "view_content",
     page: "/index.html",
     detail: { surface: "home", title: "Home", cta_id: "home__view_content__page" }
@@ -119,6 +130,7 @@ const matrix = [
   }
 ];
 const expectedEvents = [
+  "page_view",
   "view_content",
   "form_open",
   "link_click",

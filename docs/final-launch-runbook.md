@@ -11,7 +11,7 @@ Use this only when moving from pilot-ready to public-release ready. Keep secrets
 - Current asset version is `20260630-page-view-reporting`.
 - Current phase status is Phase 5 portal pilot prep, with Phase 4 legal closeout still open.
 - Media, fan reactions, inbox delivery, private handoff, operator reporting, private intake queue workbench, and private workflow-target recommendation reporting are ready.
-- The pilot write gate last passed on 2026-06-30 with 11 live QA submissions, including dedicated pilot feedback routing, inbox delivery required, 12 live event writes, media checks, browser-flow coverage, consented page-view reporting, signal-pass export coverage, protected activation-readiness reporting, and protected operator-report verification. QA run ID: `20260630170452`. Asset version: `20260630-page-view-reporting`. The live event matrix includes fan-reaction and release-room retention reporting for the media retention loop, and the gate reconciles exact write-run IDs back through the protected report.
+- The pilot write gate last passed on 2026-06-30 with 11 live QA submissions, including dedicated pilot feedback routing, inbox delivery required, 13 live event writes, media checks, browser-flow coverage, consented page-view reporting, signal-pass export coverage, protected activation-readiness reporting, and protected operator-report verification. QA run ID: `20260630173018`. Asset version: `20260630-page-view-reporting`. The live event matrix includes fan-reaction and release-room retention reporting for the media retention loop, and the gate reconciles exact write-run IDs back through the protected report.
 - The no-secret receipt is tracked in `data/lux-pilot-write-evidence.json` and validated with `node tools/qa-pilot-write-evidence.mjs`. Final release requires fresh pilot write evidence; the default freshness window is 72 hours and can be inspected with `LUX_PILOT_WRITE_EVIDENCE_MAX_AGE_HOURS`.
 - Known pilot issues are tracked without secrets in `data/lux-pilot-bug-register.json` and validated with `node tools/qa-pilot-bug-register.mjs`. The current decision is `pilot_can_continue` with no known blocking bugs.
 - Pilot scenario coverage is tracked in `data/lux-pilot-test-matrix.json`.
@@ -102,7 +102,7 @@ LUX_RESEND_API_KEY="re_..." node tools/activate-inbox-delivery.mjs
 
 Use `LUX_INBOX_ACTIVATION_WRITE_TEST=1` only when the inbox owner is ready to receive QA mail. That mode sends a live form write and requires inbox delivery.
 
-Inbox delivery was last confirmed by the 2026-06-30 pilot write gate, QA run ID `20260630170452`, with 11 live capture intents, 12 event writes, and inbox delivery required. Current pilot evidence asset version: `20260630-page-view-reporting`. Re-run the live form matrix only if sender domain, provider secret, Functions deployment, or final release evidence freshness changes:
+Inbox delivery was last confirmed by the 2026-06-30 pilot write gate, QA run ID `20260630173018`, with 11 live capture intents, 13 event writes, and inbox delivery required. Current pilot evidence asset version: `20260630-page-view-reporting`. Re-run the live form matrix only if sender domain, provider secret, Functions deployment, or final release evidence freshness changes:
 
 ```bash
 LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.mjs
