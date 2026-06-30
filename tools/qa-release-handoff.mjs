@@ -8,6 +8,7 @@ const legalReviewPacket = await readFile("docs/legal-review-packet.md", "utf8");
 const finalLaunchRunbook = await readFile("docs/final-launch-runbook.md", "utf8");
 const todo = await readFile("TODO.md", "utf8");
 const pilotWriteEvidence = await readFile("data/lux-pilot-write-evidence.json", "utf8");
+const pilotWriteEvidenceData = JSON.parse(pilotWriteEvidence);
 const buildManifest = JSON.parse(await readFile("data/lux-build-manifest.json", "utf8"));
 const finalGate = await readFile("tools/qa-final-release-gate.mjs", "utf8");
 const pilotWriteGate = await readFile("tools/qa-pilot-write-gate.mjs", "utf8");
@@ -65,6 +66,23 @@ for (const marker of [
   "eventWrites"
 ]) {
   if (!pilotWriteEvidence.includes(marker)) issue(`data/lux-pilot-write-evidence.json missing marker: ${marker}`);
+}
+
+for (const [label, doc] of [
+  ["production-release-handoff.md", handoff],
+  ["launch-blocker-resolution.md", blockerResolution],
+  ["legal-review-packet.md", legalReviewPacket],
+  ["final-launch-runbook.md", finalLaunchRunbook]
+]) {
+  for (const value of [
+    pilotWriteEvidenceData.qaRunId,
+    pilotWriteEvidenceData.assetVersion,
+    String(pilotWriteEvidenceData.writeEvidence?.formCaptureIntents)
+  ]) {
+    if (!value || !doc.includes(value)) {
+      issue(`${label} missing current pilot write evidence value: ${value || "missing"}`);
+    }
+  }
 }
 
 if (!handoff.includes("Use `docs/legal-review-packet.md` for Privacy and Terms review.")) {

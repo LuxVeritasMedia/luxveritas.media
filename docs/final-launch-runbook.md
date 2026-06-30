@@ -1,6 +1,6 @@
 # Lux Veritas Final Launch Runbook
 
-Status date: 2026-06-28
+Status date: 2026-06-30
 
 Use this only when moving from pilot-ready to public-release ready. Keep secrets out of the repo and terminal history where possible. Do not call the site release-ready until the final gate passes with write tests enabled and without blocker overrides.
 
@@ -14,7 +14,7 @@ Use this only when moving from pilot-ready to public-release ready. Keep secrets
 - The pilot write gate last passed on 2026-06-29 with 11 live QA submissions, including dedicated pilot feedback routing, inbox delivery required, live event writes, media checks, browser-flow coverage, signal-pass export coverage, protected activation-readiness reporting, and protected operator-report verification. QA run ID: `20260629101403`. The live event matrix includes fan-reaction reporting for the media retention loop, and the gate reconciles exact write-run IDs back through the protected report.
 - The no-secret receipt is tracked in `data/lux-pilot-write-evidence.json` and validated with `node tools/qa-pilot-write-evidence.mjs`. Final release requires fresh pilot write evidence; the default freshness window is 72 hours and can be inspected with `LUX_PILOT_WRITE_EVIDENCE_MAX_AGE_HOURS`.
 - Pilot scenario coverage is tracked in `data/lux-pilot-test-matrix.json`.
-- Remaining public-launch blockers are Privacy approval, Terms approval, and fresh pilot write evidence for the final release window.
+- Remaining public-launch blockers are Privacy approval and Terms approval. Final release still requires pilot write evidence to remain fresh for the release window.
 
 ## Launch Order
 
@@ -92,7 +92,7 @@ LUX_RESEND_API_KEY="re_..." node tools/activate-inbox-delivery.mjs
 
 Use `LUX_INBOX_ACTIVATION_WRITE_TEST=1` only when the inbox owner is ready to receive QA mail. That mode sends a live form write and requires inbox delivery.
 
-Inbox delivery was last confirmed on 2026-06-17 with:
+Inbox delivery was last confirmed by the 2026-06-29 pilot write gate, QA run ID `20260629101403`, with 11 live capture intents and inbox delivery required. Re-run the live form matrix only if sender domain, provider secret, Functions deployment, or final release evidence freshness changes:
 
 ```bash
 LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.mjs

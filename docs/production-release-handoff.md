@@ -99,7 +99,7 @@ LUX_PILOT_BROWSER=1 LUX_PILOT_LIVE=1 node tools/qa-pilot-readiness.mjs
 node tools/qa-final-release-gate.mjs
 ```
 
-Inbox delivery was confirmed on 2026-06-17. Re-run this only if the sender domain, provider secret, or Functions deployment changes:
+Inbox delivery was confirmed by the 2026-06-29 pilot write gate, QA run ID `20260629101403`, with 11 live capture intents and inbox delivery required. Re-run this only if the sender domain, provider secret, Functions deployment, or final release evidence freshness changes:
 
 ```bash
 LUX_RESEND_API_KEY="re_..." node tools/activate-inbox-delivery.mjs
