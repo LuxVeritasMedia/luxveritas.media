@@ -13,7 +13,7 @@ function secretShape(value) {
   return /\bre_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}|Bearer\s+[A-Za-z0-9._-]{16,}|serviceAccount:[^<\s]+@[^<\s]+\.iam\.gserviceaccount\.com/i.test(value);
 }
 
-const [textResult, jsonResult, legalRaw, workflowSelectionRaw, pilotEvidenceRaw] = await Promise.all([
+const [textResult, jsonResult, legalRaw, workflowSelectionRaw, pilotEvidenceRaw, exportedRaw] = await Promise.all([
   execFileAsync(process.execPath, ["tools/report-open-approvals.mjs"], {
     timeout: 30000,
     maxBuffer: 1024 * 1024 * 4
@@ -25,17 +25,22 @@ const [textResult, jsonResult, legalRaw, workflowSelectionRaw, pilotEvidenceRaw]
   }),
   readFile("data/lux-legal-review.json", "utf8"),
   readFile("docs/private-workflow-selection.json", "utf8"),
-  readFile("data/lux-pilot-write-evidence.json", "utf8")
+  readFile("data/lux-pilot-write-evidence.json", "utf8"),
+  readFile("data/lux-open-approvals.json", "utf8")
 ]);
 
 const text = textResult.stdout;
 const jsonRaw = jsonResult.stdout;
+const exported = JSON.parse(exportedRaw);
 const legal = JSON.parse(legalRaw);
 const workflowSelection = JSON.parse(workflowSelectionRaw);
 const pilotEvidence = JSON.parse(pilotEvidenceRaw);
 
 if (secretShape(`${text}\n${jsonRaw}`)) {
   issue("open approvals report appears to contain secret-shaped data");
+}
+if (secretShape(exportedRaw)) {
+  issue("exported open approvals manifest appears to contain secret-shaped data");
 }
 
 for (const marker of [
@@ -64,6 +69,11 @@ try {
 }
 
 if (report) {
+  const exportedStable = { ...exported, generatedAt: "" };
+  const reportStable = { ...report, generatedAt: "" };
+  if (JSON.stringify(exportedStable) !== JSON.stringify(reportStable)) {
+    issue("data/lux-open-approvals.json does not match generated open approvals JSON");
+  }
   if (report.schemaVersion !== "luxveritas.open_approvals_report.v1") issue("schemaVersion mismatch");
   if (report.project !== "LuxVeritas.media") issue("project mismatch");
   if (report.liveUrl !== "https://luxveritas.media") issue("liveUrl mismatch");

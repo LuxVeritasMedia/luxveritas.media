@@ -1,6 +1,7 @@
 import { copyFile, cp, mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import "./export-action-inventory.mjs";
+import "./export-open-approvals.mjs";
 
 const dist = "dist";
 const files = [
@@ -88,6 +89,7 @@ await cp("data/lux-radio-programming.json", join(dist, "data/lux-radio-programmi
 await cp("data/lux-pilot-bug-register.json", join(dist, "data/lux-pilot-bug-register.json"));
 await cp("data/lux-build-manifest.json", join(dist, "data/lux-build-manifest.json"));
 await cp("data/lux-action-inventory.json", join(dist, "data/lux-action-inventory.json"));
+await cp("data/lux-open-approvals.json", join(dist, "data/lux-open-approvals.json"));
 await cp("data/lux-launch-readiness.json", join(dist, "data/lux-launch-readiness.json"));
 await cp("data/lux-pilot-write-evidence.json", join(dist, "data/lux-pilot-write-evidence.json"));
 await cp("data/lux-public-terms.json", join(dist, "data/lux-public-terms.json"));
@@ -121,6 +123,7 @@ const requiredNonEmpty = [
   "data/lux-phase-status.json",
   "data/lux-build-manifest.json",
   "data/lux-action-inventory.json",
+  "data/lux-open-approvals.json",
   "data/lux-media-manifest.json",
   "data/lux-release-room.json",
   "data/lux-radio-programming.json",
@@ -139,4 +142,4 @@ for (const file of requiredNonEmpty) {
   }
 }
 
-console.log(`Prepared Firebase Hosting artifact with ${files.length + assetFiles.length + 16} files.`);
+console.log(`Prepared Firebase Hosting artifact with ${files.length + assetFiles.length + 17} files.`);

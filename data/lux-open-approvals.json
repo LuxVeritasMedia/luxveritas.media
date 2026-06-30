@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "luxveritas.open_approvals_report.v1",
+  "generatedAt": "2026-06-30T18:20:28.385Z",
+  "project": "LuxVeritas.media",
+  "liveUrl": "https://luxveritas.media",
+  "decision": "external_approvals_pending",
+  "phase": {
+    "id": "phase-5",
+    "number": 5,
+    "label": "Portal Pilot Prep",
+    "status": "active_pilot",
+    "summary": "Phase 5 pilot prep is active and technically pilot-ready: the public site, capture layer, media preview player, fan reactions, private access shell, operator reporting, private intake queue workbench, and pilot write gate are live. Full public release still requires Privacy and Terms approval before final approval."
+  },
+  "pilotEvidence": {
+    "result": "passed",
+    "qaRunId": "20260630181531",
+    "updatedAt": "2026-06-30T18:17:55Z",
+    "formCaptureIntents": 11,
+    "eventWrites": 13
+  },
+  "counts": {
+    "totalOpenOrConditional": 7,
+    "publicLaunchBlockers": 2,
+    "approvals": 7
+  },
+  "approvals": [
+    {
+      "id": "privacy_review",
+      "label": "Privacy Review",
+      "category": "legal",
+      "status": "open",
+      "blocksPublicLaunch": true,
+      "owner": "Legal/business reviewer",
+      "source": "data/lux-legal-review.json",
+      "nextAction": "Complete legal review of the Privacy page before full public launch.",
+      "verification": "LUX_LEGAL_SYNC_LAUNCH=1 ... LUX_LEGAL_REVIEW_ITEM=privacy ... node tools/set-legal-review-status.mjs && node tools/qa-release-readiness.mjs",
+      "notes": [
+        "/legal/privacy.html",
+        "privacy-draft-2026-06-09",
+        "closeout=open"
+      ]
+    },
+    {
+      "id": "terms_review",
+      "label": "Terms Review",
+      "category": "legal",
+      "status": "open",
+      "blocksPublicLaunch": true,
+      "owner": "Legal/business reviewer",
+      "source": "data/lux-legal-review.json",
+      "nextAction": "Complete legal review of the Terms page before full public launch.",
+      "verification": "LUX_LEGAL_SYNC_LAUNCH=1 ... LUX_LEGAL_REVIEW_ITEM=terms ... node tools/set-legal-review-status.mjs && node tools/qa-release-readiness.mjs",
+      "notes": [
+        "/legal/terms.html",
+        "terms-draft-2026-06-09",
+        "closeout=open"
+      ]
+    },
+    {
+      "id": "functions_deploy_iam",
+      "label": "Functions Deploy IAM",
+      "category": "automation",
+      "status": "approval_required",
+      "blocksPublicLaunch": false,
+      "owner": "Google Cloud project owner",
+      "source": "docs/functions-deploy-iam-repair.md",
+      "nextAction": "Approve and grant roles/iam.serviceAccountUser on lux-veritas-media@appspot.gserviceaccount.com to the GitHub deploy service account, then rerun the manual Functions workflow.",
+      "verification": "node tools/qa-functions-deploy-readiness.mjs",
+      "notes": [
+        "Live Functions are deployed; this hardens future manual Functions deploy automation.",
+        "Do not mutate IAM without explicit project-owner approval."
+      ]
+    },
+    {
+      "id": "external_workflow_target",
+      "label": "External Workflow Target",
+      "category": "private_workflow",
+      "status": "recommendation_ready_approval_required",
+      "blocksPublicLaunch": false,
+      "owner": "Private workflow owner",
+      "source": "docs/private-workflow-selection.json",
+      "nextAction": "Approve the receiver owner, receiver location, signing material, replay owner, and rollback owner before activating the first external target.",
+      "verification": "node tools/qa-private-workflow-selection.mjs && LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE=1 LUX_PRIVATE_INTEGRATION_ACTIVATION_DRY_RUN=1 ... node tools/activate-private-integration.mjs",
+      "notes": [
+        "current=firebase_handoff",
+        "recommended=google_workspace",
+        "Keep firebase_handoff active until a human-approved receiver owner, receiver location, signing material, replay owner, and rollback owner are approved outside this repo."
+      ]
+    },
+    {
+      "id": "seed_binder_private_upload",
+      "label": "Seed/Binder Private Upload",
+      "category": "internal_docs",
+      "status": "operator_review_required",
+      "blocksPublicLaunch": false,
+      "owner": "Internal operations owner",
+      "source": "TODO.md",
+      "nextAction": "Review and upload seed/binder docs to Drive or a private internal repo; keep them out of public GitHub and deploy artifacts.",
+      "verification": "Confirm private Drive/repo upload and rerun public product-boundary QA.",
+      "notes": [
+        "Do not upload secrets, local caches, or internal-only source materials into public repo paths."
+      ]
+    },
+    {
+      "id": "event_terms",
+      "label": "Event Terms",
+      "category": "conditional_legal",
+      "status": "conditional",
+      "blocksPublicLaunch": false,
+      "owner": "Legal/business reviewer",
+      "source": "TODO.md",
+      "nextAction": "Add Event Terms before ticketing, paid events, or public RSVP goes live.",
+      "verification": "Review event flow and rerun legal/release QA.",
+      "notes": [
+        "Not required while events remain request-access only."
+      ]
+    },
+    {
+      "id": "purchase_membership_terms",
+      "label": "Purchase/Membership Terms",
+      "category": "conditional_legal",
+      "status": "conditional",
+      "blocksPublicLaunch": false,
+      "owner": "Legal/business reviewer",
+      "source": "TODO.md",
+      "nextAction": "Add Purchase/Membership terms before commerce, paid membership, paid drops, shipping, refunds, or cancellations go live.",
+      "verification": "Review commerce flow and rerun legal/release QA.",
+      "notes": [
+        "Not required while store and membership remain waitlist-only."
+      ]
+    }
+  ]
+}

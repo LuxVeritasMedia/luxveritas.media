@@ -118,15 +118,17 @@ const eventEndpoint = "/api/event";
 const reportEndpoint = "/api/report";
 const mediaManifestPath = "/data/lux-media-manifest.json";
 const actionInventoryPath = "/data/lux-action-inventory.json";
+const openApprovalsPath = "/data/lux-open-approvals.json";
 const launchChecklistPath = "/data/lux-launch-readiness.json";
 const launchCloseoutPath = "/data/lux-launch-closeout-public.json";
 const legalReviewPath = "/data/lux-legal-review.json";
 const submitTimeoutMs = 8000;
-const publicBuildVersion = "20260630-action-reporting-keys";
+const publicBuildVersion = "20260630-open-approvals-report";
 const allowedInterestPaths = new Set(["music", "film", "events", "drops", "community", "codex", "create"]);
 let activeFormType = "request";
 let mediaManifestPromise = null;
 let actionInventoryPromise = null;
+let openApprovalsPromise = null;
 let launchChecklistPromise = null;
 let launchCloseoutPromise = null;
 let legalReviewPromise = null;
@@ -819,6 +821,21 @@ async function loadActionInventory() {
   return actionInventoryPromise;
 }
 
+async function loadOpenApprovals() {
+  if (!openApprovalsPromise) {
+    openApprovalsPromise = fetch(openApprovalsPath, { headers: { Accept: "application/json" } })
+      .then((response) => {
+        if (!response.ok) throw new Error("open_approvals_unavailable");
+        return response.json();
+      })
+      .then((report) => {
+        if (!Array.isArray(report.approvals)) throw new Error("open_approvals_invalid");
+        return report;
+      });
+  }
+  return openApprovalsPromise;
+}
+
 async function loadLaunchChecklist() {
   if (!launchChecklistPromise) {
     launchChecklistPromise = fetch(launchChecklistPath, { headers: { Accept: "application/json" } })
@@ -1111,6 +1128,55 @@ async function renderLaunchCloseoutReport() {
   } catch {
     if (summary) summary.textContent = "Launch closeout unavailable";
     if (list) list.innerHTML = "<li>Launch closeout could not be loaded.</li>";
+  }
+}
+
+function approvalStatusLabel(status) {
+  if (status === "approved") return "Approved";
+  if (status === "approval_required") return "Approval Required";
+  if (status === "recommendation_ready_approval_required") return "Recommendation Ready";
+  if (status === "operator_review_required") return "Operator Review";
+  if (status === "conditional") return "Conditional";
+  if (status === "open") return "Open";
+  return "Review";
+}
+
+function approvalMarkup(item) {
+  const label = escapeHtml(item.label || item.id || "Approval");
+  const status = `${approvalStatusLabel(item.status)}${item.blocksPublicLaunch ? " / blocks launch" : ""}`;
+  const owner = item.owner ? `Owner: ${item.owner}` : "";
+  const next = item.nextAction ? `Next: ${item.nextAction}` : "";
+  const verify = item.verification ? `Verify: ${item.verification}` : "";
+  const detail = [owner, next, verify].filter(Boolean).join(" ");
+  return `<li><strong>${label}</strong><span>${escapeHtml(status)}</span><small>${escapeHtml(detail || "Review approval status.")}</small></li>`;
+}
+
+async function renderOpenApprovalsReport() {
+  const summary = document.querySelector("[data-open-approvals-summary]");
+  const list = document.querySelector("[data-open-approvals-list]");
+  if (!summary && !list) return;
+
+  try {
+    const report = await loadOpenApprovals();
+    const approvals = Array.isArray(report.approvals) ? report.approvals : [];
+    const publicBlockers = approvals.filter((item) => item.blocksPublicLaunch);
+    const openOrConditional = approvals.filter((item) => item.status !== "approved");
+    if (summary) {
+      summary.textContent = `${publicBlockers.length} public-launch blockers, ${openOrConditional.length} open or conditional`;
+    }
+    if (list) {
+      list.innerHTML = approvals.length
+        ? approvals.map(approvalMarkup).join("")
+        : "<li>No open approvals found.</li>";
+    }
+    trackEvent("open_approvals_view", {
+      decision: report.decision || null,
+      publicLaunchBlockers: publicBlockers.length,
+      openOrConditional: openOrConditional.length
+    });
+  } catch {
+    if (summary) summary.textContent = "Open approvals unavailable";
+    if (list) list.innerHTML = "<li>Open approvals could not be loaded.</li>";
   }
 }
 
@@ -2396,6 +2462,7 @@ if ("serviceWorker" in navigator) {
 renderMediaReadinessReport();
 renderLaunchReadinessReport();
 renderLaunchCloseoutReport();
+renderOpenApprovalsReport();
 renderActionInventoryReport();
 renderLocalReport();
 renderFanSignal();

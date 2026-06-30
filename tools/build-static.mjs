@@ -1,8 +1,9 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { actionInventoryVersion } from "./lib/action-inventory.mjs";
+import "./export-open-approvals.mjs";
 
-const assetVersion = "20260630-action-reporting-keys";
+const assetVersion = "20260630-open-approvals-report";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const releaseRoom = JSON.parse(await readFile("data/lux-release-room.json", "utf8"));
 const radioProgramming = JSON.parse(await readFile("data/lux-radio-programming.json", "utf8"));
@@ -13,6 +14,7 @@ const fanFlywheel = JSON.parse(await readFile("data/lux-fan-flywheel.json", "utf
 const dropRoom = JSON.parse(await readFile("data/lux-drop-room.json", "utf8"));
 const portalRooms = JSON.parse(await readFile("data/lux-portal-rooms.json", "utf8"));
 const phaseStatus = JSON.parse(await readFile("data/lux-phase-status.json", "utf8"));
+const openApprovals = JSON.parse(await readFile("data/lux-open-approvals.json", "utf8"));
 
 const nav = [
   ["Home", "/index.html"],
@@ -856,6 +858,13 @@ function portalReport() {
           <ul class="report-list" data-launch-closeout-list><li>Checking launch closeout.</li></ul>
         </div>
       </div>
+      <div class="report-detail">
+        <div>
+          <p class="kicker">Open Approvals</p>
+          <h3 data-open-approvals-summary>Checking approval status...</h3>
+          <ul class="report-list" data-open-approvals-list><li>Checking release approvals.</li></ul>
+        </div>
+      </div>
       <div class="report-detail report-summary" data-action-inventory="panel">
         <div>
           <p class="kicker">Action Coverage</p>
@@ -1280,6 +1289,8 @@ await writeFile("data/lux-build-manifest.json", `${JSON.stringify({
   radioProgrammingVersion: radioProgramming.version,
   pilotBugRegisterVersion: pilotBugRegister.version,
   actionInventoryVersion,
+  openApprovalsDecision: openApprovals.decision || "review_required",
+  openApprovalsPublicLaunchBlockers: openApprovals.counts?.publicLaunchBlockers || 0,
   brandHouseVersion: brandHouse.version,
   fanFlywheelVersion: fanFlywheel.version,
   dropRoomVersion: dropRoom.version,

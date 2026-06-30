@@ -28,6 +28,7 @@ const requiredFiles = [
   "data/lux-pilot-bug-register.json",
   "data/lux-build-manifest.json",
   "data/lux-action-inventory.json",
+  "data/lux-open-approvals.json",
   "data/lux-legal-review.json",
   "data/lux-public-terms.json",
   "assets/luxveritas-threshold.png",

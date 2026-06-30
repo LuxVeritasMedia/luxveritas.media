@@ -32,6 +32,7 @@ const checks = [
   ["Legal Sync", "tools/qa-legal-sync.mjs"],
   ["Launch Closeout", "tools/qa-launch-closeout.mjs"],
   ["Launch Blockers", "tools/qa-launch-blockers.mjs"],
+  ["Open Approvals", "tools/qa-open-approvals.mjs"],
   ["MVP Status", "tools/qa-mvp-status.mjs"],
   ["Launch Evidence", "tools/qa-launch-evidence.mjs"],
   ["Release Handoff", "tools/qa-release-handoff.mjs"],

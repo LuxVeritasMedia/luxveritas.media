@@ -219,6 +219,9 @@ for (const file of files) {
     if (!html.includes("data-launch-readiness-summary") || !html.includes("data-launch-readiness-list")) {
       issues.push(`${rel}: missing launch gates report`);
     }
+    if (!html.includes("data-open-approvals-summary") || !html.includes("data-open-approvals-list")) {
+      issues.push(`${rel}: missing open approvals report`);
+    }
     for (const marker of [
       'data-action-inventory="summary"',
       'data-action-inventory="detail"',

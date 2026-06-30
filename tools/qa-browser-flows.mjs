@@ -12,6 +12,7 @@ const reportRequests = [];
 let submitMode = "stored";
 const buildManifest = JSON.parse(await readFile("data/lux-build-manifest.json", "utf8"));
 const actionInventory = JSON.parse(await readFile("data/lux-action-inventory.json", "utf8"));
+const openApprovals = JSON.parse(await readFile("data/lux-open-approvals.json", "utf8"));
 const expectedAssetVersion = buildManifest.assetVersion || buildManifest.version || "";
 
 const mockReport = {
@@ -1070,6 +1071,10 @@ async function operatorReportFlow(page, baseUrl) {
     return summary && /closeout items closed|unavailable/i.test(summary.textContent || "");
   }, null, { timeout: 5000 });
   await page.waitForFunction(() => {
+    const summary = document.querySelector("[data-open-approvals-summary]");
+    return summary && /public-launch blockers|unavailable/i.test(summary.textContent || "");
+  }, null, { timeout: 5000 });
+  await page.waitForFunction(() => {
     const summary = document.querySelector('[data-action-inventory="summary"]');
     return summary && /actions across|unavailable/i.test(summary.textContent || "");
   }, null, { timeout: 5000 });
@@ -1079,6 +1084,8 @@ async function operatorReportFlow(page, baseUrl) {
   const launchReadinessBeforeLoad = await page.locator("[data-launch-readiness-list]").innerText();
   const closeoutSummaryBeforeLoad = await page.locator("[data-launch-closeout-summary]").innerText();
   const closeoutBeforeLoad = await page.locator("[data-launch-closeout-list]").innerText();
+  const openApprovalsSummary = await page.locator("[data-open-approvals-summary]").innerText();
+  const openApprovalsList = await page.locator("[data-open-approvals-list]").innerText();
   const actionCoverageSummary = await page.locator('[data-action-inventory="summary"]').innerText();
   const actionCoverageDetail = await page.locator('[data-action-inventory="detail"]').innerText();
   const actionCoverageTypes = await page.locator('[data-action-inventory="types"]').innerText();
@@ -1093,6 +1100,10 @@ async function operatorReportFlow(page, baseUrl) {
   }
   if (!/2 of 4 closeout items closed/.test(closeoutSummaryBeforeLoad)) {
     issues.push(`/portal/reporting.html: expected closeout summary, found "${closeoutSummaryBeforeLoad}"`);
+  }
+  const expectedApprovalSummary = `${openApprovals.counts.publicLaunchBlockers} public-launch blockers, ${openApprovals.counts.totalOpenOrConditional} open or conditional`;
+  if (!openApprovalsSummary.includes(expectedApprovalSummary)) {
+    issues.push(`/portal/reporting.html: expected open approvals summary "${expectedApprovalSummary}", found "${openApprovalsSummary}"`);
   }
   const expectedActionSummary = `${actionInventory.actionCount} actions across ${actionInventory.routeCount} surfaces`;
   if (!actionCoverageSummary.includes(expectedActionSummary)) {
@@ -1134,6 +1145,11 @@ async function operatorReportFlow(page, baseUrl) {
   for (const label of ["WWW Hosting and Certificate", "Inbox Provider", "Privacy Approval", "Terms Approval"]) {
     if (!closeoutBeforeLoad.includes(label)) {
       issues.push(`/portal/reporting.html: launch closeout missing ${label}`);
+    }
+  }
+  for (const label of ["Privacy Review", "Terms Review", "Functions Deploy IAM", "External Workflow Target"]) {
+    if (!openApprovalsList.includes(label)) {
+      issues.push(`/portal/reporting.html: open approvals missing ${label}`);
     }
   }
 
