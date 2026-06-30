@@ -15,6 +15,10 @@ const checks = [
     script: "tools/qa-preview-helper.mjs"
   },
   {
+    label: "Private Upload Manifest",
+    script: "tools/qa-private-upload-manifest.mjs"
+  },
+  {
     label: "Deploy Status",
     script: "tools/qa-deploy-status.mjs"
   },

@@ -28,12 +28,13 @@ Lux Veritas Website Build/
   app.js
   styles.css
   firebase.json
-  firebase.indexes.json
-  firebase.rules
   apphosting.yaml
   .env.example
   robots.txt
   sitemap.xml
+  site.webmanifest
+  data/
+  functions/
   index.html
   music.html
   film.html
@@ -62,6 +63,7 @@ Lux Veritas Website Build/
     arie-handoff-website-build.md
     arie-quickstart.md
     upload-checklist.md
+    private-upload-manifest.json
     strategy-round2.md
     deployment.md
     supabase-blueprint.md
@@ -70,6 +72,9 @@ Lux Veritas Website Build/
     private-workflow-matrix.json
   tools/
     build-static.mjs
+    serve-preview.mjs
+    qa-private-upload-manifest.mjs
+    qa-preview-helper.mjs
 ```
 
 ## Minimum Required Files
@@ -79,12 +84,16 @@ If you want the lightest possible handoff, at minimum upload:
 - [AGENTS.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/AGENTS.md)
 - [TODO.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/TODO.md)
 - [tools/build-static.mjs](/Users/frederickparent/Documents/Codex/LuxVeritas-website/tools/build-static.mjs)
+- [tools/qa-preview-helper.mjs](/Users/frederickparent/Documents/Codex/LuxVeritas-website/tools/qa-preview-helper.mjs)
 - [styles.css](/Users/frederickparent/Documents/Codex/LuxVeritas-website/styles.css)
 - [app.js](/Users/frederickparent/Documents/Codex/LuxVeritas-website/app.js)
 - [docs/arie-handoff-website-build.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/arie-handoff-website-build.md)
 - [docs/arie-quickstart.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/arie-quickstart.md)
 - [docs/strategy-round2.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/strategy-round2.md)
+- [docs/private-upload-manifest.json](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/private-upload-manifest.json)
 - [docs/private-workflow-matrix.json](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/private-workflow-matrix.json)
+- [data](/Users/frederickparent/Documents/Codex/LuxVeritas-website/data)
+- [functions](/Users/frederickparent/Documents/Codex/LuxVeritas-website/functions)
 - [assets](/Users/frederickparent/Documents/Codex/LuxVeritas-website/assets)
 
 If Arie is expected to view the current static output immediately, also upload:
@@ -102,6 +111,7 @@ Exclude:
 - `source_docs_round2/`
 - `brief_extracts/`
 - `brief_extracts_round2/`
+- `*.zip`
 - any original zip archives
 - any downloaded raw planning packs
 - any machine-local caches
@@ -158,7 +168,8 @@ Ask Arie to open these files in this order:
 3. [AGENTS.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/AGENTS.md)
 4. [tools/build-static.mjs](/Users/frederickparent/Documents/Codex/LuxVeritas-website/tools/build-static.mjs)
 5. [tools/serve-preview.mjs](/Users/frederickparent/Documents/Codex/LuxVeritas-website/tools/serve-preview.mjs)
-6. [TODO.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/TODO.md)
+6. [docs/private-upload-manifest.json](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/private-upload-manifest.json)
+7. [TODO.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/TODO.md)
 
 ## What Arie Should Run First
 
@@ -186,8 +197,9 @@ Lux Veritas Website Build
 2. Upload the selected files and folders.
 3. Confirm that `docs/arie-quickstart.md` and `docs/arie-handoff-website-build.md` are present.
 4. Confirm that `tools/build-static.mjs` is present.
-5. Confirm that `assets/` uploaded successfully.
-6. Share the folder with Arie.
+5. Confirm that `tools/serve-preview.mjs` and `tools/qa-private-upload-manifest.mjs` are present.
+6. Confirm that `data/`, `functions/`, and `assets/` uploaded successfully.
+7. Share the folder with Arie.
 
 ## Final Check Before Sharing
 
@@ -197,5 +209,13 @@ Before uploading, verify:
 - no raw source zip files are included unless intentionally shared
 - no internal-only credential files are included
 - the handoff docs are present
+- `docs/private-upload-manifest.json` is present
 - the generator file is present
+- `data/` and `functions/` are present
 - the current HTML output is present if you want Arie to preview immediately
+
+Run this before sharing:
+
+```bash
+node tools/qa-private-upload-manifest.mjs
+```

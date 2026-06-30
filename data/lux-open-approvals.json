@@ -1,6 +1,6 @@
 {
   "schemaVersion": "luxveritas.open_approvals_report.v1",
-  "generatedAt": "2026-06-30T20:31:55.938Z",
+  "generatedAt": "2026-06-30T21:07:44.597Z",
   "project": "LuxVeritas.media",
   "liveUrl": "https://luxveritas.media",
   "decision": "external_approvals_pending",
@@ -94,11 +94,13 @@
       "status": "operator_review_required",
       "blocksPublicLaunch": false,
       "owner": "Internal operations owner",
-      "source": "TODO.md",
+      "source": "docs/private-upload-manifest.json",
       "nextAction": "Review and upload seed/binder docs to Drive or a private internal repo; keep them out of public GitHub and deploy artifacts.",
-      "verification": "Confirm private Drive/repo upload and rerun public product-boundary QA.",
+      "verification": "node tools/qa-private-upload-manifest.mjs && node tools/qa-product-boundary.mjs",
       "notes": [
-        "Do not upload secrets, local caches, or internal-only source materials into public repo paths."
+        "folder=Lux Veritas Website Build",
+        "target=private_drive_or_private_repo",
+        "Do not upload secrets, local caches, source zips, or internal-only seed materials into public repo paths."
       ]
     },
     {

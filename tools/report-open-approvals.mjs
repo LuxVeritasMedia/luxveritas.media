@@ -55,6 +55,7 @@ const [
   legalRaw,
   phaseRaw,
   workflowSelectionRaw,
+  privateUploadManifestRaw,
   pilotEvidenceRaw,
   todo,
   functionsRepairDoc,
@@ -65,6 +66,7 @@ const [
   readFile("data/lux-legal-review.json", "utf8"),
   readFile("data/lux-phase-status.json", "utf8"),
   readFile("docs/private-workflow-selection.json", "utf8"),
+  readFile("docs/private-upload-manifest.json", "utf8"),
   readFile("data/lux-pilot-write-evidence.json", "utf8"),
   readFile("TODO.md", "utf8"),
   readFile("docs/functions-deploy-iam-repair.md", "utf8"),
@@ -77,6 +79,7 @@ const inputText = [
   legalRaw,
   phaseRaw,
   workflowSelectionRaw,
+  privateUploadManifestRaw,
   pilotEvidenceRaw,
   todo,
   functionsRepairDoc,
@@ -93,6 +96,7 @@ const closeout = JSON.parse(closeoutRaw);
 const legalReview = JSON.parse(legalRaw);
 const phaseStatus = JSON.parse(phaseRaw);
 const workflowSelection = JSON.parse(workflowSelectionRaw);
+const privateUploadManifest = JSON.parse(privateUploadManifestRaw);
 const pilotEvidence = JSON.parse(pilotEvidenceRaw);
 
 const privacyGate = gateById(launch, "privacy_review");
@@ -180,14 +184,16 @@ if (todoOpen(todo, "Review and upload seed/binder docs")) {
     id: "seed_binder_private_upload",
     label: "Seed/Binder Private Upload",
     category: "internal_docs",
-    status: "operator_review_required",
+    status: privateUploadManifest.uploadStatus || "operator_review_required",
     blocksPublicLaunch: false,
     owner: "Internal operations owner",
-    source: "TODO.md",
+    source: "docs/private-upload-manifest.json",
     nextAction: "Review and upload seed/binder docs to Drive or a private internal repo; keep them out of public GitHub and deploy artifacts.",
-    verification: "Confirm private Drive/repo upload and rerun public product-boundary QA.",
+    verification: "node tools/qa-private-upload-manifest.mjs && node tools/qa-product-boundary.mjs",
     notes: [
-      "Do not upload secrets, local caches, or internal-only source materials into public repo paths."
+      `folder=${privateUploadManifest.recommendedFolderName || "unknown"}`,
+      `target=${privateUploadManifest.shareTarget || "unknown"}`,
+      "Do not upload secrets, local caches, source zips, or internal-only seed materials into public repo paths."
     ]
   }));
 }

@@ -17,6 +17,12 @@ Validate the preview helper without leaving a server running:
 node tools/qa-preview-helper.mjs
 ```
 
+Validate the private collaborator upload package before sharing it:
+
+```bash
+node tools/qa-private-upload-manifest.mjs
+```
+
 Run the pilot readiness gate before release checks or deploys:
 
 ```bash

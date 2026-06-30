@@ -124,6 +124,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Add product boundary doc.
 - [x] Add Lux ecosystem master seed.
 - [x] Link master seed into KYS binder index.
+- [x] Add no-secret private upload manifest and QA for the Arie/partner handoff package.
 - [ ] Review and upload seed/binder docs to Drive or a private internal repo; do not push them to public GitHub.
 - [x] Confirm Google Drive upload set excludes secrets, local caches, and internal-only source materials.
 - [x] Confirm internal seed/binder docs are not tracked in the public website repo and are not deployed to `dist`.

@@ -18,6 +18,7 @@ const checks = [
   ["Public Site", "tools/qa-public-site.mjs"],
   ["Access Model", "tools/qa-access-model.mjs"],
   ["Product Boundary", "tools/qa-product-boundary.mjs"],
+  ["Private Upload Manifest", "tools/qa-private-upload-manifest.mjs"],
   ["Integrations", "tools/qa-integrations.mjs"],
   ["Integration Contract", "tools/qa-integration-contract.mjs"],
   ["Integration Profiles", "tools/qa-integration-profiles.mjs"],
