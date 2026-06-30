@@ -362,6 +362,7 @@ function fanSignalSection() {
 
 function brandHouseSection() {
   const houseMarks = Array.isArray(brandHouse.houseMarks) ? brandHouse.houseMarks : [];
+  const constellation = Array.isArray(brandHouse.constellation) ? brandHouse.constellation : [];
   return `<section class="section brand-house" data-brand-house data-brand-house-version="${brandHouse.version || ""}">
     <div class="section-heading">
       <p class="kicker">House</p>
@@ -375,6 +376,13 @@ function brandHouseSection() {
         <p>${item.body}</p>
         <small>${item.action}</small>
       </a>`).join("")}
+    </div>
+    <div class="house-constellation" data-brand-constellation aria-label="Lux Veritas brand constellation">
+      ${constellation.map((item, index) => `<article data-brand-constellation-link="${item.id || `link-${index + 1}`}" data-track-surface="brand_constellation" data-track-intent="brand_constellation_${item.id || `link_${index + 1}`}" data-track-label="${item.label || ""}">
+        <span>${item.from || ""} → ${item.to || ""}</span>
+        <strong>${item.label || ""}</strong>
+        <p>${item.fanAction || ""}</p>
+      </article>`).join("")}
     </div>
   </section>`;
 }

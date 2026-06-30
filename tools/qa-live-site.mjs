@@ -201,6 +201,7 @@ try {
   } else {
     const brandHouse = JSON.parse(text);
     const marks = Array.isArray(brandHouse.houseMarks) ? brandHouse.houseMarks : [];
+    const constellation = Array.isArray(brandHouse.constellation) ? brandHouse.constellation : [];
     const expectedMarks = new Set(["LVR", "LVS", "LVP", "LVL", "LVC", "LVA"]);
     if (brandHouse.schemaVersion !== "luxveritas.brand_house.v1") {
       issues.push("/data/lux-brand-house.json: schemaVersion mismatch");
@@ -210,6 +211,20 @@ try {
     }
     if (marks.length !== 6) {
       issues.push(`/data/lux-brand-house.json: expected 6 house marks, received ${marks.length}`);
+    }
+    if (constellation.length !== 6) {
+      issues.push(`/data/lux-brand-house.json: expected 6 constellation links, received ${constellation.length}`);
+    }
+    for (const item of constellation) {
+      if (!item.id || !item.from || !item.to || !item.label || !item.fanAction) {
+        issues.push(`/data/lux-brand-house.json: constellation item ${item.id || "missing"} lacks id, from, to, label, or fanAction`);
+      }
+      if (item.from && !expectedMarks.has(item.from)) {
+        issues.push(`/data/lux-brand-house.json: constellation ${item.id || "item"} has invalid from mark ${item.from}`);
+      }
+      if (item.to && !expectedMarks.has(item.to)) {
+        issues.push(`/data/lux-brand-house.json: constellation ${item.id || "item"} has invalid to mark ${item.to}`);
+      }
     }
     for (const item of marks) {
       if (!expectedMarks.has(item.mark)) {

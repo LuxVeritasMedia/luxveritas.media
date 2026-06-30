@@ -1,10 +1,54 @@
 {
   "schemaVersion": "luxveritas.brand_house.v1",
-  "version": "2026-06-19-brand-house",
-  "updatedAt": "2026-06-19T00:00:00.000Z",
+  "version": "2026-06-30-brand-constellation",
+  "updatedAt": "2026-06-30T10:50:00.000Z",
   "publicPurpose": "Audience-facing brand house map for Lux Veritas public routes.",
   "headline": "One house. Many rooms.",
   "summary": "The public Lux Veritas world is organized as a living media house: records, studios, publishing, live rooms, community, and selected drops moving together without flattening the work.",
+  "constellation": [
+    {
+      "id": "sound-to-world",
+      "from": "LVR",
+      "to": "LVS",
+      "label": "Sound opens the visual world",
+      "fanAction": "Listen, then watch"
+    },
+    {
+      "id": "world-to-language",
+      "from": "LVS",
+      "to": "LVP",
+      "label": "Chapters become language",
+      "fanAction": "Watch, then read"
+    },
+    {
+      "id": "language-to-room",
+      "from": "LVP",
+      "to": "LVL",
+      "label": "Principles gather in rooms",
+      "fanAction": "Read, then attend"
+    },
+    {
+      "id": "room-to-circle",
+      "from": "LVL",
+      "to": "LVC",
+      "label": "Rooms become membership",
+      "fanAction": "Attend, then join"
+    },
+    {
+      "id": "circle-to-object",
+      "from": "LVC",
+      "to": "LVA",
+      "label": "Belonging becomes a drop",
+      "fanAction": "Join, then collect"
+    },
+    {
+      "id": "object-to-sound",
+      "from": "LVA",
+      "to": "LVR",
+      "label": "Objects return to the signal",
+      "fanAction": "Collect, then return"
+    }
+  ],
   "houseMarks": [
     {
       "mark": "LVR",

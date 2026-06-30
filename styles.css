@@ -325,6 +325,45 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
   letter-spacing: .16em;
   font-size: .68rem;
 }
+.house-constellation {
+  max-width: var(--max);
+  margin: 1px auto 0;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1px;
+  background: rgba(200,168,106,.22);
+  border: 1px solid rgba(200,168,106,.18);
+  border-top: 0;
+}
+.house-constellation article {
+  min-height: 170px;
+  display: grid;
+  align-content: space-between;
+  gap: 1rem;
+  background:
+    linear-gradient(180deg, rgba(13,90,73,.12), rgba(6,8,7,.94)),
+    #0a0d0c;
+  padding: clamp(18px, 2vw, 24px);
+}
+.house-constellation span {
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  font-size: .64rem;
+}
+.house-constellation strong {
+  color: var(--bone);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.1rem, 1.5vw, 1.36rem);
+  font-weight: 400;
+  line-height: 1.08;
+}
+.house-constellation p {
+  margin: 0;
+  color: rgba(243,238,228,.58);
+  font-size: .82rem;
+  line-height: 1.45;
+}
 .fan-flywheel {
   max-width: var(--wide);
   margin-inline: auto;
@@ -1151,7 +1190,7 @@ select option { color: var(--ink); }
 @media (max-width: 1050px) {
   .header-action { display: none; }
   .site-header { grid-template-columns: auto 1fr; }
-  .house-grid, .flywheel-grid, .drop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .house-grid, .house-constellation, .flywheel-grid, .drop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .footer-house-rail { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 850px) {
@@ -1168,7 +1207,7 @@ select option { color: var(--ink); }
     justify-content: flex-start;
   }
   .primary-nav.open { display: flex; }
-  .section-grid, .card-grid, .house-grid, .flywheel-grid, .drop-grid, .release-rail, .slate, .ops-grid, .portal-grid, .event-grid, .codex-list, .split-band, .cta-band, .site-footer, .consent-banner, .media-player-section, .media-player, .radio-signal-panel, .radio-readiness-list, .fan-signal-section, .fan-signal-panel, .interest-paths, .report-grid, .report-detail, .report-list li {
+  .section-grid, .card-grid, .house-grid, .house-constellation, .flywheel-grid, .drop-grid, .release-rail, .slate, .ops-grid, .portal-grid, .event-grid, .codex-list, .split-band, .cta-band, .site-footer, .consent-banner, .media-player-section, .media-player, .radio-signal-panel, .radio-readiness-list, .fan-signal-section, .fan-signal-panel, .interest-paths, .report-grid, .report-detail, .report-list li {
     grid-template-columns: 1fr;
   }
   .fan-signal-tier, .fan-signal-latest {

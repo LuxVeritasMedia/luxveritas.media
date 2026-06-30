@@ -206,6 +206,9 @@ for (const file of htmlFiles) {
     if (!html.includes("data-brand-house")) {
       issues.push(`${rel}: missing public brand-house section`);
     }
+    if (!html.includes("data-brand-constellation")) {
+      issues.push(`${rel}: missing public brand constellation`);
+    }
     for (const mark of ["LVR", "LVS", "LVP", "LVL", "LVC", "LVA"]) {
       if (!html.includes("class=\"house-mark\"") || !html.includes(`<span>${mark}</span>`)) {
         issues.push(`${rel}: missing house mark ${mark}`);
@@ -425,6 +428,7 @@ try {
 try {
   const brandHouse = JSON.parse(brandHouseRaw);
   const marks = Array.isArray(brandHouse.houseMarks) ? brandHouse.houseMarks : [];
+  const constellation = Array.isArray(brandHouse.constellation) ? brandHouse.constellation : [];
   if (brandHouse.schemaVersion !== "luxveritas.brand_house.v1") {
     issues.push("data/lux-brand-house.json: missing schemaVersion luxveritas.brand_house.v1");
   }
@@ -435,6 +439,20 @@ try {
     issues.push(`data/lux-brand-house.json: expected 6 house marks, found ${marks.length}`);
   }
   const expectedMarks = new Set(["LVR", "LVS", "LVP", "LVL", "LVC", "LVA"]);
+  if (constellation.length !== 6) {
+    issues.push(`data/lux-brand-house.json: expected 6 constellation links, found ${constellation.length}`);
+  }
+  for (const item of constellation) {
+    for (const field of ["id", "from", "to", "label", "fanAction"]) {
+      if (!item[field]) issues.push(`data/lux-brand-house.json: constellation item missing ${field}`);
+    }
+    if (item.from && !expectedMarks.has(item.from)) {
+      issues.push(`data/lux-brand-house.json: constellation ${item.id || "item"} has invalid from mark ${item.from}`);
+    }
+    if (item.to && !expectedMarks.has(item.to)) {
+      issues.push(`data/lux-brand-house.json: constellation ${item.id || "item"} has invalid to mark ${item.to}`);
+    }
+  }
   for (const item of marks) {
     if (!expectedMarks.has(item.mark)) issues.push(`data/lux-brand-house.json: unexpected house mark ${item.mark || "missing"}`);
     for (const field of ["title", "body", "path", "action", "logo"]) {
@@ -459,6 +477,9 @@ try {
     if (!html.includes(`data-brand-house-version="${brandHouse.version}"`)) {
       issues.push(`${rel}: missing brand house version ${brandHouse.version}`);
     }
+    if (!html.includes("data-brand-constellation")) {
+      issues.push(`${rel}: missing brand constellation section`);
+    }
     for (const item of marks) {
       if (!html.includes("class=\"house-mark\"") || !html.includes(`<span>${item.mark}</span>`)) {
         issues.push(`${rel}: missing brand manifest mark ${item.mark}`);
@@ -468,6 +489,17 @@ try {
       }
       if (!html.includes(`<small>${item.action}</small>`)) {
         issues.push(`${rel}: missing brand manifest action ${item.action}`);
+      }
+    }
+    for (const item of constellation) {
+      if (!html.includes(`data-brand-constellation-link="${item.id}"`)) {
+        issues.push(`${rel}: missing brand constellation link ${item.id}`);
+      }
+      if (!html.includes(`${item.from} → ${item.to}`)) {
+        issues.push(`${rel}: missing brand constellation route ${item.from} to ${item.to}`);
+      }
+      if (!html.includes(item.fanAction)) {
+        issues.push(`${rel}: missing brand constellation fan action ${item.fanAction}`);
       }
     }
   }
