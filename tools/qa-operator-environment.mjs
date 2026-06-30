@@ -120,16 +120,19 @@ if (firebaseVersion.ok) pass(`Firebase CLI is available (${firebaseVersion.stdou
 else warn(`Firebase CLI is not available or not on PATH: ${compactError(firebaseVersion)}`);
 
 const firebaseLogin = await run("firebase", ["login:list"], { timeout: 15000 });
+const firebaseProjects = await run("firebase", ["projects:list", "--json"], { timeout: 20000 });
+const firebaseProjectsHasLux = firebaseProjects.ok && /lux-veritas-media/.test(firebaseProjects.stdout);
 if (firebaseLogin.ok && /info@luxveritas\.media/i.test(firebaseLogin.stdout)) {
   pass("Firebase CLI lists info@luxveritas.media as logged in.");
 } else if (firebaseLogin.ok && firebaseLogin.stdout) {
   issue(`Firebase CLI is logged in, but not as info@luxveritas.media: ${firebaseLogin.stdout.replace(/\n/g, "; ")}`);
+} else if (firebaseProjectsHasLux) {
+  warn(`Firebase CLI login:list failed, but lux-veritas-media project access works; Firebase auth is operational. login:list detail: ${compactError(firebaseLogin)}`);
 } else {
   issue(`Firebase CLI login state needs attention: ${compactError(firebaseLogin)}`);
 }
 
-const firebaseProjects = await run("firebase", ["projects:list", "--json"], { timeout: 20000 });
-if (firebaseProjects.ok && /lux-veritas-media/.test(firebaseProjects.stdout)) {
+if (firebaseProjectsHasLux) {
   pass("Firebase CLI can read project metadata for lux-veritas-media.");
 } else if (firebaseProjects.ok) {
   issue("Firebase CLI responded, but lux-veritas-media was not visible in projects:list.");
