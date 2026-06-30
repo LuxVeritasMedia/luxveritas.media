@@ -6,14 +6,16 @@ function issue(message) {
   issues.push(message);
 }
 
-const [packet, legalReviewRaw, publicTermsRaw] = await Promise.all([
+const [packet, legalReviewRaw, publicTermsRaw, pilotEvidenceRaw] = await Promise.all([
   readFile("docs/legal-review-packet.md", "utf8"),
   readFile("data/lux-legal-review.json", "utf8"),
-  readFile("data/lux-public-terms.json", "utf8")
+  readFile("data/lux-public-terms.json", "utf8"),
+  readFile("data/lux-pilot-write-evidence.json", "utf8")
 ]);
 
 const legalReview = JSON.parse(legalReviewRaw);
 const publicTerms = JSON.parse(publicTermsRaw);
+const pilotEvidence = JSON.parse(pilotEvidenceRaw);
 const legalItems = new Map((legalReview.items || []).map((item) => [item.id, item]));
 
 for (const marker of [
@@ -24,6 +26,9 @@ for (const marker of [
   "data/lux-public-terms.json",
   "data/lux-legal-review.json",
   "tools/build-static.mjs",
+  "Current Technical Evidence",
+  "data/lux-pilot-write-evidence.json",
+  "Remaining public-launch blockers",
   "Privacy Checklist",
   "Terms Checklist",
   "Approval Commands",
@@ -45,6 +50,19 @@ for (const field of ["version", "privacyVersion", "termsVersion", "submissionTer
   const value = publicTerms[field];
   if (!value || !packet.includes(value)) {
     issue(`docs/legal-review-packet.md missing public terms value: ${field}`);
+  }
+}
+
+for (const value of [
+  pilotEvidence.assetVersion,
+  pilotEvidence.qaRunId,
+  pilotEvidence.updatedAt,
+  pilotEvidence.result,
+  String(pilotEvidence.writeEvidence?.formCaptureIntents),
+  String(pilotEvidence.writeEvidence?.eventWrites)
+]) {
+  if (!value || !packet.includes(value)) {
+    issue(`docs/legal-review-packet.md missing pilot evidence value: ${value || "missing"}`);
   }
 }
 

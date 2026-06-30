@@ -1,8 +1,24 @@
 # Lux Veritas Legal Review Packet
 
-Status date: 2026-06-22
+Status date: 2026-06-30
 
 This packet is for Privacy and Terms review before public launch. It is not legal approval. Do not mark any item approved until the responsible legal or business reviewer accepts the live draft language and actual operating practices.
+
+## Current Technical Evidence
+
+The public site is technically pilot-ready, but not cleared for unrestricted public launch until Privacy and Terms are approved.
+
+- Live URL: `https://luxveritas.media`
+- Current asset version: `20260622-activation-readiness`
+- Pilot write evidence file: `data/lux-pilot-write-evidence.json`
+- Latest pilot QA run: `20260629101403`
+- Pilot evidence updated: `2026-06-29T10:16:55Z`
+- Pilot result: `passed`
+- Live capture intents written: `11`
+- Live event/reporting writes: `11`
+- Inbox delivery required: `true`
+- Operator report verified: `true`
+- Remaining public-launch blockers: `privacy_review`, `terms_review`
 
 ## Review Scope
 

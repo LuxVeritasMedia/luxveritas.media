@@ -62,6 +62,7 @@ const [
   launchRaw,
   closeoutRaw,
   buildRaw,
+  pilotEvidenceRaw,
   privacyHtml,
   termsHtml
 ] = await Promise.all([
@@ -70,11 +71,12 @@ const [
   readFile("data/lux-launch-readiness.json", "utf8"),
   readFile("data/lux-launch-closeout.json", "utf8"),
   readFile("data/lux-build-manifest.json", "utf8"),
+  readFile("data/lux-pilot-write-evidence.json", "utf8"),
   readFile("legal/privacy.html", "utf8"),
   readFile("legal/terms.html", "utf8")
 ]);
 
-if (secretShape(`${legalReviewRaw}\n${publicTermsRaw}\n${launchRaw}\n${closeoutRaw}\n${buildRaw}`)) {
+if (secretShape(`${legalReviewRaw}\n${publicTermsRaw}\n${launchRaw}\n${closeoutRaw}\n${buildRaw}\n${pilotEvidenceRaw}`)) {
   console.error("Legal review request input appears to contain secret-shaped data.");
   process.exit(1);
 }
@@ -84,6 +86,7 @@ const publicTerms = JSON.parse(publicTermsRaw);
 const launch = JSON.parse(launchRaw);
 const closeout = JSON.parse(closeoutRaw);
 const build = JSON.parse(buildRaw);
+const pilotEvidence = JSON.parse(pilotEvidenceRaw);
 const gates = Array.isArray(launch.gates) ? launch.gates : [];
 const blockedGates = gates
   .filter((gate) => gate.requiredForPublicLaunch === true && gate.status === "blocked")
@@ -109,6 +112,20 @@ const packet = {
     termsVersion: publicTerms.termsVersion || "",
     submissionTermsVersion: publicTerms.submissionTermsVersion || "",
     notice: publicTerms.notice || ""
+  },
+  pilotWriteEvidence: {
+    evidenceFile: "data/lux-pilot-write-evidence.json",
+    updatedAt: pilotEvidence.updatedAt || "",
+    qaRunId: pilotEvidence.qaRunId || "",
+    result: pilotEvidence.result || "",
+    assetVersion: pilotEvidence.assetVersion || "",
+    command: pilotEvidence.command || "",
+    formCaptureIntents: pilotEvidence.writeEvidence?.formCaptureIntents ?? null,
+    eventWrites: pilotEvidence.writeEvidence?.eventWrites ?? null,
+    inboxDeliveryRequired: pilotEvidence.writeEvidence?.inboxDeliveryRequired ?? null,
+    operatorReportVerified: pilotEvidence.writeEvidence?.operatorReportVerified ?? null,
+    postWriteReconciliation: pilotEvidence.writeEvidence?.postWriteReconciliation ?? null,
+    knownPublicLaunchBlockersAllowed: pilotEvidence.knownPublicLaunchBlockersAllowed || []
   },
   legal: {
     privacy: {
@@ -175,6 +192,17 @@ Project: ${packet.project}
 Live URL: ${packet.liveUrl}
 Asset version: ${packet.assetVersion}
 Public terms bundle: ${packet.publicTerms.version}
+
+## Current Technical Evidence
+
+- Pilot write evidence: ${packet.pilotWriteEvidence.result || "missing"} via ${packet.pilotWriteEvidence.evidenceFile}
+- Pilot QA run: ${packet.pilotWriteEvidence.qaRunId || "missing"} (${packet.pilotWriteEvidence.updatedAt || "missing"})
+- Asset version tested: ${packet.pilotWriteEvidence.assetVersion || packet.assetVersion || "missing"}
+- Form capture intents written: ${packet.pilotWriteEvidence.formCaptureIntents ?? "missing"}
+- Event/reporting writes: ${packet.pilotWriteEvidence.eventWrites ?? "missing"}
+- Inbox delivery required: ${packet.pilotWriteEvidence.inboxDeliveryRequired === true ? "yes" : "no"}
+- Operator report verified: ${packet.pilotWriteEvidence.operatorReportVerified === true ? "yes" : "no"}
+- Remaining allowed public-launch blockers: ${packet.pilotWriteEvidence.knownPublicLaunchBlockersAllowed.join(", ") || "none"}
 
 ## Review Routes
 

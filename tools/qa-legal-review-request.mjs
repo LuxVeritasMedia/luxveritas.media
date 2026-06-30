@@ -13,7 +13,7 @@ function secretShape(value) {
   return /re_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}/.test(value);
 }
 
-const [markdownResult, jsonResult, legalReviewRaw, publicTermsRaw] = await Promise.all([
+const [markdownResult, jsonResult, legalReviewRaw, publicTermsRaw, pilotEvidenceRaw] = await Promise.all([
   execFileAsync(process.execPath, ["tools/export-legal-review-request.mjs"], {
     timeout: 30000,
     maxBuffer: 1024 * 1024 * 4
@@ -24,13 +24,15 @@ const [markdownResult, jsonResult, legalReviewRaw, publicTermsRaw] = await Promi
     maxBuffer: 1024 * 1024 * 4
   }),
   readFile("data/lux-legal-review.json", "utf8"),
-  readFile("data/lux-public-terms.json", "utf8")
+  readFile("data/lux-public-terms.json", "utf8"),
+  readFile("data/lux-pilot-write-evidence.json", "utf8")
 ]);
 
 const markdown = markdownResult.stdout;
 const jsonRaw = jsonResult.stdout;
 const legalReview = JSON.parse(legalReviewRaw);
 const publicTerms = JSON.parse(publicTermsRaw);
+const pilotEvidence = JSON.parse(pilotEvidenceRaw);
 
 if (secretShape(markdown) || secretShape(jsonRaw)) {
   issue("legal review request appears to contain secret-shaped data");
@@ -41,6 +43,9 @@ for (const marker of [
   "This is not legal approval",
   "https://luxveritas.media",
   "Public terms bundle",
+  "Current Technical Evidence",
+  "Pilot write evidence",
+  "data/lux-pilot-write-evidence.json",
   "Review Routes",
   "Privacy sections:",
   "Terms sections:",
@@ -77,6 +82,24 @@ if (packet) {
   if (packet.project !== "LuxVeritas.media") issue("legal review request project mismatch");
   if (packet.liveUrl !== "https://luxveritas.media") issue("legal review request liveUrl mismatch");
   if (!packet.assetVersion) issue("legal review request assetVersion missing");
+  if (packet.pilotWriteEvidence?.evidenceFile !== "data/lux-pilot-write-evidence.json") {
+    issue("legal review request pilot evidence file mismatch");
+  }
+  if (packet.pilotWriteEvidence?.qaRunId !== pilotEvidence.qaRunId) {
+    issue("legal review request pilot qaRunId mismatch");
+  }
+  if (packet.pilotWriteEvidence?.result !== pilotEvidence.result) {
+    issue("legal review request pilot result mismatch");
+  }
+  if (packet.pilotWriteEvidence?.assetVersion !== pilotEvidence.assetVersion) {
+    issue("legal review request pilot assetVersion mismatch");
+  }
+  if (packet.pilotWriteEvidence?.inboxDeliveryRequired !== pilotEvidence.writeEvidence?.inboxDeliveryRequired) {
+    issue("legal review request pilot inbox delivery mismatch");
+  }
+  if (!markdown.includes(pilotEvidence.qaRunId)) {
+    issue("markdown request missing pilot qaRunId");
+  }
   if (!Array.isArray(packet.reviewerChecklist) || packet.reviewerChecklist.length < 5) {
     issue("legal review request checklist is incomplete");
   }
