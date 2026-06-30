@@ -70,6 +70,8 @@ Lux Veritas Website Build/
     private-integration-profiles.json
     private-integration-field-map.json
     private-workflow-matrix.json
+    external-workflow-targets.json
+    private-workflow-selection.json
   tools/
     build-static.mjs
     serve-preview.mjs
@@ -92,6 +94,8 @@ If you want the lightest possible handoff, at minimum upload:
 - [docs/strategy-round2.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/strategy-round2.md)
 - [docs/private-upload-manifest.json](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/private-upload-manifest.json)
 - [docs/private-workflow-matrix.json](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/private-workflow-matrix.json)
+- [docs/external-workflow-targets.json](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/external-workflow-targets.json)
+- [docs/private-workflow-selection.json](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/private-workflow-selection.json)
 - [data](/Users/frederickparent/Documents/Codex/LuxVeritas-website/data)
 - [functions](/Users/frederickparent/Documents/Codex/LuxVeritas-website/functions)
 - [assets](/Users/frederickparent/Documents/Codex/LuxVeritas-website/assets)
@@ -169,7 +173,9 @@ Ask Arie to open these files in this order:
 4. [tools/build-static.mjs](/Users/frederickparent/Documents/Codex/LuxVeritas-website/tools/build-static.mjs)
 5. [tools/serve-preview.mjs](/Users/frederickparent/Documents/Codex/LuxVeritas-website/tools/serve-preview.mjs)
 6. [docs/private-upload-manifest.json](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/private-upload-manifest.json)
-7. [TODO.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/TODO.md)
+7. [docs/private-workflow-selection.json](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/private-workflow-selection.json)
+8. [docs/external-workflow-targets.json](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/external-workflow-targets.json)
+9. [TODO.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/TODO.md)
 
 ## What Arie Should Run First
 
@@ -198,8 +204,9 @@ Lux Veritas Website Build
 3. Confirm that `docs/arie-quickstart.md` and `docs/arie-handoff-website-build.md` are present.
 4. Confirm that `tools/build-static.mjs` is present.
 5. Confirm that `tools/serve-preview.mjs` and `tools/qa-private-upload-manifest.mjs` are present.
-6. Confirm that `data/`, `functions/`, and `assets/` uploaded successfully.
-7. Share the folder with Arie.
+6. Confirm that `docs/external-workflow-targets.json` and `docs/private-workflow-selection.json` are present for private workflow activation planning.
+7. Confirm that `data/`, `functions/`, and `assets/` uploaded successfully.
+8. Share the folder with Arie.
 
 ## Final Check Before Sharing
 
@@ -210,6 +217,8 @@ Before uploading, verify:
 - no internal-only credential files are included
 - the handoff docs are present
 - `docs/private-upload-manifest.json` is present
+- `docs/external-workflow-targets.json` is present
+- `docs/private-workflow-selection.json` is present
 - the generator file is present
 - `data/` and `functions/` are present
 - the current HTML output is present if you want Arie to preview immediately

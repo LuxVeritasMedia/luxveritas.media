@@ -138,6 +138,9 @@ for (const secret of [
 
 for (const marker of [
   "docs/private-upload-manifest.json",
+  "docs/private-workflow-matrix.json",
+  "docs/external-workflow-targets.json",
+  "docs/private-workflow-selection.json",
   "data/",
   "functions/",
   "tools/serve-preview.mjs",

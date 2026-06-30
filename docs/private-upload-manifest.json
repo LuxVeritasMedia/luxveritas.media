@@ -37,6 +37,7 @@
     "docs/private-integration-profiles.json",
     "docs/private-integration-field-map.json",
     "docs/private-workflow-matrix.json",
+    "docs/external-workflow-targets.json",
     "docs/private-workflow-selection.json",
     "tools/build-static.mjs",
     "tools/serve-preview.mjs",
