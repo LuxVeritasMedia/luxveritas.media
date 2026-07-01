@@ -81,6 +81,45 @@ else issue("manifest uploadStatus should remain operator_review_required until e
 if (manifest.shareTarget === "private_drive_or_private_repo") pass("manifest share target stays private.");
 else issue("manifest shareTarget must be private_drive_or_private_repo");
 
+const uploadApproval = manifest.recommendedUploadApproval || {};
+if (uploadApproval.status === "identified_pending_internal_operations_owner_approval") pass("recommended upload approval remains pending operator approval.");
+else issue("recommendedUploadApproval status mismatch");
+if (uploadApproval.folderName === manifest.recommendedFolderName) pass("recommended upload approval folder matches manifest folder.");
+else issue("recommendedUploadApproval folderName must match recommendedFolderName");
+if (uploadApproval.shareTarget === manifest.shareTarget) pass("recommended upload approval shareTarget matches manifest shareTarget.");
+else issue("recommendedUploadApproval shareTarget must match manifest shareTarget");
+if (/I approve uploading the curated Lux Veritas Website Build package/i.test(uploadApproval.approvalLanguage || "")) pass("recommended upload approval has exact approval language.");
+else issue("recommendedUploadApproval missing exact approval language");
+if (!/Exclude source zips, local caches, secrets, internal ecosystem seed\/binder materials, and internal LuxFlow OS app folders/i.test(uploadApproval.approvalLanguage || "")) {
+  issue("recommendedUploadApproval language missing exclusion scope");
+}
+for (const scope of [
+  "Upload only the curated website build package listed in requiredPaths and selected optionalGeneratedPaths.",
+  "Share only through a private Drive folder or private internal repository with controlled collaborator access.",
+  "Keep internal ecosystem seed/binder docs separate unless deliberately shared in a separate private context.",
+  "Do not publish this private upload folder as a public website or public GitHub repo."
+]) {
+  if (!uploadApproval.approvalScope?.includes(scope)) issue(`recommendedUploadApproval approvalScope missing: ${scope}`);
+}
+for (const proof of [
+  "Private folder or private repository exists.",
+  "Arie/collaborator access is confirmed.",
+  "Excluded paths and secret exclusions are absent.",
+  "Verification commands pass from a clean local copy after download or clone."
+]) {
+  if (!uploadApproval.requiredOperatorProof?.includes(proof)) issue(`recommendedUploadApproval required proof missing: ${proof}`);
+}
+for (const command of [
+  "node tools/qa-private-upload-manifest.mjs",
+  "node tools/qa-product-boundary.mjs",
+  "node tools/qa-preview-helper.mjs",
+  "node tools/qa-public-site.mjs"
+]) {
+  if (!uploadApproval.verificationCommands?.includes(command)) issue(`recommendedUploadApproval verificationCommands missing ${command}`);
+}
+if (/externally confirmed/i.test(uploadApproval.closeoutRule || "")) pass("recommended upload approval has external closeout rule.");
+else issue("recommendedUploadApproval closeoutRule must require external confirmation");
+
 for (const marker of [
   "does not prove the private Drive or private repository upload happened",
   "internal operations owner",
@@ -141,6 +180,8 @@ for (const secret of [
 }
 
 for (const marker of [
+  "Approval Language",
+  "I approve uploading the curated Lux Veritas Website Build package",
   "docs/private-upload-manifest.json",
   "docs/private-workflow-matrix.json",
   "docs/external-workflow-targets.json",
@@ -171,7 +212,7 @@ for (const marker of [
   "Privacy and Terms legal review",
   "GitHub manual Functions deploy IAM grant",
   "approved external workflow target selection",
-  "private seed/binder upload to Drive or a private repo"
+  "approved curated website-build upload to a private Drive folder or private repo"
 ]) {
   if (!arieQuickstart.includes(marker)) issue(`Arie quickstart missing current open item: ${marker}`);
 }
@@ -180,7 +221,7 @@ for (const marker of [
   "Current posture: pilot-ready with public launch blocked by external Privacy and Terms approval.",
   "GitHub manual Functions deploy IAM grant",
   "approved external Google Workspace, GHL, or CodexOps workflow target",
-  "private seed/binder upload to Drive or a private internal repo"
+  "approved curated website-build upload to Drive or a private internal repo"
 ]) {
   if (!arieHandoff.includes(marker)) issue(`Arie handoff missing current status marker: ${marker}`);
 }

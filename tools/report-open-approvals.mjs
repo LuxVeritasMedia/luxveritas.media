@@ -204,11 +204,12 @@ if (todoOpen(todo, "Review and upload seed/binder docs")) {
     blocksPublicLaunch: false,
     owner: "Internal operations owner",
     source: "docs/private-upload-manifest.json",
-    nextAction: "Review and upload seed/binder docs to Drive or a private internal repo; keep them out of public GitHub and deploy artifacts.",
+    nextAction: `Approve uploading the curated Lux Veritas Website Build package to the private ${privateUploadManifest.recommendedFolderName || "website build"} folder for Arie/collaborator access; exclude source zips, local caches, secrets, internal ecosystem seed/binder materials, and internal LuxFlow OS app folders.`,
     verification: "node tools/qa-private-upload-manifest.mjs && node tools/qa-product-boundary.mjs",
     notes: [
       `folder=${privateUploadManifest.recommendedFolderName || "unknown"}`,
       `target=${privateUploadManifest.shareTarget || "unknown"}`,
+      privateUploadManifest.recommendedUploadApproval?.status || "",
       "Do not upload secrets, local caches, source zips, or internal-only seed materials into public repo paths."
     ]
   }));

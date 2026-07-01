@@ -509,7 +509,7 @@ Current posture: pilot-ready with public launch blocked by external Privacy and 
 - final legal review
 - GitHub manual Functions deploy IAM grant
 - approved external Google Workspace, GHL, or CodexOps workflow target
-- private seed/binder upload to Drive or a private internal repo
+- approved curated website-build upload to Drive or a private internal repo
 - whether this static prototype should now be migrated to Next.js
 - portal auth / roles / real gated access implementation
 - external analytics and CRM integration after approval

@@ -195,6 +195,6 @@ Current known open items include:
 - Privacy and Terms legal review
 - GitHub manual Functions deploy IAM grant
 - approved external workflow target selection
-- private seed/binder upload to Drive or a private repo
+- approved curated website-build upload to a private Drive folder or private repo
 - Event Terms only if ticketing or public RSVP goes live
 - Purchase/Membership terms only if commerce or paid membership goes live

@@ -127,6 +127,13 @@ if (report) {
     if (!upload.verification?.includes("node tools/qa-private-upload-manifest.mjs")) issue("seed/binder upload approval missing manifest QA verification");
     if (!upload.notes?.some((item) => item.includes(privateUpload.recommendedFolderName))) issue("seed/binder upload approval missing folder note");
     if (!upload.notes?.some((item) => item.includes(privateUpload.shareTarget))) issue("seed/binder upload approval missing share target note");
+    if (!upload.notes?.includes(privateUpload.recommendedUploadApproval?.status)) issue("seed/binder upload approval missing exact approval status note");
+    if (!upload.nextAction?.includes("Approve uploading the curated Lux Veritas Website Build package")) {
+      issue("seed/binder upload approval missing exact upload approval action");
+    }
+    if (!upload.nextAction?.includes("exclude source zips, local caches, secrets")) {
+      issue("seed/binder upload approval missing exclusion boundary");
+    }
   }
 
   if (report.counts?.publicLaunchBlockers !== 2) issue("public launch blocker count should be 2");

@@ -7,6 +7,34 @@
   "shareTarget": "private_drive_or_private_repo",
   "purpose": "No-secret manifest for uploading the Lux Veritas website build package to a private collaborator folder without source zips, local caches, secrets, or internal ecosystem seed materials.",
   "approvalBoundary": "This manifest proves the upload package is curated and secret-free. It does not prove the private Drive or private repository upload happened; an internal operations owner must review and complete that external action.",
+  "recommendedUploadApproval": {
+    "status": "identified_pending_internal_operations_owner_approval",
+    "folderName": "Lux Veritas Website Build",
+    "shareTarget": "private_drive_or_private_repo",
+    "approvalLanguage": "I approve uploading the curated Lux Veritas Website Build package to a private Drive folder or private internal repository for Arie/collaborator access, using docs/private-upload-manifest.json and docs/upload-checklist.md as the inclusion and exclusion source of truth. Exclude source zips, local caches, secrets, internal ecosystem seed/binder materials, and internal LuxFlow OS app folders.",
+    "approvalScope": [
+      "Upload only the curated website build package listed in requiredPaths and selected optionalGeneratedPaths.",
+      "Share only through a private Drive folder or private internal repository with controlled collaborator access.",
+      "Keep internal ecosystem seed/binder docs separate unless deliberately shared in a separate private context.",
+      "Do not upload source_docs, brief_extracts, zip archives, local caches, .git, node_modules, real .env files, secrets, credentials, or internal LuxFlow OS app folders.",
+      "Do not publish this private upload folder as a public website or public GitHub repo."
+    ],
+    "requiredOperatorProof": [
+      "Private folder or private repository exists.",
+      "Arie/collaborator access is confirmed.",
+      "docs/arie-quickstart.md, docs/arie-handoff-website-build.md, and docs/upload-checklist.md are present.",
+      "data/, functions/, assets/, and required docs/tools are present.",
+      "Excluded paths and secret exclusions are absent.",
+      "Verification commands pass from a clean local copy after download or clone."
+    ],
+    "verificationCommands": [
+      "node tools/qa-private-upload-manifest.mjs",
+      "node tools/qa-product-boundary.mjs",
+      "node tools/qa-preview-helper.mjs",
+      "node tools/qa-public-site.mjs"
+    ],
+    "closeoutRule": "Mark this approval complete only after the private upload is externally confirmed and the required operator proof is recorded outside the public deploy artifact."
+  },
   "requiredPaths": [
     "AGENTS.md",
     "TODO.md",

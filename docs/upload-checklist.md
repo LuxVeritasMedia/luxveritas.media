@@ -17,6 +17,16 @@ This file explains:
 Lux Veritas Website Build
 ```
 
+## Approval Language
+
+Use this exact approval before uploading or sharing the private handoff package:
+
+```text
+I approve uploading the curated Lux Veritas Website Build package to a private Drive folder or private internal repository for Arie/collaborator access, using docs/private-upload-manifest.json and docs/upload-checklist.md as the inclusion and exclusion source of truth. Exclude source zips, local caches, secrets, internal ecosystem seed/binder materials, and internal LuxFlow OS app folders.
+```
+
+This approval covers only the curated website build package. Keep internal ecosystem seed/binder docs separate unless they are deliberately shared in a separate private context.
+
 ## Recommended Folder Structure
 
 Upload these files and folders into the shared Drive folder:
