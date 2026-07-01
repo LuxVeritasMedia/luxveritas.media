@@ -111,6 +111,15 @@ if (report) {
   if (external && !external.notes?.some((item) => item.includes(workflowSelection.recommendedFirstExternalTarget))) {
     issue("external workflow target missing recommended target note");
   }
+  if (external && !external.nextAction?.includes("Approve google_workspace as the first external private workflow target")) {
+    issue("external workflow target next action missing exact google_workspace approval");
+  }
+  if (external && !external.nextAction?.includes("firebase_handoff as rollback")) {
+    issue("external workflow target next action missing firebase_handoff rollback");
+  }
+  if (external && !external.notes?.includes(workflowSelection.recommendedFirstExternalApproval?.status)) {
+    issue("external workflow target missing first external approval status note");
+  }
 
   const upload = approvals.get("seed_binder_private_upload");
   if (upload) {

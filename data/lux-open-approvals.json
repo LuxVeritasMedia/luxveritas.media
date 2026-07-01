@@ -1,6 +1,6 @@
 {
   "schemaVersion": "luxveritas.open_approvals_report.v1",
-  "generatedAt": "2026-07-01T02:47:44.613Z",
+  "generatedAt": "2026-07-01T03:00:31.065Z",
   "project": "LuxVeritas.media",
   "liveUrl": "https://luxveritas.media",
   "decision": "external_approvals_pending",
@@ -79,11 +79,12 @@
       "blocksPublicLaunch": false,
       "owner": "Private workflow owner",
       "source": "docs/private-workflow-selection.json",
-      "nextAction": "Approve the receiver owner, receiver location, signing material, replay owner, and rollback owner before activating the first external target.",
+      "nextAction": "Approve google_workspace as the first external private workflow target, including receiver owner, receiver location, signing material, replay owner, rollback owner, retention expectations, and legal-version evidence owner; keep firebase_handoff as rollback until live write, replay, and operator-report checks pass.",
       "verification": "node tools/qa-private-workflow-selection.mjs && LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE=1 LUX_PRIVATE_INTEGRATION_ACTIVATION_DRY_RUN=1 ... node tools/activate-private-integration.mjs",
       "notes": [
         "current=firebase_handoff",
         "recommended=google_workspace",
+        "identified_pending_explicit_private_workflow_owner_approval",
         "Keep firebase_handoff active until a human-approved receiver owner, receiver location, signing material, replay owner, and rollback owner are approved outside this repo."
       ]
     },

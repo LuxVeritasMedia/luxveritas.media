@@ -60,6 +60,58 @@ if (selection.selectionStatus !== "recommendation_ready_approval_required") {
 if (selection.recommendedFirstExternalTarget !== "google_workspace") {
   issue("private workflow selection should recommend google_workspace as the first external approval target");
 }
+const firstExternalApproval = selection.recommendedFirstExternalApproval || {};
+if (firstExternalApproval.status !== "identified_pending_explicit_private_workflow_owner_approval") {
+  issue("private workflow selection first external approval status mismatch");
+}
+if (firstExternalApproval.target !== "google_workspace" || firstExternalApproval.targetSecretValue !== "google_workspace") {
+  issue("private workflow selection first external approval must target google_workspace");
+}
+if (!/I approve google_workspace as the first external private workflow target/i.test(firstExternalApproval.approvalLanguage || "")) {
+  issue("private workflow selection missing exact google_workspace approval language");
+}
+if (!/Firebase handoff remains the rollback path/i.test(firstExternalApproval.approvalLanguage || "")) {
+  issue("private workflow selection approval language must keep Firebase rollback path");
+}
+for (const scope of [
+  "Approve google_workspace as the first external target only; do not activate ghl_crm or codex_ops from this approval.",
+  "Approve server-side handoff only through Firebase Secret Manager.",
+  "Keep firebase_handoff active as rollback until post-activation checks prove live writes and replay."
+]) {
+  if (!firstExternalApproval.approvalScope?.includes(scope)) issue(`first external approval scope missing: ${scope}`);
+}
+for (const privateValue of [
+  "workflow owner",
+  "receiver owner",
+  "approved private receiver location",
+  "approved signing material",
+  "replay owner",
+  "rollback owner",
+  "legal-version evidence owner"
+]) {
+  if (!firstExternalApproval.privateValuesRequiredOutsideRepo?.includes(privateValue)) {
+    issue(`first external approval missing private value requirement: ${privateValue}`);
+  }
+}
+for (const secret of ["FORM_INTEGRATION_URL", "FORM_INTEGRATION_SIGNING_SECRET", "FORM_INTEGRATION_TARGET"]) {
+  if (!firstExternalApproval.secretNamesOnly?.includes(secret)) issue(`first external approval missing secret name ${secret}`);
+}
+for (const evidence of [
+  "Activation dry run passes with LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE=1.",
+  "Provider readiness reports google_workspace active without printing destination values.",
+  "Pilot write gate passes after activation.",
+  "FORM_INTEGRATION_TARGET can return to firebase_handoff."
+]) {
+  const evidenceBuckets = [
+    firstExternalApproval.approvalEvidence,
+    firstExternalApproval.dryRunEvidence,
+    firstExternalApproval.postActivationEvidence,
+    firstExternalApproval.rollbackEvidence
+  ].filter(Array.isArray);
+  if (!evidenceBuckets.some((bucket) => bucket.includes(evidence))) {
+    issue(`first external approval evidence missing: ${evidence}`);
+  }
+}
 if (!/Firebase Secret Manager/i.test(selection.activationBoundary || "")) {
   issue("private workflow selection activationBoundary must require Firebase Secret Manager");
 }

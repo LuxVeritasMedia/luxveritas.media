@@ -175,7 +175,7 @@ if (todoOpen(todo, "iam.serviceAccounts.ActAs")) {
   }));
 }
 
-if (todoOpen(todo, "Configure approved external CRM/Google workflow target")) {
+if (todoOpen(todo, "google_workspace")) {
   approvals.push(approval({
     id: "external_workflow_target",
     label: "External Workflow Target",
@@ -184,11 +184,12 @@ if (todoOpen(todo, "Configure approved external CRM/Google workflow target")) {
     blocksPublicLaunch: false,
     owner: "Private workflow owner",
     source: "docs/private-workflow-selection.json",
-    nextAction: "Approve the receiver owner, receiver location, signing material, replay owner, and rollback owner before activating the first external target.",
+    nextAction: "Approve google_workspace as the first external private workflow target, including receiver owner, receiver location, signing material, replay owner, rollback owner, retention expectations, and legal-version evidence owner; keep firebase_handoff as rollback until live write, replay, and operator-report checks pass.",
     verification: "node tools/qa-private-workflow-selection.mjs && LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE=1 LUX_PRIVATE_INTEGRATION_ACTIVATION_DRY_RUN=1 ... node tools/activate-private-integration.mjs",
     notes: [
       `current=${workflowSelection.currentPrimaryTarget || "unknown"}`,
       `recommended=${workflowSelection.recommendedFirstExternalTarget || "unknown"}`,
+      workflowSelection.recommendedFirstExternalApproval?.status || "",
       workflowSelection.selectionRule || ""
     ].filter(Boolean)
   }));

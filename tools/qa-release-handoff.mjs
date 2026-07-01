@@ -306,7 +306,7 @@ for (const marker of [
   "Add final launch runbook for DNS, inbox, legal, write tests, and gate approval",
   "Legal review: Privacy",
   "Legal review: Terms",
-  "Configure approved external CRM/Google workflow target"
+  "Approve and configure `google_workspace` as the first external private workflow target"
 ]) {
   if (!todo.includes(marker)) issue(`TODO.md missing launch blocker marker: ${marker}`);
 }

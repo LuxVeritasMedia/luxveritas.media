@@ -58,6 +58,11 @@ for (const marker of [
   "integration-review@example.com",
   "membership_waitlist",
   "Recommended first external target: google_workspace",
+  "Exact First External Approval",
+  "identified_pending_explicit_private_workflow_owner_approval",
+  "I approve google_workspace as the first external private workflow target",
+  "Approve google_workspace as the first external target only",
+  "Private values required outside this repo",
   "Recommended First External Activation",
   "Target: google_workspace",
   "Label: Google Workspace Intake",
@@ -128,6 +133,45 @@ if (packet) {
   if (packet.workflowSelection?.currentPrimaryTarget !== "firebase_handoff") issue("workflow selection current primary target mismatch");
   if (packet.workflowSelection?.recommendedFirstExternalTarget !== "google_workspace") issue("workflow selection first target mismatch");
   if (!packet.workflowSelection?.recommendationRationale?.includes("Google Workspace Intake")) issue("workflow selection rationale missing");
+  const firstExternalApproval = packet.workflowSelection?.recommendedFirstExternalApproval;
+  if (!firstExternalApproval) {
+    issue("workflow selection missing first external approval block");
+  } else {
+    if (firstExternalApproval.status !== "identified_pending_explicit_private_workflow_owner_approval") {
+      issue("workflow selection first external approval status mismatch");
+    }
+    if (firstExternalApproval.target !== "google_workspace" || firstExternalApproval.targetSecretValue !== "google_workspace") {
+      issue("workflow selection first external approval target mismatch");
+    }
+    if (!/I approve google_workspace as the first external private workflow target/i.test(firstExternalApproval.approvalLanguage || "")) {
+      issue("workflow selection first external approval language missing");
+    }
+    for (const scope of [
+      "Approve google_workspace as the first external target only; do not activate ghl_crm or codex_ops from this approval.",
+      "Approve server-side handoff only through Firebase Secret Manager."
+    ]) {
+      if (!firstExternalApproval.approvalScope?.includes(scope)) issue(`workflow selection first external approval missing scope ${scope}`);
+    }
+    for (const privateValue of ["workflow owner", "receiver owner", "replay owner", "rollback owner", "legal-version evidence owner"]) {
+      if (!firstExternalApproval.privateValuesRequiredOutsideRepo?.includes(privateValue)) {
+        issue(`workflow selection first external approval missing private value ${privateValue}`);
+      }
+    }
+    for (const evidence of [
+      "Private workflow owner accepts queue routing and retention expectations.",
+      "Activation dry run passes with LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE=1.",
+      "Provider readiness reports google_workspace active without printing destination values."
+    ]) {
+      const evidenceBuckets = [
+        firstExternalApproval.approvalEvidence,
+        firstExternalApproval.dryRunEvidence,
+        firstExternalApproval.postActivationEvidence
+      ].filter(Array.isArray);
+      if (!evidenceBuckets.some((bucket) => bucket.includes(evidence))) {
+        issue(`workflow selection first external approval missing evidence ${evidence}`);
+      }
+    }
+  }
   if (!Array.isArray(packet.workflowSelection?.recommendedActivationOrder) || packet.workflowSelection.recommendedActivationOrder.length !== 3) {
     issue("workflow selection activation order missing");
   } else {
@@ -149,6 +193,12 @@ if (packet) {
     if (activation.label !== "Google Workspace Intake") issue("recommended external label should be Google Workspace Intake");
     if (activation.providerClass !== "workspace_automation") issue("recommended external provider class mismatch");
     if (activation.targetSecretValue !== "google_workspace") issue("recommended external target secret value mismatch");
+    if (!/I approve google_workspace as the first external private workflow target/i.test(activation.approvalLanguage || "")) {
+      issue("recommended external activation missing exact approval language");
+    }
+    if (!activation.approvalScope?.includes("Approve google_workspace as the first external target only; do not activate ghl_crm or codex_ops from this approval.")) {
+      issue("recommended external activation missing exact approval scope");
+    }
     if (activation.approvalRequired !== true) issue("recommended external activation must require approval");
     for (const queue of ["submission_review", "press_contact", "partner_licensing", "strategic_access", "access_review"]) {
       if (!activation.queueCoverage?.includes(queue)) issue(`recommended external activation missing queue ${queue}`);

@@ -7,6 +7,58 @@
   "selectionRule": "Keep firebase_handoff active until a human-approved receiver owner, receiver location, signing material, replay owner, and rollback owner are approved outside this repo.",
   "recommendedFirstExternalTarget": "google_workspace",
   "recommendationRationale": "Google Workspace Intake is the safest first external target because it supports review-led intake archive, consent and legal-version evidence, submissions, press, partner, strategic access, and portal access queues before CRM nurture or build-packet routing.",
+  "recommendedFirstExternalApproval": {
+    "status": "identified_pending_explicit_private_workflow_owner_approval",
+    "target": "google_workspace",
+    "targetSecretValue": "google_workspace",
+    "label": "Google Workspace Intake",
+    "approvalLanguage": "I approve google_workspace as the first external private workflow target for LuxVeritas.media intake archive, owner routing, consent evidence, legal-version evidence, submissions, press, partner, strategic access, and portal access review. Firebase handoff remains the rollback path until live write, replay, and operator-report checks pass.",
+    "approvalScope": [
+      "Approve google_workspace as the first external target only; do not activate ghl_crm or codex_ops from this approval.",
+      "Approve server-side handoff only through Firebase Secret Manager.",
+      "Approve review/archive/routing use for submission_review, press_contact, partner_licensing, strategic_access, and access_review queues.",
+      "Keep membership_waitlist and event_access on the current path until CRM consent and follow-up rules are separately approved.",
+      "Keep firebase_handoff active as rollback until post-activation checks prove live writes and replay."
+    ],
+    "privateValuesRequiredOutsideRepo": [
+      "workflow owner",
+      "receiver owner",
+      "approved private receiver location",
+      "approved signing material",
+      "replay owner",
+      "rollback owner",
+      "retention expectation",
+      "legal-version evidence owner"
+    ],
+    "secretNamesOnly": [
+      "FORM_INTEGRATION_URL",
+      "FORM_INTEGRATION_SIGNING_SECRET",
+      "FORM_INTEGRATION_TARGET"
+    ],
+    "approvalEvidence": [
+      "Private workflow owner accepts queue routing and retention expectations.",
+      "Receiver confirms idempotency and replay behavior.",
+      "Access controls are reviewed by the business owner.",
+      "Retention and deletion expectations are reviewed.",
+      "No provider URLs, account IDs, field IDs, private destinations, tokens, or credentials are stored in this repo."
+    ],
+    "dryRunEvidence": [
+      "Activation dry run passes with LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE=1.",
+      "Private workflow selection QA passes.",
+      "Private integration request QA passes."
+    ],
+    "postActivationEvidence": [
+      "Provider readiness reports google_workspace active without printing destination values.",
+      "Live operator report shows the selected target without exposing destination details.",
+      "One live form matrix write reaches inbox delivery and the selected private handoff when the inbox owner is ready for QA mail.",
+      "Pilot write gate passes after activation."
+    ],
+    "rollbackEvidence": [
+      "FORM_INTEGRATION_TARGET can return to firebase_handoff.",
+      "Firebase receiver location and signing material can be restored through Firebase Secret Manager.",
+      "Provider readiness and live operator report QA pass after rollback."
+    ]
+  },
   "activationBoundary": "Activation must be server-side only through Firebase Secret Manager. Public pages must never contain receiver locations, provider account data, provider field IDs, signing material, or workflow implementation details.",
   "recommendedActivationOrder": [
     {

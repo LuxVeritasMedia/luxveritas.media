@@ -91,7 +91,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Include no-secret external workflow readiness in launch evidence exports.
 - [x] Add no-secret Functions IAM repair request export and QA for the remaining GitHub manual Functions deploy grant.
 - [x] Add unknown-principal recovery path for the GitHub manual Functions deploy IAM grant.
-- [ ] Configure approved external CRM/Google workflow target after the private workflow is chosen.
+- [ ] Approve and configure `google_workspace` as the first external private workflow target after the private workflow owner accepts receiver owner, receiver location, signing material, replay owner, rollback owner, retention expectations, and legal-version evidence owner. Keep `firebase_handoff` as rollback until live write, replay, and operator-report checks pass.
 - [x] Reauthenticate Firebase CLI locally before provider-secret inspection.
 - [x] Configure `REPORT_OPERATOR_TOKEN_SHA256` on `reportactivity` for private pilot reporting access.
 

@@ -211,6 +211,7 @@ const packet = {
     currentPrimaryTarget: workflowSelection.currentPrimaryTarget || "",
     recommendedFirstExternalTarget: workflowSelection.recommendedFirstExternalTarget || "",
     recommendationRationale: workflowSelection.recommendationRationale || "",
+    recommendedFirstExternalApproval: workflowSelection.recommendedFirstExternalApproval || null,
     recommendedActivationOrder: Array.isArray(workflowSelection.recommendedActivationOrder)
       ? workflowSelection.recommendedActivationOrder.map((item) => ({
         rank: item.rank,
@@ -230,6 +231,11 @@ const packet = {
     status: recommendedProfile.status,
     providerClass: recommendedProfile.providerClass,
     targetSecretValue: recommendedProfile.targetSecretValue,
+    approvalLanguage: workflowSelection.recommendedFirstExternalApproval?.approvalLanguage || "",
+    approvalScope: workflowSelection.recommendedFirstExternalApproval?.approvalScope || [],
+    approvalEvidence: workflowSelection.recommendedFirstExternalApproval?.approvalEvidence || [],
+    dryRunEvidence: workflowSelection.recommendedFirstExternalApproval?.dryRunEvidence || [],
+    postActivationEvidence: workflowSelection.recommendedFirstExternalApproval?.postActivationEvidence || [],
     approvalRequired: recommendedProfile.status === "future",
     queueCoverage: recommendedActivation?.queueCoverage || [],
     primaryJob: recommendedActivation?.primaryJob || "",
@@ -425,6 +431,28 @@ ${workflowRows || "- None"}
 
 ${packet.workflowSelection.recommendedActivationOrder.map((item) => `- ${item.rank}. ${item.profile}: ${item.decision}; queues: ${item.queueCoverage.join(", ")}; job: ${item.primaryJob}; approval required: ${item.approvalRequired ? "yes" : "no"}`).join("\n") || "- None"}
 
+## Exact First External Approval
+
+- Status: ${packet.workflowSelection.recommendedFirstExternalApproval?.status || "missing"}
+- Target: ${packet.workflowSelection.recommendedFirstExternalApproval?.target || "missing"}
+- Target secret value: ${packet.workflowSelection.recommendedFirstExternalApproval?.targetSecretValue || "missing"}
+
+\`\`\`text
+${packet.workflowSelection.recommendedFirstExternalApproval?.approvalLanguage || "missing"}
+\`\`\`
+
+Approval scope:
+
+${packet.workflowSelection.recommendedFirstExternalApproval?.approvalScope?.map((item) => `- ${item}`).join("\n") || "- None"}
+
+Private values required outside this repo:
+
+${packet.workflowSelection.recommendedFirstExternalApproval?.privateValuesRequiredOutsideRepo?.map((item) => `- ${item}`).join("\n") || "- None"}
+
+Evidence before activation:
+
+${packet.workflowSelection.recommendedFirstExternalApproval?.approvalEvidence?.map((item) => `- ${item}`).join("\n") || "- None"}
+
 ## Recommended First External Activation
 
 - Target: ${packet.recommendedExternalActivation?.target || "missing"}
@@ -436,6 +464,7 @@ ${packet.workflowSelection.recommendedActivationOrder.map((item) => `- ${item.ra
 - Queue coverage: ${packet.recommendedExternalActivation?.queueCoverage?.join(", ") || "missing"}
 - Primary job: ${packet.recommendedExternalActivation?.primaryJob || "missing"}
 - Required approval fields: ${packet.recommendedExternalActivation?.requiredApprovalFields?.join(", ") || "missing"}
+- Exact approval: ${packet.recommendedExternalActivation?.approvalLanguage || "missing"}
 
 Dry run:
 
