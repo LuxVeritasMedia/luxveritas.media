@@ -116,6 +116,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Wire legal sync dry-run QA into pilot, workflow, and final release gates.
 - [x] Add legal review packet for Privacy and Terms approval.
 - [x] Add no-secret legal review request export for counsel/business approval.
+- [x] Add legal reviewer decision-intake fields and no-secret evidence guardrails.
 - [ ] Legal review: Privacy.
 - [ ] Legal review: Terms.
 - [ ] Add Event Terms if ticketing or public RSVP goes live.

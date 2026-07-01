@@ -1,6 +1,6 @@
 # Lux Veritas Legal Review Packet
 
-Status date: 2026-06-30
+Status date: 2026-07-01
 
 This packet is for Privacy and Terms review before public launch. It is not legal approval. Do not mark any item approved until the responsible legal or business reviewer accepts the live draft language and actual operating practices.
 
@@ -75,6 +75,34 @@ node tools/qa-legal-sync.mjs
 ```
 
 The exported request includes no-secret page proof for the live Privacy and Terms routes, including titles, descriptions, placeholder-language checks, and section inventories for reviewer triage.
+
+## Reviewer Decision Intake
+
+The reviewer should fill this out outside the public repo before any approval command is run:
+
+- reviewerName:
+- reviewedAt:
+- decision: `approved`, `needs_changes`, or `blocked`
+- privacyVersion: `privacy-draft-2026-06-09`
+- termsVersion: `terms-draft-2026-06-09`
+- submissionTermsVersion: `submission-draft-2026-06-09`
+- assetVersion: `20260630-pilot-feedback-report`
+- pilotQaRunId: `20260701021744`
+- evidenceReference: no-secret approval reference only
+- conditionsOrChanges:
+
+Do not approve if:
+
+- the live Privacy or Terms route differs from the reviewed draft
+- the reviewer cannot confirm actual practices for data collection, consent, analytics, submissions, memberships, events, purchases, creator participation, licensing, storage, retention, deletion, service providers, or contact paths
+- paid membership, ticketing, store purchases, creator payments, refunds, cancellations, or regulated activity will go live before matching terms are reviewed
+- approval evidence includes secrets, private URLs, credentials, account IDs, or non-public contract terms
+
+Acceptable no-secret evidence examples:
+
+- legal review email dated YYYY-MM-DD
+- signed internal approval note dated YYYY-MM-DD
+- counsel ticket or business approval record ID without private URL
 
 Run these only after approval is real:
 

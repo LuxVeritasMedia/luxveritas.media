@@ -145,6 +145,38 @@ const packet = {
     "Confirm storage, retention, deletion, service-provider, legal-compliance, and contact paths are acceptable for launch.",
     "Confirm no paid commerce, ticketing, creator payment, or regulated activity launches without matching reviewed terms."
   ],
+  reviewerDecisionIntake: {
+    purpose: "Reviewer fills this out outside the public repo before any approval command is run.",
+    requiredDecisionValues: ["approved", "needs_changes", "blocked"],
+    requiredFields: [
+      "reviewerName",
+      "reviewedAt",
+      "decision",
+      "privacyVersion",
+      "termsVersion",
+      "submissionTermsVersion",
+      "evidenceReference",
+      "conditionsOrChanges"
+    ],
+    versionLock: {
+      privacyVersion: publicTerms.privacyVersion || "",
+      termsVersion: publicTerms.termsVersion || "",
+      submissionTermsVersion: publicTerms.submissionTermsVersion || "",
+      assetVersion: build.assetVersion || build.version || "",
+      pilotQaRunId: pilotEvidence.qaRunId || ""
+    },
+    blockApprovalIf: [
+      "The live Privacy or Terms route differs from the reviewed draft.",
+      "The reviewer cannot confirm the actual practices for data collection, consent, analytics, submissions, memberships, events, purchases, creator participation, licensing, storage, retention, deletion, service providers, or contact paths.",
+      "Paid membership, ticketing, store purchases, creator payments, refunds, cancellations, or regulated activity will go live before matching terms are reviewed.",
+      "Any approval evidence includes secrets, private URLs, credentials, account IDs, or non-public contract terms."
+    ],
+    noSecretEvidenceExamples: [
+      "Legal review email dated YYYY-MM-DD",
+      "Signed internal approval note dated YYYY-MM-DD",
+      "Counsel ticket or business approval record ID without private URL"
+    ]
+  },
   approvalCommands: [
     "LUX_LEGAL_SYNC_LAUNCH=1 LUX_LEGAL_EVIDENCE=\"Legal review packet YYYY-MM-DD\" LUX_LEGAL_REVIEW_ITEM=privacy LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY=\"Reviewer Name\" node tools/set-legal-review-status.mjs",
     "LUX_LEGAL_SYNC_LAUNCH=1 LUX_LEGAL_EVIDENCE=\"Legal review packet YYYY-MM-DD\" LUX_LEGAL_REVIEW_ITEM=terms LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY=\"Reviewer Name\" node tools/set-legal-review-status.mjs",
@@ -226,6 +258,32 @@ ${blockers}
 ## Reviewer Checklist
 
 ${packet.reviewerChecklist.map((item) => `- ${item}`).join("\n")}
+
+## Reviewer Decision Intake
+
+Purpose: ${packet.reviewerDecisionIntake.purpose}
+
+Required decision values: ${packet.reviewerDecisionIntake.requiredDecisionValues.join(", ")}
+
+Required fields:
+
+${packet.reviewerDecisionIntake.requiredFields.map((item) => `- ${item}`).join("\n")}
+
+Version lock:
+
+- Privacy version: ${packet.reviewerDecisionIntake.versionLock.privacyVersion}
+- Terms version: ${packet.reviewerDecisionIntake.versionLock.termsVersion}
+- Submission terms version: ${packet.reviewerDecisionIntake.versionLock.submissionTermsVersion}
+- Asset version: ${packet.reviewerDecisionIntake.versionLock.assetVersion}
+- Pilot QA run ID: ${packet.reviewerDecisionIntake.versionLock.pilotQaRunId}
+
+Do not approve if:
+
+${packet.reviewerDecisionIntake.blockApprovalIf.map((item) => `- ${item}`).join("\n")}
+
+No-secret evidence examples:
+
+${packet.reviewerDecisionIntake.noSecretEvidenceExamples.map((item) => `- ${item}`).join("\n")}
 
 ## Approval Commands
 

@@ -51,6 +51,11 @@ for (const marker of [
   "Terms sections:",
   "Current Launch Blockers",
   "Reviewer Checklist",
+  "Reviewer Decision Intake",
+  "Required decision values: approved, needs_changes, blocked",
+  "Version lock:",
+  "Do not approve if:",
+  "No-secret evidence examples:",
   "Approval Commands",
   "LUX_LEGAL_SYNC_LAUNCH=1",
   "LUX_LEGAL_EVIDENCE",
@@ -102,6 +107,42 @@ if (packet) {
   }
   if (!Array.isArray(packet.reviewerChecklist) || packet.reviewerChecklist.length < 5) {
     issue("legal review request checklist is incomplete");
+  }
+  if (packet.reviewerDecisionIntake?.purpose !== "Reviewer fills this out outside the public repo before any approval command is run.") {
+    issue("legal review request decision intake purpose mismatch");
+  }
+  for (const decision of ["approved", "needs_changes", "blocked"]) {
+    if (!packet.reviewerDecisionIntake?.requiredDecisionValues?.includes(decision)) {
+      issue(`legal review request decision intake missing decision value: ${decision}`);
+    }
+  }
+  for (const field of ["reviewerName", "reviewedAt", "decision", "privacyVersion", "termsVersion", "submissionTermsVersion", "evidenceReference", "conditionsOrChanges"]) {
+    if (!packet.reviewerDecisionIntake?.requiredFields?.includes(field)) {
+      issue(`legal review request decision intake missing field: ${field}`);
+    }
+  }
+  if (packet.reviewerDecisionIntake?.versionLock?.privacyVersion !== publicTerms.privacyVersion) {
+    issue("legal review request decision intake privacy version mismatch");
+  }
+  if (packet.reviewerDecisionIntake?.versionLock?.termsVersion !== publicTerms.termsVersion) {
+    issue("legal review request decision intake terms version mismatch");
+  }
+  if (packet.reviewerDecisionIntake?.versionLock?.submissionTermsVersion !== publicTerms.submissionTermsVersion) {
+    issue("legal review request decision intake submission terms version mismatch");
+  }
+  if (packet.reviewerDecisionIntake?.versionLock?.pilotQaRunId !== pilotEvidence.qaRunId) {
+    issue("legal review request decision intake pilot QA run mismatch");
+  }
+  for (const guard of [
+    "The live Privacy or Terms route differs from the reviewed draft.",
+    "Any approval evidence includes secrets, private URLs, credentials, account IDs, or non-public contract terms."
+  ]) {
+    if (!packet.reviewerDecisionIntake?.blockApprovalIf?.includes(guard)) {
+      issue(`legal review request decision intake missing approval blocker: ${guard}`);
+    }
+  }
+  if (!packet.reviewerDecisionIntake?.noSecretEvidenceExamples?.some((item) => /Legal review email dated YYYY-MM-DD/.test(item))) {
+    issue("legal review request decision intake missing no-secret evidence example");
   }
   for (const id of ["privacy", "terms"]) {
     const manifestItem = legalReview.items.find((item) => item.id === id);
