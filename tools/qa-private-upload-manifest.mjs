@@ -52,16 +52,20 @@ const [
   manifestRaw,
   checklist,
   productBoundary,
+  arieQuickstart,
+  arieHandoff,
   trackedDocsRaw
 ] = await Promise.all([
   readFile("docs/private-upload-manifest.json", "utf8"),
   readFile("docs/upload-checklist.md", "utf8"),
   readFile("docs/PRODUCT_BOUNDARY.md", "utf8"),
+  readFile("docs/arie-quickstart.md", "utf8"),
+  readFile("docs/arie-handoff-website-build.md", "utf8"),
   execFileAsync("git", ["ls-files", "docs"], { timeout: 10000 }).then(({ stdout }) => stdout)
 ]);
 
-if (secretShape(`${manifestRaw}\n${checklist}`)) {
-  issue("private upload manifest or checklist appears to contain secret-shaped data");
+if (secretShape(`${manifestRaw}\n${checklist}\n${arieQuickstart}\n${arieHandoff}`)) {
+  issue("private upload manifest or handoff docs appear to contain secret-shaped data");
 }
 
 const manifest = JSON.parse(manifestRaw);
@@ -154,9 +158,31 @@ for (const marker of [
 for (const stale of [
   "firebase.indexes.json",
   "firebase.rules",
-  "python3 -m http.server 4173"
+  "python3 -m http.server 4173",
+  "/Users/frederickparent/Documents/New%20project",
+  "/Users/frederickparent/Documents/New project"
 ]) {
-  if (manifestRaw.includes(stale) || checklist.includes(stale)) issue(`private upload guidance still references stale item: ${stale}`);
+  if (`${manifestRaw}\n${checklist}\n${arieQuickstart}\n${arieHandoff}`.includes(stale)) {
+    issue(`private upload guidance still references stale item: ${stale}`);
+  }
+}
+
+for (const marker of [
+  "Privacy and Terms legal review",
+  "GitHub manual Functions deploy IAM grant",
+  "approved external workflow target selection",
+  "private seed/binder upload to Drive or a private repo"
+]) {
+  if (!arieQuickstart.includes(marker)) issue(`Arie quickstart missing current open item: ${marker}`);
+}
+
+for (const marker of [
+  "Current posture: pilot-ready with public launch blocked by external Privacy and Terms approval.",
+  "GitHub manual Functions deploy IAM grant",
+  "approved external Google Workspace, GHL, or CodexOps workflow target",
+  "private seed/binder upload to Drive or a private internal repo"
+]) {
+  if (!arieHandoff.includes(marker)) issue(`Arie handoff missing current status marker: ${marker}`);
 }
 
 for (const marker of [
