@@ -254,7 +254,9 @@ for (const marker of [
   "iam.serviceAccounts.ActAs",
   "roles/iam.serviceAccountUser",
   "lux-veritas-media@appspot.gserviceaccount.com",
-  "PASTE_GCP_SERVICE_ACCOUNT_VALUE_HERE",
+  "github-actions-firebase@lux-veritas-media.iam.gserviceaccount.com",
+  "identified_pending_explicit_project_owner_approval",
+  "Exact Approval Language",
   "node tools/qa-functions-deploy-readiness.mjs"
 ]) {
   if (!functionsIamRepairRequest.includes(marker) && !functionsIamRepairExport.includes(marker)) {
