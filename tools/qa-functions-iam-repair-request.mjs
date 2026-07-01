@@ -46,6 +46,11 @@ for (const marker of [
   "Recent workflow logs mask the GitHub deploy service account value",
   "Security approval is required before any agent",
   "Cloud Console Repair",
+  "Unknown Principal Recovery",
+  "Do not guess the deploy service account principal",
+  "APPROVED_DEPLOY_SERVICE_ACCOUNT_EMAIL",
+  "gh secret set GCP_SERVICE_ACCOUNT --repo LuxVeritasMedia/luxveritas.media",
+  "Do not create, download, upload, paste, or commit service-account JSON keys.",
   "gcloud iam service-accounts add-iam-policy-binding",
   "PASTE_GCP_SERVICE_ACCOUNT_VALUE_HERE",
   "node tools/qa-functions-deploy-readiness.mjs",
@@ -77,6 +82,28 @@ if (packet) {
   if (packet.blocker?.providerSecretName !== "GCP_WORKLOAD_IDENTITY_PROVIDER") issue("provider secret name mismatch");
   if (!packet.knownFacts?.some((item) => /Security approval is required/i.test(item))) {
     issue("knownFacts missing security approval requirement");
+  }
+  if (packet.unknownPrincipalRecovery?.status !== "approved_principal_required") {
+    issue("unknown principal recovery status mismatch");
+  }
+  if (!packet.unknownPrincipalRecovery?.rule?.includes("Do not guess")) {
+    issue("unknown principal recovery rule missing no-guessing guard");
+  }
+  for (const marker of [
+    "Workload Identity provider",
+    "without creating a JSON key",
+    "Replace GitHub Actions secret GCP_SERVICE_ACCOUNT",
+    "Rerun firebase-functions-manual.yml"
+  ]) {
+    if (!packet.unknownPrincipalRecovery?.steps?.some((item) => item.includes(marker))) {
+      issue(`unknown principal recovery missing step marker: ${marker}`);
+    }
+  }
+  if (!packet.unknownPrincipalRecovery?.githubSecretRotationTemplate?.includes("gh secret set GCP_SERVICE_ACCOUNT --repo LuxVeritasMedia/luxveritas.media")) {
+    issue("unknown principal recovery missing GitHub secret rotation template");
+  }
+  if (!packet.unknownPrincipalRecovery?.keyPolicy?.includes("service-account JSON keys")) {
+    issue("unknown principal recovery missing service-account key policy");
   }
   if (!packet.cloudConsole?.url?.includes("iam-admin/serviceaccounts/details/lux-veritas-media@appspot.gserviceaccount.com/permissions")) {
     issue("cloud console URL mismatch");

@@ -80,6 +80,20 @@ const packet = {
       "Save."
     ]
   },
+  unknownPrincipalRecovery: {
+    status: "approved_principal_required",
+    rule: "Do not guess the deploy service account principal when the GitHub secret value cannot be read back.",
+    steps: [
+      `Find the existing deploy service account connected to the Workload Identity provider for ${repo}.`,
+      "If it cannot be identified, have the project owner choose or create a new approved GitHub deploy service account without creating a JSON key.",
+      "Confirm the chosen service account is allowed to impersonate through the existing Workload Identity provider.",
+      `Replace GitHub Actions secret ${principalSecretName} with the approved service account email.`,
+      `Grant ${requiredRole} on ${targetServiceAccount} to the approved deploy service account.`,
+      `Rerun ${workflow} and node tools/qa-functions-deploy-readiness.mjs.`
+    ],
+    githubSecretRotationTemplate: `printf '%s' 'APPROVED_DEPLOY_SERVICE_ACCOUNT_EMAIL' | gh secret set ${principalSecretName} --repo ${repo}`,
+    keyPolicy: "Do not create, download, upload, paste, or commit service-account JSON keys."
+  },
   gcloudTemplate: [
     "gcloud iam service-accounts add-iam-policy-binding \\",
     `  ${targetServiceAccount} \\`,
@@ -140,6 +154,21 @@ ${value.cloudConsole.url}
 \`\`\`
 
 ${value.cloudConsole.steps.map((item, index) => `${index + 1}. ${item}`).join("\n")}
+
+## Unknown Principal Recovery
+
+- Status: ${value.unknownPrincipalRecovery.status}
+- Rule: ${value.unknownPrincipalRecovery.rule}
+
+${value.unknownPrincipalRecovery.steps.map((item, index) => `${index + 1}. ${item}`).join("\n")}
+
+GitHub secret rotation template:
+
+\`\`\`bash
+${value.unknownPrincipalRecovery.githubSecretRotationTemplate}
+\`\`\`
+
+Key policy: ${value.unknownPrincipalRecovery.keyPolicy}
 
 ## gcloud Template
 

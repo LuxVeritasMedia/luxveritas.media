@@ -66,6 +66,26 @@ https://console.cloud.google.com/iam-admin/serviceaccounts/details/lux-veritas-m
 
 If the `GCP_SERVICE_ACCOUNT` value is not known, find the deploy service account in Google Cloud IAM by looking for the service account connected to the GitHub Workload Identity provider for `LuxVeritasMedia/luxveritas.media`. GitHub secret values cannot be read back after creation, so the value must come from the original setup notes, Google Cloud IAM, or by replacing the GitHub secret with a newly approved deploy service account.
 
+## If The Secret Value Is Unknown
+
+Do not guess the principal. Use one of these approved recovery paths:
+
+1. Find the existing deploy service account in Google Cloud IAM by inspecting the Workload Identity provider and service account impersonation bindings for `LuxVeritasMedia/luxveritas.media`.
+2. If the existing deploy service account cannot be identified, have the project owner choose or create a new approved GitHub deploy service account without creating a JSON key.
+3. Confirm the chosen service account is allowed to impersonate through the existing Workload Identity provider.
+4. Replace the GitHub Actions secret `GCP_SERVICE_ACCOUNT` with the approved service account email.
+5. Grant `roles/iam.serviceAccountUser` on `lux-veritas-media@appspot.gserviceaccount.com` to that approved service account.
+6. Rerun the manual Functions workflow and `node tools/qa-functions-deploy-readiness.mjs`.
+
+GitHub secret rotation template:
+
+```bash
+printf '%s' 'APPROVED_DEPLOY_SERVICE_ACCOUNT_EMAIL' \
+  | gh secret set GCP_SERVICE_ACCOUNT --repo LuxVeritasMedia/luxveritas.media
+```
+
+This stores only the approved deploy service account email in GitHub. Do not create or upload service-account keys.
+
 ## gcloud Command
 
 If Google Cloud SDK is available and authenticated as a project owner:
