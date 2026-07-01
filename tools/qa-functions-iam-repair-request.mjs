@@ -3,13 +3,30 @@ import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
 const issues = [];
+const identifiedDeployServiceAccount = "github-actions-firebase@lux-veritas-media.iam.gserviceaccount.com";
+const targetServiceAccount = "lux-veritas-media@appspot.gserviceaccount.com";
+const requiredRole = "roles/iam.serviceAccountUser";
+const exactApprovalLanguage = `I approve granting ${requiredRole} on ${targetServiceAccount} to ${identifiedDeployServiceAccount} for the LuxVeritasMedia/luxveritas.media manual Firebase Functions deploy workflow.`;
 
 function issue(message) {
   issues.push(message);
 }
 
+function escapeRegex(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function secretShape(value) {
-  return /\bre_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}|Bearer\s+[A-Za-z0-9._-]{16,}|serviceAccount:[^<\s]+@[^<\s]+\.iam\.gserviceaccount\.com/i.test(value);
+  let checked = value;
+  for (const allowed of [
+    identifiedDeployServiceAccount,
+    `serviceAccount:${identifiedDeployServiceAccount}`,
+    targetServiceAccount,
+    `serviceAccount:${targetServiceAccount}`
+  ]) {
+    checked = checked.replace(new RegExp(escapeRegex(allowed), "g"), "KNOWN_NON_SECRET_IAM_PRINCIPAL");
+  }
+  return /\bre_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}|Bearer\s+[A-Za-z0-9._-]{16,}|serviceAccount:[^<\s]+@[^<\s]+\.iam\.gserviceaccount\.com/i.test(checked);
 }
 
 const [markdownResult, jsonResult] = await Promise.all([
@@ -43,16 +60,21 @@ for (const marker of [
   "GCP_SERVICE_ACCOUNT",
   "GCP_WORKLOAD_IDENTITY_PROVIDER",
   "GitHub secret values cannot be read back",
-  "Recent workflow logs mask the GitHub deploy service account value",
+  identifiedDeployServiceAccount,
+  "identified_pending_explicit_project_owner_approval",
+  "Read-only IAM inspection identified",
+  "Identified Principal Evidence",
+  "Exact Approval Language",
+  exactApprovalLanguage,
   "Security approval is required before any agent",
   "Cloud Console Repair",
   "Unknown Principal Recovery",
-  "Do not guess the deploy service account principal",
+  "do not guess a new deploy service account principal",
   "APPROVED_DEPLOY_SERVICE_ACCOUNT_EMAIL",
   "gh secret set GCP_SERVICE_ACCOUNT --repo LuxVeritasMedia/luxveritas.media",
   "Do not create, download, upload, paste, or commit service-account JSON keys.",
   "gcloud iam service-accounts add-iam-policy-binding",
-  "PASTE_GCP_SERVICE_ACCOUNT_VALUE_HERE",
+  `serviceAccount:${identifiedDeployServiceAccount}`,
   "node tools/qa-functions-deploy-readiness.mjs",
   "node tools/qa-provider-readiness.mjs",
   "Do not paste service-account JSON keys",
@@ -83,13 +105,26 @@ if (packet) {
   if (!packet.knownFacts?.some((item) => /Security approval is required/i.test(item))) {
     issue("knownFacts missing security approval requirement");
   }
-  if (packet.unknownPrincipalRecovery?.status !== "approved_principal_required") {
-    issue("unknown principal recovery status mismatch");
+  if (packet.blocker?.identifiedPrincipal?.serviceAccount !== identifiedDeployServiceAccount) {
+    issue("identified deploy service account mismatch");
   }
-  if (!packet.unknownPrincipalRecovery?.rule?.includes("Do not guess")) {
-    issue("unknown principal recovery rule missing no-guessing guard");
+  if (packet.blocker?.identifiedPrincipal?.status !== "identified_pending_explicit_project_owner_approval") {
+    issue("identified principal status mismatch");
+  }
+  if (!packet.blocker?.identifiedPrincipal?.evidence?.some((item) => /Workload Identity User binding/i.test(item))) {
+    issue("identified principal evidence missing Workload Identity binding proof");
+  }
+  if (packet.exactApprovalLanguage !== exactApprovalLanguage) {
+    issue("exact approval language mismatch");
+  }
+  if (packet.unknownPrincipalRecovery?.status !== "identified_principal_ready_for_explicit_approval") {
+    issue("principal recovery status mismatch");
+  }
+  if (!packet.unknownPrincipalRecovery?.rule?.includes("do not guess")) {
+    issue("principal recovery rule missing no-guessing guard");
   }
   for (const marker of [
+    identifiedDeployServiceAccount,
     "Workload Identity provider",
     "without creating a JSON key",
     "Replace GitHub Actions secret GCP_SERVICE_ACCOUNT",

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "luxveritas.open_approvals_report.v1",
-  "generatedAt": "2026-07-01T02:21:11.454Z",
+  "generatedAt": "2026-07-01T02:47:44.613Z",
   "project": "LuxVeritas.media",
   "liveUrl": "https://luxveritas.media",
   "decision": "external_approvals_pending",
@@ -64,7 +64,7 @@
       "blocksPublicLaunch": false,
       "owner": "Google Cloud project owner",
       "source": "docs/functions-deploy-iam-repair.md",
-      "nextAction": "Approve and grant roles/iam.serviceAccountUser on lux-veritas-media@appspot.gserviceaccount.com to the GitHub deploy service account, then rerun the manual Functions workflow.",
+      "nextAction": "Approve and grant roles/iam.serviceAccountUser on lux-veritas-media@appspot.gserviceaccount.com to github-actions-firebase@lux-veritas-media.iam.gserviceaccount.com, then rerun the manual Functions workflow.",
       "verification": "node tools/qa-functions-deploy-readiness.mjs",
       "notes": [
         "Live Functions are deployed; this hardens future manual Functions deploy automation.",

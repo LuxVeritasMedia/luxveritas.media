@@ -10,10 +10,35 @@ This packet documents the no-secret repair path for the remaining GitHub manual 
 - GitHub CLI is authenticated and can inspect workflow status.
 - GitHub Actions secrets `GCP_SERVICE_ACCOUNT` and `GCP_WORKLOAD_IDENTITY_PROVIDER` exist, but their values cannot be read back.
 - Recent workflow logs mask the GitHub deploy service account value as `***`, so the principal cannot be safely recovered from logs.
-- `gcloud` is not installed on the current launch machine, so the CLI grant path requires Google Cloud SDK setup or Cloud Console.
+- Google Cloud CLI is available at `.codex-tools/google-cloud-sdk/bin/gcloud` when run with the bundled Python runtime:
+
+```bash
+CLOUDSDK_PYTHON=/Users/frederickparent/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 \
+  .codex-tools/google-cloud-sdk/bin/gcloud
+```
+
+- Read-only IAM inspection on 2026-06-30 found the active GitHub Workload Identity service account:
+
+```text
+github-actions-firebase@lux-veritas-media.iam.gserviceaccount.com
+```
+
+- The service account above has a Workload Identity User binding for:
+
+```text
+principalSet://iam.googleapis.com/projects/795940577664/locations/global/workloadIdentityPools/github-actions-pool/attribute.repository/LuxVeritasMedia/luxveritas.media
+```
+
+- The Workload Identity provider is active and limited to:
+
+```text
+assertion.repository == 'LuxVeritasMedia/luxveritas.media' && assertion.ref == 'refs/heads/main'
+```
+
+- This account currently has project-level Firebase viewer/hosting permissions, but it still needs the target runtime-service-account grant below for manual Functions deploys.
 - The latest manual `workflow_dispatch` Functions deploy evidence is still the failed run below.
 
-Security approval is required before any agent, local command, or GitHub workflow mutates Google Cloud IAM. Do not add a self-repair workflow or run the `gcloud` policy-binding command until the project owner explicitly approves granting `roles/iam.serviceAccountUser` on the target service account to the GitHub deploy service account.
+Security approval is required before any agent, local command, or GitHub workflow mutates Google Cloud IAM. Do not add a self-repair workflow or run the `gcloud` policy-binding command until the project owner explicitly approves granting `roles/iam.serviceAccountUser` on `lux-veritas-media@appspot.gserviceaccount.com` to `github-actions-firebase@lux-veritas-media.iam.gserviceaccount.com`.
 
 ## Current Blocker
 
@@ -43,7 +68,7 @@ Grant the GitHub deploy service account this role:
 ```text
 Project: lux-veritas-media
 Target service account: lux-veritas-media@appspot.gserviceaccount.com
-Principal: the service account email stored in GitHub Actions secret GCP_SERVICE_ACCOUNT
+Principal: github-actions-firebase@lux-veritas-media.iam.gserviceaccount.com
 Role: Service Account User
 Role ID: roles/iam.serviceAccountUser
 Permission supplied: iam.serviceAccounts.ActAs
@@ -60,11 +85,11 @@ https://console.cloud.google.com/iam-admin/serviceaccounts/details/lux-veritas-m
 ```
 
 2. Choose `Grant access`.
-3. Principal: paste the service-account email stored in GitHub Actions secret `GCP_SERVICE_ACCOUNT`.
+3. Principal: `github-actions-firebase@lux-veritas-media.iam.gserviceaccount.com`.
 4. Role: `Service Account User`.
 5. Save.
 
-If the `GCP_SERVICE_ACCOUNT` value is not known, find the deploy service account in Google Cloud IAM by looking for the service account connected to the GitHub Workload Identity provider for `LuxVeritasMedia/luxveritas.media`. GitHub secret values cannot be read back after creation, so the value must come from the original setup notes, Google Cloud IAM, or by replacing the GitHub secret with a newly approved deploy service account.
+If the GitHub secret later changes, re-run the read-only IAM inspection instead of guessing. GitHub secret values cannot be read back after creation, so the value must come from the original setup notes, Google Cloud IAM, or by replacing the GitHub secret with a newly approved deploy service account.
 
 ## If The Secret Value Is Unknown
 
@@ -88,14 +113,21 @@ This stores only the approved deploy service account email in GitHub. Do not cre
 
 ## gcloud Command
 
-If Google Cloud SDK is available and authenticated as a project owner:
+After explicit project-owner approval, run:
 
 ```bash
-gcloud iam service-accounts add-iam-policy-binding \
+CLOUDSDK_PYTHON=/Users/frederickparent/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 \
+  .codex-tools/google-cloud-sdk/bin/gcloud iam service-accounts add-iam-policy-binding \
   lux-veritas-media@appspot.gserviceaccount.com \
   --project=lux-veritas-media \
-  --member="serviceAccount:PASTE_GCP_SERVICE_ACCOUNT_VALUE_HERE" \
+  --member="serviceAccount:github-actions-firebase@lux-veritas-media.iam.gserviceaccount.com" \
   --role="roles/iam.serviceAccountUser"
+```
+
+Exact approval language:
+
+```text
+I approve granting roles/iam.serviceAccountUser on lux-veritas-media@appspot.gserviceaccount.com to github-actions-firebase@lux-veritas-media.iam.gserviceaccount.com for the LuxVeritasMedia/luxveritas.media manual Firebase Functions deploy workflow.
 ```
 
 ## Verify

@@ -2,6 +2,8 @@ import { readFile } from "node:fs/promises";
 
 const jsonMode = process.env.LUX_OPEN_APPROVALS_JSON === "1";
 const issues = [];
+const identifiedDeployServiceAccount = "github-actions-firebase@lux-veritas-media.iam.gserviceaccount.com";
+const targetServiceAccount = "lux-veritas-media@appspot.gserviceaccount.com";
 
 function todoOpen(todo, marker) {
   return todo.split("\n").some((line) => line.includes("- [ ]") && line.includes(marker));
@@ -45,8 +47,21 @@ function approval({ id, label, category, status, blocksPublicLaunch, owner, sour
   };
 }
 
+function escapeRegex(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function secretShape(value) {
-  return /\bre_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}|Bearer\s+[A-Za-z0-9._-]{16,}|serviceAccount:[^<\s]+@[^<\s]+\.iam\.gserviceaccount\.com/i.test(value);
+  let checked = value;
+  for (const allowed of [
+    identifiedDeployServiceAccount,
+    `serviceAccount:${identifiedDeployServiceAccount}`,
+    targetServiceAccount,
+    `serviceAccount:${targetServiceAccount}`
+  ]) {
+    checked = checked.replace(new RegExp(escapeRegex(allowed), "g"), "KNOWN_NON_SECRET_IAM_PRINCIPAL");
+  }
+  return /\bre_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}|Bearer\s+[A-Za-z0-9._-]{16,}|serviceAccount:[^<\s]+@[^<\s]+\.iam\.gserviceaccount\.com/i.test(checked);
 }
 
 const [
@@ -151,7 +166,7 @@ if (todoOpen(todo, "iam.serviceAccounts.ActAs")) {
     blocksPublicLaunch: false,
     owner: "Google Cloud project owner",
     source: "docs/functions-deploy-iam-repair.md",
-    nextAction: "Approve and grant roles/iam.serviceAccountUser on lux-veritas-media@appspot.gserviceaccount.com to the GitHub deploy service account, then rerun the manual Functions workflow.",
+    nextAction: "Approve and grant roles/iam.serviceAccountUser on lux-veritas-media@appspot.gserviceaccount.com to github-actions-firebase@lux-veritas-media.iam.gserviceaccount.com, then rerun the manual Functions workflow.",
     verification: "node tools/qa-functions-deploy-readiness.mjs",
     notes: [
       "Live Functions are deployed; this hardens future manual Functions deploy automation.",

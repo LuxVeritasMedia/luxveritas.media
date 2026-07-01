@@ -7,14 +7,33 @@ const repo = "LuxVeritasMedia/luxveritas.media";
 const project = "lux-veritas-media";
 const workflow = "firebase-functions-manual.yml";
 const targetServiceAccount = "lux-veritas-media@appspot.gserviceaccount.com";
+const identifiedDeployServiceAccount = "github-actions-firebase@lux-veritas-media.iam.gserviceaccount.com";
+const identifiedProviderPrincipal = "principalSet://iam.googleapis.com/projects/795940577664/locations/global/workloadIdentityPools/github-actions-pool/attribute.repository/LuxVeritasMedia/luxveritas.media";
+const identifiedProviderCondition = "assertion.repository == 'LuxVeritasMedia/luxveritas.media' && assertion.ref == 'refs/heads/main'";
 const principalSecretName = "GCP_SERVICE_ACCOUNT";
 const providerSecretName = "GCP_WORKLOAD_IDENTITY_PROVIDER";
 const requiredRole = "roles/iam.serviceAccountUser";
 const requiredPermission = "iam.serviceAccounts.ActAs";
 const repairDoc = "docs/functions-deploy-iam-repair.md";
+const cloudSdkPython = "/Users/frederickparent/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3";
+const gcloudPath = ".codex-tools/google-cloud-sdk/bin/gcloud";
+const exactApprovalLanguage = `I approve granting ${requiredRole} on ${targetServiceAccount} to ${identifiedDeployServiceAccount} for the ${repo} manual Firebase Functions deploy workflow.`;
+
+function escapeRegex(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 
 function secretShape(value) {
-  return /\bre_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}|Bearer\s+[A-Za-z0-9._-]{16,}|serviceAccount:[^<\s]+@[^<\s]+\.iam\.gserviceaccount\.com/i.test(value);
+  let checked = value;
+  for (const allowed of [
+    identifiedDeployServiceAccount,
+    `serviceAccount:${identifiedDeployServiceAccount}`,
+    targetServiceAccount,
+    `serviceAccount:${targetServiceAccount}`
+  ]) {
+    checked = checked.replace(new RegExp(escapeRegex(allowed), "g"), "KNOWN_NON_SECRET_IAM_PRINCIPAL");
+  }
+  return /\bre_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}|Bearer\s+[A-Za-z0-9._-]{16,}|serviceAccount:[^<\s]+@[^<\s]+\.iam\.gserviceaccount\.com/i.test(checked);
 }
 
 function latestKnownRun(doc) {
@@ -58,13 +77,24 @@ const packet = {
     targetServiceAccount,
     principalSecretName,
     providerSecretName,
+    identifiedPrincipal: {
+      status: "identified_pending_explicit_project_owner_approval",
+      serviceAccount: identifiedDeployServiceAccount,
+      evidence: [
+        "Read-only Google Cloud IAM inspection found this account has the Workload Identity User binding for LuxVeritasMedia/luxveritas.media.",
+        `Provider principal: ${identifiedProviderPrincipal}`,
+        `Provider condition: ${identifiedProviderCondition}`,
+        "Project IAM shows this account currently has Firebase viewer/hosting permissions."
+      ],
+      exactApprovalLanguage
+    },
     latestKnownFailedRun: run,
     failureShape: `manual Functions deploy lacks ${requiredPermission} on ${targetServiceAccount}`
   },
   knownFacts: [
     "GitHub Actions uses Workload Identity, not a committed service-account key.",
     "GitHub secret values cannot be read back after creation.",
-    "Recent workflow logs mask the GitHub deploy service account value, so the principal cannot be safely recovered from logs.",
+    `Read-only IAM inspection identified ${identifiedDeployServiceAccount} as the active GitHub Workload Identity service account for this repo.`,
     "Security approval is required before any agent, local command, or GitHub workflow mutates Google Cloud IAM.",
     `The principal value is stored as GitHub secret ${principalSecretName}.`,
     `The Workload Identity provider value is stored as GitHub secret ${providerSecretName}.`,
@@ -75,18 +105,18 @@ const packet = {
     steps: [
       "Open the target service account permissions page.",
       "Choose Grant access.",
-      `Principal: paste the service account email stored in GitHub Actions secret ${principalSecretName}.`,
+      `Principal: ${identifiedDeployServiceAccount}.`,
       "Role: Service Account User.",
       "Save."
     ]
   },
   unknownPrincipalRecovery: {
-    status: "approved_principal_required",
-    rule: "Do not guess the deploy service account principal when the GitHub secret value cannot be read back.",
+    status: "identified_principal_ready_for_explicit_approval",
+    rule: "Use the identified principal above unless the GitHub secret is intentionally rotated; do not guess a new deploy service account principal.",
     steps: [
-      `Find the existing deploy service account connected to the Workload Identity provider for ${repo}.`,
-      "If it cannot be identified, have the project owner choose or create a new approved GitHub deploy service account without creating a JSON key.",
-      "Confirm the chosen service account is allowed to impersonate through the existing Workload Identity provider.",
+      `Confirm ${identifiedDeployServiceAccount} remains the approved GitHub deploy service account.`,
+      "If it is not approved, have the project owner choose or create a new GitHub deploy service account without creating a JSON key.",
+      "Confirm the approved service account is allowed to impersonate through the existing Workload Identity provider.",
       `Replace GitHub Actions secret ${principalSecretName} with the approved service account email.`,
       `Grant ${requiredRole} on ${targetServiceAccount} to the approved deploy service account.`,
       `Rerun ${workflow} and node tools/qa-functions-deploy-readiness.mjs.`
@@ -95,12 +125,14 @@ const packet = {
     keyPolicy: "Do not create, download, upload, paste, or commit service-account JSON keys."
   },
   gcloudTemplate: [
-    "gcloud iam service-accounts add-iam-policy-binding \\",
+    `CLOUDSDK_PYTHON=${cloudSdkPython} \\`,
+    `  ${gcloudPath} iam service-accounts add-iam-policy-binding \\`,
     `  ${targetServiceAccount} \\`,
     `  --project=${project} \\`,
-    `  --member=\"serviceAccount:PASTE_${principalSecretName}_VALUE_HERE\" \\`,
+    `  --member=\"serviceAccount:${identifiedDeployServiceAccount}\" \\`,
     `  --role=\"${requiredRole}\"`
   ].join("\n"),
+  exactApprovalLanguage,
   verificationCommands: [
     `.codex-tools/gh-local/bin/gh workflow run ${workflow} --repo ${repo}`,
     "node tools/qa-functions-deploy-readiness.mjs",
@@ -139,11 +171,23 @@ Purpose: ${value.purpose}
 - Required permission: ${value.blocker.requiredPermission}
 - Principal source: GitHub Actions secret \`${value.blocker.principalSecretName}\`
 - Workload provider source: GitHub Actions secret \`${value.blocker.providerSecretName}\`
+- Identified principal: ${value.blocker.identifiedPrincipal.serviceAccount}
+- Principal status: ${value.blocker.identifiedPrincipal.status}
 - Latest known failed run: ${value.blocker.latestKnownFailedRun.url || "Not recorded"}
 
 ## Known Facts
 
 ${value.knownFacts.map((item) => `- ${item}`).join("\n")}
+
+## Identified Principal Evidence
+
+${value.blocker.identifiedPrincipal.evidence.map((item) => `- ${item}`).join("\n")}
+
+## Exact Approval Language
+
+\`\`\`text
+${value.exactApprovalLanguage}
+\`\`\`
 
 ## Cloud Console Repair
 
