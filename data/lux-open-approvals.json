@@ -1,6 +1,6 @@
 {
   "schemaVersion": "luxveritas.open_approvals_report.v1",
-  "generatedAt": "2026-06-30T21:07:44.597Z",
+  "generatedAt": "2026-07-01T02:21:11.454Z",
   "project": "LuxVeritas.media",
   "liveUrl": "https://luxveritas.media",
   "decision": "external_approvals_pending",
@@ -13,8 +13,8 @@
   },
   "pilotEvidence": {
     "result": "passed",
-    "qaRunId": "20260630193913",
-    "updatedAt": "2026-06-30T19:43:48Z",
+    "qaRunId": "20260701021744",
+    "updatedAt": "2026-07-01T02:19:58Z",
     "formCaptureIntents": 11,
     "eventWrites": 13
   },

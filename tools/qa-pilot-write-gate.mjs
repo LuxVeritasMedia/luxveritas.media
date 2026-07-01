@@ -186,9 +186,11 @@ function qaRunDateLabel() {
 function replacePilotEvidenceMarkers(current, evidence) {
   return current
     .replace(/((?:The )?[Pp]ilot write gate last passed on )\d{4}-\d{2}-\d{2}/, `$1${qaRunDateLabel()}`)
-    .replace(/(Inbox delivery was (?:last )?confirmed by the \d{4}-\d{2}-\d{2} pilot write gate, QA run ID `)[^`]+(`)/, `$1${qaRunId}$2`)
+    .replace(/(Inbox delivery was (?:last )?confirmed by the )\d{4}-\d{2}-\d{2}( pilot write gate, QA run ID `)[^`]+(`)/g, `$1${qaRunDateLabel()}$2${qaRunId}$3`)
+    .replace(/(Inbox provider closeout is resolved: the )\d{4}-\d{2}-\d{2}( pilot write gate confirmed)/g, `$1${qaRunDateLabel()}$2`)
     .replace(/QA run ID: `[^`]+`/g, `QA run ID: \`${qaRunId}\``)
     .replace(/Asset version: `[^`]+`/g, `Asset version: \`${evidence.assetVersion}\``)
+    .replace(/Current asset version is `[^`]+`/g, `Current asset version is \`${evidence.assetVersion}\``)
     .replace(/Current pilot evidence asset version: `[^`]+`/g, `Current pilot evidence asset version: \`${evidence.assetVersion}\``)
     .replace(/Current asset version: `[^`]+`/g, `Current asset version: \`${evidence.assetVersion}\``)
     .replace(/Current live asset version: `[^`]+`/g, `Current live asset version: \`${evidence.assetVersion}\``)
