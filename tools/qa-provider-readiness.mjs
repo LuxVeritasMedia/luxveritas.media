@@ -45,8 +45,7 @@ for (const name of requiredProviderSecrets) {
   } else {
     if (item.status === "auth_unavailable") authUnavailable = true;
     const message = `${name} secret metadata missing or unavailable${item.error ? ` (${item.error})` : ""}.`;
-    if (item.status === "auth_unavailable") localSecretIssues.push(message);
-    else issue(message);
+    localSecretIssues.push(message);
   }
 
   const status = valueStatus[name];
@@ -55,8 +54,7 @@ for (const name of requiredProviderSecrets) {
   } else {
     if (status?.status === "auth_unavailable") authUnavailable = true;
     const message = `${name} secret value is not active${status?.detail ? ` (${status.detail})` : ""}.`;
-    if (status?.status === "auth_unavailable") localSecretIssues.push(message);
-    else issue(message);
+    localSecretIssues.push(message);
   }
 }
 
@@ -98,8 +96,8 @@ if (delivery) {
 }
 
 if (localSecretIssues.length) {
-  if (authUnavailable && liveProviderActive) {
-    warn("Local Firebase CLI credentials are expired, so direct secret metadata could not be inspected; protected live provider report is active.");
+  if (liveProviderActive) {
+    warn(`${authUnavailable ? "Local Firebase CLI credentials are expired" : "Local Firebase CLI secret inspection is unavailable"}, so direct secret metadata could not be fully inspected; protected live provider report is active.`);
     for (const item of localSecretIssues) warn(item);
   } else {
     for (const item of localSecretIssues) issue(item);
@@ -110,7 +108,7 @@ for (const message of passed) console.log(`PASS ${message}`);
 if (warnings.length) {
   console.log("Provider readiness warnings:");
   for (const warning of warnings) console.log(`WARN ${warning}`);
-  if (authUnavailable && liveProviderActive) {
+  if (liveProviderActive && localSecretIssues.length) {
     console.log("");
     console.log("Local Firebase reauth guidance:");
     console.log("- This is an operator-machine issue only; the protected live provider report is active.");

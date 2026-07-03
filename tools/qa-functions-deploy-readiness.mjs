@@ -33,6 +33,10 @@ function compact(value) {
   return String(value || "").replace(/\s+/g, " ").trim().slice(0, 320);
 }
 
+function firebaseAuthExpired(text) {
+  return /credentials are no longer valid|firebase login --reauth|Authentication Error|refreshing access token/i.test(String(text || ""));
+}
+
 async function run(command, args = [], options = {}) {
   try {
     const result = await execFileAsync(command, args, {
@@ -123,16 +127,25 @@ const functionsList = await run("firebase", ["functions:list", "--project", proj
 const functionsListText = `${functionsList.stdout}\n${functionsList.stderr}`;
 const functionsJson = parseJson(functionsList.stdout, null);
 const functionIds = Array.isArray(functionsJson?.result) ? functionsJson.result.map((item) => item.id) : [];
+let functionsListAuthProbe = "";
+if (!functionsList.ok && /Failed to list functions/i.test(functionsListText || functionsList.message)) {
+  const authProbe = await run("firebase", ["projects:list", "--json"], { timeout: 15000, maxBuffer: 1024 * 1024 * 2 });
+  functionsListAuthProbe = `${authProbe.stdout}\n${authProbe.stderr}\n${authProbe.message || ""}`;
+}
 if (functionsList.ok && functionIds.includes("submitForm") && functionIds.includes("reportActivity")) {
   pass("Firebase CLI can read deployed Functions for submitForm and reportActivity.");
 } else if (functionsList.ok && /submitForm/i.test(functionsListText) && /reportActivity/i.test(functionsListText)) {
   pass("Firebase CLI can read deployed Functions for submitForm and reportActivity.");
+} else if (firebaseAuthExpired(`${functionsListText}\n${functionsList.message || ""}\n${functionsListAuthProbe}`)) {
+  warn("Local Firebase CLI credentials are expired, so deployed Functions inventory could not be inspected from this machine; run `firebase login --reauth --no-localhost`, select `info@luxveritas.media`, paste the one-time code into the terminal prompt only, then rerun this check.");
+} else if (/Failed to list functions/i.test(functionsListText || functionsList.message) && /Failed to list Firebase projects/i.test(functionsListAuthProbe)) {
+  warn("Firebase CLI could not list deployed Functions or projects from this machine; if this persists, refresh local credentials with `firebase login --reauth --no-localhost`, select `info@luxveritas.media`, paste the one-time code into the terminal prompt only, then rerun this check.");
 } else if (/encountered an error|firepit-log/i.test(functionsListText)) {
   warn("Firebase Functions list hit the Firebase CLI non-interactive firepit bug; use shell `firebase functions:list --project lux-veritas-media --json` when direct function inventory proof is needed.");
 } else if (functionsList.ok) {
   warn("Firebase CLI responded, but expected deployed Functions were not visible in this non-interactive check.");
 } else {
-  warn(`Firebase Functions list unavailable from this machine: ${compact(functionsList.stderr || functionsList.stdout || functionsList.message)}`);
+  warn(`Firebase Functions list unavailable from this machine: ${compact(functionsList.stderr || functionsList.stdout || functionsList.message)}. If this persists, refresh local credentials with \`firebase login --reauth --no-localhost\`, select \`info@luxveritas.media\`, paste the one-time code into the terminal prompt only, then rerun this check.`);
 }
 
 let latestManualRun = null;

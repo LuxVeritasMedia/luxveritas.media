@@ -6,7 +6,7 @@ This packet documents the no-secret repair path for the remaining GitHub manual 
 
 ## Current Operator Findings
 
-- Firebase CLI can read the deployed `submitForm` and `reportActivity` Functions from the current launch machine.
+- Firebase CLI can read the deployed `submitForm` and `reportActivity` Functions from the current launch machine when local Firebase credentials are fresh. If `node tools/qa-functions-deploy-readiness.mjs` reports expired local credentials, run `firebase login --reauth --no-localhost`, select `info@luxveritas.media`, paste the one-time code into the terminal prompt only, and rerun the check.
 - GitHub CLI is authenticated and can inspect workflow status.
 - GitHub Actions secrets `GCP_SERVICE_ACCOUNT` and `GCP_WORKLOAD_IDENTITY_PROVIDER` exist, but their values cannot be read back.
 - Recent workflow logs mask the GitHub deploy service account value as `***`, so the principal cannot be safely recovered from logs.

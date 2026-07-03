@@ -3,6 +3,7 @@ import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
 const firebaseToolsPackage = "firebase-tools@15.22.1";
+const firebaseCliTimeoutMs = Number.parseInt(process.env.LUX_FIREBASE_CLI_TIMEOUT_MS || "15000", 10);
 
 export const requiredProviderSecrets = [
   "RESEND_API_KEY",
@@ -13,13 +14,14 @@ export const requiredProviderSecrets = [
 ];
 
 async function runFirebase(args) {
+  const options = { maxBuffer: 1024 * 1024, timeout: Number.isFinite(firebaseCliTimeoutMs) ? firebaseCliTimeoutMs : 15000 };
   try {
-    return await execFileAsync("firebase", args, { maxBuffer: 1024 * 1024 });
+    return await execFileAsync("firebase", args, options);
   } catch (error) {
     if (error?.code !== "ENOENT") throw error;
   }
 
-  return execFileAsync("npx", [firebaseToolsPackage, ...args], { maxBuffer: 1024 * 1024 });
+  return execFileAsync("npx", [firebaseToolsPackage, ...args], options);
 }
 
 function firebaseAuthErrorDetail(error) {
@@ -72,11 +74,7 @@ export async function providerSecretMetadata(name, project) {
 }
 
 export async function providerSecretMetadataEntries(project, secrets = requiredProviderSecrets) {
-  const entries = [];
-  for (const name of secrets) {
-    entries.push([name, await providerSecretMetadata(name, project)]);
-  }
-  return entries;
+  return Promise.all(secrets.map(async (name) => [name, await providerSecretMetadata(name, project)]));
 }
 
 export async function providerSecretValue(name, project) {
@@ -139,17 +137,15 @@ export function providerSecretValueStatus(name, value) {
 }
 
 export async function providerSecretValueStatusEntries(project, secrets = requiredProviderSecrets) {
-  const entries = [];
-  for (const name of secrets) {
+  return Promise.all(secrets.map(async (name) => {
     const secret = await providerSecretValue(name, project);
-    entries.push([
+    return [
       name,
       secret.ok
         ? providerSecretValueStatus(name, secret.value)
         : { ok: false, status: secret.status || "unavailable", detail: secret.error || "could not access value" }
-    ]);
-  }
-  return entries;
+    ];
+  }));
 }
 
 export async function liveProviderDeliveryReadiness({ baseUrl, reportToken }) {
