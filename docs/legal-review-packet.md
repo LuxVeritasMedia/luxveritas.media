@@ -11,8 +11,8 @@ The public site is technically pilot-ready, but not cleared for unrestricted pub
 - Live URL: `https://luxveritas.media`
 - Current asset version: `20260630-pilot-feedback-report`
 - Pilot write evidence file: `data/lux-pilot-write-evidence.json`
-- Latest pilot QA run: `20260701021744`
-- Pilot evidence updated: `2026-07-01T02:19:58Z`
+- Latest pilot QA run: `20260703014414`
+- Pilot evidence updated: `2026-07-03T01:47:01Z`
 - Pilot result: `passed`
 - Live capture intents written: `11`
 - Live event/reporting writes: `13`
