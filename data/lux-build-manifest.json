@@ -14,7 +14,7 @@
   "dropRoomVersion": "2026-06-20-drop-room",
   "portalRoomsVersion": "2026-06-20-portal-rooms",
   "phaseStatusVersion": "2026-06-28-phase-status",
-  "publicTermsVersion": "2026-06-09-public-capture",
+  "publicTermsVersion": "2026-07-03-public-capture",
   "routeCount": 38,
   "publicRouteCount": 20,
   "appScript": "app.js?v=20260630-pilot-feedback-report",

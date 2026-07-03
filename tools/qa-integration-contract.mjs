@@ -33,8 +33,8 @@ const sample = {
   tag: "membership-waitlist",
   source: "luxveritas.media",
   source_page: "/membership.html",
-  public_terms_version: "2026-06-09-public-capture",
-  privacy_version: "privacy-draft-2026-06-09",
+  public_terms_version: "2026-07-03-public-capture",
+  privacy_version: "privacy-draft-2026-07-03",
   terms_version: "terms-draft-2026-06-09",
   submission_terms_version: "submission-draft-2026-06-09",
   consent_email: true,
@@ -80,8 +80,8 @@ expectEqual(payload.routing.priority, "standard", "payload routing priority");
 expectEqual(payload.contact.email, "qa@luxveritas.media", "payload contact email");
 expectEqual(payload.consent.email, true, "payload email consent");
 expectEqual(payload.consent.sms, false, "payload sms consent");
-expectEqual(payload.legal.publicTermsVersion, "2026-06-09-public-capture", "payload public terms version");
-expectEqual(payload.legal.privacyVersion, "privacy-draft-2026-06-09", "payload privacy version");
+expectEqual(payload.legal.publicTermsVersion, "2026-07-03-public-capture", "payload public terms version");
+expectEqual(payload.legal.privacyVersion, "privacy-draft-2026-07-03", "payload privacy version");
 expectEqual(payload.legal.termsVersion, "terms-draft-2026-06-09", "payload terms version");
 expectEqual(payload.legal.submissionTermsVersion, "submission-draft-2026-06-09", "payload submission terms version");
 expectEqual(payload.submission.id, submissionId, "payload nested submission id");

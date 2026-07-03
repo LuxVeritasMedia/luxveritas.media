@@ -1109,7 +1109,7 @@ const pages = [
     <h2>Email and SMS Consent</h2>
     <p>If you opt in, Lux Veritas may use your contact information to respond to your inquiry, send updates, share invitations, or communicate about releases, memberships, events, submissions, or related opportunities. SMS messages are used only where permission has been given.</p>
     <h2>Analytics</h2>
-    <p>Lux Veritas may use basic analytics and site measurement tools to understand traffic, page usage, campaign performance, and general audience behavior.</p>
+    <p>Lux Veritas may use basic analytics and site measurement tools to understand traffic, page usage, audience behavior, consented site interactions, CTA activity, media playback, radio-preview activity, fan reactions, and operator reports.</p>
     <h2>Purchases</h2>
     <p>If products, tickets, or other purchases are made available, additional information needed to process those transactions may be collected through checkout, payment, fulfillment, or customer support providers.</p>
     <h2>Events</h2>
@@ -1121,7 +1121,7 @@ const pages = [
     <h2>Creator Participation and Licensing</h2>
     <p>For creator, collaborator, partner, or licensing conversations, Lux Veritas may collect contact details, business information, materials shared for review, and notes related to the request.</p>
     <h2>How Information May Be Used</h2>
-    <p>Information may be used to respond to messages, review submissions, manage access requests, operate memberships, deliver events, support purchases, improve the site, and protect the integrity of Lux Veritas services and community spaces.</p>
+    <p>Information may be used to respond to messages, review submissions, manage access requests, operate memberships, deliver events, support purchases, improve the site, route reports, and protect the integrity of Lux Veritas services and community spaces.</p>
     <h2>Contact</h2>
     <p>For privacy-related questions, use the contact path available on this site.</p>
   `, "press", true, "Contact")],

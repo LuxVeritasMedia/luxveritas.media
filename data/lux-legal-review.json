@@ -1,6 +1,6 @@
 {
   "schemaVersion": "luxveritas.legal_review.v1",
-  "updatedAt": "2026-06-09T00:00:00.000Z",
+  "updatedAt": "2026-07-03T00:00:00.000Z",
   "items": [
     {
       "id": "privacy",
@@ -8,7 +8,7 @@
       "status": "needs_review",
       "reviewedAt": null,
       "reviewedBy": null,
-      "version": "privacy-draft-2026-06-09",
+      "version": "privacy-draft-2026-07-03",
       "notes": "Legal-review-safe draft only. Requires counsel or business approval before full public launch."
     },
     {

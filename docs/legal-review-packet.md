@@ -31,8 +31,8 @@ The public site is technically pilot-ready, but not cleared for unrestricted pub
 
 Current public versions:
 
-- Public terms bundle: `2026-06-09-public-capture`
-- Privacy draft: `privacy-draft-2026-06-09`
+- Public terms bundle: `2026-07-03-public-capture`
+- Privacy draft: `privacy-draft-2026-07-03`
 - Terms draft: `terms-draft-2026-06-09`
 - Submission terms draft: `submission-draft-2026-06-09`
 
@@ -55,7 +55,7 @@ Confirm that `/legal/privacy.html` accurately describes the actual practices for
 
 - data collected through public forms, portal access requests, submissions, events, membership interest, press, contact, and investor/partner requests
 - email and SMS consent, including opt-in language and opt-out expectations
-- analytics, consented engagement events, CTA reporting, media-player events, and operator reporting
+- analytics, consented engagement events, CTA reporting, media-player events, fan reactions, radio-preview activity, and operator reporting
 - purchases, paid drops, memberships, refunds, and cancellations if commerce goes live
 - event access, RSVP, guest-list, location, and attendance data if events go live
 - submissions, creator participation, user content, licensing inquiries, and review records
@@ -96,7 +96,7 @@ The reviewer should fill this out outside the public repo before any approval co
 - reviewerName:
 - reviewedAt:
 - decision: `approved`, `needs_changes`, or `blocked`
-- privacyVersion: `privacy-draft-2026-06-09`
+- privacyVersion: `privacy-draft-2026-07-03`
 - termsVersion: `terms-draft-2026-06-09`
 - submissionTermsVersion: `submission-draft-2026-06-09`
 - assetVersion: `20260630-pilot-feedback-report`

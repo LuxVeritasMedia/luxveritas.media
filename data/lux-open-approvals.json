@@ -1,6 +1,6 @@
 {
   "schemaVersion": "luxveritas.open_approvals_report.v1",
-  "generatedAt": "2026-07-03T01:48:51.871Z",
+  "generatedAt": "2026-07-03T13:43:46.770Z",
   "project": "LuxVeritas.media",
   "liveUrl": "https://luxveritas.media",
   "decision": "external_approvals_pending",
@@ -36,7 +36,7 @@
       "verification": "LUX_LEGAL_SYNC_LAUNCH=1 ... LUX_LEGAL_REVIEW_ITEM=privacy ... node tools/set-legal-review-status.mjs && node tools/qa-release-readiness.mjs",
       "notes": [
         "/legal/privacy.html",
-        "privacy-draft-2026-06-09",
+        "privacy-draft-2026-07-03",
         "closeout=open"
       ]
     },

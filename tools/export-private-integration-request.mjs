@@ -85,8 +85,8 @@ const samplePayload = buildIntegrationPayload({
   phone: "",
   consent_email: true,
   consent_sms: false,
-  public_terms_version: "2026-06-09-public-capture",
-  privacy_version: "privacy-draft-2026-06-09",
+  public_terms_version: "2026-07-03-public-capture",
+  privacy_version: "privacy-draft-2026-07-03",
   terms_version: "terms-draft-2026-06-09",
   submission_terms_version: "submission-draft-2026-06-09",
   message: "Sample private handoff payload for receiver implementation."
