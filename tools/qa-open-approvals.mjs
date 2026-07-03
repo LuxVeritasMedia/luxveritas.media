@@ -134,6 +134,9 @@ if (report) {
     if (!upload.nextAction?.includes("exclude source zips, local caches, secrets")) {
       issue("seed/binder upload approval missing exclusion boundary");
     }
+    if (/LuxFlow/i.test(upload.nextAction || "")) {
+      issue("seed/binder upload approval public next action exposes internal product term");
+    }
   }
 
   if (report.counts?.publicLaunchBlockers !== 2) issue("public launch blocker count should be 2");

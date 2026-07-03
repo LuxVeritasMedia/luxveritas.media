@@ -1,6 +1,6 @@
 {
   "schemaVersion": "luxveritas.open_approvals_report.v1",
-  "generatedAt": "2026-07-03T14:17:21.498Z",
+  "generatedAt": "2026-07-03T14:23:30.328Z",
   "project": "LuxVeritas.media",
   "liveUrl": "https://luxveritas.media",
   "decision": "external_approvals_pending",
@@ -96,7 +96,7 @@
       "blocksPublicLaunch": false,
       "owner": "Internal operations owner",
       "source": "docs/private-upload-manifest.json",
-      "nextAction": "Approve uploading the curated Lux Veritas Website Build package to the private Lux Veritas Website Build folder for Arie/collaborator access; exclude source zips, local caches, secrets, internal ecosystem seed/binder materials, and internal LuxFlow OS app folders.",
+      "nextAction": "Approve uploading the curated Lux Veritas Website Build package to the private Lux Veritas Website Build folder for Arie/collaborator access; exclude source zips, local caches, secrets, internal ecosystem seed/binder materials, and internal app folders.",
       "verification": "node tools/qa-private-upload-manifest.mjs && node tools/qa-product-boundary.mjs",
       "notes": [
         "folder=Lux Veritas Website Build",
