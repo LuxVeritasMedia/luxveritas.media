@@ -168,6 +168,44 @@
     "Run one live form matrix only when the inbox owner is ready for QA mail.",
     "Replay pending handoffs from protected operator reporting if needed."
   ],
+  "approvalDecisionIntake": {
+    "purpose": "Private workflow owner records this outside the public repo before any external workflow target is activated.",
+    "requiredDecisionValues": [
+      "approved",
+      "needs_changes",
+      "blocked"
+    ],
+    "requiredFields": [
+      "reviewerName",
+      "reviewedAt",
+      "decision",
+      "target",
+      "workflowOwner",
+      "receiverOwner",
+      "receiverLocationEvidence",
+      "signingMaterialEvidence",
+      "replayOwner",
+      "rollbackOwner",
+      "retentionExpectation",
+      "legalVersionEvidenceOwner",
+      "evidenceReference",
+      "conditionsOrChanges"
+    ],
+    "blockApprovalIf": [
+      "Receiver location, signing material, or target identity would be stored in the public repo.",
+      "The target is not one of the approved private integration profile IDs.",
+      "Firebase handoff rollback owner and rollback evidence are missing.",
+      "Retention, deletion, legal-version evidence, or replay ownership is unresolved.",
+      "The approval would activate ghl_crm or codex_ops under the google_workspace approval scope.",
+      "Public routes would expose provider account data, provider field IDs, URLs, tokens, prompts, internal dashboards, financials, rights operations, or unreleased canon."
+    ],
+    "noSecretEvidenceExamples": [
+      "Private workflow approval note dated YYYY-MM-DD",
+      "Internal owner ticket ID without private URL",
+      "Receiver readiness checklist ID without endpoint, token, account ID, or field ID",
+      "Retention approval note dated YYYY-MM-DD"
+    ]
+  },
   "doNotDo": [
     "Do not replace firebase_handoff without an approved receiver and rollback owner.",
     "Do not store provider URLs, account IDs, field IDs, private destinations, tokens, or credentials in this repo.",

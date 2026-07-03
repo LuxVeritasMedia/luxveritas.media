@@ -9,11 +9,15 @@ function issue(message) {
   issues.push(message);
 }
 
+function includesText(list, pattern) {
+  return Array.isArray(list) && list.some((item) => pattern.test(String(item)));
+}
+
 function secretShape(value) {
   return /\bre_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}|FORM_INTEGRATION_URL=https:\/\/\S+/i.test(value);
 }
 
-const [markdownResult, jsonResult, profilesRaw, fieldMapRaw, workflowMatrixRaw, pilotEvidenceRaw] = await Promise.all([
+const [markdownResult, jsonResult, profilesRaw, fieldMapRaw, workflowMatrixRaw, workflowSelectionRaw, pilotEvidenceRaw, publicTermsRaw] = await Promise.all([
   execFileAsync(process.execPath, ["tools/export-private-integration-request.mjs"], {
     timeout: 30000,
     maxBuffer: 1024 * 1024 * 4
@@ -26,7 +30,9 @@ const [markdownResult, jsonResult, profilesRaw, fieldMapRaw, workflowMatrixRaw, 
   readFile("docs/private-integration-profiles.json", "utf8"),
   readFile("docs/private-integration-field-map.json", "utf8"),
   readFile("docs/private-workflow-matrix.json", "utf8"),
-  readFile("data/lux-pilot-write-evidence.json", "utf8")
+  readFile("docs/private-workflow-selection.json", "utf8"),
+  readFile("data/lux-pilot-write-evidence.json", "utf8"),
+  readFile("data/lux-public-terms.json", "utf8")
 ]);
 
 const markdown = markdownResult.stdout;
@@ -34,7 +40,9 @@ const jsonRaw = jsonResult.stdout;
 const registry = JSON.parse(profilesRaw);
 const fieldMap = JSON.parse(fieldMapRaw);
 const workflowMatrix = JSON.parse(workflowMatrixRaw);
+const workflowSelection = JSON.parse(workflowSelectionRaw);
 const pilotEvidence = JSON.parse(pilotEvidenceRaw);
+const publicTerms = JSON.parse(publicTermsRaw);
 const profiles = Array.isArray(registry.profiles) ? registry.profiles : [];
 
 if (secretShape(markdown) || secretShape(jsonRaw)) {
@@ -63,6 +71,17 @@ for (const marker of [
   "I approve google_workspace as the first external private workflow target",
   "Approve google_workspace as the first external target only",
   "Private values required outside this repo",
+  "Approval Decision Intake",
+  "Required decision values:",
+  "Required fields:",
+  "Version lock:",
+  "Pilot QA run ID:",
+  "Public terms version:",
+  "Do not approve if:",
+  "No-secret evidence examples:",
+  "receiverLocationEvidence",
+  "signingMaterialEvidence",
+  "legalVersionEvidenceOwner",
   "Recommended First External Activation",
   "Target: google_workspace",
   "Label: Google Workspace Intake",
@@ -184,6 +203,75 @@ if (packet) {
   }
   for (const guard of ["Set Firebase secrets only after approval.", "Run live operator report QA."]) {
     if (!packet.workflowSelection?.approvalChecklist?.includes(guard)) issue(`workflow selection approval checklist missing ${guard}`);
+  }
+  if (!packet.workflowSelection?.approvalDecisionIntake) {
+    issue("workflow selection missing approval decision intake summary");
+  }
+  const decisionIntake = packet.approvalDecisionIntake;
+  if (!decisionIntake) {
+    issue("private integration request missing approvalDecisionIntake");
+  } else {
+    if (decisionIntake.purpose !== workflowSelection.approvalDecisionIntake?.purpose) {
+      issue("approval decision intake purpose mismatch");
+    }
+    if (!/outside the public repo/i.test(decisionIntake.purpose || "")) {
+      issue("approval decision intake purpose must require records outside public repo");
+    }
+    for (const value of ["approved", "needs_changes", "blocked"]) {
+      if (!decisionIntake.requiredDecisionValues?.includes(value)) {
+        issue(`approval decision intake missing decision value ${value}`);
+      }
+    }
+    for (const field of [
+      "reviewerName",
+      "reviewedAt",
+      "decision",
+      "target",
+      "workflowOwner",
+      "receiverOwner",
+      "receiverLocationEvidence",
+      "signingMaterialEvidence",
+      "replayOwner",
+      "rollbackOwner",
+      "retentionExpectation",
+      "legalVersionEvidenceOwner",
+      "evidenceReference",
+      "conditionsOrChanges"
+    ]) {
+      if (!decisionIntake.requiredFields?.includes(field)) {
+        issue(`approval decision intake missing required field ${field}`);
+      }
+    }
+    const versionLock = decisionIntake.versionLock || {};
+    if (versionLock.selectionSchemaVersion !== workflowSelection.schemaVersion) issue("approval decision intake selection version mismatch");
+    if (versionLock.recommendedTarget !== "google_workspace") issue("approval decision intake recommended target mismatch");
+    if (versionLock.currentPrimaryTarget !== "firebase_handoff") issue("approval decision intake current primary target mismatch");
+    if (versionLock.assetVersion !== pilotEvidence.assetVersion) issue("approval decision intake asset version mismatch");
+    if (versionLock.pilotQaRunId !== pilotEvidence.qaRunId) issue("approval decision intake pilot QA run mismatch");
+    if (versionLock.publicTermsVersion !== publicTerms.version) issue("approval decision intake public terms version mismatch");
+    if (versionLock.privacyVersion !== publicTerms.privacyVersion) issue("approval decision intake privacy version mismatch");
+    if (versionLock.termsVersion !== publicTerms.termsVersion) issue("approval decision intake terms version mismatch");
+    if (versionLock.submissionTermsVersion !== publicTerms.submissionTermsVersion) issue("approval decision intake submission terms version mismatch");
+    const blockerChecks = [
+      [/receiver location.*signing material.*target identity.*public repo/i, "receiver/signing/target public repo blocker"],
+      [/activate ghl_crm or codex_ops.*google_workspace approval scope/i, "target scope blocker"],
+      [/public routes.*provider account data.*provider field IDs.*URLs.*tokens.*prompts.*internal dashboards.*financials.*rights.*unreleased canon/i, "public exposure blocker"]
+    ];
+    for (const [pattern, label] of blockerChecks) {
+      if (!includesText(decisionIntake.blockApprovalIf, pattern)) {
+        issue(`approval decision intake missing ${label}`);
+      }
+    }
+    const evidenceChecks = [
+      [/private workflow approval note/i, "private workflow approval note example"],
+      [/receiver readiness checklist ID.*without endpoint.*token.*field ID/i, "receiver checklist no-secret example"],
+      [/retention approval note/i, "retention approval note example"]
+    ];
+    for (const [pattern, label] of evidenceChecks) {
+      if (!includesText(decisionIntake.noSecretEvidenceExamples, pattern)) {
+        issue(`approval decision intake missing ${label}`);
+      }
+    }
   }
   if (!packet.recommendedExternalActivation) {
     issue("private integration request missing recommendedExternalActivation");

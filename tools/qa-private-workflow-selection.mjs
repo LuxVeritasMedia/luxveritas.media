@@ -192,6 +192,56 @@ for (const step of [
   if (!selection.approvalChecklist?.includes(step)) issue(`approvalChecklist missing step: ${step}`);
 }
 
+const decisionIntake = selection.approvalDecisionIntake || {};
+if (!/outside the public repo/i.test(decisionIntake.purpose || "")) {
+  issue("approvalDecisionIntake purpose must require recording decisions outside the public repo");
+}
+for (const value of ["approved", "needs_changes", "blocked"]) {
+  if (!decisionIntake.requiredDecisionValues?.includes(value)) {
+    issue(`approvalDecisionIntake missing decision value: ${value}`);
+  }
+}
+for (const field of [
+  "reviewerName",
+  "reviewedAt",
+  "decision",
+  "target",
+  "workflowOwner",
+  "receiverOwner",
+  "receiverLocationEvidence",
+  "signingMaterialEvidence",
+  "replayOwner",
+  "rollbackOwner",
+  "retentionExpectation",
+  "legalVersionEvidenceOwner",
+  "evidenceReference",
+  "conditionsOrChanges"
+]) {
+  if (!decisionIntake.requiredFields?.includes(field)) {
+    issue(`approvalDecisionIntake missing required field: ${field}`);
+  }
+}
+for (const blocker of [
+  "Receiver location, signing material, or target identity would be stored in the public repo.",
+  "The target is not one of the approved private integration profile IDs.",
+  "Firebase handoff rollback owner and rollback evidence are missing.",
+  "The approval would activate ghl_crm or codex_ops under the google_workspace approval scope.",
+  "Public routes would expose provider account data, provider field IDs, URLs, tokens, prompts, internal dashboards, financials, rights operations, or unreleased canon."
+]) {
+  if (!decisionIntake.blockApprovalIf?.includes(blocker)) {
+    issue(`approvalDecisionIntake missing blocker: ${blocker}`);
+  }
+}
+for (const example of [
+  "Private workflow approval note dated YYYY-MM-DD",
+  "Internal owner ticket ID without private URL",
+  "Receiver readiness checklist ID without endpoint, token, account ID, or field ID"
+]) {
+  if (!decisionIntake.noSecretEvidenceExamples?.includes(example)) {
+    issue(`approvalDecisionIntake missing no-secret evidence example: ${example}`);
+  }
+}
+
 for (const guard of [
   "Do not replace firebase_handoff without an approved receiver and rollback owner.",
   "Do not store provider URLs, account IDs, field IDs, private destinations, tokens, or credentials in this repo.",

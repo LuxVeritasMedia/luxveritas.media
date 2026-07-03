@@ -23,7 +23,8 @@ const [
   pilotEvidenceRaw,
   launchRaw,
   closeoutRaw,
-  buildRaw
+  buildRaw,
+  publicTermsRaw
 ] = await Promise.all([
   readFile("docs/private-integration-profiles.json", "utf8"),
   readFile("docs/private-integration-field-map.json", "utf8"),
@@ -32,10 +33,11 @@ const [
   readFile("data/lux-pilot-write-evidence.json", "utf8"),
   readFile("data/lux-launch-readiness.json", "utf8"),
   readFile("data/lux-launch-closeout.json", "utf8"),
-  readFile("data/lux-build-manifest.json", "utf8")
+  readFile("data/lux-build-manifest.json", "utf8"),
+  readFile("data/lux-public-terms.json", "utf8")
 ]);
 
-if (secretShape(`${profilesRaw}\n${fieldMapRaw}\n${workflowMatrixRaw}\n${workflowSelectionRaw}\n${pilotEvidenceRaw}\n${launchRaw}\n${closeoutRaw}\n${buildRaw}`)) {
+if (secretShape(`${profilesRaw}\n${fieldMapRaw}\n${workflowMatrixRaw}\n${workflowSelectionRaw}\n${pilotEvidenceRaw}\n${launchRaw}\n${closeoutRaw}\n${buildRaw}\n${publicTermsRaw}`)) {
   console.error("Private integration request input appears to contain secret-shaped data.");
   process.exit(1);
 }
@@ -48,6 +50,7 @@ const pilotEvidence = JSON.parse(pilotEvidenceRaw);
 const launch = JSON.parse(launchRaw);
 const closeout = JSON.parse(closeoutRaw);
 const build = JSON.parse(buildRaw);
+const publicTerms = JSON.parse(publicTermsRaw);
 const profiles = Array.isArray(registry.profiles) ? registry.profiles : [];
 const activeProfiles = profiles.filter((profile) => profile.status !== "future");
 const futureProfiles = profiles.filter((profile) => profile.status === "future");
@@ -223,7 +226,26 @@ const packet = {
       }))
       : [],
     approvalChecklist: workflowSelection.approvalChecklist || [],
+    approvalDecisionIntake: workflowSelection.approvalDecisionIntake || null,
     doNotDo: workflowSelection.doNotDo || []
+  },
+  approvalDecisionIntake: {
+    purpose: workflowSelection.approvalDecisionIntake?.purpose || "",
+    requiredDecisionValues: workflowSelection.approvalDecisionIntake?.requiredDecisionValues || [],
+    requiredFields: workflowSelection.approvalDecisionIntake?.requiredFields || [],
+    versionLock: {
+      selectionSchemaVersion: workflowSelection.schemaVersion || "",
+      recommendedTarget: recommendedTarget || "",
+      currentPrimaryTarget: workflowSelection.currentPrimaryTarget || "",
+      assetVersion: build.assetVersion || build.version || "",
+      pilotQaRunId: pilotEvidence.qaRunId || "",
+      publicTermsVersion: publicTerms.version || "",
+      privacyVersion: publicTerms.privacyVersion || "",
+      termsVersion: publicTerms.termsVersion || "",
+      submissionTermsVersion: publicTerms.submissionTermsVersion || ""
+    },
+    blockApprovalIf: workflowSelection.approvalDecisionIntake?.blockApprovalIf || [],
+    noSecretEvidenceExamples: workflowSelection.approvalDecisionIntake?.noSecretEvidenceExamples || []
   },
   recommendedExternalActivation: recommendedProfile ? {
     target: recommendedProfile.id,
@@ -452,6 +474,36 @@ ${packet.workflowSelection.recommendedFirstExternalApproval?.privateValuesRequir
 Evidence before activation:
 
 ${packet.workflowSelection.recommendedFirstExternalApproval?.approvalEvidence?.map((item) => `- ${item}`).join("\n") || "- None"}
+
+## Approval Decision Intake
+
+Purpose: ${packet.approvalDecisionIntake.purpose || "missing"}
+
+Required decision values: ${packet.approvalDecisionIntake.requiredDecisionValues.join(", ") || "missing"}
+
+Required fields:
+
+${packet.approvalDecisionIntake.requiredFields.map((item) => `- ${item}`).join("\n") || "- None"}
+
+Version lock:
+
+- Selection schema: ${packet.approvalDecisionIntake.versionLock.selectionSchemaVersion}
+- Recommended target: ${packet.approvalDecisionIntake.versionLock.recommendedTarget}
+- Current primary target: ${packet.approvalDecisionIntake.versionLock.currentPrimaryTarget}
+- Asset version: ${packet.approvalDecisionIntake.versionLock.assetVersion}
+- Pilot QA run ID: ${packet.approvalDecisionIntake.versionLock.pilotQaRunId}
+- Public terms version: ${packet.approvalDecisionIntake.versionLock.publicTermsVersion}
+- Privacy version: ${packet.approvalDecisionIntake.versionLock.privacyVersion}
+- Terms version: ${packet.approvalDecisionIntake.versionLock.termsVersion}
+- Submission terms version: ${packet.approvalDecisionIntake.versionLock.submissionTermsVersion}
+
+Do not approve if:
+
+${packet.approvalDecisionIntake.blockApprovalIf.map((item) => `- ${item}`).join("\n") || "- None"}
+
+No-secret evidence examples:
+
+${packet.approvalDecisionIntake.noSecretEvidenceExamples.map((item) => `- ${item}`).join("\n") || "- None"}
 
 ## Recommended First External Activation
 
