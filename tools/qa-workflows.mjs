@@ -330,7 +330,9 @@ for (const marker of [
   "node tools/qa-pilot-bug-register.mjs",
   "reconciles the exact write-run IDs",
   "LUX_INBOX_ACTIVATION_WRITE_TEST=1",
-  "ready to receive QA mail"
+  "ready to receive QA mail",
+  "firebase login --reauth --no-localhost",
+  "terminal prompt only"
 ]) {
   if (!finalLaunchRunbook.includes(marker)) issues.push(`final-launch-runbook.md: missing ${marker}`);
 }

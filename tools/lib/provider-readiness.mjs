@@ -25,10 +25,10 @@ async function runFirebase(args) {
 function firebaseAuthErrorDetail(error) {
   const message = `${error?.message || ""}\n${error?.stdout || ""}\n${error?.stderr || ""}`;
   if (/credentials are no longer valid|firebase login --reauth|Authentication Error/i.test(message)) {
-    return "Firebase credentials expired; run firebase login --reauth";
+    return "Firebase credentials expired; run firebase login --reauth --no-localhost";
   }
   if (/not currently authenticated|must be authenticated|login:ci/i.test(message)) {
-    return "Firebase CLI is not authenticated";
+    return "Firebase CLI is not authenticated; run firebase login --reauth --no-localhost";
   }
   return "";
 }

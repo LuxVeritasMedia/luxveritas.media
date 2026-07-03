@@ -110,6 +110,14 @@ for (const message of passed) console.log(`PASS ${message}`);
 if (warnings.length) {
   console.log("Provider readiness warnings:");
   for (const warning of warnings) console.log(`WARN ${warning}`);
+  if (authUnavailable && liveProviderActive) {
+    console.log("");
+    console.log("Local Firebase reauth guidance:");
+    console.log("- This is an operator-machine issue only; the protected live provider report is active.");
+    console.log("- Run: firebase login --reauth --no-localhost");
+    console.log("- Select info@luxveritas.media and paste the one-time code into the terminal prompt only.");
+    console.log("- Then rerun: node tools/qa-provider-readiness.mjs");
+  }
 }
 if (issues.length) {
   console.log("Provider readiness blockers:");
@@ -117,7 +125,7 @@ if (issues.length) {
   console.log("");
   console.log("Next setup commands:");
   if (authUnavailable) {
-    console.log("- firebase login --reauth");
+    console.log("- firebase login --reauth --no-localhost");
     console.log("- node tools/qa-provider-readiness.mjs");
   } else {
     const needsInbox = valueStatus.RESEND_API_KEY?.ok !== true;

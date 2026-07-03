@@ -155,7 +155,7 @@ if (firebaseProjectsHasLux) {
 } else if (firebaseProjects.ok) {
   issue("Firebase CLI responded, but lux-veritas-media was not visible in projects:list.");
 } else if (/reauth|auth|login|expired|credential/i.test(compactError(firebaseProjects))) {
-  issue("Firebase CLI credentials need interactive refresh; run firebase login --reauth in Terminal.");
+  issue("Firebase CLI credentials need interactive refresh; run firebase login --reauth --no-localhost in Terminal, select info@luxveritas.media, and paste the one-time code into the terminal prompt only.");
 } else {
   warn(`Firebase project metadata check unavailable: ${compactError(firebaseProjects)}`);
 }

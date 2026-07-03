@@ -42,6 +42,15 @@ node tools/qa-functions-deploy-readiness.mjs
 
 If the operator-environment check reports a different Firebase account, log it out and run a fresh login with `info@luxveritas.media` before checking provider secrets or deploying Functions.
 
+If provider readiness says the live provider report is active but local Firebase CLI credentials are expired, the live site is not failing. Refresh only the operator machine:
+
+```bash
+firebase login --reauth --no-localhost
+node tools/qa-provider-readiness.mjs
+```
+
+Select `info@luxveritas.media` in the browser approval flow. Paste the one-time authorization code into the terminal prompt only, never into chat, docs, git, or issue comments.
+
 If the Hosting workflow fails at `Preflight Firebase deploy auth`, generate a Firebase CLI token from the approved Firebase account and store it in GitHub Actions:
 
 ```bash
