@@ -66,6 +66,10 @@ for (const value of [
   }
 }
 
+if (!packet.includes(`- pilotQaRunId: \`${pilotEvidence.qaRunId}\``)) {
+  issue("docs/legal-review-packet.md reviewer decision intake must lock the current pilot QA run ID");
+}
+
 for (const id of ["privacy", "terms"]) {
   const item = legalItems.get(id);
   if (!item) {

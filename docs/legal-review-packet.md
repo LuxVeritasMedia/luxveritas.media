@@ -1,6 +1,6 @@
 # Lux Veritas Legal Review Packet
 
-Status date: 2026-07-01
+Status date: 2026-07-03
 
 This packet is for Privacy and Terms review before public launch. It is not legal approval. Do not mark any item approved until the responsible legal or business reviewer accepts the live draft language and actual operating practices.
 
@@ -87,7 +87,7 @@ The reviewer should fill this out outside the public repo before any approval co
 - termsVersion: `terms-draft-2026-06-09`
 - submissionTermsVersion: `submission-draft-2026-06-09`
 - assetVersion: `20260630-pilot-feedback-report`
-- pilotQaRunId: `20260701021744`
+- pilotQaRunId: `20260703014414`
 - evidenceReference: no-secret approval reference only
 - conditionsOrChanges:
 
