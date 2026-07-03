@@ -4,6 +4,7 @@ const project = process.env.LUX_FIREBASE_PROJECT || "lux-veritas-media";
 const apiKey = process.env.LUX_RESEND_API_KEY || "";
 const dryRun = process.env.LUX_INBOX_ACTIVATION_DRY_RUN === "1";
 const skipDeploy = process.env.LUX_INBOX_ACTIVATION_SKIP_DEPLOY === "1";
+const skipDomainCheck = process.env.LUX_INBOX_ACTIVATION_SKIP_DOMAIN_CHECK === "1";
 const writeTest = process.env.LUX_INBOX_ACTIVATION_WRITE_TEST === "1";
 const functionTarget = "functions:submitForm,functions:reportActivity";
 
@@ -13,6 +14,7 @@ function usage(exitCode = 1) {
   console.error("");
   console.error("Optional checks:");
   console.error("  LUX_INBOX_ACTIVATION_DRY_RUN=1 validates the activation path without writing secrets or deploying.");
+  console.error("  LUX_INBOX_ACTIVATION_SKIP_DOMAIN_CHECK=1 skips the Resend sender-domain readiness check.");
   console.error("  LUX_INBOX_ACTIVATION_WRITE_TEST=1 sends a live QA form and requires inbox delivery.");
   process.exit(exitCode);
 }
@@ -39,9 +41,22 @@ if (!/^re_/i.test(apiKey)) {
 
 if (dryRun) {
   console.log(`Dry run passed for inbox activation in project ${project}.`);
-  console.log(`Would set RESEND_API_KEY, deploy ${functionTarget}, then run provider readiness.`);
+  console.log(`Would verify Resend sender-domain readiness, set RESEND_API_KEY, deploy ${functionTarget}, then run provider readiness.`);
   if (writeTest) console.log("Would also run live form write QA with inbox delivery required.");
   process.exit(0);
+}
+
+if (!skipDomainCheck) {
+  await run(process.execPath, ["tools/qa-resend-domain-readiness.mjs"], {
+    env: {
+      LUX_RESEND_API_KEY: apiKey,
+      LUX_RESEND_DOMAIN_STRICT: "1",
+      LUX_RESEND_DOMAIN: process.env.LUX_RESEND_DOMAIN || "luxveritas.media",
+      LUX_RESEND_FROM_EMAIL: process.env.LUX_RESEND_FROM_EMAIL || "forms@luxveritas.media"
+    }
+  });
+} else {
+  console.log("Skipped Resend sender-domain readiness check.");
 }
 
 await run(process.execPath, ["tools/setup-inbox-provider-secret.mjs"], {

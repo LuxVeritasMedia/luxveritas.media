@@ -46,7 +46,7 @@ Use `LUX_LAUNCH_DRY_RUN=1` to validate without writing. A `ready` launch gate al
 - Release readiness currently reports external legal blockers for Privacy and Terms. Strict release checks also require pilot write evidence to remain fresh for the final release window.
 - `www.luxveritas.media` closeout is resolved: DNS, Firebase custom-domain verification, certificate, and Hosting mapping return HTTP 200.
 - Inbox provider closeout is resolved: the 2026-07-03 pilot write gate confirmed 11 capture intents with inbox delivery required.
-- Pilot write gate last passed on 2026-07-03 with live form writes, 13 event writes, inbox delivery required, dedicated pilot feedback routing, fan-reaction reporting, release-room retention reporting, consented page-view reporting, signal-pass export coverage, protected activation-readiness reporting, and post-write reconciliation through the protected operator report. QA run ID: `20260703014414`. Asset version: `20260630-pilot-feedback-report`.
+- Pilot write gate last passed on 2026-07-03 with live form writes, 13 event writes, inbox delivery required, dedicated pilot feedback routing, fan-reaction reporting, release-room retention reporting, consented page-view reporting, signal-pass export coverage, protected activation-readiness reporting, and post-write reconciliation through the protected operator report. QA run ID: `20260703140813`. Asset version: `20260630-pilot-feedback-report`.
 
 ## Closed - www Domain
 
@@ -89,7 +89,7 @@ Acceptance:
 
 Goal: public forms store server-side and send silent inbox notifications to the approved Lux Veritas inbox.
 
-Status: closed on 2026-06-17. Latest live revalidation passed on 2026-07-03 via pilot write gate `20260703014414`. Keep the steps below as revalidation guidance if the sender domain, provider secret, or Functions deployment changes.
+Status: closed on 2026-06-17. Latest live revalidation passed on 2026-07-03 via pilot write gate `20260703140813`. Keep the steps below as revalidation guidance if the sender domain, provider secret, or Functions deployment changes.
 
 Actions:
 
@@ -97,6 +97,7 @@ Actions:
 2. Activate the approved provider key, redeploy the inbox-aware functions, and run provider readiness:
 
 ```bash
+LUX_RESEND_API_KEY="re_..." node tools/qa-resend-domain-readiness.mjs
 LUX_RESEND_API_KEY="re_..." node tools/activate-inbox-delivery.mjs
 ```
 

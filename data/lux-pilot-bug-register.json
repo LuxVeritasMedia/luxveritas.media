@@ -1,7 +1,7 @@
 {
   "schemaVersion": "luxveritas.pilot_bug_register.v1",
   "version": "2026-06-30-pilot-bug-register",
-  "updatedAt": "2026-07-03T01:47:01Z",
+  "updatedAt": "2026-07-03T14:12:37Z",
   "status": "no_known_blocking_bugs",
   "decision": "pilot_can_continue",
   "summary": {
@@ -12,7 +12,7 @@
   },
   "evidence": {
     "assetVersion": "20260630-pilot-feedback-report",
-    "pilotWriteQaRunId": "20260703014414",
+    "pilotWriteQaRunId": "20260703140813",
     "pilotWriteEvidenceFile": "data/lux-pilot-write-evidence.json",
     "pilotFeedbackRoute": "/pilot-feedback.html",
     "latestDeployWorkflow": "Deploy Firebase Hosting",

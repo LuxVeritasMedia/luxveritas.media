@@ -66,6 +66,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Add live QA for sanitized launch closeout endpoint.
 - [x] Add protected activation-readiness checklist for choosing the next Google Workspace/GHL/CodexOps workflow target without exposing provider details.
 - [x] Add one-command inbox provider activation path for real email delivery.
+- [x] Add Resend sender-domain readiness QA before inbox provider activation.
 - [x] Add www domain closeout helper for DNS/SSL evidence.
 - [x] Add profile-gated private integration activation path for future CRM/Workspace/Codex handoffs.
 - [x] Add screened intake routing fields for Phase 6 reporting and future server-side handoff.

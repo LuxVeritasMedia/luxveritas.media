@@ -11,6 +11,7 @@ const functionsIamRepairExport = await readFile("tools/export-functions-iam-repa
 const openApprovals = await readFile("tools/report-open-approvals.mjs", "utf8");
 const openApprovalsQa = await readFile("tools/qa-open-approvals.mjs", "utf8");
 const inboxActivation = await readFile("tools/activate-inbox-delivery.mjs", "utf8");
+const resendDomainReadiness = await readFile("tools/qa-resend-domain-readiness.mjs", "utf8");
 const privateIntegrationActivation = await readFile("tools/activate-private-integration.mjs", "utf8");
 const wwwResolver = await readFile("tools/resolve-www-domain.mjs", "utf8");
 const firebaseDeployAuth = await readFile("tools/qa-firebase-deploy-auth.mjs", "utf8");
@@ -286,13 +287,28 @@ for (const marker of [
 for (const marker of [
   "LUX_RESEND_API_KEY",
   "LUX_INBOX_ACTIVATION_DRY_RUN",
+  "LUX_INBOX_ACTIVATION_SKIP_DOMAIN_CHECK",
   "LUX_INBOX_ACTIVATION_WRITE_TEST",
+  "tools/qa-resend-domain-readiness.mjs",
   "tools/setup-inbox-provider-secret.mjs",
   "functions:submitForm,functions:reportActivity",
   "tools/qa-provider-readiness.mjs",
   "tools/qa-form-delivery.mjs"
 ]) {
   if (!inboxActivation.includes(marker)) issues.push(`activate-inbox-delivery.mjs: missing ${marker}`);
+}
+
+for (const marker of [
+  "LUX_RESEND_API_KEY",
+  "LUX_RESEND_DOMAIN",
+  "LUX_RESEND_FROM_EMAIL",
+  "LUX_RESEND_DOMAIN_STRICT",
+  "https://api.resend.com",
+  "forms@luxveritas.media",
+  "luxveritas.media",
+  "sending-ready"
+]) {
+  if (!resendDomainReadiness.includes(marker)) issues.push(`qa-resend-domain-readiness.mjs: missing ${marker}`);
 }
 
 for (const marker of [

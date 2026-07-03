@@ -314,9 +314,12 @@ The function defaults to `FORM_TO_EMAIL=info@luxveritas.media` and `FORM_FROM_EM
 Recommended setup:
 
 ```bash
+LUX_RESEND_API_KEY="re_..." node tools/qa-resend-domain-readiness.mjs
 LUX_RESEND_API_KEY="re_..." node tools/activate-inbox-delivery.mjs
 LUX_FORM_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-form-delivery.mjs
 ```
+
+`activate-inbox-delivery.mjs` runs the Resend sender-domain readiness check before writing the Firebase secret. Use `LUX_INBOX_ACTIVATION_SKIP_DOMAIN_CHECK=1` only when an approved operator has separately verified the sender domain and needs to recover deployment quickly.
 
 If provider or release readiness reports `Firebase credentials expired`, run `firebase login --reauth --no-localhost` locally, select `info@luxveritas.media`, and paste the one-time code into the terminal prompt only before rechecking secrets or deploying Functions.
 

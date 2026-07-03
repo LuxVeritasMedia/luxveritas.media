@@ -1,7 +1,7 @@
 {
   "schemaVersion": "luxveritas.phase_status.v1",
   "version": "2026-06-28-phase-status",
-  "updatedAt": "2026-07-03T01:47:01Z",
+  "updatedAt": "2026-07-03T14:12:37Z",
   "currentPhase": {
     "id": "phase-5",
     "number": 5,
@@ -13,7 +13,7 @@
   "pilotStatus": "pilot_ready_with_public_launch_blockers",
   "pilotEvidence": {
     "assetVersion": "20260630-pilot-feedback-report",
-    "qaRunId": "20260703014414",
+    "qaRunId": "20260703140813",
     "result": "passed",
     "evidenceFile": "data/lux-pilot-write-evidence.json",
     "verifiedCapabilities": [
