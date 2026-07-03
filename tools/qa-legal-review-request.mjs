@@ -50,6 +50,10 @@ for (const marker of [
   "Privacy sections:",
   "Terms sections:",
   "Current Launch Blockers",
+  "Reviewer Quickstart",
+  "Open the live Privacy and Terms routes",
+  "LUX_LEGAL_PACKET_OUT=/tmp/lux-legal-review-request.md node tools/export-legal-review-request.mjs",
+  "Record the reviewer decision outside the public repo",
   "Reviewer Checklist",
   "Reviewer Decision Intake",
   "Required decision values: approved, needs_changes, blocked",
@@ -107,6 +111,18 @@ if (packet) {
   }
   if (!Array.isArray(packet.reviewerChecklist) || packet.reviewerChecklist.length < 5) {
     issue("legal review request checklist is incomplete");
+  }
+  if (!Array.isArray(packet.reviewerQuickstart) || packet.reviewerQuickstart.length < 6) {
+    issue("legal review request reviewerQuickstart is incomplete");
+  }
+  for (const marker of [
+    "Open the live Privacy and Terms routes",
+    "Record the reviewer decision outside the public repo",
+    "Rerun node tools/qa-release-readiness.mjs"
+  ]) {
+    if (!packet.reviewerQuickstart?.some((item) => item.includes(marker))) {
+      issue(`legal review request reviewerQuickstart missing marker: ${marker}`);
+    }
   }
   if (packet.reviewerDecisionIntake?.purpose !== "Reviewer fills this out outside the public repo before any approval command is run.") {
     issue("legal review request decision intake purpose mismatch");

@@ -138,6 +138,14 @@ const packet = {
     }
   },
   blockedLaunchGates: blockedGates,
+  reviewerQuickstart: [
+    "Open the live Privacy and Terms routes and compare them to the actual site practices.",
+    "Export this no-secret review request with LUX_LEGAL_PACKET_OUT=/tmp/lux-legal-review-request.md node tools/export-legal-review-request.mjs.",
+    "Record the reviewer decision outside the public repo using the decision-intake fields below.",
+    "If the decision is needs_changes or blocked, update the public drafts first and rerun legal QA.",
+    "If the decision is approved, run the approval commands below with a no-secret evidence reference and the reviewer name.",
+    "Rerun node tools/qa-release-readiness.mjs; Privacy and Terms should no longer appear as blockers."
+  ],
   reviewerChecklist: [
     "Confirm public forms, portal access requests, submissions, membership interest, events, press, contact, investor, and partner inquiry practices are accurately described.",
     "Confirm email/SMS consent, analytics, CTA reporting, media-player events, operator reporting, and opt-out language match actual practices.",
@@ -254,6 +262,12 @@ ${legalRows}
 ## Current Launch Blockers
 
 ${blockers}
+
+## Reviewer Quickstart
+
+${packet.reviewerQuickstart.map((item, index) => `${index + 1}. ${item}`).join("\n")}
+
+Do not use chat text, private links, credentials, account IDs, or contract terms as the evidence reference. Use a no-secret record such as a dated legal review email, signed internal approval note, or counsel ticket ID.
 
 ## Reviewer Checklist
 
