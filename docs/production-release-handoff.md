@@ -81,7 +81,7 @@ node tools/qa-mvp-preflight.mjs
 node tools/qa-launch-evidence.mjs
 node tools/qa-pilot-write-evidence.mjs
 node tools/qa-pilot-test-matrix.mjs
-firebase login --reauth
+firebase login --reauth --no-localhost
 node tools/qa-functions-deploy-readiness.mjs
 node tools/qa-provider-readiness.mjs
 node tools/qa-private-workflow-matrix.mjs

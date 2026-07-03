@@ -1,6 +1,6 @@
 {
   "version": "2026-06-11-launch-gates",
-  "updatedAt": "2026-06-18T23:44:05.172Z",
+  "updatedAt": "2026-07-03T01:47:01Z",
   "gates": [
     {
       "id": "media_sources",
@@ -23,8 +23,8 @@
       "blockerType": "provider_activation",
       "verification": "Run provider readiness and form delivery QA after inbox setup.",
       "requiredForPublicLaunch": true,
-      "statusEvidenceReference": "2026-06-17-live-form-matrix-10-capture-intents-email-sent",
-      "statusUpdatedAt": "2026-06-17T09:28:55.564Z",
+      "statusEvidenceReference": "2026-07-03-live-pilot-write-gate-11-capture-intents-email-sent; qa run 20260703014414",
+      "statusUpdatedAt": "2026-07-03T01:47:01Z",
       "statusUpdatedBy": "Codex"
     },
     {

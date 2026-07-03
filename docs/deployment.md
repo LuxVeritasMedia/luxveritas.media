@@ -318,7 +318,7 @@ LUX_RESEND_API_KEY="re_..." node tools/activate-inbox-delivery.mjs
 LUX_FORM_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-form-delivery.mjs
 ```
 
-If provider or release readiness reports `Firebase credentials expired`, run `firebase login --reauth` locally before rechecking secrets or deploying Functions.
+If provider or release readiness reports `Firebase credentials expired`, run `firebase login --reauth --no-localhost` locally, select `info@luxveritas.media`, and paste the one-time code into the terminal prompt only before rechecking secrets or deploying Functions.
 
 For an offline pilot deployment before the real provider key exists, keep `RESEND_API_KEY` set to `not_configured`. The function treats only values beginning with `re_` as active provider keys.
 

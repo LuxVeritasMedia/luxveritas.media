@@ -1,6 +1,6 @@
 {
   "schemaVersion": "luxveritas.launch_closeout.v1",
-  "updatedAt": "2026-06-23T03:38:16.000Z",
+  "updatedAt": "2026-07-03T01:47:01Z",
   "purpose": "No-secret public-release closeout tracker. Store evidence references only; do not store credentials, operator tokens, private report exports, provider keys, or legal advice in this file.",
   "items": [
     {
@@ -38,12 +38,12 @@
         "Pending inbox replay is available to an approved operator"
       ],
       "commands": [
-        "firebase login --reauth",
+        "firebase login --reauth --no-localhost",
         "node tools/qa-provider-readiness.mjs",
         "LUX_RESEND_API_KEY=\"re_...\" node tools/activate-inbox-delivery.mjs",
         "LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.mjs"
       ],
-      "evidenceReference": "2026-06-23-live-pilot-write-gate-11-capture-intents-email-sent; qa run 20260623033816",
+      "evidenceReference": "2026-07-03-live-pilot-write-gate-11-capture-intents-email-sent; qa run 20260703014414",
       "closedAt": "2026-06-17T09:28:55.743Z",
       "closedBy": "Codex"
     },

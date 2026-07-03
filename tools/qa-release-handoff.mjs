@@ -25,7 +25,7 @@ for (const marker of [
   "LuxVeritasMedia/luxveritas.media",
   buildManifest.assetVersion,
   "www.luxveritas.media",
-  "firebase login --reauth",
+  "firebase login --reauth --no-localhost",
   "RESEND_API_KEY",
   "forms@luxveritas.media",
   "Privacy page needs legal/business approval",

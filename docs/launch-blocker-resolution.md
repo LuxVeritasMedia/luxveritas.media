@@ -89,7 +89,7 @@ Acceptance:
 
 Goal: public forms store server-side and send silent inbox notifications to the approved Lux Veritas inbox.
 
-Status: closed on 2026-06-17. Keep the steps below as revalidation guidance if the sender domain, provider secret, or Functions deployment changes.
+Status: closed on 2026-06-17. Latest live revalidation passed on 2026-07-03 via pilot write gate `20260703014414`. Keep the steps below as revalidation guidance if the sender domain, provider secret, or Functions deployment changes.
 
 Actions:
 
