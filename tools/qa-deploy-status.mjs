@@ -27,6 +27,46 @@ function issue(message) {
   console.log(`BLOCK ${message}`);
 }
 
+function compact(value) {
+  return String(value || "").replace(/\s+/g, " ").trim().slice(0, 320);
+}
+
+async function run(command, args = [], options = {}) {
+  try {
+    const result = await execFileAsync(command, args, {
+      timeout: options.timeout || 20000,
+      maxBuffer: options.maxBuffer || 1024 * 1024 * 4
+    });
+    return {
+      ok: true,
+      stdout: result.stdout.trim(),
+      stderr: result.stderr.trim()
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      stdout: String(error.stdout || "").trim(),
+      stderr: String(error.stderr || "").trim(),
+      message: error.message,
+      code: error.code
+    };
+  }
+}
+
+async function findGh() {
+  const available = [];
+  for (const command of [".codex-tools/gh-local/bin/gh", "gh"]) {
+    const result = await run(command, ["--version"], { timeout: 8000 });
+    if (result.ok) available.push(command);
+  }
+  for (const command of available) {
+    const auth = await run(command, ["auth", "status"], { timeout: 12000 });
+    if (auth.ok) return command;
+  }
+  if (available.length) return available[0];
+  return "";
+}
+
 async function gitValue(args) {
   const { stdout } = await execFileAsync("git", args, { timeout: 10000 });
   return stdout.trim();
@@ -60,6 +100,49 @@ async function fetchJson(url) {
       throw error;
     }
   }
+}
+
+async function latestWorkflowRunFromGh() {
+  const gh = await findGh();
+  if (!gh) return { run: null, warning: "GitHub CLI is unavailable for deploy-status fallback." };
+  const result = await run(gh, [
+    "run",
+    "list",
+    "--repo",
+    repo,
+    "--workflow",
+    workflow,
+    "--branch",
+    "main",
+    "--limit",
+    "1",
+    "--json",
+    "databaseId,status,conclusion,headSha,createdAt,updatedAt,url"
+  ], { timeout: 20000, maxBuffer: 1024 * 1024 * 2 });
+  if (!result.ok) {
+    return { run: null, warning: `GitHub CLI deploy-status fallback failed: ${compact(result.stderr || result.stdout || result.message)}` };
+  }
+  let parsed = [];
+  try {
+    parsed = JSON.parse(result.stdout || "[]");
+  } catch {
+    return { run: null, warning: "GitHub CLI deploy-status fallback returned non-JSON output." };
+  }
+  const runItem = Array.isArray(parsed) ? parsed[0] : null;
+  if (!runItem) return { run: null, warning: "GitHub CLI deploy-status fallback found no hosting workflow runs." };
+  return {
+    run: {
+      id: runItem.databaseId,
+      run_number: runItem.databaseId,
+      status: runItem.status,
+      conclusion: runItem.conclusion,
+      head_sha: runItem.headSha,
+      html_url: runItem.url,
+      created_at: runItem.createdAt,
+      updated_at: runItem.updatedAt
+    },
+    warning: ""
+  };
 }
 
 function assetVersionFromBuildScript(buildScript) {
@@ -137,7 +220,34 @@ try {
     issue(`no hosting workflow runs found for ${repo}/${workflow}.`);
   }
 } catch (error) {
-  warn(`could not read GitHub Actions status: ${error?.message || String(error)}`);
+  const fallback = await latestWorkflowRunFromGh();
+  if (fallback.run) {
+    latestRun = fallback.run;
+    const runSha = latestRun.head_sha || "";
+    const runUrl = latestRun.html_url || "";
+    if (runSha === remoteSha) {
+      pass(`latest hosting workflow targets origin/main (${runSummary(latestRun)}) via GitHub CLI fallback.`);
+    } else {
+      issue(`latest hosting workflow targets ${runSha.slice(0, 7) || "unknown"}, not origin/main ${remoteSha.slice(0, 7)}.`);
+    }
+
+    if (latestRun.status === "completed" && latestRun.conclusion === "success") {
+      const completedAge = minutesSince(latestRun.updated_at || latestRun.created_at);
+      pass(`latest hosting workflow completed successfully${completedAge === null ? "" : ` ${completedAge} minute(s) ago`}: ${runUrl}`);
+    } else if (latestRun.status === "in_progress" || latestRun.status === "queued") {
+      const activeAge = minutesSince(latestRun.created_at);
+      const ageText = activeAge === null ? "unknown age" : `${activeAge} minute(s) old`;
+      if (activeAge !== null && activeAge > maxActiveRunAgeMinutes) {
+        issue(`latest hosting workflow is still ${latestRun.status} after ${ageText} (limit ${maxActiveRunAgeMinutes}): ${runUrl}`);
+      } else {
+        warn(`latest hosting workflow is still ${latestRun.status} (${ageText}): ${runUrl}`);
+      }
+    } else {
+      issue(`latest hosting workflow is ${latestRun.status}/${latestRun.conclusion || "none"}: ${runUrl}`);
+    }
+  } else {
+    warn(`could not read GitHub Actions status: ${error?.message || String(error)}${fallback.warning ? `; ${fallback.warning}` : ""}`);
+  }
 }
 
 try {
