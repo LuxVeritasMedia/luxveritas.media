@@ -36,6 +36,19 @@ Current public versions:
 - Terms draft: `terms-draft-2026-06-09`
 - Submission terms draft: `submission-draft-2026-06-09`
 
+## Reviewer Quickstart
+
+Use this order so approval evidence stays clean and the launch gates update only after review is real:
+
+1. Open the live Privacy and Terms routes listed above and compare them to the actual site practices.
+2. Export the no-secret review request with `LUX_LEGAL_PACKET_OUT=/tmp/lux-legal-review-request.md node tools/export-legal-review-request.mjs`.
+3. Record the reviewer decision outside the public repo using the decision-intake fields below.
+4. If the decision is `needs_changes` or `blocked`, update the public drafts first and rerun legal QA.
+5. If the decision is `approved`, run the approval commands below with a no-secret evidence reference and the reviewer name.
+6. Rerun `node tools/qa-release-readiness.mjs`; Privacy and Terms should no longer appear as blockers.
+
+Do not use chat text, private links, credentials, account IDs, or contract terms as the evidence reference. Use a no-secret record such as a dated legal review email, signed internal approval note, or counsel ticket ID.
+
 ## Privacy Checklist
 
 Confirm that `/legal/privacy.html` accurately describes the actual practices for:
