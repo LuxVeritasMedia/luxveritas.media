@@ -1,6 +1,6 @@
 {
   "schemaVersion": "luxveritas.open_approvals_report.v1",
-  "generatedAt": "2026-07-03T14:23:30.328Z",
+  "generatedAt": "2026-07-04T02:22:53.422Z",
   "project": "LuxVeritas.media",
   "liveUrl": "https://luxveritas.media",
   "decision": "external_approvals_pending",
@@ -38,7 +38,50 @@
         "/legal/privacy.html",
         "privacy-draft-2026-07-03",
         "closeout=open"
-      ]
+      ],
+      "decisionIntake": {
+        "approvalId": "privacy_review",
+        "purpose": "Record the Privacy review decision outside the public repo before marking the launch gate approved.",
+        "requiredDecisionValues": [
+          "approved",
+          "needs_changes",
+          "blocked"
+        ],
+        "requiredFields": [
+          "approvalId",
+          "reviewerName",
+          "reviewedAt",
+          "decision",
+          "evidenceReference",
+          "conditionsOrChanges",
+          "route",
+          "legalVersion",
+          "publicTermsVersion",
+          "privacyVersion",
+          "reviewScope"
+        ],
+        "versionLock": {
+          "route": "/legal/privacy.html",
+          "legalVersion": "privacy-draft-2026-07-03",
+          "publicTermsVersion": "2026-07-03-public-capture",
+          "privacyVersion": "privacy-draft-2026-07-03",
+          "assetVersion": "20260630-pilot-feedback-report",
+          "pilotQaRunId": "20260703140813"
+        },
+        "blockApprovalIf": [
+          "The approval record would include secrets, API keys, private URLs, provider account IDs, private report exports, legal advice, contract terms, or non-public operational details.",
+          "The decision owner cannot confirm the reviewed live route, target, role, or upload package matches the version lock.",
+          "The live Privacy page differs from the reviewed route and version.",
+          "The reviewer cannot confirm actual practices for data collection, email or SMS consent, analytics, submissions, memberships, events, purchases, creator participation, storage, retention, deletion, service providers, and contact paths."
+        ],
+        "noSecretEvidenceExamples": [
+          "Approval email dated YYYY-MM-DD without quoted secrets or private URLs.",
+          "Internal approval record ID without a private link.",
+          "Signed reviewer note dated YYYY-MM-DD with only public route, version, and decision metadata.",
+          "Legal review packet approval for privacy-draft-2026-07-03 dated YYYY-MM-DD.",
+          "Business approval note naming /legal/privacy.html and privacy version only."
+        ]
+      }
     },
     {
       "id": "terms_review",
@@ -54,7 +97,52 @@
         "/legal/terms.html",
         "terms-draft-2026-06-09",
         "closeout=open"
-      ]
+      ],
+      "decisionIntake": {
+        "approvalId": "terms_review",
+        "purpose": "Record the Terms review decision outside the public repo before marking the launch gate approved.",
+        "requiredDecisionValues": [
+          "approved",
+          "needs_changes",
+          "blocked"
+        ],
+        "requiredFields": [
+          "approvalId",
+          "reviewerName",
+          "reviewedAt",
+          "decision",
+          "evidenceReference",
+          "conditionsOrChanges",
+          "route",
+          "legalVersion",
+          "publicTermsVersion",
+          "termsVersion",
+          "submissionTermsVersion",
+          "reviewScope"
+        ],
+        "versionLock": {
+          "route": "/legal/terms.html",
+          "legalVersion": "terms-draft-2026-06-09",
+          "publicTermsVersion": "2026-07-03-public-capture",
+          "termsVersion": "terms-draft-2026-06-09",
+          "submissionTermsVersion": "submission-draft-2026-06-09",
+          "assetVersion": "20260630-pilot-feedback-report",
+          "pilotQaRunId": "20260703140813"
+        },
+        "blockApprovalIf": [
+          "The approval record would include secrets, API keys, private URLs, provider account IDs, private report exports, legal advice, contract terms, or non-public operational details.",
+          "The decision owner cannot confirm the reviewed live route, target, role, or upload package matches the version lock.",
+          "The live Terms page differs from the reviewed route and version.",
+          "The reviewer cannot confirm actual practices for submissions, user content, memberships, creator participation, events, licensing, purchases, refunds, cancellations, community access, and contact paths."
+        ],
+        "noSecretEvidenceExamples": [
+          "Approval email dated YYYY-MM-DD without quoted secrets or private URLs.",
+          "Internal approval record ID without a private link.",
+          "Signed reviewer note dated YYYY-MM-DD with only public route, version, and decision metadata.",
+          "Legal review packet approval for terms-draft-2026-06-09 dated YYYY-MM-DD.",
+          "Business approval note naming /legal/terms.html and terms version only."
+        ]
+      }
     },
     {
       "id": "functions_deploy_iam",
@@ -69,7 +157,50 @@
       "notes": [
         "Live Functions are deployed; this hardens future manual Functions deploy automation.",
         "Do not mutate IAM without explicit project-owner approval."
-      ]
+      ],
+      "decisionIntake": {
+        "approvalId": "functions_deploy_iam",
+        "purpose": "Record the Google Cloud project-owner approval outside the public repo before changing IAM for manual Functions deploy automation.",
+        "requiredDecisionValues": [
+          "approved",
+          "needs_changes",
+          "blocked"
+        ],
+        "requiredFields": [
+          "approvalId",
+          "reviewerName",
+          "reviewedAt",
+          "decision",
+          "evidenceReference",
+          "conditionsOrChanges",
+          "projectOwner",
+          "deployServiceAccount",
+          "runtimeServiceAccount",
+          "iamRole",
+          "manualWorkflowEvidence"
+        ],
+        "versionLock": {
+          "firebaseProject": "lux-veritas-media",
+          "deployServiceAccount": "github-actions-firebase@lux-veritas-media.iam.gserviceaccount.com",
+          "runtimeServiceAccount": "lux-veritas-media@appspot.gserviceaccount.com",
+          "iamRole": "roles/iam.serviceAccountUser",
+          "verificationCommand": "node tools/qa-functions-deploy-readiness.mjs"
+        },
+        "blockApprovalIf": [
+          "The approval record would include secrets, API keys, private URLs, provider account IDs, private report exports, legal advice, contract terms, or non-public operational details.",
+          "The decision owner cannot confirm the reviewed live route, target, role, or upload package matches the version lock.",
+          "The project owner has not explicitly approved the IAM mutation.",
+          "The approval would create or download a service account key.",
+          "The approval would grant broader roles than Service Account User on the runtime service account."
+        ],
+        "noSecretEvidenceExamples": [
+          "Approval email dated YYYY-MM-DD without quoted secrets or private URLs.",
+          "Internal approval record ID without a private link.",
+          "Signed reviewer note dated YYYY-MM-DD with only public route, version, and decision metadata.",
+          "Google Cloud IAM change ticket ID without private console URL.",
+          "Project-owner approval note naming the deploy and runtime service accounts only."
+        ]
+      }
     },
     {
       "id": "external_workflow_target",
@@ -86,7 +217,60 @@
         "recommended=google_workspace",
         "identified_pending_explicit_private_workflow_owner_approval",
         "Keep firebase_handoff active until a human-approved receiver owner, receiver location, signing material, replay owner, and rollback owner are approved outside this repo."
-      ]
+      ],
+      "decisionIntake": {
+        "approvalId": "external_workflow_target",
+        "purpose": "Private workflow owner records this outside the public repo before any external workflow target is activated.",
+        "requiredDecisionValues": [
+          "approved",
+          "needs_changes",
+          "blocked"
+        ],
+        "requiredFields": [
+          "approvalId",
+          "reviewerName",
+          "reviewedAt",
+          "decision",
+          "evidenceReference",
+          "conditionsOrChanges",
+          "target",
+          "workflowOwner",
+          "receiverOwner",
+          "receiverLocationEvidence",
+          "signingMaterialEvidence",
+          "replayOwner",
+          "rollbackOwner",
+          "retentionExpectation",
+          "legalVersionEvidenceOwner"
+        ],
+        "versionLock": {
+          "selectionSchemaVersion": "luxveritas.private_workflow_selection.v1",
+          "recommendedTarget": "google_workspace",
+          "currentPrimaryTarget": "firebase_handoff",
+          "firstExternalApprovalStatus": "identified_pending_explicit_private_workflow_owner_approval",
+          "pilotQaRunId": "20260703140813",
+          "assetVersion": "20260630-pilot-feedback-report"
+        },
+        "blockApprovalIf": [
+          "The approval record would include secrets, API keys, private URLs, provider account IDs, private report exports, legal advice, contract terms, or non-public operational details.",
+          "The decision owner cannot confirm the reviewed live route, target, role, or upload package matches the version lock.",
+          "Receiver location, signing material, or target identity would be stored in the public repo.",
+          "The target is not one of the approved private integration profile IDs.",
+          "Firebase handoff rollback owner and rollback evidence are missing.",
+          "Retention, deletion, legal-version evidence, or replay ownership is unresolved.",
+          "The approval would activate ghl_crm or codex_ops under the google_workspace approval scope.",
+          "Public routes would expose provider account data, provider field IDs, URLs, tokens, prompts, internal dashboards, financials, rights operations, or unreleased canon."
+        ],
+        "noSecretEvidenceExamples": [
+          "Approval email dated YYYY-MM-DD without quoted secrets or private URLs.",
+          "Internal approval record ID without a private link.",
+          "Signed reviewer note dated YYYY-MM-DD with only public route, version, and decision metadata.",
+          "Private workflow approval note dated YYYY-MM-DD",
+          "Internal owner ticket ID without private URL",
+          "Receiver readiness checklist ID without endpoint, token, account ID, or field ID",
+          "Retention approval note dated YYYY-MM-DD"
+        ]
+      }
     },
     {
       "id": "seed_binder_private_upload",
@@ -103,7 +287,49 @@
         "target=private_drive_or_private_repo",
         "identified_pending_internal_operations_owner_approval",
         "Do not upload secrets, local caches, source zips, or internal-only seed materials into public repo paths."
-      ]
+      ],
+      "decisionIntake": {
+        "approvalId": "seed_binder_private_upload",
+        "purpose": "Record private upload approval outside the public repo before sharing the curated collaborator package.",
+        "requiredDecisionValues": [
+          "approved",
+          "needs_changes",
+          "blocked"
+        ],
+        "requiredFields": [
+          "approvalId",
+          "reviewerName",
+          "reviewedAt",
+          "decision",
+          "evidenceReference",
+          "conditionsOrChanges",
+          "operationsOwner",
+          "folderName",
+          "shareTarget",
+          "uploadPackageEvidence",
+          "exclusionEvidence"
+        ],
+        "versionLock": {
+          "manifest": "docs/private-upload-manifest.json",
+          "recommendedFolderName": "Lux Veritas Website Build",
+          "shareTarget": "private_drive_or_private_repo",
+          "approvalStatus": "identified_pending_internal_operations_owner_approval"
+        },
+        "blockApprovalIf": [
+          "The approval record would include secrets, API keys, private URLs, provider account IDs, private report exports, legal advice, contract terms, or non-public operational details.",
+          "The decision owner cannot confirm the reviewed live route, target, role, or upload package matches the version lock.",
+          "The upload set includes source zip archives, local caches, secrets, private keys, internal-only seed materials, or internal app folders.",
+          "The destination is a public repo, public Drive folder, or unaudited share target.",
+          "The uploader cannot confirm the package matches docs/upload-checklist.md and docs/private-upload-manifest.json."
+        ],
+        "noSecretEvidenceExamples": [
+          "Approval email dated YYYY-MM-DD without quoted secrets or private URLs.",
+          "Internal approval record ID without a private link.",
+          "Signed reviewer note dated YYYY-MM-DD with only public route, version, and decision metadata.",
+          "Private Drive folder creation note with folder name only.",
+          "Upload checklist signoff dated YYYY-MM-DD without private links."
+        ]
+      }
     },
     {
       "id": "event_terms",
@@ -117,7 +343,44 @@
       "verification": "Review event flow and rerun legal/release QA.",
       "notes": [
         "Not required while events remain request-access only."
-      ]
+      ],
+      "decisionIntake": {
+        "approvalId": "event_terms",
+        "purpose": "Record the event-terms trigger decision outside the public repo before ticketing, paid events, or public RSVP goes live.",
+        "requiredDecisionValues": [
+          "approved",
+          "needs_changes",
+          "blocked"
+        ],
+        "requiredFields": [
+          "approvalId",
+          "reviewerName",
+          "reviewedAt",
+          "decision",
+          "evidenceReference",
+          "conditionsOrChanges",
+          "trigger",
+          "eventFlowOwner",
+          "legalOwner",
+          "goLiveScope"
+        ],
+        "versionLock": {
+          "currentPublicEventMode": "request_access_only",
+          "source": "TODO.md"
+        },
+        "blockApprovalIf": [
+          "The approval record would include secrets, API keys, private URLs, provider account IDs, private report exports, legal advice, contract terms, or non-public operational details.",
+          "The decision owner cannot confirm the reviewed live route, target, role, or upload package matches the version lock.",
+          "Ticketing, paid events, public RSVP, exact private locations, pricing, guest lists, or private performance details would go live without reviewed event terms."
+        ],
+        "noSecretEvidenceExamples": [
+          "Approval email dated YYYY-MM-DD without quoted secrets or private URLs.",
+          "Internal approval record ID without a private link.",
+          "Signed reviewer note dated YYYY-MM-DD with only public route, version, and decision metadata.",
+          "Event terms not-triggered note dated YYYY-MM-DD.",
+          "Legal trigger ticket ID without private event details."
+        ]
+      }
     },
     {
       "id": "purchase_membership_terms",
@@ -131,7 +394,44 @@
       "verification": "Review commerce flow and rerun legal/release QA.",
       "notes": [
         "Not required while store and membership remain waitlist-only."
-      ]
+      ],
+      "decisionIntake": {
+        "approvalId": "purchase_membership_terms",
+        "purpose": "Record the commerce and paid-membership terms trigger decision outside the public repo before payments, shipping, refunds, or paid access go live.",
+        "requiredDecisionValues": [
+          "approved",
+          "needs_changes",
+          "blocked"
+        ],
+        "requiredFields": [
+          "approvalId",
+          "reviewerName",
+          "reviewedAt",
+          "decision",
+          "evidenceReference",
+          "conditionsOrChanges",
+          "trigger",
+          "commerceOwner",
+          "legalOwner",
+          "goLiveScope"
+        ],
+        "versionLock": {
+          "currentPublicCommerceMode": "waitlist_only",
+          "source": "TODO.md"
+        },
+        "blockApprovalIf": [
+          "The approval record would include secrets, API keys, private URLs, provider account IDs, private report exports, legal advice, contract terms, or non-public operational details.",
+          "The decision owner cannot confirm the reviewed live route, target, role, or upload package matches the version lock.",
+          "Paid membership, paid drops, store checkout, shipping, refunds, cancellations, or creator payment flows would go live without reviewed purchase or membership terms."
+        ],
+        "noSecretEvidenceExamples": [
+          "Approval email dated YYYY-MM-DD without quoted secrets or private URLs.",
+          "Internal approval record ID without a private link.",
+          "Signed reviewer note dated YYYY-MM-DD with only public route, version, and decision metadata.",
+          "Commerce terms not-triggered note dated YYYY-MM-DD.",
+          "Legal trigger ticket ID without private payment provider details."
+        ]
+      }
     }
   ]
 }

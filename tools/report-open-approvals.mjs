@@ -32,7 +32,47 @@ function closeoutById(closeout, id) {
   return (Array.isArray(closeout.items) ? closeout.items : []).find((item) => item.id === id) || null;
 }
 
-function approval({ id, label, category, status, blocksPublicLaunch, owner, source, nextAction, verification, notes = [] }) {
+function uniqueList(values) {
+  return [...new Set(values.filter(Boolean))];
+}
+
+function decisionIntake({
+  approvalId,
+  purpose,
+  requiredFields = [],
+  versionLock = {},
+  blockApprovalIf = [],
+  noSecretEvidenceExamples = []
+}) {
+  return {
+    approvalId,
+    purpose,
+    requiredDecisionValues: ["approved", "needs_changes", "blocked"],
+    requiredFields: uniqueList([
+      "approvalId",
+      "reviewerName",
+      "reviewedAt",
+      "decision",
+      "evidenceReference",
+      "conditionsOrChanges",
+      ...requiredFields
+    ]),
+    versionLock,
+    blockApprovalIf: uniqueList([
+      "The approval record would include secrets, API keys, private URLs, provider account IDs, private report exports, legal advice, contract terms, or non-public operational details.",
+      "The decision owner cannot confirm the reviewed live route, target, role, or upload package matches the version lock.",
+      ...blockApprovalIf
+    ]),
+    noSecretEvidenceExamples: uniqueList([
+      "Approval email dated YYYY-MM-DD without quoted secrets or private URLs.",
+      "Internal approval record ID without a private link.",
+      "Signed reviewer note dated YYYY-MM-DD with only public route, version, and decision metadata.",
+      ...noSecretEvidenceExamples
+    ])
+  };
+}
+
+function approval({ id, label, category, status, blocksPublicLaunch, owner, source, nextAction, verification, notes = [], decisionIntake: intake = null }) {
   return {
     id,
     label,
@@ -43,7 +83,8 @@ function approval({ id, label, category, status, blocksPublicLaunch, owner, sour
     source,
     nextAction,
     verification,
-    notes
+    notes,
+    decisionIntake: intake
   };
 }
 
@@ -68,6 +109,7 @@ const [
   launchRaw,
   closeoutRaw,
   legalRaw,
+  publicTermsRaw,
   phaseRaw,
   workflowSelectionRaw,
   privateUploadManifestRaw,
@@ -79,6 +121,7 @@ const [
   readFile("data/lux-launch-readiness.json", "utf8"),
   readFile("data/lux-launch-closeout.json", "utf8"),
   readFile("data/lux-legal-review.json", "utf8"),
+  readFile("data/lux-public-terms.json", "utf8"),
   readFile("data/lux-phase-status.json", "utf8"),
   readFile("docs/private-workflow-selection.json", "utf8"),
   readFile("docs/private-upload-manifest.json", "utf8"),
@@ -92,6 +135,7 @@ const inputText = [
   launchRaw,
   closeoutRaw,
   legalRaw,
+  publicTermsRaw,
   phaseRaw,
   workflowSelectionRaw,
   privateUploadManifestRaw,
@@ -109,6 +153,7 @@ if (secretShape(inputText)) {
 const launch = JSON.parse(launchRaw);
 const closeout = JSON.parse(closeoutRaw);
 const legalReview = JSON.parse(legalRaw);
+const publicTerms = JSON.parse(publicTermsRaw);
 const phaseStatus = JSON.parse(phaseRaw);
 const workflowSelection = JSON.parse(workflowSelectionRaw);
 const privateUploadManifest = JSON.parse(privateUploadManifestRaw);
@@ -137,7 +182,28 @@ approvals.push(approval({
     privacy.route,
     privacy.version,
     privacyCloseout?.status ? `closeout=${privacyCloseout.status}` : ""
-  ].filter(Boolean)
+  ].filter(Boolean),
+  decisionIntake: decisionIntake({
+    approvalId: "privacy_review",
+    purpose: "Record the Privacy review decision outside the public repo before marking the launch gate approved.",
+    requiredFields: ["route", "legalVersion", "publicTermsVersion", "privacyVersion", "reviewScope"],
+    versionLock: {
+      route: privacy.route,
+      legalVersion: privacy.version,
+      publicTermsVersion: publicTerms.version || "",
+      privacyVersion: publicTerms.privacyVersion || "",
+      assetVersion: pilotEvidence.assetVersion || "",
+      pilotQaRunId: pilotEvidence.qaRunId || ""
+    },
+    blockApprovalIf: [
+      "The live Privacy page differs from the reviewed route and version.",
+      "The reviewer cannot confirm actual practices for data collection, email or SMS consent, analytics, submissions, memberships, events, purchases, creator participation, storage, retention, deletion, service providers, and contact paths."
+    ],
+    noSecretEvidenceExamples: [
+      "Legal review packet approval for privacy-draft-2026-07-03 dated YYYY-MM-DD.",
+      "Business approval note naming /legal/privacy.html and privacy version only."
+    ]
+  })
 }));
 
 approvals.push(approval({
@@ -154,7 +220,29 @@ approvals.push(approval({
     terms.route,
     terms.version,
     termsCloseout?.status ? `closeout=${termsCloseout.status}` : ""
-  ].filter(Boolean)
+  ].filter(Boolean),
+  decisionIntake: decisionIntake({
+    approvalId: "terms_review",
+    purpose: "Record the Terms review decision outside the public repo before marking the launch gate approved.",
+    requiredFields: ["route", "legalVersion", "publicTermsVersion", "termsVersion", "submissionTermsVersion", "reviewScope"],
+    versionLock: {
+      route: terms.route,
+      legalVersion: terms.version,
+      publicTermsVersion: publicTerms.version || "",
+      termsVersion: publicTerms.termsVersion || "",
+      submissionTermsVersion: publicTerms.submissionTermsVersion || "",
+      assetVersion: pilotEvidence.assetVersion || "",
+      pilotQaRunId: pilotEvidence.qaRunId || ""
+    },
+    blockApprovalIf: [
+      "The live Terms page differs from the reviewed route and version.",
+      "The reviewer cannot confirm actual practices for submissions, user content, memberships, creator participation, events, licensing, purchases, refunds, cancellations, community access, and contact paths."
+    ],
+    noSecretEvidenceExamples: [
+      "Legal review packet approval for terms-draft-2026-06-09 dated YYYY-MM-DD.",
+      "Business approval note naming /legal/terms.html and terms version only."
+    ]
+  })
 }));
 
 if (todoOpen(todo, "iam.serviceAccounts.ActAs")) {
@@ -171,7 +259,28 @@ if (todoOpen(todo, "iam.serviceAccounts.ActAs")) {
     notes: [
       "Live Functions are deployed; this hardens future manual Functions deploy automation.",
       "Do not mutate IAM without explicit project-owner approval."
-    ]
+    ],
+    decisionIntake: decisionIntake({
+      approvalId: "functions_deploy_iam",
+      purpose: "Record the Google Cloud project-owner approval outside the public repo before changing IAM for manual Functions deploy automation.",
+      requiredFields: ["projectOwner", "deployServiceAccount", "runtimeServiceAccount", "iamRole", "manualWorkflowEvidence"],
+      versionLock: {
+        firebaseProject: "lux-veritas-media",
+        deployServiceAccount: identifiedDeployServiceAccount,
+        runtimeServiceAccount: targetServiceAccount,
+        iamRole: "roles/iam.serviceAccountUser",
+        verificationCommand: "node tools/qa-functions-deploy-readiness.mjs"
+      },
+      blockApprovalIf: [
+        "The project owner has not explicitly approved the IAM mutation.",
+        "The approval would create or download a service account key.",
+        "The approval would grant broader roles than Service Account User on the runtime service account."
+      ],
+      noSecretEvidenceExamples: [
+        "Google Cloud IAM change ticket ID without private console URL.",
+        "Project-owner approval note naming the deploy and runtime service accounts only."
+      ]
+    })
   }));
 }
 
@@ -191,7 +300,35 @@ if (todoOpen(todo, "google_workspace")) {
       `recommended=${workflowSelection.recommendedFirstExternalTarget || "unknown"}`,
       workflowSelection.recommendedFirstExternalApproval?.status || "",
       workflowSelection.selectionRule || ""
-    ].filter(Boolean)
+    ].filter(Boolean),
+    decisionIntake: decisionIntake({
+      approvalId: "external_workflow_target",
+      purpose: workflowSelection.approvalDecisionIntake?.purpose || "Record the private workflow target decision outside the public repo before activation.",
+      requiredFields: workflowSelection.approvalDecisionIntake?.requiredFields || [
+        "workflowOwner",
+        "receiverOwner",
+        "receiverLocationEvidence",
+        "signingMaterialEvidence",
+        "replayOwner",
+        "rollbackOwner",
+        "retentionExpectation",
+        "legalVersionEvidenceOwner"
+      ],
+      versionLock: {
+        selectionSchemaVersion: workflowSelection.schemaVersion || "",
+        recommendedTarget: workflowSelection.recommendedFirstExternalTarget || "",
+        currentPrimaryTarget: workflowSelection.currentPrimaryTarget || "",
+        firstExternalApprovalStatus: workflowSelection.recommendedFirstExternalApproval?.status || "",
+        pilotQaRunId: pilotEvidence.qaRunId || "",
+        assetVersion: pilotEvidence.assetVersion || ""
+      },
+      blockApprovalIf: workflowSelection.approvalDecisionIntake?.blockApprovalIf || [
+        "Receiver location, signing material, or target identity would be stored in the public repo."
+      ],
+      noSecretEvidenceExamples: workflowSelection.approvalDecisionIntake?.noSecretEvidenceExamples || [
+        "Private workflow approval note dated YYYY-MM-DD."
+      ]
+    })
   }));
 }
 
@@ -211,7 +348,27 @@ if (todoOpen(todo, "Review and upload seed/binder docs")) {
       `target=${privateUploadManifest.shareTarget || "unknown"}`,
       privateUploadManifest.recommendedUploadApproval?.status || "",
       "Do not upload secrets, local caches, source zips, or internal-only seed materials into public repo paths."
-    ]
+    ],
+    decisionIntake: decisionIntake({
+      approvalId: "seed_binder_private_upload",
+      purpose: "Record private upload approval outside the public repo before sharing the curated collaborator package.",
+      requiredFields: ["operationsOwner", "folderName", "shareTarget", "uploadPackageEvidence", "exclusionEvidence"],
+      versionLock: {
+        manifest: "docs/private-upload-manifest.json",
+        recommendedFolderName: privateUploadManifest.recommendedFolderName || "",
+        shareTarget: privateUploadManifest.shareTarget || "",
+        approvalStatus: privateUploadManifest.recommendedUploadApproval?.status || ""
+      },
+      blockApprovalIf: [
+        "The upload set includes source zip archives, local caches, secrets, private keys, internal-only seed materials, or internal app folders.",
+        "The destination is a public repo, public Drive folder, or unaudited share target.",
+        "The uploader cannot confirm the package matches docs/upload-checklist.md and docs/private-upload-manifest.json."
+      ],
+      noSecretEvidenceExamples: [
+        "Private Drive folder creation note with folder name only.",
+        "Upload checklist signoff dated YYYY-MM-DD without private links."
+      ]
+    })
   }));
 }
 
@@ -226,7 +383,23 @@ if (todoOpen(todo, "Add Event Terms")) {
     source: "TODO.md",
     nextAction: "Add Event Terms before ticketing, paid events, or public RSVP goes live.",
     verification: "Review event flow and rerun legal/release QA.",
-    notes: ["Not required while events remain request-access only."]
+    notes: ["Not required while events remain request-access only."],
+    decisionIntake: decisionIntake({
+      approvalId: "event_terms",
+      purpose: "Record the event-terms trigger decision outside the public repo before ticketing, paid events, or public RSVP goes live.",
+      requiredFields: ["trigger", "eventFlowOwner", "legalOwner", "goLiveScope"],
+      versionLock: {
+        currentPublicEventMode: "request_access_only",
+        source: "TODO.md"
+      },
+      blockApprovalIf: [
+        "Ticketing, paid events, public RSVP, exact private locations, pricing, guest lists, or private performance details would go live without reviewed event terms."
+      ],
+      noSecretEvidenceExamples: [
+        "Event terms not-triggered note dated YYYY-MM-DD.",
+        "Legal trigger ticket ID without private event details."
+      ]
+    })
   }));
 }
 
@@ -241,7 +414,23 @@ if (todoOpen(todo, "Add Purchase/Membership terms")) {
     source: "TODO.md",
     nextAction: "Add Purchase/Membership terms before commerce, paid membership, paid drops, shipping, refunds, or cancellations go live.",
     verification: "Review commerce flow and rerun legal/release QA.",
-    notes: ["Not required while store and membership remain waitlist-only."]
+    notes: ["Not required while store and membership remain waitlist-only."],
+    decisionIntake: decisionIntake({
+      approvalId: "purchase_membership_terms",
+      purpose: "Record the commerce and paid-membership terms trigger decision outside the public repo before payments, shipping, refunds, or paid access go live.",
+      requiredFields: ["trigger", "commerceOwner", "legalOwner", "goLiveScope"],
+      versionLock: {
+        currentPublicCommerceMode: "waitlist_only",
+        source: "TODO.md"
+      },
+      blockApprovalIf: [
+        "Paid membership, paid drops, store checkout, shipping, refunds, cancellations, or creator payment flows would go live without reviewed purchase or membership terms."
+      ],
+      noSecretEvidenceExamples: [
+        "Commerce terms not-triggered note dated YYYY-MM-DD.",
+        "Legal trigger ticket ID without private payment provider details."
+      ]
+    })
   }));
 }
 
