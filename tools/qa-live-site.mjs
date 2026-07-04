@@ -374,7 +374,8 @@ try {
     if (currentPhase.id !== "phase-5" || currentPhase.status !== "active_pilot") {
       issues.push("/data/lux-phase-status.json: current phase mismatch");
     }
-    if (phaseStatus.pilotStatus !== "pilot_ready_with_public_launch_blockers") {
+    const allowedPilotStatuses = new Set(["pilot_ready", "pilot_ready_with_public_launch_blockers"]);
+    if (!allowedPilotStatuses.has(phaseStatus.pilotStatus)) {
       issues.push("/data/lux-phase-status.json: pilotStatus mismatch");
     }
     if (phaseStatus.pilotEvidence?.assetVersion !== liveBuildManifest?.assetVersion) {
@@ -385,9 +386,29 @@ try {
     if (!phaseStatus.pilotEvidence?.verifiedCapabilities?.includes("post_write_reconciliation")) {
       issues.push("/data/lux-phase-status.json: missing post-write reconciliation evidence");
     }
-    for (const blocker of ["privacy_review", "terms_review"]) {
+    let legalPhaseBlockers = ["privacy_review", "terms_review"];
+    try {
+      const legalResult = await fetchWithTimeout("/data/lux-legal-review.json");
+      if (legalResult.response.ok) {
+        const legalReview = JSON.parse(legalResult.text);
+        legalPhaseBlockers = [
+          ["privacy_review", "privacy"],
+          ["terms_review", "terms"]
+        ].filter(([, legalId]) => (
+          legalReview.items?.find((item) => item.id === legalId)?.status !== "approved"
+        )).map(([gateId]) => gateId);
+      }
+    } catch {
+      warnings.push("/data/lux-legal-review.json: unavailable while deriving phase legal blockers");
+    }
+    for (const blocker of legalPhaseBlockers) {
       if (!phaseStatus.publicLaunchBlockers?.includes(blocker)) {
         issues.push(`/data/lux-phase-status.json: missing public launch blocker ${blocker}`);
+      }
+    }
+    for (const blocker of ["privacy_review", "terms_review"].filter((id) => !legalPhaseBlockers.includes(id))) {
+      if (phaseStatus.publicLaunchBlockers?.includes(blocker)) {
+        issues.push(`/data/lux-phase-status.json: ${blocker} should not remain a public launch blocker after approval`);
       }
     }
   }
