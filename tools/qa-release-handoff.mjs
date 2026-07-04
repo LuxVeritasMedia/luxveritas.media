@@ -5,6 +5,7 @@ const handoff = await readFile("docs/production-release-handoff.md", "utf8");
 const blockerResolution = await readFile("docs/launch-blocker-resolution.md", "utf8");
 const launchCloseout = await readFile("data/lux-launch-closeout.json", "utf8");
 const legalReviewPacket = await readFile("docs/legal-review-packet.md", "utf8");
+const legalReview = JSON.parse(await readFile("data/lux-legal-review.json", "utf8"));
 const finalLaunchRunbook = await readFile("docs/final-launch-runbook.md", "utf8");
 const todo = await readFile("TODO.md", "utf8");
 const pilotWriteEvidence = await readFile("data/lux-pilot-write-evidence.json", "utf8");
@@ -14,6 +15,9 @@ const finalGate = await readFile("tools/qa-final-release-gate.mjs", "utf8");
 const pilotWriteGate = await readFile("tools/qa-pilot-write-gate.mjs", "utf8");
 const writeReconciliation = await readFile("tools/qa-live-write-reconciliation.mjs", "utf8");
 const activationDryRuns = await readFile("tools/qa-private-integration-activation-dry-runs.mjs", "utf8");
+const legalApproved = ["privacy", "terms"].every((id) => (
+  legalReview.items?.find((item) => item.id === id)?.status === "approved"
+));
 
 function issue(message) {
   issues.push(message);
@@ -28,8 +32,6 @@ for (const marker of [
   "firebase login --reauth --no-localhost",
   "RESEND_API_KEY",
   "forms@luxveritas.media",
-  "Privacy page needs legal/business approval",
-  "Terms page needs legal/business approval",
   "External CRM/Google workflow target",
   "node tools/qa-provider-readiness.mjs",
   "node tools/qa-resend-inbox-activation-terminal.mjs",
@@ -66,6 +68,12 @@ for (const marker of [
   "LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.mjs"
 ]) {
   if (!handoff.includes(marker)) issue(`production-release-handoff.md missing marker: ${marker}`);
+}
+
+for (const marker of legalApproved
+  ? ["Privacy and Terms owner approval is recorded", "final release-gate verification active"]
+  : ["Privacy page needs legal/business approval", "Terms page needs legal/business approval"]) {
+  if (!handoff.includes(marker)) issue(`production-release-handoff.md missing legal-state marker: ${marker}`);
 }
 
 for (const marker of [
