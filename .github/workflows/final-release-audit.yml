@@ -41,6 +41,9 @@ jobs:
       - name: QA legal sync
         run: node tools/qa-legal-sync.mjs
 
+      - name: QA legal approval closeout
+        run: node tools/qa-legal-approval-closeout.mjs
+
       - name: QA launch blockers
         run: node tools/qa-launch-blockers.mjs
 

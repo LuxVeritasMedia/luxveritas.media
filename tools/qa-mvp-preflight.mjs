@@ -39,6 +39,10 @@ const checks = [
     script: "tools/qa-open-approval-decision-forms.mjs"
   },
   {
+    label: "Legal Approval Closeout",
+    script: "tools/qa-legal-approval-closeout.mjs"
+  },
+  {
     label: "MVP Status",
     script: "tools/qa-mvp-status.mjs"
   },

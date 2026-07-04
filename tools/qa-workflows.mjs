@@ -12,6 +12,7 @@ const openApprovals = await readFile("tools/report-open-approvals.mjs", "utf8");
 const openApprovalsQa = await readFile("tools/qa-open-approvals.mjs", "utf8");
 const openApprovalDecisionFormsExport = await readFile("tools/export-open-approval-decision-forms.mjs", "utf8");
 const openApprovalDecisionFormsQa = await readFile("tools/qa-open-approval-decision-forms.mjs", "utf8");
+const legalApprovalCloseoutQa = await readFile("tools/qa-legal-approval-closeout.mjs", "utf8");
 const inboxActivation = await readFile("tools/activate-inbox-delivery.mjs", "utf8");
 const resendDomainReadiness = await readFile("tools/qa-resend-domain-readiness.mjs", "utf8");
 const privateIntegrationActivation = await readFile("tools/activate-private-integration.mjs", "utf8");
@@ -42,6 +43,7 @@ for (const marker of [
   "node tools/qa-private-workflow-selection.mjs",
   "node tools/qa-private-integration-request.mjs",
   "node tools/qa-legal-sync.mjs",
+  "node tools/qa-legal-approval-closeout.mjs",
   "node tools/qa-release-handoff.mjs",
   "node tools/qa-action-inventory.mjs",
   "node tools/qa-launch-closeout.mjs",
@@ -129,6 +131,19 @@ for (const marker of [
   "secretShape"
 ]) {
   if (!openApprovalDecisionFormsQa.includes(marker)) issues.push(`qa-open-approval-decision-forms.mjs: missing ${marker}`);
+}
+
+for (const marker of [
+  "Legal approval closeout QA passed",
+  "Open approval decision form privacy_review YYYY-MM-DD",
+  "Open approval decision form terms_review YYYY-MM-DD",
+  "LUX_LEGAL_DRY_RUN",
+  "LUX_LEGAL_SYNC_LAUNCH",
+  "approvalIds",
+  "publicTermsVersion",
+  "secretPattern"
+]) {
+  if (!legalApprovalCloseoutQa.includes(marker)) issues.push(`qa-legal-approval-closeout.mjs: missing ${marker}`);
 }
 
 for (const marker of [
@@ -227,6 +242,7 @@ for (const marker of [
   "node tools/qa-action-inventory.mjs",
   "node tools/qa-launch-closeout.mjs",
   "node tools/qa-legal-sync.mjs",
+  "node tools/qa-legal-approval-closeout.mjs",
   "node tools/qa-launch-blockers.mjs",
   "node tools/qa-open-approvals.mjs",
   "node tools/qa-open-approval-decision-forms.mjs",

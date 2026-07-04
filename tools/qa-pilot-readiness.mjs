@@ -35,6 +35,7 @@ const checks = [
   ["Launch Blockers", "tools/qa-launch-blockers.mjs"],
   ["Open Approvals", "tools/qa-open-approvals.mjs"],
   ["Open Approval Decision Forms", "tools/qa-open-approval-decision-forms.mjs"],
+  ["Legal Approval Closeout", "tools/qa-legal-approval-closeout.mjs"],
   ["MVP Status", "tools/qa-mvp-status.mjs"],
   ["Launch Evidence", "tools/qa-launch-evidence.mjs"],
   ["Release Handoff", "tools/qa-release-handoff.mjs"],

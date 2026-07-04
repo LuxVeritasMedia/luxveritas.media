@@ -54,6 +54,11 @@ const checks = [
     env: {}
   },
   {
+    label: "Legal Approval Closeout",
+    script: "tools/qa-legal-approval-closeout.mjs",
+    env: {}
+  },
+  {
     label: "Deploy Status",
     script: "tools/qa-deploy-status.mjs",
     env: { LUX_DEPLOY_STATUS_STRICT: "1" }
