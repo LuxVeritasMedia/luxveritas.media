@@ -291,9 +291,10 @@ const packet = {
     ],
     rollback: [
       "Return FORM_INTEGRATION_TARGET to firebase_handoff.",
-      "Restore the Firebase receiver URL and signing material through Firebase Secret Manager.",
+      "Restore Firebase handoff receiver location and signing material through Firebase Secret Manager.",
       "Redeploy submitForm, reportActivity, and receivePrivateHandoff.",
-      "Run provider readiness, live operator report QA, and one no-write live matrix check."
+      "Run provider readiness and live operator report QA after rollback.",
+      "Run one no-write live matrix check after rollback."
     ]
   } : null,
   requiredSecrets,

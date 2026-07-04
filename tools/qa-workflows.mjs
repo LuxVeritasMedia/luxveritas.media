@@ -18,6 +18,7 @@ const resendDomainReadiness = await readFile("tools/qa-resend-domain-readiness.m
 const resendActivationTerminal = await readFile("tools/run-resend-inbox-activation-terminal.mjs", "utf8");
 const resendActivationTerminalQa = await readFile("tools/qa-resend-inbox-activation-terminal.mjs", "utf8");
 const privateIntegrationActivation = await readFile("tools/activate-private-integration.mjs", "utf8");
+const privateWorkflowApprovalCloseout = await readFile("tools/qa-private-workflow-approval-closeout.mjs", "utf8");
 const wwwResolver = await readFile("tools/resolve-www-domain.mjs", "utf8");
 const firebaseDeployAuth = await readFile("tools/qa-firebase-deploy-auth.mjs", "utf8");
 const firebaseCiTokenSetup = await readFile("tools/setup-firebase-ci-token.mjs", "utf8");
@@ -44,6 +45,7 @@ for (const marker of [
   "node tools/qa-external-workflow-targets.mjs",
   "node tools/qa-private-workflow-selection.mjs",
   "node tools/qa-private-integration-request.mjs",
+  "node tools/qa-private-workflow-approval-closeout.mjs",
   "node tools/qa-legal-sync.mjs",
   "node tools/qa-legal-approval-closeout.mjs",
   "node tools/qa-release-handoff.mjs",
@@ -260,6 +262,7 @@ for (const marker of [
   "node tools/qa-external-workflow-targets.mjs",
   "node tools/qa-private-workflow-selection.mjs",
   "node tools/qa-private-integration-request.mjs",
+  "node tools/qa-private-workflow-approval-closeout.mjs",
   "node tools/qa-workflows.mjs",
   "LUX_FINAL_ALLOW_BLOCKERS=1 LUX_FINAL_SKIP_BROWSER=1 LUX_FINAL_SKIP_LIVE=1 node tools/qa-final-release-gate.mjs"
 ]) {
@@ -397,6 +400,20 @@ for (const marker of [
   "tools/qa-provider-readiness.mjs"
 ]) {
   if (!privateIntegrationActivation.includes(marker)) issues.push(`activate-private-integration.mjs: missing ${marker}`);
+}
+
+for (const marker of [
+  "Private workflow approval closeout QA passed",
+  "google_workspace approval flag guard",
+  "google_workspace approved dry-run closeout",
+  "LUX_PRIVATE_INTEGRATION_ALLOW_FUTURE",
+  "LUX_PRIVATE_INTEGRATION_ACTIVATION_DRY_RUN",
+  "FORM_INTEGRATION_TARGET to firebase_handoff",
+  "recommendedTarget",
+  "publicTermsVersion",
+  "secretPattern"
+]) {
+  if (!privateWorkflowApprovalCloseout.includes(marker)) issues.push(`qa-private-workflow-approval-closeout.mjs: missing ${marker}`);
 }
 
 for (const marker of [

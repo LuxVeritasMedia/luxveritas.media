@@ -19,6 +19,10 @@ const checks = [
     script: "tools/qa-private-upload-manifest.mjs"
   },
   {
+    label: "Private Workflow Approval Closeout",
+    script: "tools/qa-private-workflow-approval-closeout.mjs"
+  },
+  {
     label: "Deploy Status",
     script: "tools/qa-deploy-status.mjs"
   },

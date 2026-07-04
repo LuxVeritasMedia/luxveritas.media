@@ -49,6 +49,11 @@ const checks = [
     env: {}
   },
   {
+    label: "Private Workflow Approval Closeout",
+    script: "tools/qa-private-workflow-approval-closeout.mjs",
+    env: {}
+  },
+  {
     label: "Legal Sync",
     script: "tools/qa-legal-sync.mjs",
     env: {}

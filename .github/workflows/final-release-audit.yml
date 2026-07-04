@@ -86,6 +86,9 @@ jobs:
       - name: QA private integration request
         run: node tools/qa-private-integration-request.mjs
 
+      - name: QA private workflow approval closeout
+        run: node tools/qa-private-workflow-approval-closeout.mjs
+
       - name: QA workflows
         run: node tools/qa-workflows.mjs
 
