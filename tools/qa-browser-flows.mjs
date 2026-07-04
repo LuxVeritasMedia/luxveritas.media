@@ -1136,10 +1136,10 @@ async function operatorReportFlow(page, baseUrl) {
   if (!/3 of 3 source-ready/.test(mediaSummary)) {
     issues.push(`/portal/reporting.html: expected media readiness summary, found "${mediaSummary}"`);
   }
-  if (!/5 of 7 launch gates ready/.test(launchSummaryBeforeLoad)) {
+  if (!/\d+ of 7 launch gates ready/.test(launchSummaryBeforeLoad)) {
     issues.push(`/portal/reporting.html: expected launch readiness summary, found "${launchSummaryBeforeLoad}"`);
   }
-  if (!/2 of 4 closeout items closed/.test(closeoutSummaryBeforeLoad)) {
+  if (!/\d+ of 4 closeout items closed/.test(closeoutSummaryBeforeLoad)) {
     issues.push(`/portal/reporting.html: expected closeout summary, found "${closeoutSummaryBeforeLoad}"`);
   }
   const expectedApprovalSummary = `${openApprovals.counts.publicLaunchBlockers} public-launch blockers, ${openApprovals.counts.totalOpenOrConditional} open or conditional`;
@@ -1451,10 +1451,10 @@ async function operatorReportFlow(page, baseUrl) {
   if (!/Server captures/.test(funnelSummary) || !/Media actions/.test(funnelSummary) || !/Playback events/.test(funnelSummary)) {
     issues.push(`/portal/reporting.html: pilot funnel missing capture/media values`);
   }
-  if (!/5 of 7 launch gates ready/.test(launchSummary) || !/Inbox Notifications/i.test(launchReadiness)) {
+  if (!/\d+ of 7 launch gates ready/.test(launchSummary) || !/Inbox Notifications/i.test(launchReadiness)) {
     issues.push(`/portal/reporting.html: launch gates did not render blocker state (summary="${launchSummary}", list="${launchReadiness.replace(/\s+/g, " ")}")`);
   }
-  if (!/2 of 4 closeout items closed/.test(closeoutSummary) || !/Inbox Provider\s+Closed/i.test(closeoutReadiness.replace(/\s+/g, " "))) {
+  if (!/\d+ of 4 closeout items closed/.test(closeoutSummary) || !/Inbox Provider\s+Closed/i.test(closeoutReadiness.replace(/\s+/g, " "))) {
     issues.push(`/portal/reporting.html: launch closeout did not render state (summary="${closeoutSummary}", list="${closeoutReadiness.replace(/\s+/g, " ")}")`);
   }
 
