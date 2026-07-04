@@ -29,9 +29,16 @@ function assertUnchanged(before, after, label) {
 
 async function runLegalSync(label, env, expectOk = true, expectedText = "") {
   const before = await fileSnapshot();
+  const childEnv = {
+    PATH: process.env.PATH,
+    HOME: process.env.HOME,
+    TMPDIR: process.env.TMPDIR,
+    ...env,
+    LUX_LEGAL_DRY_RUN: "1"
+  };
   try {
     const { stdout, stderr } = await execFileAsync(node, ["tools/set-legal-review-status.mjs"], {
-      env: { ...process.env, ...env, LUX_LEGAL_DRY_RUN: "1" },
+      env: childEnv,
       timeout: 30000,
       maxBuffer: 1024 * 1024
     });

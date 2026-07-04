@@ -1,6 +1,6 @@
 # Lux Veritas Website TODO
 
-Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout remains open before full public release.
+Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout is approved and final release-gate verification is active.
 
 ## P0 - Protect Internal Material
 - [x] Remove internal ops/backend terms from generated public pages.
@@ -121,8 +121,8 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Add no-secret legal review request export for counsel/business approval.
 - [x] Add legal reviewer decision-intake fields and no-secret evidence guardrails.
 - [x] Add legal approval closeout rehearsal QA for Privacy/Terms decision forms and dry-run launch sync.
-- [ ] Legal review: Privacy.
-- [ ] Legal review: Terms.
+- [x] Legal review: Privacy.
+- [x] Legal review: Terms.
 - [ ] Add Event Terms if ticketing or public RSVP goes live.
 - [ ] Add Purchase/Membership terms if commerce or paid membership goes live.
 

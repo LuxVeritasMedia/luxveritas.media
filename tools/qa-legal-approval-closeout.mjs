@@ -53,9 +53,16 @@ function includesAll(values, required, label) {
 
 async function runDryRun(label, env, expectedText, expectOk = true) {
   const before = await snapshot();
+  const childEnv = {
+    PATH: process.env.PATH,
+    HOME: process.env.HOME,
+    TMPDIR: process.env.TMPDIR,
+    ...env,
+    LUX_LEGAL_DRY_RUN: "1"
+  };
   try {
     const { stdout, stderr } = await execFileAsync(node, ["tools/set-legal-review-status.mjs"], {
-      env: { ...process.env, ...env, LUX_LEGAL_DRY_RUN: "1" },
+      env: childEnv,
       timeout: 30000,
       maxBuffer: 1024 * 1024
     });
@@ -138,13 +145,33 @@ for (const approvalId of approvalIds) {
     continue;
   }
 
-  if (legalItem?.status !== "needs_review") issue(`${approvalId}: expected legal status needs_review until real external approval`);
-  if (legalItem?.reviewedAt !== null) issue(`${approvalId}: reviewedAt should remain null before real external approval`);
-  if (legalItem?.reviewedBy !== null) issue(`${approvalId}: reviewedBy should remain null before real external approval`);
-  if (launchGate?.status !== "blocked") issue(`${approvalId}: launch gate should remain blocked before real external approval`);
-  if (closeoutItem?.status !== "open") issue(`${approvalId}: closeout item should remain open before real external approval`);
-  if (form.status !== "open") issue(`${approvalId}: approval form status should be open`);
-  if (form.blocksPublicLaunch !== true) issue(`${approvalId}: approval form should block public launch`);
+  const approved = legalItem?.status === "approved";
+  const awaitingReview = legalItem?.status === "needs_review";
+  if (!approved && !awaitingReview) {
+    issue(`${approvalId}: expected legal status needs_review or approved`);
+  }
+  if (approved) {
+    if (!legalItem?.reviewedAt) issue(`${approvalId}: approved legal item missing reviewedAt`);
+    if (!legalItem?.reviewedBy) issue(`${approvalId}: approved legal item missing reviewedBy`);
+    if (launchGate?.status !== "ready") issue(`${approvalId}: launch gate should be ready after approval`);
+    if (!launchGate?.statusEvidenceReference) issue(`${approvalId}: launch gate missing approval evidence reference`);
+    if (!launchGate?.statusUpdatedAt) issue(`${approvalId}: launch gate missing statusUpdatedAt`);
+    if (!launchGate?.statusUpdatedBy) issue(`${approvalId}: launch gate missing statusUpdatedBy`);
+    if (closeoutItem?.status !== "closed") issue(`${approvalId}: closeout item should be closed after approval`);
+    if (!closeoutItem?.evidenceReference) issue(`${approvalId}: closeout item missing evidence reference`);
+    if (!closeoutItem?.closedAt) issue(`${approvalId}: closeout item missing closedAt`);
+    if (!closeoutItem?.closedBy) issue(`${approvalId}: closeout item missing closedBy`);
+    if (form.status !== "approved") issue(`${approvalId}: approval form status should be approved`);
+    if (form.blocksPublicLaunch !== false) issue(`${approvalId}: approval form should not block public launch after approval`);
+  }
+  if (awaitingReview) {
+    if (legalItem?.reviewedAt !== null) issue(`${approvalId}: reviewedAt should remain null before real external approval`);
+    if (legalItem?.reviewedBy !== null) issue(`${approvalId}: reviewedBy should remain null before real external approval`);
+    if (launchGate?.status !== "blocked") issue(`${approvalId}: launch gate should remain blocked before real external approval`);
+    if (closeoutItem?.status !== "open") issue(`${approvalId}: closeout item should remain open before real external approval`);
+    if (form.status !== "open") issue(`${approvalId}: approval form status should be open`);
+    if (form.blocksPublicLaunch !== true) issue(`${approvalId}: approval form should block public launch`);
+  }
   if (form.decisionIntake?.approvalId !== approvalId) issue(`${approvalId}: decision intake approvalId mismatch`);
   includesAll(form.decisionIntake?.requiredDecisionValues || [], ["approved", "needs_changes", "blocked"], `${approvalId} decision values`);
   includesAll(form.decisionIntake?.requiredFields || [], [

@@ -7,13 +7,13 @@ const requireCurrentPilotEvidence = process.env.LUX_MVP_STATUS_REQUIRE_CURRENT_P
 const maxPilotAgeHours = pilotEvidenceMaxAgeHours();
 const issues = [];
 const warnings = [];
-const activeBlockedGateIds = [
+const legalLaunchGateIds = [
   "privacy_review",
   "terms_review"
 ];
 const closeoutItemIds = [
   "inbox_notifications",
-  ...activeBlockedGateIds
+  ...legalLaunchGateIds
 ];
 
 function issue(message) {
@@ -56,7 +56,10 @@ if (report) {
   if (report.phaseStatus?.version !== "2026-06-28-phase-status") issue("phase status version mismatch");
   if (report.phaseStatus?.currentPhase?.id !== "phase-5") issue("phase status current phase must be phase-5");
   if (report.phaseStatus?.currentPhase?.status !== "active_pilot") issue("phase status current phase must be active_pilot");
-  if (report.phaseStatus?.pilotStatus !== "pilot_ready_with_public_launch_blockers") issue("phase status pilotStatus must be pilot_ready_with_public_launch_blockers");
+  const allowedPhasePilotStatuses = new Set(["pilot_ready", "pilot_ready_with_public_launch_blockers"]);
+  if (!allowedPhasePilotStatuses.has(report.phaseStatus?.pilotStatus)) {
+    issue("phase status pilotStatus must be pilot_ready or pilot_ready_with_public_launch_blockers");
+  }
   if (report.phaseStatus?.pilotEvidence?.assetVersion !== report.build?.localAssetVersion) {
     pilotEvidenceStale("phase status pilot evidence asset version does not match local build; rerun the live pilot write gate after deploy");
   }
@@ -69,8 +72,19 @@ if (report) {
   const phaseBlockers = Array.isArray(report.phaseStatus?.publicLaunchBlockers)
     ? report.phaseStatus.publicLaunchBlockers
     : [];
-  if (!phaseBlockers.includes("privacy_review") || !phaseBlockers.includes("terms_review")) {
-    issue("phase status must report Privacy and Terms as public launch blockers");
+  const expectedLegalBlockerIds = [
+    ["privacy_review", report.legal?.privacy?.status],
+    ["terms_review", report.legal?.terms?.status]
+  ].filter(([, status]) => status !== "approved").map(([id]) => id);
+  for (const id of expectedLegalBlockerIds) {
+    if (!phaseBlockers.includes(id)) {
+      issue(`phase status must report ${id} as a public launch blocker while it is not approved`);
+    }
+  }
+  for (const id of legalLaunchGateIds.filter((gateId) => !expectedLegalBlockerIds.includes(gateId))) {
+    if (phaseBlockers.includes(id)) {
+      issue(`phase status must not report ${id} as a public launch blocker after approval`);
+    }
   }
   if (!localFreshness.ok && !phaseBlockers.includes("pilot_write_evidence_freshness")) {
     issue("phase status must report pilot write freshness as a public launch blocker when evidence is stale");
@@ -157,7 +171,7 @@ if (report) {
   if (typeof report.launchGates?.externalApprovalCount !== "number") {
     issue("launch gate externalApprovalCount missing");
   }
-  for (const id of activeBlockedGateIds) {
+  for (const id of expectedLegalBlockerIds) {
     if (!blockedIds.has(id)) warn(`expected current public-launch blocker ${id} is not reported as blocked`);
   }
   for (const gate of blocked) {

@@ -1,16 +1,16 @@
 {
   "schemaVersion": "luxveritas.phase_status.v1",
   "version": "2026-06-28-phase-status",
-  "updatedAt": "2026-07-03T14:12:37Z",
+  "updatedAt": "2026-07-04T13:59:14.856Z",
   "currentPhase": {
     "id": "phase-5",
     "number": 5,
     "label": "Portal Pilot Prep",
     "status": "active_pilot",
-    "summary": "Phase 5 pilot prep is active and technically pilot-ready: the public site, capture layer, media preview player, fan reactions, private access shell, operator reporting, private intake queue workbench, and pilot write gate are live. Full public release still requires Privacy and Terms approval before final approval."
+    "summary": "Phase 5 pilot prep is active and technically pilot-ready: the public site, capture layer, media preview player, fan reactions, private access shell, operator reporting, private intake queue workbench, and pilot write gate are live. Privacy and Terms owner approval is recorded, and final release-gate verification is active."
   },
-  "publicLaunchStatus": "blocked_by_external_legal_approval",
-  "pilotStatus": "pilot_ready_with_public_launch_blockers",
+  "publicLaunchStatus": "ready_for_final_release_gate",
+  "pilotStatus": "pilot_ready",
   "pilotEvidence": {
     "assetVersion": "20260630-pilot-feedback-report",
     "qaRunId": "20260703140813",
@@ -55,8 +55,8 @@
       "id": "phase-4-closeout",
       "phaseNumber": 4,
       "label": "Capture, Legal, Seed, Boundary Closeout",
-      "status": "external_approval_open",
-      "summary": "Capture, media, reporting, domain, inbox, pilot write-gate, and boundary work are ready. Privacy and Terms review remain open; pilot write evidence is fresh for the current release window."
+      "status": "approval_closed",
+      "summary": "Capture, media, reporting, domain, inbox, pilot write-gate, legal closeout, and boundary work are ready. Privacy and Terms owner approval is recorded; pilot write evidence is fresh for the current release window."
     },
     {
       "id": "phase-5-portal-shell",
@@ -96,10 +96,7 @@
       "rule": "Keep store and membership waitlist-only until purchase, refund, and membership terms are approved."
     }
   ],
-  "publicLaunchBlockers": [
-    "privacy_review",
-    "terms_review"
-  ],
+  "publicLaunchBlockers": [],
   "codeConfigBlockers": [],
   "nextDecisions": [
     {
@@ -111,8 +108,8 @@
     {
       "id": "legal-approval",
       "label": "Privacy and Terms Approval",
-      "status": "external_review_pending",
-      "summary": "Approve legal review only after the pages match actual site practices."
+      "status": "approved",
+      "summary": "Owner/business approval is recorded for the reviewed Privacy and Terms pages."
     },
     {
       "id": "fresh-pilot-write-evidence",

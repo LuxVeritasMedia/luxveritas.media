@@ -246,6 +246,7 @@ The legal review manifest uses `luxveritas.legal_review.v1`. Privacy and Terms r
 
 ```bash
 LUX_LEGAL_SYNC_LAUNCH=1 \
+LUX_LEGAL_CONFIRM_WRITE=1 \
 LUX_LEGAL_EVIDENCE="Legal review packet YYYY-MM-DD" \
 LUX_LEGAL_REVIEW_ITEM=privacy \
 LUX_LEGAL_REVIEW_STATUS=approved \
@@ -253,6 +254,7 @@ LUX_LEGAL_REVIEWED_BY="Reviewer Name" \
 node tools/set-legal-review-status.mjs
 
 LUX_LEGAL_SYNC_LAUNCH=1 \
+LUX_LEGAL_CONFIRM_WRITE=1 \
 LUX_LEGAL_EVIDENCE="Legal review packet YYYY-MM-DD" \
 LUX_LEGAL_REVIEW_ITEM=terms \
 LUX_LEGAL_REVIEW_STATUS=approved \

@@ -1,14 +1,14 @@
 # Lux Veritas Open Approval Decision Forms
 
-Generated: 2026-07-04T02:31:40.553Z
+Generated: 2026-07-04T14:31:33.117Z
 
 Purpose: No-secret approval decision forms for private reviewer records. Fill completed decisions outside the public repo.
 
 Project: LuxVeritas.media
 Live URL: https://luxveritas.media
-Decision: external_approvals_pending
-Open or conditional approvals: 7
-Public launch blockers: 2
+Decision: ready_for_final_release_gate
+Open or conditional approvals: 5
+Public launch blockers: 0
 
 Pilot evidence: passed run=20260703140813 forms=11 events=13
 
@@ -22,8 +22,8 @@ Pilot evidence: passed run=20260703140813 forms=11 events=13
 ## Privacy Review (`privacy_review`)
 
 - Category: legal
-- Status: open
-- Blocks public launch: yes
+- Status: approved
+- Blocks public launch: no
 - Owner: Legal/business reviewer
 - Source: data/lux-legal-review.json
 
@@ -84,8 +84,8 @@ Complete legal review of the Privacy page before full public launch.
 ## Terms Review (`terms_review`)
 
 - Category: legal
-- Status: open
-- Blocks public launch: yes
+- Status: approved
+- Blocks public launch: no
 - Owner: Legal/business reviewer
 - Source: data/lux-legal-review.json
 

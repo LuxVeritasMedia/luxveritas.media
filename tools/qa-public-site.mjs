@@ -686,8 +686,9 @@ try {
   if (currentPhase.id !== "phase-5" || currentPhase.status !== "active_pilot") {
     issues.push("data/lux-phase-status.json: currentPhase must be phase-5 active_pilot");
   }
-  if (phaseStatus.pilotStatus !== "pilot_ready_with_public_launch_blockers") {
-    issues.push("data/lux-phase-status.json: pilotStatus must be pilot_ready_with_public_launch_blockers");
+  const allowedPilotStatuses = new Set(["pilot_ready", "pilot_ready_with_public_launch_blockers"]);
+  if (!allowedPilotStatuses.has(phaseStatus.pilotStatus)) {
+    issues.push("data/lux-phase-status.json: pilotStatus must be pilot_ready or pilot_ready_with_public_launch_blockers");
   }
   if (!/^20\d{6}-[a-z0-9-]+$/.test(phaseStatus.pilotEvidence?.assetVersion || "")) {
     issues.push("data/lux-phase-status.json: pilotEvidence assetVersion missing or invalid");
@@ -700,18 +701,30 @@ try {
       issues.push(`data/lux-phase-status.json: missing pilot evidence capability ${capability}`);
     }
   }
-  if (!/Privacy and Terms approval/i.test(currentPhase.summary || "")) {
-    issues.push("data/lux-phase-status.json: current phase summary must name legal approval as a launch blocker");
+  if (!/Privacy and Terms .*approval/i.test(currentPhase.summary || "")) {
+    issues.push("data/lux-phase-status.json: current phase summary must name legal approval status");
   }
   const evidenceFreshness = pilotEvidenceFreshness(JSON.parse(pilotWriteEvidenceRaw).updatedAt, {
     maxAgeHours: pilotEvidenceMaxAgeHours()
   });
+  const legalReviewForPhase = JSON.parse(legalReviewRaw);
+  const legalPhaseBlockers = [
+    ["privacy_review", "privacy"],
+    ["terms_review", "terms"]
+  ].filter(([, legalId]) => (
+    legalReviewForPhase.items?.find((item) => item.id === legalId)?.status !== "approved"
+  )).map(([gateId]) => gateId);
   const expectedBlockers = evidenceFreshness.ok
-    ? ["privacy_review", "terms_review"]
-    : ["privacy_review", "terms_review", "pilot_write_evidence_freshness"];
+    ? legalPhaseBlockers
+    : [...legalPhaseBlockers, "pilot_write_evidence_freshness"];
   for (const blocker of expectedBlockers) {
     if (!phaseStatus.publicLaunchBlockers?.includes(blocker)) {
       issues.push(`data/lux-phase-status.json: missing public launch blocker ${blocker}`);
+    }
+  }
+  for (const blocker of ["privacy_review", "terms_review"].filter((id) => !legalPhaseBlockers.includes(id))) {
+    if (phaseStatus.publicLaunchBlockers?.includes(blocker)) {
+      issues.push(`data/lux-phase-status.json: ${blocker} must not remain a public launch blocker after approval`);
     }
   }
   if (evidenceFreshness.ok && phaseStatus.publicLaunchBlockers?.includes("pilot_write_evidence_freshness")) {

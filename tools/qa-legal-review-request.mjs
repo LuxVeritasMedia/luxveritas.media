@@ -188,14 +188,25 @@ if (packet) {
   for (const section of ["Site Use", "Submissions", "User Content", "Memberships and Creator Participation", "Events", "Purchases", "Refunds and Cancellations", "Licensing and Partnerships", "Intellectual Property", "Contact"]) {
     if (!termsSections.has(section)) issue(`terms page proof missing section: ${section}`);
   }
-  for (const id of ["privacy_review", "terms_review"]) {
+  const expectedLegalBlockers = [
+    ["privacy_review", "privacy"],
+    ["terms_review", "terms"]
+  ].filter(([, legalId]) => (
+    legalReview.items.find((item) => item.id === legalId)?.status !== "approved"
+  )).map(([gateId]) => gateId);
+  for (const id of expectedLegalBlockers) {
     if (!packet.blockedLaunchGates?.some((gate) => gate.id === id)) {
       issue(`legal review request missing active blocker ${id}`);
     }
   }
+  for (const id of ["privacy_review", "terms_review"].filter((gateId) => !expectedLegalBlockers.includes(gateId))) {
+    if (packet.blockedLaunchGates?.some((gate) => gate.id === id)) {
+      issue(`legal review request should not include approved blocker ${id}`);
+    }
+  }
   for (const command of [
-    "LUX_LEGAL_SYNC_LAUNCH=1 LUX_LEGAL_EVIDENCE=\"Legal review packet YYYY-MM-DD\" LUX_LEGAL_REVIEW_ITEM=privacy LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY=\"Reviewer Name\" node tools/set-legal-review-status.mjs",
-    "LUX_LEGAL_SYNC_LAUNCH=1 LUX_LEGAL_EVIDENCE=\"Legal review packet YYYY-MM-DD\" LUX_LEGAL_REVIEW_ITEM=terms LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY=\"Reviewer Name\" node tools/set-legal-review-status.mjs",
+    "LUX_LEGAL_CONFIRM_WRITE=1 LUX_LEGAL_SYNC_LAUNCH=1 LUX_LEGAL_EVIDENCE=\"Legal review packet YYYY-MM-DD\" LUX_LEGAL_REVIEW_ITEM=privacy LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY=\"Reviewer Name\" node tools/set-legal-review-status.mjs",
+    "LUX_LEGAL_CONFIRM_WRITE=1 LUX_LEGAL_SYNC_LAUNCH=1 LUX_LEGAL_EVIDENCE=\"Legal review packet YYYY-MM-DD\" LUX_LEGAL_REVIEW_ITEM=terms LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY=\"Reviewer Name\" node tools/set-legal-review-status.mjs",
     "node tools/build-static.mjs",
     "node tools/prepare-hosting.mjs",
     "node tools/qa-release-readiness.mjs"

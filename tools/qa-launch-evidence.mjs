@@ -88,8 +88,8 @@ for (const marker of [
   "approval required: yes",
   "## Launch Gates",
   "## Open Approvals",
-  "Decision: external_approvals_pending",
-  "Public launch blockers: 2",
+  `Decision: ${openApprovals.decision}`,
+  `Public launch blockers: ${openApprovals.counts?.publicLaunchBlockers ?? "unknown"}`,
   "Functions Deploy IAM",
   "External Workflow Target",
   "## Approval Decision Forms",
@@ -242,9 +242,6 @@ if (evidence) {
     issue("evidence external workflow readiness missing activation command packet");
   }
   const blocked = Array.isArray(evidence.launchGates?.blocked) ? evidence.launchGates.blocked : [];
-  for (const id of ["privacy_review", "terms_review"]) {
-    if (!blocked.some((gate) => gate.id === id)) issue(`evidence missing current blocked gate ${id}`);
-  }
   if (evidence.openApprovals?.decision !== openApprovals.decision) issue("evidence open approvals decision mismatch");
   if (evidence.openApprovals?.counts?.publicLaunchBlockers !== openApprovals.counts?.publicLaunchBlockers) {
     issue("evidence open approvals publicLaunchBlockers mismatch");
@@ -258,7 +255,16 @@ if (evidence) {
   }
   for (const id of ["privacy_review", "terms_review"]) {
     const item = approvalItems.find((entry) => entry.id === id);
-    if (item && item.blocksPublicLaunch !== true) issue(`evidence open approval ${id} should block public launch`);
+    const source = openApprovals.approvals?.find((entry) => entry.id === id);
+    if (item && source && item.blocksPublicLaunch !== source.blocksPublicLaunch) {
+      issue(`evidence open approval ${id} public-launch blocker mismatch`);
+    }
+    if (source?.blocksPublicLaunch === true && !blocked.some((gate) => gate.id === id)) {
+      issue(`evidence missing current blocked gate ${id}`);
+    }
+    if (source?.blocksPublicLaunch === false && blocked.some((gate) => gate.id === id)) {
+      issue(`evidence should not report approved gate ${id} as blocked`);
+    }
   }
   for (const id of ["functions_deploy_iam", "external_workflow_target"]) {
     const item = approvalItems.find((entry) => entry.id === id);
@@ -307,7 +313,10 @@ if (evidence) {
   }
   for (const id of ["privacy_review", "terms_review"]) {
     const item = decisionForms.find((entry) => entry.id === id);
-    if (item && item.blocksPublicLaunch !== true) issue(`evidence approval decision form ${id} should block public launch`);
+    const source = approvalDecisionForms.forms?.find((entry) => entry.id === id);
+    if (item && source && item.blocksPublicLaunch !== source.blocksPublicLaunch) {
+      issue(`evidence approval decision form ${id} public-launch blocker mismatch`);
+    }
   }
   const closeoutItems = Array.isArray(evidence.closeout?.items) ? evidence.closeout.items : [];
   if (!evidence.closeout?.updatedAt) issue("evidence closeout updatedAt missing");

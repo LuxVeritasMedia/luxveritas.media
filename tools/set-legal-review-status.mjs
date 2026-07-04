@@ -9,6 +9,7 @@ const reviewedBy = (process.env.LUX_LEGAL_REVIEWED_BY || "").trim();
 const evidenceReference = (process.env.LUX_LEGAL_EVIDENCE || "").trim();
 const syncLaunch = process.env.LUX_LEGAL_SYNC_LAUNCH === "1";
 const dryRun = process.env.LUX_LEGAL_DRY_RUN === "1";
+const confirmWrite = process.env.LUX_LEGAL_CONFIRM_WRITE === "1";
 const validItems = new Set(["privacy", "terms", "all"]);
 const validStatuses = new Set(["approved", "needs_review"]);
 const gateByLegalItem = {
@@ -21,9 +22,9 @@ function fail(message) {
   console.error(message);
   console.error("");
   console.error("Usage:");
-  console.error("  LUX_LEGAL_REVIEW_ITEM=privacy LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY='Reviewer Name' node tools/set-legal-review-status.mjs");
-  console.error("  LUX_LEGAL_SYNC_LAUNCH=1 LUX_LEGAL_EVIDENCE='Legal review packet 2026-06-20' LUX_LEGAL_REVIEW_ITEM=privacy LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY='Reviewer Name' node tools/set-legal-review-status.mjs");
-  console.error("  LUX_LEGAL_REVIEW_ITEM=all LUX_LEGAL_REVIEW_STATUS=needs_review node tools/set-legal-review-status.mjs");
+  console.error("  LUX_LEGAL_CONFIRM_WRITE=1 LUX_LEGAL_REVIEW_ITEM=privacy LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY='Reviewer Name' node tools/set-legal-review-status.mjs");
+  console.error("  LUX_LEGAL_CONFIRM_WRITE=1 LUX_LEGAL_SYNC_LAUNCH=1 LUX_LEGAL_EVIDENCE='Legal review packet 2026-06-20' LUX_LEGAL_REVIEW_ITEM=privacy LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY='Reviewer Name' node tools/set-legal-review-status.mjs");
+  console.error("  LUX_LEGAL_CONFIRM_WRITE=1 LUX_LEGAL_REVIEW_ITEM=all LUX_LEGAL_REVIEW_STATUS=needs_review node tools/set-legal-review-status.mjs");
   console.error("");
   console.error("Use LUX_LEGAL_DRY_RUN=1 to validate without writing.");
   process.exit(1);
@@ -34,6 +35,7 @@ if (!validStatuses.has(statusArg)) fail("Set LUX_LEGAL_REVIEW_STATUS to approved
 if (statusArg === "approved" && !reviewedBy) fail("Set LUX_LEGAL_REVIEWED_BY before marking legal review approved.");
 if (syncLaunch && statusArg === "approved" && !evidenceReference) fail("Set LUX_LEGAL_EVIDENCE before syncing approved legal review to launch closeout.");
 if (evidenceReference && secretPattern.test(evidenceReference)) fail("LUX_LEGAL_EVIDENCE appears to contain secret-shaped data. Store only a no-secret evidence reference.");
+if (!dryRun && !confirmWrite) fail("Set LUX_LEGAL_CONFIRM_WRITE=1 before writing legal review status. Use LUX_LEGAL_DRY_RUN=1 to validate without writing.");
 
 const [manifestRaw, launchRaw, closeoutRaw] = await Promise.all([
   readFile(file, "utf8"),

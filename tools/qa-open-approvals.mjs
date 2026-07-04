@@ -39,6 +39,12 @@ const publicTerms = JSON.parse(publicTermsRaw);
 const workflowSelection = JSON.parse(workflowSelectionRaw);
 const privateUpload = JSON.parse(privateUploadRaw);
 const pilotEvidence = JSON.parse(pilotEvidenceRaw);
+const publicLaunchLegalBlockers = ["privacy", "terms"].some((id) => (
+  legal.items.find((entry) => entry.id === id)?.status !== "approved"
+));
+const expectedDecision = publicLaunchLegalBlockers
+  ? "external_approvals_pending"
+  : "ready_for_final_release_gate";
 
 if (secretShape(`${text}\n${jsonRaw}`)) {
   issue("open approvals report appears to contain secret-shaped data");
@@ -49,7 +55,6 @@ if (secretShape(exportedRaw)) {
 
 for (const marker of [
   "Lux Veritas open approvals report",
-  "Decision: external_approvals_pending",
   "Privacy Review",
   "Terms Review",
   "Functions Deploy IAM",
@@ -57,13 +62,18 @@ for (const marker of [
   "Seed/Binder Private Upload",
   "Event Terms",
   "Purchase/Membership Terms",
-  "blocks public launch",
   "node tools/qa-release-readiness.mjs",
   "node tools/qa-functions-deploy-readiness.mjs",
   "node tools/qa-private-workflow-selection.mjs",
   "node tools/qa-private-upload-manifest.mjs"
 ]) {
   if (!text.includes(marker)) issue(`text report missing marker: ${marker}`);
+}
+if (!text.includes(`Decision: ${expectedDecision}`)) {
+  issue(`text report missing marker: Decision: ${expectedDecision}`);
+}
+if (publicLaunchLegalBlockers && !text.includes("blocks public launch")) {
+  issue("text report missing marker: blocks public launch");
 }
 
 let report = null;
@@ -82,7 +92,7 @@ if (report) {
   if (report.schemaVersion !== "luxveritas.open_approvals_report.v1") issue("schemaVersion mismatch");
   if (report.project !== "LuxVeritas.media") issue("project mismatch");
   if (report.liveUrl !== "https://luxveritas.media") issue("liveUrl mismatch");
-  if (report.decision !== "external_approvals_pending") issue("decision should remain external_approvals_pending while legal is open");
+  if (report.decision !== expectedDecision) issue(`decision should be ${expectedDecision}`);
   if (report.pilotEvidence?.qaRunId !== pilotEvidence.qaRunId) issue("pilot qaRunId mismatch");
   if (report.pilotEvidence?.formCaptureIntents !== pilotEvidence.writeEvidence?.formCaptureIntents) issue("pilot form count mismatch");
   if (!Array.isArray(report.approvals) || report.approvals.length < 6) issue("approval list is incomplete");
@@ -117,8 +127,13 @@ if (report) {
       issue(`missing approval item ${id}`);
       continue;
     }
-    if (item.blocksPublicLaunch !== true) issue(`${id} must block public launch`);
-    if (item.status !== "open") issue(`${id} should be open while legal status is ${legalItem?.status || "missing"}`);
+    const legalApproved = legalItem?.status === "approved";
+    if (item.blocksPublicLaunch !== !legalApproved) {
+      issue(`${id} blocksPublicLaunch should be ${String(!legalApproved)}`);
+    }
+    if (item.status !== (legalApproved ? "approved" : "open")) {
+      issue(`${id} should be ${legalApproved ? "approved" : "open"} while legal status is ${legalItem?.status || "missing"}`);
+    }
     if (!item.notes?.includes(legalItem?.version)) issue(`${id} missing legal version note`);
     if (item.decisionIntake?.versionLock?.legalVersion !== legalItem?.version) issue(`${id} decisionIntake legal version mismatch`);
     if (item.decisionIntake?.versionLock?.publicTermsVersion !== publicTerms.version) issue(`${id} decisionIntake public terms version mismatch`);
@@ -225,8 +240,12 @@ if (report) {
     issue("purchase/membership terms decisionIntake current mode mismatch");
   }
 
-  if (report.counts?.publicLaunchBlockers !== 2) issue("public launch blocker count should be 2");
-  if ((report.counts?.totalOpenOrConditional || 0) < 6) issue("open/conditional approval count is too low");
+  const expectedPublicLaunchBlockers = publicLaunchLegalBlockers ? 2 : 0;
+  const minimumOpenOrConditional = publicLaunchLegalBlockers ? 6 : 5;
+  if (report.counts?.publicLaunchBlockers !== expectedPublicLaunchBlockers) {
+    issue(`public launch blocker count should be ${expectedPublicLaunchBlockers}`);
+  }
+  if ((report.counts?.totalOpenOrConditional || 0) < minimumOpenOrConditional) issue("open/conditional approval count is too low");
 }
 
 if (issues.length) {

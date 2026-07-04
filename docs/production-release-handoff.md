@@ -11,9 +11,9 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - GitHub repo: `LuxVeritasMedia/luxveritas.media`
 - Current live asset version: `20260630-pilot-feedback-report`
 - Current phase: Phase 5 of 10, portal pilot prep active
-- Phase 4 closeout: legal approval remains open before full public release
+- Phase 4 closeout: Privacy and Terms owner approval is recorded; final release-gate verification is active
 - Next major phase: authenticated portal shell with approved auth and role gates
-- Current MVP posture: pilot-ready with public launch blocked by external Privacy/Terms approval and a required fresh pilot write-gate rehearsal before final release.
+- Current MVP posture: pilot-ready with Privacy/Terms approval recorded and final release-gate verification active; rerun the pilot write-gate rehearsal when freshness requires it.
 
 ## What Is Working
 
@@ -41,7 +41,7 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 - Fan-flywheel and brand-house navigation cards have stable link tracking for retention-path reporting.
 - Protected operator reporting now summarizes retention-path clicks across fan-flywheel, brand-house, and release-room cards.
 - Pilot testing is covered by a no-secret scenario matrix for public capture, media player, portal capture, operator reporting, launch gates, and private workflow readiness.
-- A dedicated pilot write gate can send live QA submissions and event writes, require inbox delivery, verify live media/browser coverage, confirm protected operator reporting, and reconcile the exact write-run IDs back through the protected report while allowing only the known Privacy and Terms approval blockers.
+- A dedicated pilot write gate can send live QA submissions and event writes, require inbox delivery, verify live media/browser coverage, confirm protected operator reporting, and reconcile the exact write-run IDs back through the protected report.
 - Pilot write gate last passed on 2026-07-03 with 11 live capture-intent submissions, including dedicated pilot feedback routing, inbox delivery required, 13 live event writes, live media-source checks, live browser-flow coverage, signal-pass export coverage, consented page-view reporting, protected activation-readiness reporting, and protected operator-report verification. QA run ID: `20260703140813`. Asset version: `20260630-pilot-feedback-report`. Live event matrix coverage includes fan-reaction and release-room retention reporting for the media retention loop, and the gate reconciles exact write-run IDs back through the protected report.
 - No-secret pilot write evidence is tracked in `data/lux-pilot-write-evidence.json` and validated with `node tools/qa-pilot-write-evidence.mjs`. Final release rehearsal requires fresh evidence, defaulting to a 72-hour max age via `LUX_PILOT_WRITE_EVIDENCE_MAX_AGE_HOURS`.
 - Operator reporting summarizes audience-interest demand from stored captures.
@@ -53,10 +53,10 @@ This repo is the public LuxVeritas.media front door. The apex site is live and s
 
 ## Launch Blockers
 
-These are the known blockers before calling the site public-launch ready.
+These are the known gates before calling the site public-launch ready.
 
-1. Privacy page needs legal/business approval.
-2. Terms page needs legal/business approval.
+1. Privacy page owner/business approval is recorded in `data/lux-legal-review.json`.
+2. Terms page owner/business approval is recorded in `data/lux-legal-review.json`.
 3. The pilot write gate must be rerun when `node tools/qa-pilot-write-evidence.mjs` reports stale evidence; strict release checks treat stale pilot evidence as a blocker.
 4. External CRM/Google workflow target may be selected after the private workflow is approved. The signed Firebase private handoff is already active for the MVP intake queue, and the private operator report now shows demand-led recommendations for the first external target. The no-secret selection packet in `docs/private-workflow-selection.json` keeps `firebase_handoff` active and recommends `google_workspace` as the first external approval target before `ghl_crm` follow-up or `codex_ops` packet routing. The exported private integration request now includes a `google_workspace` first-activation packet with approval fields, current pilot-write evidence, a sanitized receiver implementation sample, dry-run command, live acceptance checks, and Firebase rollback.
 
@@ -131,8 +131,8 @@ Set `LUX_REPORT_TOKEN` before running `node tools/qa-live-operator-report.mjs` o
 After legal approval:
 
 ```bash
-LUX_LEGAL_SYNC_LAUNCH=1 LUX_LEGAL_EVIDENCE="Legal review packet YYYY-MM-DD" LUX_LEGAL_REVIEW_ITEM=privacy LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY="Reviewer Name" node tools/set-legal-review-status.mjs
-LUX_LEGAL_SYNC_LAUNCH=1 LUX_LEGAL_EVIDENCE="Legal review packet YYYY-MM-DD" LUX_LEGAL_REVIEW_ITEM=terms LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY="Reviewer Name" node tools/set-legal-review-status.mjs
+LUX_LEGAL_CONFIRM_WRITE=1 LUX_LEGAL_SYNC_LAUNCH=1 LUX_LEGAL_EVIDENCE="Legal review packet YYYY-MM-DD" LUX_LEGAL_REVIEW_ITEM=privacy LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY="Reviewer Name" node tools/set-legal-review-status.mjs
+LUX_LEGAL_CONFIRM_WRITE=1 LUX_LEGAL_SYNC_LAUNCH=1 LUX_LEGAL_EVIDENCE="Legal review packet YYYY-MM-DD" LUX_LEGAL_REVIEW_ITEM=terms LUX_LEGAL_REVIEW_STATUS=approved LUX_LEGAL_REVIEWED_BY="Reviewer Name" node tools/set-legal-review-status.mjs
 node tools/build-static.mjs
 node tools/prepare-hosting.mjs
 node tools/qa-release-readiness.mjs

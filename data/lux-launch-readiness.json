@@ -1,6 +1,6 @@
 {
   "version": "2026-06-11-launch-gates",
-  "updatedAt": "2026-07-03T01:47:01Z",
+  "updatedAt": "2026-07-04T14:30:11.762Z",
   "gates": [
     {
       "id": "media_sources",
@@ -53,23 +53,29 @@
       "id": "privacy_review",
       "label": "Privacy Review",
       "category": "legal",
-      "status": "blocked",
+      "status": "ready",
       "nextAction": "Complete legal review of the Privacy page before full public launch.",
       "owner": "Legal/business reviewer",
       "blockerType": "legal_review",
       "verification": "Mark Privacy approved in the legal review manifest, then run release-readiness QA.",
-      "requiredForPublicLaunch": true
+      "requiredForPublicLaunch": true,
+      "statusEvidenceReference": "Owner business approval 2026-07-04",
+      "statusUpdatedAt": "2026-07-04T14:30:11.762Z",
+      "statusUpdatedBy": "Frederick Parent"
     },
     {
       "id": "terms_review",
       "label": "Terms Review",
       "category": "legal",
-      "status": "blocked",
+      "status": "ready",
       "nextAction": "Complete legal review of the Terms page before full public launch.",
       "owner": "Legal/business reviewer",
       "blockerType": "legal_review",
       "verification": "Mark Terms approved in the legal review manifest, then run release-readiness QA.",
-      "requiredForPublicLaunch": true
+      "requiredForPublicLaunch": true,
+      "statusEvidenceReference": "Owner business approval 2026-07-04",
+      "statusUpdatedAt": "2026-07-04T14:30:11.762Z",
+      "statusUpdatedBy": "Frederick Parent"
     },
     {
       "id": "www_redirect",
