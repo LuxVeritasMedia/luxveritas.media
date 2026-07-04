@@ -15,6 +15,8 @@ const openApprovalDecisionFormsQa = await readFile("tools/qa-open-approval-decis
 const legalApprovalCloseoutQa = await readFile("tools/qa-legal-approval-closeout.mjs", "utf8");
 const inboxActivation = await readFile("tools/activate-inbox-delivery.mjs", "utf8");
 const resendDomainReadiness = await readFile("tools/qa-resend-domain-readiness.mjs", "utf8");
+const resendActivationTerminal = await readFile("tools/run-resend-inbox-activation-terminal.mjs", "utf8");
+const resendActivationTerminalQa = await readFile("tools/qa-resend-inbox-activation-terminal.mjs", "utf8");
 const privateIntegrationActivation = await readFile("tools/activate-private-integration.mjs", "utf8");
 const wwwResolver = await readFile("tools/resolve-www-domain.mjs", "utf8");
 const firebaseDeployAuth = await readFile("tools/qa-firebase-deploy-auth.mjs", "utf8");
@@ -62,6 +64,7 @@ for (const marker of [
   "node tools/qa-release-readiness.mjs",
   "node tools/qa-domain-readiness.mjs",
   "node tools/qa-provider-readiness.mjs",
+  "node tools/qa-resend-inbox-activation-terminal.mjs",
   "npm install --no-save playwright",
   "npx playwright install chromium",
   "node tools/qa-browser-flows.mjs",
@@ -251,6 +254,7 @@ for (const marker of [
   "node tools/qa-pilot-write-evidence.mjs",
   "node tools/qa-pilot-bug-register.mjs",
   "node tools/qa-live-media-sources.mjs",
+  "node tools/qa-resend-inbox-activation-terminal.mjs",
   "node tools/qa-private-integration-field-map.mjs",
   "node tools/qa-private-workflow-matrix.mjs",
   "node tools/qa-external-workflow-targets.mjs",
@@ -351,6 +355,35 @@ for (const marker of [
   "sending-ready"
 ]) {
   if (!resendDomainReadiness.includes(marker)) issues.push(`qa-resend-domain-readiness.mjs: missing ${marker}`);
+}
+
+for (const marker of [
+  "readHidden",
+  "setEcho(false)",
+  "Paste approved Resend API key (input hidden):",
+  "LUX_INBOX_ACTIVATION_LOG",
+  "--dry-run",
+  "--write-test",
+  "--skip-deploy",
+  "tools/qa-resend-domain-readiness.mjs",
+  "tools/activate-inbox-delivery.mjs",
+  "tools/qa-provider-readiness.mjs",
+  "tools/qa-release-readiness.mjs"
+]) {
+  if (!resendActivationTerminal.includes(marker)) issues.push(`run-resend-inbox-activation-terminal.mjs: missing ${marker}`);
+}
+
+for (const marker of [
+  "Resend inbox activation terminal QA passed",
+  "node tools/run-resend-inbox-activation-terminal.mjs",
+  "LUX_INBOX_ACTIVATION_LOG",
+  "--dry-run",
+  "--write-test",
+  "--skip-deploy",
+  "hidden input",
+  "secretPattern"
+]) {
+  if (!resendActivationTerminalQa.includes(marker)) issues.push(`qa-resend-inbox-activation-terminal.mjs: missing ${marker}`);
 }
 
 for (const marker of [

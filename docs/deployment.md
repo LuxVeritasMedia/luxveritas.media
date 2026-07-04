@@ -314,10 +314,13 @@ The function defaults to `FORM_TO_EMAIL=info@luxveritas.media` and `FORM_FROM_EM
 Recommended setup:
 
 ```bash
+node tools/run-resend-inbox-activation-terminal.mjs
 LUX_RESEND_API_KEY="re_..." node tools/qa-resend-domain-readiness.mjs
 LUX_RESEND_API_KEY="re_..." node tools/activate-inbox-delivery.mjs
 LUX_FORM_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-form-delivery.mjs
 ```
+
+Use the terminal runner when possible. It prompts for the Resend key with hidden input, keeps the key out of shell history, and writes only non-secret check output to `/tmp/lux-resend-activation.log`.
 
 `activate-inbox-delivery.mjs` runs the Resend sender-domain readiness check before writing the Firebase secret. Use `LUX_INBOX_ACTIVATION_SKIP_DOMAIN_CHECK=1` only when an approved operator has separately verified the sender domain and needs to recover deployment quickly.
 

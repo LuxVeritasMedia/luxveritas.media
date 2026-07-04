@@ -68,6 +68,9 @@ jobs:
       - name: QA live media sources
         run: node tools/qa-live-media-sources.mjs
 
+      - name: QA Resend inbox activation terminal
+        run: node tools/qa-resend-inbox-activation-terminal.mjs
+
       - name: QA private integration field map
         run: node tools/qa-private-integration-field-map.mjs
 

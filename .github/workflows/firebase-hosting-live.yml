@@ -150,6 +150,9 @@ jobs:
       - name: QA provider readiness
         run: node tools/qa-provider-readiness.mjs
 
+      - name: QA Resend inbox activation terminal
+        run: node tools/qa-resend-inbox-activation-terminal.mjs
+
       - name: Install browser QA dependencies
         run: |
           npm install --no-save playwright

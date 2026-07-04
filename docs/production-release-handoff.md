@@ -86,6 +86,7 @@ node tools/qa-open-approval-decision-forms.mjs
 node tools/qa-legal-approval-closeout.mjs
 firebase login --reauth --no-localhost
 node tools/qa-functions-deploy-readiness.mjs
+node tools/qa-resend-inbox-activation-terminal.mjs
 node tools/qa-provider-readiness.mjs
 node tools/qa-private-workflow-matrix.mjs
 node tools/qa-private-integration-activation-dry-runs.mjs
@@ -107,9 +108,12 @@ node tools/qa-final-release-gate.mjs
 Inbox delivery was confirmed by the 2026-07-03 pilot write gate, QA run ID `20260703140813`, with 11 live capture intents, 13 event writes, and inbox delivery required. Current pilot evidence asset version: `20260630-pilot-feedback-report`. Re-run this only if the sender domain, provider secret, Functions deployment, or final release evidence freshness changes:
 
 ```bash
+node tools/run-resend-inbox-activation-terminal.mjs
 LUX_RESEND_API_KEY="re_..." node tools/activate-inbox-delivery.mjs
 LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.mjs
 ```
+
+Prefer the terminal runner for live operator work because it prompts for the Resend key with hidden input, keeps the key out of shell history, and writes only non-secret check output to `/tmp/lux-resend-activation.log`.
 
 For final release approval after all blockers are cleared, run the gate with write tests enabled:
 

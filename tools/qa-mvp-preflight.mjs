@@ -27,6 +27,10 @@ const checks = [
     script: "tools/qa-functions-deploy-readiness.mjs"
   },
   {
+    label: "Resend Inbox Activation Terminal",
+    script: "tools/qa-resend-inbox-activation-terminal.mjs"
+  },
+  {
     label: "Action Inventory",
     script: "tools/qa-action-inventory.mjs"
   },

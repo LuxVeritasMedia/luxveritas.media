@@ -74,6 +74,11 @@ const checks = [
     env: { LUX_PROVIDER_STRICT: "1" }
   },
   {
+    label: "Resend Inbox Activation Terminal",
+    script: "tools/qa-resend-inbox-activation-terminal.mjs",
+    env: {}
+  },
+  {
     label: "Live Operator Report",
     script: "tools/qa-live-operator-report.mjs",
     env: { LUX_OPERATOR_REPORT_STRICT: writeTests ? "1" : "0" }

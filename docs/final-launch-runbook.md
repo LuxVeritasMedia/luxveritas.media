@@ -108,8 +108,11 @@ curl -I https://www.luxveritas.media
 3. Reconfirm inbox delivery if the sender domain, Firebase Functions, or provider secret changes:
 
 ```bash
+node tools/run-resend-inbox-activation-terminal.mjs
 LUX_RESEND_API_KEY="re_..." node tools/activate-inbox-delivery.mjs
 ```
+
+Prefer the terminal runner for live operator work because it keeps the Resend key out of shell history and leaves only non-secret output in `/tmp/lux-resend-activation.log`.
 
 Use `LUX_INBOX_ACTIVATION_WRITE_TEST=1` only when the inbox owner is ready to receive QA mail. That mode sends a live form write and requires inbox delivery.
 
