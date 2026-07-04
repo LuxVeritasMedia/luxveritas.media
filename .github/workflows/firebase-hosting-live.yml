@@ -102,6 +102,9 @@ jobs:
       - name: QA open approvals
         run: node tools/qa-open-approvals.mjs
 
+      - name: QA open approval decision forms
+        run: node tools/qa-open-approval-decision-forms.mjs
+
       - name: QA MVP status
         run: node tools/qa-mvp-status.mjs
 

@@ -10,6 +10,8 @@ const functionsIamRepairRequest = await readFile("tools/qa-functions-iam-repair-
 const functionsIamRepairExport = await readFile("tools/export-functions-iam-repair-request.mjs", "utf8");
 const openApprovals = await readFile("tools/report-open-approvals.mjs", "utf8");
 const openApprovalsQa = await readFile("tools/qa-open-approvals.mjs", "utf8");
+const openApprovalDecisionFormsExport = await readFile("tools/export-open-approval-decision-forms.mjs", "utf8");
+const openApprovalDecisionFormsQa = await readFile("tools/qa-open-approval-decision-forms.mjs", "utf8");
 const inboxActivation = await readFile("tools/activate-inbox-delivery.mjs", "utf8");
 const resendDomainReadiness = await readFile("tools/qa-resend-domain-readiness.mjs", "utf8");
 const privateIntegrationActivation = await readFile("tools/activate-private-integration.mjs", "utf8");
@@ -45,6 +47,7 @@ for (const marker of [
   "node tools/qa-launch-closeout.mjs",
   "node tools/qa-launch-blockers.mjs",
   "node tools/qa-open-approvals.mjs",
+  "node tools/qa-open-approval-decision-forms.mjs",
   "node tools/qa-mvp-status.mjs",
   "node tools/qa-launch-evidence.mjs",
   "node tools/qa-pilot-write-evidence.mjs",
@@ -104,6 +107,28 @@ for (const deprecatedAction of [
 
 if (hosting.includes("firebase-tools@latest") || functions.includes("firebase-tools@latest")) {
   issues.push("workflows: pin firebase-tools to a known-good version instead of @latest");
+}
+
+for (const marker of [
+  "luxveritas.open_approval_decision_forms.v1",
+  "decisionRecordTemplate",
+  "Completed decision records belong in the approved private owner system",
+  "Do not paste secrets",
+  "LUX_APPROVAL_FORMS_FORMAT",
+  "LUX_APPROVAL_FORMS_OUT"
+]) {
+  if (!openApprovalDecisionFormsExport.includes(marker)) issues.push(`export-open-approval-decision-forms.mjs: missing ${marker}`);
+}
+
+for (const marker of [
+  "Open approval decision forms QA passed",
+  "decisionRecordTemplate",
+  "docs/open-approval-decision-forms.md",
+  "privacy_review",
+  "purchase_membership_terms",
+  "secretShape"
+]) {
+  if (!openApprovalDecisionFormsQa.includes(marker)) issues.push(`qa-open-approval-decision-forms.mjs: missing ${marker}`);
 }
 
 for (const marker of [
@@ -204,6 +229,7 @@ for (const marker of [
   "node tools/qa-legal-sync.mjs",
   "node tools/qa-launch-blockers.mjs",
   "node tools/qa-open-approvals.mjs",
+  "node tools/qa-open-approval-decision-forms.mjs",
   "node tools/qa-mvp-status.mjs",
   "node tools/qa-launch-evidence.mjs",
   "node tools/qa-pilot-write-evidence.mjs",

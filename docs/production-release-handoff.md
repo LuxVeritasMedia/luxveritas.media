@@ -64,7 +64,7 @@ Before selecting the external target, review `docs/private-workflow-matrix.json`
 
 Use `docs/launch-blocker-resolution.md` as the operational closeout packet for the remaining release blockers. Use `docs/legal-review-packet.md` for Privacy and Terms review. Use `docs/final-launch-runbook.md` for the exact final launch sequence. Use `node tools/export-launch-evidence.mjs` for a no-secret release packet that includes phase, media, action coverage, launch gates, closeout, and command summaries.
 
-Use `node tools/report-open-approvals.mjs` for a no-secret live operator view of every remaining approval, including whether each item blocks public launch or is automation/private workflow follow-up. Validate the approval view with `node tools/qa-open-approvals.mjs`.
+Use `node tools/report-open-approvals.mjs` for a no-secret live operator view of every remaining approval, including whether each item blocks public launch or is automation/private workflow follow-up. Use `docs/open-approval-decision-forms.md` when reviewers need fillable no-secret decision records for Privacy, Terms, Functions IAM, external workflow target, private upload, and conditional legal triggers. Validate the approval view and decision forms with `node tools/qa-open-approvals.mjs` and `node tools/qa-open-approval-decision-forms.mjs`.
 
 Automation hardening note: if manual GitHub Functions deploys still fail on `iam.serviceAccounts.ActAs`, use `docs/functions-deploy-iam-repair.md` to grant the GitHub deploy service account `roles/iam.serviceAccountUser` on `lux-veritas-media@appspot.gserviceaccount.com`, then rerun `node tools/qa-functions-deploy-readiness.mjs`. This IAM change requires explicit project-owner approval before any agent, local command, or GitHub workflow mutates Google Cloud IAM.
 
@@ -81,6 +81,8 @@ node tools/qa-mvp-preflight.mjs
 node tools/qa-launch-evidence.mjs
 node tools/qa-pilot-write-evidence.mjs
 node tools/qa-pilot-test-matrix.mjs
+LUX_APPROVAL_FORMS_OUT=/tmp/lux-open-approval-decision-forms.md node tools/export-open-approval-decision-forms.mjs
+node tools/qa-open-approval-decision-forms.mjs
 firebase login --reauth --no-localhost
 node tools/qa-functions-deploy-readiness.mjs
 node tools/qa-provider-readiness.mjs
