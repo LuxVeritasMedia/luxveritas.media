@@ -79,7 +79,8 @@ const [
   previewHelper,
   deployStatus,
   preflight,
-  openApprovalsResult
+  openApprovalsResult,
+  approvalDecisionFormsResult
 ] = await Promise.all([
   readFile("data/lux-build-manifest.json", "utf8"),
   readFile("data/lux-launch-readiness.json", "utf8"),
@@ -98,7 +99,8 @@ const [
   run("tools/qa-preview-helper.mjs"),
   includeLive ? run("tools/qa-deploy-status.mjs") : Promise.resolve({ ok: false, output: "Skipped. Set LUX_EVIDENCE_LIVE=1 to include live deploy-status output." }),
   includeLive ? run("tools/qa-mvp-preflight.mjs") : Promise.resolve({ ok: false, output: "Skipped. Set LUX_EVIDENCE_LIVE=1 to include preflight output." }),
-  run("tools/report-open-approvals.mjs", { LUX_OPEN_APPROVALS_JSON: "1" })
+  run("tools/report-open-approvals.mjs", { LUX_OPEN_APPROVALS_JSON: "1" }),
+  run("tools/export-open-approval-decision-forms.mjs", { LUX_APPROVAL_FORMS_FORMAT: "json" })
 ]);
 
 const buildManifest = JSON.parse(buildManifestRaw);
@@ -115,10 +117,17 @@ const pilotMatrix = JSON.parse(pilotMatrixRaw);
 const privateWorkflowSelection = JSON.parse(privateWorkflowSelectionRaw);
 let openApprovals = null;
 let openApprovalsOk = openApprovalsResult.ok;
+let approvalDecisionForms = null;
+let approvalDecisionFormsOk = approvalDecisionFormsResult.ok;
 try {
   openApprovals = JSON.parse(openApprovalsResult.output || "{}");
 } catch {
   openApprovalsOk = false;
+}
+try {
+  approvalDecisionForms = JSON.parse(approvalDecisionFormsResult.output || "{}");
+} catch {
+  approvalDecisionFormsOk = false;
 }
 const pilotFreshness = pilotEvidenceFreshness(pilotWriteEvidence.updatedAt, {
   maxAgeHours: pilotEvidenceMaxAgeHours()
@@ -299,6 +308,29 @@ const evidence = {
       : [],
     error: openApprovalsOk ? "" : openApprovalsResult.output || "open approvals report unavailable"
   },
+  approvalDecisionForms: {
+    ok: approvalDecisionFormsOk,
+    schemaVersion: approvalDecisionForms?.schemaVersion || "unavailable",
+    purpose: approvalDecisionForms?.purpose || "",
+    counts: approvalDecisionForms?.counts || {},
+    rules: Array.isArray(approvalDecisionForms?.rules) ? approvalDecisionForms.rules : [],
+    forms: Array.isArray(approvalDecisionForms?.forms)
+      ? approvalDecisionForms.forms.map((form) => ({
+        id: form.id,
+        label: form.label,
+        category: form.category,
+        status: form.status,
+        blocksPublicLaunch: form.blocksPublicLaunch === true,
+        owner: form.owner,
+        source: form.source,
+        requiredDecisionValues: form.decisionIntake?.requiredDecisionValues || [],
+        requiredFields: form.decisionIntake?.requiredFields || [],
+        versionLockKeys: Object.keys(form.decisionIntake?.versionLock || {}).sort(),
+        templateFieldCount: Object.keys(form.decisionRecordTemplate || {}).length
+      }))
+      : [],
+    error: approvalDecisionFormsOk ? "" : approvalDecisionFormsResult.output || "approval decision forms unavailable"
+  },
   closeout: {
     updatedAt: closeout.updatedAt || "",
     byStatus: closeoutByStatus,
@@ -429,6 +461,15 @@ ${evidence.launchGates.blocked.map((gate) => `- ${gate.label} (${gate.id}): ${ga
 - Public launch blockers: ${evidence.openApprovals.counts.publicLaunchBlockers ?? "unknown"}
 
 ${evidence.openApprovals.approvals.map((item) => `- ${item.label} (${item.id}) [${item.category}]: ${item.status}${item.blocksPublicLaunch ? " - blocks public launch" : ""}`).join("\n") || "- none"}
+
+## Approval Decision Forms
+
+- Schema: ${evidence.approvalDecisionForms.schemaVersion}
+- Forms available: ${evidence.approvalDecisionForms.forms.length}
+- Public launch blockers covered: ${evidence.approvalDecisionForms.counts.publicLaunchBlockers ?? "unknown"}
+- Rules: ${evidence.approvalDecisionForms.rules.join(" | ") || "none"}
+
+${evidence.approvalDecisionForms.forms.map((item) => `- ${item.label} (${item.id}) [${item.category}]: ${item.status}; fields ${item.templateFieldCount}; version keys ${item.versionLockKeys.join(", ") || "none"}${item.blocksPublicLaunch ? " - blocks public launch" : ""}`).join("\n") || "- none"}
 
 ## Closeout
 

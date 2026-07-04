@@ -34,6 +34,12 @@ const { stdout: openApprovalsRaw } = await execFileAsync(process.execPath, ["too
   maxBuffer: 1024 * 1024 * 4
 });
 const openApprovals = JSON.parse(openApprovalsRaw);
+const { stdout: approvalDecisionFormsRaw } = await execFileAsync(process.execPath, ["tools/export-open-approval-decision-forms.mjs"], {
+  env: { ...process.env, LUX_APPROVAL_FORMS_FORMAT: "json" },
+  timeout: 30000,
+  maxBuffer: 1024 * 1024 * 4
+});
+const approvalDecisionForms = JSON.parse(approvalDecisionFormsRaw);
 
 const { stdout: markdown } = await execFileAsync(process.execPath, ["tools/export-launch-evidence.mjs"], {
   timeout: 90000,
@@ -86,6 +92,12 @@ for (const marker of [
   "Public launch blockers: 2",
   "Functions Deploy IAM",
   "External Workflow Target",
+  "## Approval Decision Forms",
+  "Schema: luxveritas.open_approval_decision_forms.v1",
+  "Forms available: 7",
+  "Privacy Review (privacy_review)",
+  "Terms Review (terms_review)",
+  "version keys",
   "## Closeout",
   "## Command Summaries",
   "### Preview Helper",
@@ -251,6 +263,51 @@ if (evidence) {
   for (const id of ["functions_deploy_iam", "external_workflow_target"]) {
     const item = approvalItems.find((entry) => entry.id === id);
     if (item && item.blocksPublicLaunch !== false) issue(`evidence open approval ${id} should not block public launch`);
+  }
+  if (evidence.approvalDecisionForms?.schemaVersion !== "luxveritas.open_approval_decision_forms.v1") {
+    issue("evidence approval decision forms schemaVersion mismatch");
+  }
+  if (evidence.approvalDecisionForms?.counts?.totalOpenOrConditional !== approvalDecisionForms.counts?.totalOpenOrConditional) {
+    issue("evidence approval decision forms open count mismatch");
+  }
+  if (evidence.approvalDecisionForms?.counts?.publicLaunchBlockers !== approvalDecisionForms.counts?.publicLaunchBlockers) {
+    issue("evidence approval decision forms blocker count mismatch");
+  }
+  if (!evidence.approvalDecisionForms?.rules?.some((item) => /Do not paste secrets/i.test(item))) {
+    issue("evidence approval decision forms missing no-secret rule");
+  }
+  if (!evidence.approvalDecisionForms?.rules?.some((item) => /private owner system/i.test(item))) {
+    issue("evidence approval decision forms missing private owner system rule");
+  }
+  const decisionForms = Array.isArray(evidence.approvalDecisionForms?.forms) ? evidence.approvalDecisionForms.forms : [];
+  if (decisionForms.length !== approvalDecisionForms.forms?.length) {
+    issue("evidence approval decision forms count mismatch");
+  }
+  for (const id of ["privacy_review", "terms_review", "functions_deploy_iam", "external_workflow_target", "seed_binder_private_upload", "event_terms", "purchase_membership_terms"]) {
+    const item = decisionForms.find((entry) => entry.id === id);
+    const source = approvalDecisionForms.forms?.find((entry) => entry.id === id);
+    if (!item) {
+      issue(`evidence approval decision forms missing form ${id}`);
+      continue;
+    }
+    if (!source) {
+      issue(`source approval decision forms missing form ${id}`);
+      continue;
+    }
+    if (item.templateFieldCount !== Object.keys(source.decisionRecordTemplate || {}).length) {
+      issue(`evidence approval decision form ${id} template field count mismatch`);
+    }
+    for (const value of ["approved", "needs_changes", "blocked"]) {
+      if (!item.requiredDecisionValues?.includes(value)) issue(`evidence approval decision form ${id} missing decision value ${value}`);
+    }
+    for (const field of ["approvalId", "reviewerName", "reviewedAt", "decision", "evidenceReference", "conditionsOrChanges"]) {
+      if (!item.requiredFields?.includes(field)) issue(`evidence approval decision form ${id} missing required field ${field}`);
+    }
+    if (!item.versionLockKeys?.length) issue(`evidence approval decision form ${id} missing version lock keys`);
+  }
+  for (const id of ["privacy_review", "terms_review"]) {
+    const item = decisionForms.find((entry) => entry.id === id);
+    if (item && item.blocksPublicLaunch !== true) issue(`evidence approval decision form ${id} should block public launch`);
   }
   const closeoutItems = Array.isArray(evidence.closeout?.items) ? evidence.closeout.items : [];
   if (!evidence.closeout?.updatedAt) issue("evidence closeout updatedAt missing");

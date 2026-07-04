@@ -233,6 +233,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Add approval decision forms QA to MVP preflight and pilot readiness.
 - [x] Add no-secret launch evidence export for release handoff.
 - [x] Add launch evidence QA to pilot and workflow guardrails.
+- [x] Include approval decision forms in launch evidence export.
 - [x] Include no-secret launch closeout status in launch evidence export.
 - [x] Add no-secret launch closeout tracker for remaining public-launch blockers.
 - [x] Add no-secret launch closeout status helper for DNS, inbox, and legal approvals.
