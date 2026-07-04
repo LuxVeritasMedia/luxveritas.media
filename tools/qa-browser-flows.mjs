@@ -13,7 +13,27 @@ let submitMode = "stored";
 const buildManifest = JSON.parse(await readFile("data/lux-build-manifest.json", "utf8"));
 const actionInventory = JSON.parse(await readFile("data/lux-action-inventory.json", "utf8"));
 const openApprovals = JSON.parse(await readFile("data/lux-open-approvals.json", "utf8"));
+const launchReadinessManifest = JSON.parse(await readFile("data/lux-launch-readiness.json", "utf8"));
+const launchCloseoutManifest = JSON.parse(await readFile("data/lux-launch-closeout.json", "utf8"));
 const expectedAssetVersion = buildManifest.assetVersion || buildManifest.version || "";
+const expectedLaunchGates = Array.isArray(launchReadinessManifest.gates)
+  ? launchReadinessManifest.gates
+  : [];
+const expectedRequiredLaunchGates = expectedLaunchGates.filter((gate) => gate.requiredForPublicLaunch);
+const expectedLaunchReadyGates = expectedRequiredLaunchGates.filter((gate) => gate.status === "ready");
+const expectedLaunchSummary = `${expectedLaunchReadyGates.length} of ${expectedRequiredLaunchGates.length} launch gates ready`;
+const expectedLaunchGateLabels = expectedLaunchGates
+  .map((gate) => gate.label)
+  .filter(Boolean);
+const expectedCloseoutItems = Array.isArray(launchCloseoutManifest.items)
+  ? launchCloseoutManifest.items
+  : [];
+const expectedClosedCloseoutItems = expectedCloseoutItems.filter((item) => item.status === "closed");
+const expectedCloseoutSummary = `${expectedClosedCloseoutItems.length} of ${expectedCloseoutItems.length} closeout items closed`;
+const expectedCloseoutLabels = expectedCloseoutItems
+  .map((item) => item.label)
+  .filter(Boolean);
+const normalizedText = (value) => String(value || "").replace(/\s+/g, " ").trim();
 
 const mockReport = {
   ok: true,
@@ -1136,11 +1156,11 @@ async function operatorReportFlow(page, baseUrl) {
   if (!/3 of 3 source-ready/.test(mediaSummary)) {
     issues.push(`/portal/reporting.html: expected media readiness summary, found "${mediaSummary}"`);
   }
-  if (!/\d+ of 7 launch gates ready/.test(launchSummaryBeforeLoad)) {
-    issues.push(`/portal/reporting.html: expected launch readiness summary, found "${launchSummaryBeforeLoad}"`);
+  if (!launchSummaryBeforeLoad.includes(expectedLaunchSummary)) {
+    issues.push(`/portal/reporting.html: expected launch readiness summary "${expectedLaunchSummary}", found "${launchSummaryBeforeLoad}"`);
   }
-  if (!/\d+ of 4 closeout items closed/.test(closeoutSummaryBeforeLoad)) {
-    issues.push(`/portal/reporting.html: expected closeout summary, found "${closeoutSummaryBeforeLoad}"`);
+  if (!closeoutSummaryBeforeLoad.includes(expectedCloseoutSummary)) {
+    issues.push(`/portal/reporting.html: expected closeout summary "${expectedCloseoutSummary}", found "${closeoutSummaryBeforeLoad}"`);
   }
   const expectedApprovalSummary = `${openApprovals.counts.publicLaunchBlockers} public-launch blockers, ${openApprovals.counts.totalOpenOrConditional} open or conditional`;
   if (!openApprovalsSummary.includes(expectedApprovalSummary)) {
@@ -1178,12 +1198,12 @@ async function operatorReportFlow(page, baseUrl) {
       issues.push(`/portal/reporting.html: media readiness missing ${label}`);
     }
   }
-  for (const label of ["Media Sources", "Inbox Notifications", "Privacy Review", "WWW Redirect"]) {
+  for (const label of expectedLaunchGateLabels) {
     if (!launchReadinessBeforeLoad.includes(label)) {
       issues.push(`/portal/reporting.html: launch readiness missing ${label}`);
     }
   }
-  for (const label of ["WWW Hosting and Certificate", "Inbox Provider", "Privacy Approval", "Terms Approval"]) {
+  for (const label of expectedCloseoutLabels) {
     if (!closeoutBeforeLoad.includes(label)) {
       issues.push(`/portal/reporting.html: launch closeout missing ${label}`);
     }
@@ -1451,11 +1471,13 @@ async function operatorReportFlow(page, baseUrl) {
   if (!/Server captures/.test(funnelSummary) || !/Media actions/.test(funnelSummary) || !/Playback events/.test(funnelSummary)) {
     issues.push(`/portal/reporting.html: pilot funnel missing capture/media values`);
   }
-  if (!/\d+ of 7 launch gates ready/.test(launchSummary) || !/Inbox Notifications/i.test(launchReadiness)) {
-    issues.push(`/portal/reporting.html: launch gates did not render blocker state (summary="${launchSummary}", list="${launchReadiness.replace(/\s+/g, " ")}")`);
+  const missingLaunchLabels = expectedLaunchGateLabels.filter((label) => !launchReadiness.includes(label));
+  if (!launchSummary.includes(expectedLaunchSummary) || missingLaunchLabels.length) {
+    issues.push(`/portal/reporting.html: launch gates did not render expected state (expected="${expectedLaunchSummary}", summary="${launchSummary}", missing="${missingLaunchLabels.join(", ")}", list="${normalizedText(launchReadiness)}")`);
   }
-  if (!/\d+ of 4 closeout items closed/.test(closeoutSummary) || !/Inbox Provider\s+Closed/i.test(closeoutReadiness.replace(/\s+/g, " "))) {
-    issues.push(`/portal/reporting.html: launch closeout did not render state (summary="${closeoutSummary}", list="${closeoutReadiness.replace(/\s+/g, " ")}")`);
+  const missingCloseoutLabels = expectedCloseoutLabels.filter((label) => !closeoutReadiness.includes(label));
+  if (!closeoutSummary.includes(expectedCloseoutSummary) || missingCloseoutLabels.length) {
+    issues.push(`/portal/reporting.html: launch closeout did not render expected state (expected="${expectedCloseoutSummary}", summary="${closeoutSummary}", missing="${missingCloseoutLabels.join(", ")}", list="${normalizedText(closeoutReadiness)}")`);
   }
 
   const reportRequestCountBeforeInboxTest = reportRequests.length;
