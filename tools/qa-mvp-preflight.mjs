@@ -35,6 +35,10 @@ const checks = [
     script: "tools/qa-launch-blockers.mjs"
   },
   {
+    label: "Open Approval Decision Forms",
+    script: "tools/qa-open-approval-decision-forms.mjs"
+  },
+  {
     label: "MVP Status",
     script: "tools/qa-mvp-status.mjs"
   },

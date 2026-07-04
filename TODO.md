@@ -230,6 +230,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Include no-secret launch closeout status in the MVP status report.
 - [x] Keep MVP status QA pre-deploy safe; deploy-status owns stale live asset blockers.
 - [x] Add combined no-secret MVP preflight command for release operators.
+- [x] Add approval decision forms QA to MVP preflight and pilot readiness.
 - [x] Add no-secret launch evidence export for release handoff.
 - [x] Add launch evidence QA to pilot and workflow guardrails.
 - [x] Include no-secret launch closeout status in launch evidence export.

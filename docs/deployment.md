@@ -97,7 +97,7 @@ node tools/qa-mvp-status.mjs
 
 This QA treats live/local asset drift as a warning because the Hosting workflow runs it before deployment. Use `node tools/qa-deploy-status.mjs` after deploy when stale production assets should be treated as blockers.
 
-Run the local MVP preflight when you want one no-secret command for operator environment, deploy status, launch-blocker sync, MVP status, and release-readiness signals:
+Run the local MVP preflight when you want one no-secret command for operator environment, deploy status, launch-blocker sync, approval decision forms, MVP status, and release-readiness signals:
 
 ```bash
 node tools/qa-mvp-preflight.mjs
