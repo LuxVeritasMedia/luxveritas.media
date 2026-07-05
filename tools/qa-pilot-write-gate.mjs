@@ -383,4 +383,4 @@ if (writeTests) {
 
 console.log("");
 console.log(`Pilot write gate checked: ${passed.length} passed, ${failures.length} blocking check(s).`);
-console.log("Known public-release blockers still require separate legal approval: Privacy and Terms.");
+console.log("Public-release legal/blocker state is validated separately by qa-launch-blockers and qa-legal-approval-closeout.");
