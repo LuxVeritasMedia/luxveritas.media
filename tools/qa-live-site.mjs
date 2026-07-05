@@ -469,7 +469,9 @@ try {
       issues.push("/data/lux-pilot-bug-register.json: version does not match build manifest pilotBugRegisterVersion");
     }
     if (bugRegister.evidence?.assetVersion !== liveBuildManifest?.assetVersion) {
-      issues.push("/data/lux-pilot-bug-register.json: assetVersion does not match live build manifest");
+      const message = "/data/lux-pilot-bug-register.json: assetVersion does not match live build manifest; rerun the live pilot write gate after deploy";
+      if (requireCurrentPilotEvidence) issues.push(message);
+      else warnings.push(message);
     }
     if (bugRegister.status !== "no_known_blocking_bugs" || bugRegister.decision !== "pilot_can_continue") {
       issues.push("/data/lux-pilot-bug-register.json: expected no known blocking bugs and pilot_can_continue");
