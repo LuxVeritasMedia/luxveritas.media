@@ -100,7 +100,7 @@ The reviewer should fill this out outside the public repo before any approval co
 - termsVersion: `terms-draft-2026-06-09`
 - submissionTermsVersion: `submission-draft-2026-06-09`
 - assetVersion: `20260630-pilot-feedback-report`
-- pilotQaRunId: `20260703140813`
+- pilotQaRunId: `20260705114236`
 - evidenceReference: no-secret approval reference only
 - conditionsOrChanges:
 
