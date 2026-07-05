@@ -1,6 +1,6 @@
 {
   "schemaVersion": "luxveritas.open_approvals_report.v1",
-  "generatedAt": "2026-07-05T11:59:30.198Z",
+  "generatedAt": "2026-07-05T12:07:40.550Z",
   "project": "LuxVeritas.media",
   "liveUrl": "https://luxveritas.media",
   "decision": "ready_for_final_release_gate",
@@ -13,8 +13,8 @@
   },
   "pilotEvidence": {
     "result": "passed",
-    "qaRunId": "20260705114236",
-    "updatedAt": "2026-07-05T11:44:59Z",
+    "qaRunId": "20260705120526",
+    "updatedAt": "2026-07-05T12:07:28Z",
     "formCaptureIntents": 11,
     "eventWrites": 13
   },
@@ -65,8 +65,8 @@
           "legalVersion": "privacy-draft-2026-07-03",
           "publicTermsVersion": "2026-07-03-public-capture",
           "privacyVersion": "privacy-draft-2026-07-03",
-          "assetVersion": "20260704-portal-access-path",
-          "pilotQaRunId": "20260705114236"
+          "assetVersion": "20260705-cache-refresh",
+          "pilotQaRunId": "20260705120526"
         },
         "blockApprovalIf": [
           "The approval record would include secrets, API keys, private URLs, provider account IDs, private report exports, legal advice, contract terms, or non-public operational details.",
@@ -126,8 +126,8 @@
           "publicTermsVersion": "2026-07-03-public-capture",
           "termsVersion": "terms-draft-2026-06-09",
           "submissionTermsVersion": "submission-draft-2026-06-09",
-          "assetVersion": "20260704-portal-access-path",
-          "pilotQaRunId": "20260705114236"
+          "assetVersion": "20260705-cache-refresh",
+          "pilotQaRunId": "20260705120526"
         },
         "blockApprovalIf": [
           "The approval record would include secrets, API keys, private URLs, provider account IDs, private report exports, legal advice, contract terms, or non-public operational details.",
@@ -248,8 +248,8 @@
           "recommendedTarget": "google_workspace",
           "currentPrimaryTarget": "firebase_handoff",
           "firstExternalApprovalStatus": "identified_pending_explicit_private_workflow_owner_approval",
-          "pilotQaRunId": "20260705114236",
-          "assetVersion": "20260704-portal-access-path"
+          "pilotQaRunId": "20260705120526",
+          "assetVersion": "20260705-cache-refresh"
         },
         "blockApprovalIf": [
           "The approval record would include secrets, API keys, private URLs, provider account IDs, private report exports, legal advice, contract terms, or non-public operational details.",
