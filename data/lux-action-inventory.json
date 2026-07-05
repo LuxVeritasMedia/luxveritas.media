@@ -1,7 +1,7 @@
 {
   "schemaVersion": "luxveritas.action_inventory.v1",
   "version": "2026-06-30-action-reporting-keys",
-  "buildAssetVersion": "20260704-portal-access-path",
+  "buildAssetVersion": "20260705-cache-refresh",
   "routeCount": 38,
   "actionCount": 1259,
   "summary": {

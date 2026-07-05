@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260704-portal-access-path";
+const CACHE_NAME = "luxveritas-static-20260705-cache-refresh";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260704-portal-access-path",
-  "/app.js?v=20260704-portal-access-path",
+  "/styles.css?v=20260705-cache-refresh",
+  "/app.js?v=20260705-cache-refresh",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"
@@ -34,7 +34,7 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin || url.pathname.startsWith("/api/")) return;
 
   if (request.mode === "navigate") {
-    event.respondWith(fetch(request).catch(() => caches.match("/offline.html")));
+    event.respondWith(fetch(request, { cache: "reload" }).catch(() => caches.match("/offline.html")));
     return;
   }
 
