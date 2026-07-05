@@ -531,6 +531,7 @@ async function portalFallbackFlow(page, baseUrl) {
   submitMode = "fallback";
   await page.goto(`${baseUrl}/auth/signin.html`, { waitUntil: "domcontentloaded" });
   await page.fill('[data-portal-signin-form] input[name="email"]', "portal-fallback@luxveritas.media");
+  await page.selectOption('[data-portal-signin-form] select[name="role_path"]', "Member");
   await page.click("[data-portal-signin]");
   await page.waitForFunction(() => {
     const status = document.querySelector("[data-portal-status]");
@@ -1051,6 +1052,7 @@ async function portalSigninFlow(page, baseUrl) {
   await page.goto(`${baseUrl}/auth/signin.html`, { waitUntil: "domcontentloaded" });
   await page.evaluate(() => localStorage.setItem("luxveritas_consent", "accepted"));
   await page.fill('[data-portal-signin-form] input[name="email"]', "portal-qa@luxveritas.media");
+  await page.selectOption('[data-portal-signin-form] select[name="role_path"]', "Creator");
   await page.click("[data-portal-signin]");
   await page.waitForFunction(() => {
     const status = document.querySelector("[data-portal-status]");
@@ -1081,8 +1083,8 @@ async function portalSigninFlow(page, baseUrl) {
     if (!payload[field]) issues.push(`/auth/signin.html: portal sign-in payload missing ${field}`);
   }
   if (payload.formType !== "portal_signin") issues.push(`/auth/signin.html: portal sign-in payload formType mismatch`);
-  if (payload.role_path !== "General" || payload.inquiry_type !== "Portal") {
-    issues.push(`/auth/signin.html: portal sign-in payload did not route to General / Portal`);
+  if (payload.role_path !== "Creator" || payload.inquiry_type !== "Portal" || payload.access_path !== "creator" || payload.portal_role_target !== "creator") {
+    issues.push(`/auth/signin.html: portal sign-in payload did not route to Creator / Portal`);
   }
   if (payload.email !== "portal-qa@luxveritas.media") {
     issues.push(`/auth/signin.html: portal sign-in payload email mismatch`);

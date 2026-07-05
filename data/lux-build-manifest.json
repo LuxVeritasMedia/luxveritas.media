@@ -1,7 +1,7 @@
 {
   "schemaVersion": "luxveritas.build_manifest.v1",
-  "version": "20260630-pilot-feedback-report",
-  "assetVersion": "20260630-pilot-feedback-report",
+  "version": "20260704-portal-access-path",
+  "assetVersion": "20260704-portal-access-path",
   "mediaManifestVersion": "2026-06-10-mvp-media-preview",
   "releaseRoomVersion": "2026-06-30-release-room",
   "radioProgrammingVersion": "2026-06-30-radio-readiness",
@@ -17,6 +17,6 @@
   "publicTermsVersion": "2026-07-03-public-capture",
   "routeCount": 38,
   "publicRouteCount": 20,
-  "appScript": "app.js?v=20260630-pilot-feedback-report",
-  "stylesheet": "styles.css?v=20260630-pilot-feedback-report"
+  "appScript": "app.js?v=20260704-portal-access-path",
+  "stylesheet": "styles.css?v=20260704-portal-access-path"
 }

@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { actionInventoryVersion } from "./lib/action-inventory.mjs";
 import "./export-open-approvals.mjs";
 
-const assetVersion = "20260630-pilot-feedback-report";
+const assetVersion = "20260704-portal-access-path";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const releaseRoom = JSON.parse(await readFile("data/lux-release-room.json", "utf8"));
 const radioProgramming = JSON.parse(await readFile("data/lux-radio-programming.json", "utf8"));
@@ -23,7 +23,6 @@ const nav = [
   ["Events", "/events.html"],
   ["Codex", "/codex.html"],
   ["About", "/about.html"],
-  ["Join", "/join.html"],
 ];
 
 const eventCards = [
@@ -736,6 +735,9 @@ function signInShell() {
     <section class="section prose-block">
       <form class="inline-form auth-form" action="/portal/index.html" method="get" data-portal-signin-form>
         <label><span>Email</span><input type="email" name="email" autocomplete="email" placeholder="you@example.com" required /></label>
+        <label><span>Access path</span><select name="role_path" required data-portal-access-path>
+          <option value="">Select access path</option><option>Member</option><option>Artist</option><option>Creator</option><option>Press</option><option>Partner</option><option>Investor</option><option>Event guest</option><option>General</option>
+        </select></label>
         <div class="form-status" data-portal-status hidden></div>
         <div class="hero-actions">
           <button class="button button-primary" type="submit" data-portal-signin>Continue</button>

@@ -29,6 +29,8 @@ Public forms may collect these role-path labels only:
 
 Operator and admin are intentionally absent from public forms.
 
+The noindex sign-in shell captures only the visitor email and intended access path before live auth exists. It should route the attempt as `Portal` inquiry data, record a receipt, and never imply that an account, role, room, or entitlement has opened.
+
 ## Inquiry Keys
 
 Public inquiry labels map to stable keys:

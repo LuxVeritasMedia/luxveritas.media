@@ -123,7 +123,7 @@ const launchChecklistPath = "/data/lux-launch-readiness.json";
 const launchCloseoutPath = "/data/lux-launch-closeout-public.json";
 const legalReviewPath = "/data/lux-legal-review.json";
 const submitTimeoutMs = 8000;
-const publicBuildVersion = "20260630-pilot-feedback-report";
+const publicBuildVersion = "20260704-portal-access-path";
 const allowedInterestPaths = new Set(["music", "film", "events", "drops", "community", "codex", "create"]);
 let activeFormType = "request";
 let mediaManifestPromise = null;
@@ -2253,17 +2253,19 @@ async function handleFormSubmit(event) {
   }
 }
 
-function portalSigninPayload(email) {
+function portalSigninPayload(email, rolePath = "General") {
+  const normalizedRolePath = accessPathMap[rolePath] ? rolePath : "General";
+  const access = accessPathMap[normalizedRolePath] || accessPathMap.General;
   return {
     name: "Portal visitor",
     email,
     phone: "",
-    role_path: "General",
+    role_path: normalizedRolePath,
     inquiry_type: "Portal",
-    access_path: "general",
-    portal_role_target: "visitor",
+    access_path: access.accessPath,
+    portal_role_target: access.portalRoleTarget,
     inquiry_key: "portal",
-    message: "Private portal sign-in/access check submitted from the sign-in shell.",
+    message: `Private portal sign-in/access check submitted from the sign-in shell for ${normalizedRolePath} access.`,
     formType: "portal_signin",
     tag: "portal-signin",
     source: "luxveritas.media",
@@ -2289,6 +2291,7 @@ async function handlePortalSignin(event) {
   if (!portalSigninForm?.reportValidity()) return;
 
   const email = portalSigninForm.email.value.trim().toLowerCase();
+  const rolePath = portalSigninForm.role_path?.value || "General";
   const status = portalSigninForm.querySelector("[data-portal-status]");
   const submitButton = portalSigninForm.querySelector("[data-portal-signin]");
   const defaultLabel = submitButton?.textContent || "Continue";
@@ -2302,11 +2305,12 @@ async function handlePortalSignin(event) {
   const progressTimer = startSubmitProgress(status, "Checking screened access...");
   const attempt = {
     email,
+    role_path: rolePath,
     source_page: window.location.pathname,
     timestamp: new Date().toISOString(),
     status: "screened_access_required"
   };
-  const payload = portalSigninPayload(email);
+  const payload = portalSigninPayload(email, rolePath);
 
   attempts.push(attempt);
   writeJson("luxveritas_portal_attempts", attempts.slice(-50));
@@ -2318,6 +2322,10 @@ async function handlePortalSignin(event) {
 
   const dialogEmail = dialogForm?.querySelector('[name="email"]');
   if (dialogEmail && !dialogEmail.value) dialogEmail.value = email;
+  const dialogRolePath = dialogForm?.querySelector('[name="role_path"]');
+  if (dialogRolePath && !dialogRolePath.value) dialogRolePath.value = payload.role_path;
+  const dialogInquiryType = dialogForm?.querySelector('[name="inquiry_type"]');
+  if (dialogInquiryType && !dialogInquiryType.value) dialogInquiryType.value = payload.inquiry_type;
 
   try {
     const result = await submitToServer(payload);
@@ -2333,6 +2341,8 @@ async function handlePortalSignin(event) {
     });
     trackEvent("portal_signin_capture", {
       delivery: result.delivery || "accepted",
+      role_path: payload.role_path,
+      portal_role_target: payload.portal_role_target,
       receipt: payload.client_submission_id
     });
     setPortalSigninStatus(

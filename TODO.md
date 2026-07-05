@@ -145,6 +145,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Define access request interface before wiring any live services.
 - [x] Define screened intake routing map before wiring live services.
 - [x] Add QA gate for public access paths, inquiry keys, and portal-role targets.
+- [x] Harden noindex sign-in shell so portal access checks capture intended access path without opening accounts or rooms.
 - [x] Keep LuxOS/LuxFlow bridge deferred until Phase 7.
 
 ## P6 - QA

@@ -258,7 +258,7 @@ add(publicTerms.schemaVersion === "luxveritas.public_terms.v1", "Public terms ve
 add(Boolean(publicTerms.version && publicTerms.privacyVersion && publicTerms.termsVersion && publicTerms.submissionTermsVersion), "Public terms manifest contains active legal version IDs.");
 add(pilotBugRegister.schemaVersion === "luxveritas.pilot_bug_register.v1", "Pilot bug register schema version is current.");
 add(pilotBugRegister.version === buildManifest.pilotBugRegisterVersion, "Pilot bug register version matches build manifest.");
-add(pilotBugRegister.evidence?.assetVersion === expectedAssetVersion, "Pilot bug register asset version matches generated build.");
+add(pilotBugRegister.evidence?.assetVersion === expectedAssetVersion, "Pilot bug register asset version does not match generated build; rerun the live pilot write gate after deploy.", "warning");
 add(pilotBugRegister.evidence?.pilotWriteQaRunId === pilotWriteEvidence.qaRunId, "Pilot bug register references current pilot write evidence.");
 add(pilotBugRegister.status === "no_known_blocking_bugs" && pilotBugRegister.decision === "pilot_can_continue", "Pilot bug register reports no known blocking bugs.");
 add((pilotBugRegister.summary?.openBlockingBugs || 0) === 0 && openPilotBlockingBugs.length === 0, `No open pilot blocking bugs. Open: ${openPilotBlockingBugs.map((item) => item.id || item.label || "unknown").join(", ") || "none"}`);

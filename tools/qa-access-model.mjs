@@ -6,6 +6,7 @@ const functionJs = await readFile("functions/index.js", "utf8");
 const buildScript = await readFile("tools/build-static.mjs", "utf8");
 const doc = await readFile("docs/portal-access-model.md", "utf8");
 const portalHtml = await readFile("portal/index.html", "utf8");
+const signInHtml = await readFile("auth/signin.html", "utf8");
 
 const portalRoles = ["visitor", "member", "artist", "creator", "press", "partner", "investor", "operator", "admin"];
 const publicRoleLabels = ["Member", "Artist", "Creator", "Press", "Partner", "Investor", "Event guest", "General"];
@@ -57,6 +58,10 @@ for (const key of portalSurfaceKeys) {
   if (!portalHtml.includes(`data-portal-role="${key}"`)) {
     issues.push(`portal/index.html: portal shell missing role card ${key}`);
   }
+}
+
+if (!signInHtml.includes('data-portal-access-path')) {
+  issues.push("auth/signin.html: portal sign-in shell missing access-path selector");
 }
 
 for (const marker of ["portalAccessCards", "portalIndex", "Portal Surface Model"]) {
