@@ -246,7 +246,7 @@ if (packet) {
     if (versionLock.selectionSchemaVersion !== workflowSelection.schemaVersion) issue("approval decision intake selection version mismatch");
     if (versionLock.recommendedTarget !== "google_workspace") issue("approval decision intake recommended target mismatch");
     if (versionLock.currentPrimaryTarget !== "firebase_handoff") issue("approval decision intake current primary target mismatch");
-    if (versionLock.assetVersion !== pilotEvidence.assetVersion) issue("approval decision intake asset version mismatch");
+    if (versionLock.assetVersion !== packet.assetVersion) issue("approval decision intake asset version mismatch");
     if (versionLock.pilotQaRunId !== pilotEvidence.qaRunId) issue("approval decision intake pilot QA run mismatch");
     if (versionLock.publicTermsVersion !== publicTerms.version) issue("approval decision intake public terms version mismatch");
     if (versionLock.privacyVersion !== publicTerms.privacyVersion) issue("approval decision intake privacy version mismatch");
