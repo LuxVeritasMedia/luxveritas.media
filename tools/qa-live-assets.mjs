@@ -127,6 +127,9 @@ if (!assetFiles.some((asset) => asset.path === "/data/lux-drop-room.json")) {
 if (!assetFiles.some((asset) => asset.path === "/data/lux-portal-rooms.json")) {
   issue("dist artifact missing /data/lux-portal-rooms.json");
 }
+if (!assetFiles.some((asset) => asset.path === "/data/lux-apps.json")) {
+  issue("dist artifact missing /data/lux-apps.json");
+}
 if (!assetFiles.some((asset) => asset.path === "/data/lux-phase-status.json")) {
   issue("dist artifact missing /data/lux-phase-status.json");
 }

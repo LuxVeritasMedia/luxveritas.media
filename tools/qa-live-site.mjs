@@ -177,8 +177,8 @@ try {
     if (buildManifest.stylesheet !== `styles.css?v=${expectedAssetVersion}`) {
       issues.push("/data/lux-build-manifest.json: stylesheet does not match current asset version");
     }
-    if (!buildManifest.mediaManifestVersion || !buildManifest.releaseRoomVersion || !buildManifest.radioProgrammingVersion || !buildManifest.pilotBugRegisterVersion || !buildManifest.actionInventoryVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.phaseStatusVersion || !buildManifest.publicTermsVersion) {
-      issues.push("/data/lux-build-manifest.json: missing mediaManifestVersion, releaseRoomVersion, radioProgrammingVersion, pilotBugRegisterVersion, actionInventoryVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, phaseStatusVersion, or publicTermsVersion");
+    if (!buildManifest.mediaManifestVersion || !buildManifest.releaseRoomVersion || !buildManifest.radioProgrammingVersion || !buildManifest.pilotBugRegisterVersion || !buildManifest.actionInventoryVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.appCatalogVersion || !buildManifest.phaseStatusVersion || !buildManifest.publicTermsVersion) {
+      issues.push("/data/lux-build-manifest.json: missing mediaManifestVersion, releaseRoomVersion, radioProgrammingVersion, pilotBugRegisterVersion, actionInventoryVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, appCatalogVersion, phaseStatusVersion, or publicTermsVersion");
     }
   }
 } catch (error) {
@@ -356,6 +356,28 @@ try {
   }
 } catch (error) {
   issues.push(`/data/lux-portal-rooms.json: invalid response (${error.message})`);
+}
+
+try {
+  const { response, text } = await fetchWithTimeout("/data/lux-apps.json");
+  if (!response.ok) {
+    issues.push(`/data/lux-apps.json: expected HTTP 200, received ${response.status}`);
+  } else {
+    const luxApps = JSON.parse(text);
+    const apps = Array.isArray(luxApps.apps) ? luxApps.apps : [];
+    const expectedApps = ["cr8", "canoncraft", "signalcrafter", "realcraft", "promptops"];
+    if (luxApps.schemaVersion !== "luxveritas.apps.v1") {
+      issues.push("/data/lux-apps.json: schemaVersion mismatch");
+    }
+    if (liveBuildManifest?.appCatalogVersion && liveBuildManifest.appCatalogVersion !== luxApps.version) {
+      issues.push("/data/lux-apps.json: version does not match build manifest appCatalogVersion");
+    }
+    if (apps.map((app) => app.id).join("|") !== expectedApps.join("|")) {
+      issues.push(`/data/lux-apps.json: expected apps ${expectedApps.join(", ")}`);
+    }
+  }
+} catch (error) {
+  issues.push(`/data/lux-apps.json: invalid response (${error.message})`);
 }
 
 try {

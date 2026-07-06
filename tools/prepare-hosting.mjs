@@ -4,8 +4,23 @@ import "./export-action-inventory.mjs";
 import "./export-open-approvals.mjs";
 
 const dist = "dist";
+const luxApps = JSON.parse(await readFile("data/lux-apps.json", "utf8"));
+const appHtmlFiles = Array.isArray(luxApps.apps)
+  ? luxApps.apps.flatMap((app) => {
+    const base = `luxflow/${app.slug || app.id}`;
+    return [
+      `${base}/index.html`,
+      `${base}/support.html`,
+      `${base}/privacy.html`,
+      `${base}/terms.html`,
+      `${base}/delete-data.html`,
+      `${base}/download.html`
+    ];
+  })
+  : [];
 const files = [
   "about.html",
+  "apps/index.html",
   "app.js",
   "private-steward.html",
   "codex-inner.html",
@@ -41,6 +56,8 @@ const files = [
   "events/listening-room.html",
   "legal/privacy.html",
   "legal/terms.html",
+  "luxflow/index.html",
+  ...appHtmlFiles,
   "portal/admin.html",
   "portal/admin/users.html",
   "portal/index.html",
@@ -82,6 +99,7 @@ await cp("data/lux-brand-house.json", join(dist, "data/lux-brand-house.json"));
 await cp("data/lux-fan-flywheel.json", join(dist, "data/lux-fan-flywheel.json"));
 await cp("data/lux-drop-room.json", join(dist, "data/lux-drop-room.json"));
 await cp("data/lux-portal-rooms.json", join(dist, "data/lux-portal-rooms.json"));
+await cp("data/lux-apps.json", join(dist, "data/lux-apps.json"));
 await cp("data/lux-phase-status.json", join(dist, "data/lux-phase-status.json"));
 await cp("data/lux-media-manifest.json", join(dist, "data/lux-media-manifest.json"));
 await cp("data/lux-release-room.json", join(dist, "data/lux-release-room.json"));
@@ -120,6 +138,7 @@ const requiredNonEmpty = [
   "data/lux-fan-flywheel.json",
   "data/lux-drop-room.json",
   "data/lux-portal-rooms.json",
+  "data/lux-apps.json",
   "data/lux-phase-status.json",
   "data/lux-build-manifest.json",
   "data/lux-action-inventory.json",
@@ -142,4 +161,4 @@ for (const file of requiredNonEmpty) {
   }
 }
 
-console.log(`Prepared Firebase Hosting artifact with ${files.length + assetFiles.length + 17} files.`);
+console.log(`Prepared Firebase Hosting artifact with ${files.length + assetFiles.length + 18} files.`);

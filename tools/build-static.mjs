@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { actionInventoryVersion } from "./lib/action-inventory.mjs";
 import "./export-open-approvals.mjs";
 
-const assetVersion = "20260705-cache-refresh";
+const assetVersion = "20260705-luxflow-apps";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const releaseRoom = JSON.parse(await readFile("data/lux-release-room.json", "utf8"));
 const radioProgramming = JSON.parse(await readFile("data/lux-radio-programming.json", "utf8"));
@@ -13,6 +13,7 @@ const brandHouse = JSON.parse(await readFile("data/lux-brand-house.json", "utf8"
 const fanFlywheel = JSON.parse(await readFile("data/lux-fan-flywheel.json", "utf8"));
 const dropRoom = JSON.parse(await readFile("data/lux-drop-room.json", "utf8"));
 const portalRooms = JSON.parse(await readFile("data/lux-portal-rooms.json", "utf8"));
+const luxApps = JSON.parse(await readFile("data/lux-apps.json", "utf8"));
 const phaseStatus = JSON.parse(await readFile("data/lux-phase-status.json", "utf8"));
 const openApprovals = JSON.parse(await readFile("data/lux-open-approvals.json", "utf8"));
 
@@ -810,6 +811,148 @@ function portalIndex() {
   });
 }
 
+const luxFlowApps = Array.isArray(luxApps.apps) ? luxApps.apps : [];
+
+function appBasePath(app) {
+  return `/luxflow/${app.slug || app.id}`;
+}
+
+function appPlatformList(app) {
+  return (Array.isArray(app.platforms) ? app.platforms : [])
+    .map((platform) => `<span>${platform}</span>`)
+    .join("");
+}
+
+function appCard(app) {
+  const base = appBasePath(app);
+  return `<a class="vertical-card" href="${base}/index.html" data-lux-app="${app.id}" data-lux-app-status="${app.status || "waitlist"}">
+    <span>${app.category || "LuxFlow App"} · ${app.statusLabel || "Waitlist"}</span>
+    <h3>${app.name}</h3>
+    <p>${app.shortDescription}</p>
+    <small>${appPlatformList(app)}</small>
+  </a>`;
+}
+
+function appsIndex() {
+  return shell({
+    path: "/apps/index.html",
+    title: "Apps | Lux Veritas",
+    description: "Public Lux Veritas app marketplace for LuxFlow creator, worldbuilding, release, visual, and operations tools.",
+    body: `${pageHero("Apps", "Tools for the world we are building.", "Lux Veritas apps begin as public product doors: waitlists, downloads, support, and app-store readiness. The private systems behind them stay separate until access and roles are approved.", `<div class="hero-actions"><a class="button button-primary" href="/luxflow/index.html">Open LuxFlow</a><button class="button button-quiet" data-open-form="fan">Join app waitlist</button></div>`)}
+    <section class="section verticals"><div class="section-heading"><p class="kicker">Marketplace</p><h2>Public app doors. Private systems protected.</h2><p>Explore upcoming LuxFlow apps and join the path that matches your work.</p></div><div class="card-grid">${luxFlowApps.map(appCard).join("")}</div></section>
+    <section class="section split-band"><div><p class="kicker">Access</p><h2>Download when live. Request access before then.</h2></div><div><p>Each app page carries the public product story, support path, privacy terms, and download links required for web, App Store, and Google Play rollout.</p></div></section>`
+  });
+}
+
+function luxflowIndex() {
+  const suite = luxApps.suite || {};
+  return shell({
+    path: "/luxflow/index.html",
+    title: "LuxFlow | Lux Veritas Apps",
+    description: suite.summary || "LuxFlow is the public app suite for Lux Veritas creator and media tools.",
+    body: `${pageHero("LuxFlow", suite.headline || "Creative systems for the Lux Veritas universe.", suite.summary || "LuxFlow apps help creators and teams shape media work without exposing private studio systems.", `<div class="hero-actions"><button class="button button-primary" data-open-form="fan">Join LuxFlow waitlist</button><a class="button button-quiet" href="/apps/index.html">All Apps</a></div>`)}
+    <section class="section verticals"><div class="section-heading"><p class="kicker">Suite</p><h2>Choose the door that matches the work.</h2><p>LuxFlow app pages are public product surfaces. Actual private app rooms open later through approved account access.</p></div><div class="card-grid">${luxFlowApps.map(appCard).join("")}</div></section>
+    <section class="section empty-state"><p class="kicker">Boundary</p><h2>Product pages now. Private app access later.</h2><p>LuxVeritas.media can sell, explain, route, support, and capture interest for LuxFlow apps. It does not publish private prompts, dashboards, account logic, or protected studio systems in the public layer.</p></section>`
+  });
+}
+
+function appFeatureCards(app) {
+  const features = Array.isArray(app.features) ? app.features : [];
+  return features.map((feature) => `<article><span>${app.name}</span><h3>${feature}</h3><p>${app.name} will open this path through approved product releases, waitlists, or download links.</p></article>`).join("");
+}
+
+function appProductPage(app) {
+  const base = appBasePath(app);
+  return shell({
+    path: `${base}/index.html`,
+    title: `${app.name} | LuxFlow`,
+    description: app.shortDescription,
+    body: `${pageHero(app.category || "LuxFlow App", app.name, `${app.headline}\n\n${app.shortDescription}`, `<div class="hero-actions"><a class="button button-primary" href="${app.downloadUrl}">${app.primaryCta || "Join waitlist"}</a><button class="button button-quiet" data-open-form="fan">Request early access</button></div>`)}
+    <section class="section split-band"><div><p class="kicker">${app.statusLabel || "Waitlist"}</p><h2>${app.audience}</h2></div><div><p>Platforms planned: ${(app.platforms || []).join(", ")}.</p><p>Public app pages provide product information, support, legal, and download paths. Account-gated features open only when approved access is ready.</p></div></section>
+    <section class="section"><div class="release-rail">${appFeatureCards(app)}</div></section>
+    <section class="section report-detail"><div><p class="kicker">App Store Readiness</p><h3>Public compliance paths</h3><ul class="report-list">
+      <li><strong>Support</strong><span>Available</span><small><a href="${app.supportUrl}">${app.supportUrl}</a></small></li>
+      <li><strong>Privacy</strong><span>Available</span><small><a href="${app.privacyUrl}">${app.privacyUrl}</a></small></li>
+      <li><strong>Terms</strong><span>Available</span><small><a href="${app.termsUrl}">${app.termsUrl}</a></small></li>
+      <li><strong>Data</strong><span>Available</span><small><a href="${app.deleteDataUrl}">${app.deleteDataUrl}</a></small></li>
+    </ul></div></section>`
+  });
+}
+
+function appSupportPage(app) {
+  const base = appBasePath(app);
+  return shell({
+    path: `${base}/support.html`,
+    title: `${app.name} Support | LuxFlow`,
+    description: `Support information for ${app.name}.`,
+    body: `${pageHero("Support", `${app.name} Support`, "Use this public support path for product questions, access issues, account review, and app-store support routing.", `<div class="hero-actions"><button class="button button-primary" data-open-form="press">Contact Support</button><a class="button button-quiet" href="${base}/index.html">${app.name}</a></div>`)}
+    <section class="section prose-block"><h2>Support Scope</h2><p>${app.name} support covers product access questions, waitlist status, download links, account questions if accounts are live, and app-store review support.</p><h2>Contact</h2><p>Use the contact path on this site and include the app name, device, platform, and a short description of the issue.</p><h2>Availability</h2><p>Some features may remain waitlist-only until the app is released on web, App Store, or Google Play.</p></section>`
+  });
+}
+
+function appPrivacyPage(app) {
+  const base = appBasePath(app);
+  return shell({
+    path: `${base}/privacy.html`,
+    title: `${app.name} Privacy | LuxFlow`,
+    description: `Privacy information for ${app.name}.`,
+    body: `${pageHero("Privacy", `${app.name} Privacy`, "This app-specific privacy page explains the public data categories expected for waitlist, download, support, and future account access.", `<div class="hero-actions"><a class="button button-primary" href="/legal/privacy.html">Main Privacy</a><a class="button button-quiet" href="${base}/support.html">Support</a></div>`)}
+    <section class="section prose-block"><h2>Data Collected</h2><p>${app.name} may collect contact details, access-path interest, support messages, device or platform context supplied by the user, and app activity if account features go live.</p><h2>Email and Notifications</h2><p>Email follow-up is optional and used for access, support, product updates, and download availability where consent is provided.</p><h2>Purchases</h2><p>If paid downloads, subscriptions, memberships, or in-app purchases are offered, purchase details may be processed by the relevant store, payment provider, or approved checkout flow.</p><h2>User Content</h2><p>If the app accepts prompts, creative notes, media, or other content, that material may be reviewed, stored, or routed to provide the requested feature or support path.</p><h2>Contact and Deletion</h2><p>Use the support or data deletion page for app-specific privacy requests.</p></section>`
+  });
+}
+
+function appTermsPage(app) {
+  const base = appBasePath(app);
+  return shell({
+    path: `${base}/terms.html`,
+    title: `${app.name} Terms | LuxFlow`,
+    description: `Terms information for ${app.name}.`,
+    body: `${pageHero("Terms", `${app.name} Terms`, "These app-specific terms describe public waitlist, download, support, and future account access conditions.", `<div class="hero-actions"><a class="button button-primary" href="/legal/terms.html">Main Terms</a><a class="button button-quiet" href="${base}/support.html">Support</a></div>`)}
+    <section class="section prose-block"><h2>Use</h2><p>${app.name} may be offered as a waitlist, web app, mobile app, or gated product experience. Access may be limited, screened, changed, or withdrawn.</p><h2>Accounts</h2><p>If account features are launched, users are responsible for keeping account access secure and using the app lawfully.</p><h2>Creative Material</h2><p>Users should submit only material they have the right to use. App outputs and drafts should be reviewed before public, legal, commercial, or release decisions.</p><h2>Purchases and Refunds</h2><p>If paid features go live, store, subscription, cancellation, and refund terms will be shown at the point of purchase or inside the relevant app store flow.</p><h2>Changes</h2><p>Features, pricing, availability, and terms may change as the app moves from waitlist to release.</p></section>`
+  });
+}
+
+function appDeleteDataPage(app) {
+  const base = appBasePath(app);
+  return shell({
+    path: `${base}/delete-data.html`,
+    title: `${app.name} Data Deletion | LuxFlow`,
+    description: `Data deletion request path for ${app.name}.`,
+    body: `${pageHero("Data", `${app.name} Data Deletion`, "Use this page to request deletion or review of app-related personal data when account or submission records exist.", `<div class="hero-actions"><button class="button button-primary" data-open-form="press">Request Data Review</button><a class="button button-quiet" href="${base}/privacy.html">Privacy</a></div>`)}
+    <section class="section prose-block"><h2>How to Request</h2><p>Use the contact path on this site and include the app name, the email connected to the request, and the type of data you want reviewed or deleted.</p><h2>Before Accounts Are Live</h2><p>If ${app.name} is waitlist-only, deletion may apply to waitlist, support, and access-request records rather than in-app account data.</p><h2>Store Accounts</h2><p>Apple App Store or Google Play account, billing, and device records may need to be managed through the relevant store account settings.</p></section>`
+  });
+}
+
+function appDownloadPage(app) {
+  const base = appBasePath(app);
+  const storeLinks = [
+    app.appStoreUrl ? `<a class="button button-primary" href="${app.appStoreUrl}">App Store</a>` : "",
+    app.playStoreUrl ? `<a class="button button-primary" href="${app.playStoreUrl}">Google Play</a>` : "",
+    app.webUrl ? `<a class="button button-primary" href="${app.webUrl}">Open Web App</a>` : ""
+  ].filter(Boolean).join("");
+  return shell({
+    path: `${base}/download.html`,
+    title: `${app.name} Download | LuxFlow`,
+    description: `Download and waitlist path for ${app.name}.`,
+    body: `${pageHero("Download", `${app.name} Download`, "Download links appear here when public store listings or web access are live. Until then, join the waitlist for first access.", `<div class="hero-actions">${storeLinks || `<button class="button button-primary" data-open-form="fan">${app.primaryCta || "Join waitlist"}</button>`}<a class="button button-quiet" href="${base}/index.html">${app.name}</a></div>`)}
+    <section class="section split-band"><div><p class="kicker">${app.statusLabel || "Waitlist"}</p><h2>Store links open only when approved.</h2></div><div><p>${app.name} is prepared for ${(app.platforms || []).join(", ")} rollout. Public links will be added after store listings, support paths, and legal pages are approved.</p></div></section>`
+  });
+}
+
+function appPages() {
+  return luxFlowApps.flatMap((app) => {
+    const base = appBasePath(app);
+    return [
+      [`${base}/index.html`, appProductPage(app)],
+      [`${base}/support.html`, appSupportPage(app)],
+      [`${base}/privacy.html`, appPrivacyPage(app)],
+      [`${base}/terms.html`, appTermsPage(app)],
+      [`${base}/delete-data.html`, appDeleteDataPage(app)],
+      [`${base}/download.html`, appDownloadPage(app)]
+    ];
+  });
+}
+
 function portalReport() {
   return shell({
     path: "/portal/reporting.html",
@@ -1073,6 +1216,9 @@ function placeholder(path, title, description) {
 
 const pages = [
   ["/index.html", home()],
+  ["/apps/index.html", appsIndex()],
+  ["/luxflow/index.html", luxflowIndex()],
+  ...appPages(),
   ["/music.html", music()],
   ["/film.html", film()],
   ["/events.html", eventsIndex()],
@@ -1231,6 +1377,19 @@ await Promise.all(
 
 const publicPaths = [
   "/index.html",
+  "/apps/index.html",
+  "/luxflow/index.html",
+  ...luxFlowApps.flatMap((app) => {
+    const base = appBasePath(app);
+    return [
+      `${base}/index.html`,
+      `${base}/support.html`,
+      `${base}/privacy.html`,
+      `${base}/terms.html`,
+      `${base}/delete-data.html`,
+      `${base}/download.html`
+    ];
+  }),
   "/music.html",
   "/film.html",
   "/events.html",
@@ -1307,6 +1466,7 @@ await writeFile("data/lux-build-manifest.json", `${JSON.stringify({
   fanFlywheelVersion: fanFlywheel.version,
   dropRoomVersion: dropRoom.version,
   portalRoomsVersion: portalRooms.version,
+  appCatalogVersion: luxApps.version,
   phaseStatusVersion: phaseStatus.version,
   publicTermsVersion: publicTerms.version,
   routeCount: pages.length,

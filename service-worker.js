@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260705-cache-refresh";
+const CACHE_NAME = "luxveritas-static-20260705-luxflow-apps";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260705-cache-refresh",
-  "/app.js?v=20260705-cache-refresh",
+  "/styles.css?v=20260705-luxflow-apps",
+  "/app.js?v=20260705-luxflow-apps",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"

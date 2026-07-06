@@ -21,6 +21,7 @@ const requiredFiles = [
   "data/lux-fan-flywheel.json",
   "data/lux-drop-room.json",
   "data/lux-portal-rooms.json",
+  "data/lux-apps.json",
   "data/lux-phase-status.json",
   "data/lux-pilot-write-evidence.json",
   "data/lux-media-manifest.json",
@@ -356,6 +357,7 @@ const brandHouseRaw = await readFile(join(root, "data/lux-brand-house.json"), "u
 const fanFlywheelRaw = await readFile(join(root, "data/lux-fan-flywheel.json"), "utf8");
 const dropRoomRaw = await readFile(join(root, "data/lux-drop-room.json"), "utf8");
 const portalRoomsRaw = await readFile(join(root, "data/lux-portal-rooms.json"), "utf8");
+const luxAppsRaw = await readFile(join(root, "data/lux-apps.json"), "utf8");
 const phaseStatusRaw = await readFile(join(root, "data/lux-phase-status.json"), "utf8");
 const pilotWriteEvidenceRaw = await readFile(join(root, "data/lux-pilot-write-evidence.json"), "utf8");
 const mediaManifestRaw = await readFile(join(root, "data/lux-media-manifest.json"), "utf8");
@@ -380,6 +382,7 @@ for (const pattern of bannedTerms) {
   if (pattern.test(fanFlywheelRaw)) issues.push(`data/lux-fan-flywheel.json: banned public term matched ${pattern}`);
   if (pattern.test(dropRoomRaw)) issues.push(`data/lux-drop-room.json: banned public term matched ${pattern}`);
   if (pattern.test(portalRoomsRaw)) issues.push(`data/lux-portal-rooms.json: banned public term matched ${pattern}`);
+  if (pattern.test(luxAppsRaw)) issues.push(`data/lux-apps.json: banned public term matched ${pattern}`);
   if (pattern.test(phaseStatusRaw)) issues.push(`data/lux-phase-status.json: banned public term matched ${pattern}`);
   if (pattern.test(pilotWriteEvidenceRaw)) issues.push(`data/lux-pilot-write-evidence.json: banned public term matched ${pattern}`);
   if (pattern.test(mediaManifestRaw)) issues.push(`data/lux-media-manifest.json: banned public term matched ${pattern}`);
@@ -430,8 +433,8 @@ try {
   if (buildManifest.routeCount !== htmlFiles.length) {
     issues.push(`data/lux-build-manifest.json: routeCount ${buildManifest.routeCount} does not match ${htmlFiles.length} generated HTML files`);
   }
-  if (!buildManifest.publicRouteCount || !buildManifest.mediaManifestVersion || !buildManifest.releaseRoomVersion || !buildManifest.radioProgrammingVersion || !buildManifest.pilotBugRegisterVersion || !buildManifest.actionInventoryVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.phaseStatusVersion || !buildManifest.publicTermsVersion) {
-    issues.push("data/lux-build-manifest.json: missing publicRouteCount, mediaManifestVersion, releaseRoomVersion, radioProgrammingVersion, pilotBugRegisterVersion, actionInventoryVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, phaseStatusVersion, or publicTermsVersion");
+  if (!buildManifest.publicRouteCount || !buildManifest.mediaManifestVersion || !buildManifest.releaseRoomVersion || !buildManifest.radioProgrammingVersion || !buildManifest.pilotBugRegisterVersion || !buildManifest.actionInventoryVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.appCatalogVersion || !buildManifest.phaseStatusVersion || !buildManifest.publicTermsVersion) {
+    issues.push("data/lux-build-manifest.json: missing publicRouteCount, mediaManifestVersion, releaseRoomVersion, radioProgrammingVersion, pilotBugRegisterVersion, actionInventoryVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, appCatalogVersion, phaseStatusVersion, or publicTermsVersion");
   }
 } catch (error) {
   issues.push(`data/lux-build-manifest.json: invalid JSON (${error.message})`);
@@ -671,6 +674,50 @@ try {
   }
 } catch (error) {
   issues.push(`data/lux-portal-rooms.json: invalid JSON (${error.message})`);
+}
+
+try {
+  const luxApps = JSON.parse(luxAppsRaw);
+  const apps = Array.isArray(luxApps.apps) ? luxApps.apps : [];
+  if (luxApps.schemaVersion !== "luxveritas.apps.v1") {
+    issues.push("data/lux-apps.json: missing schemaVersion luxveritas.apps.v1");
+  }
+  if (!luxApps.version || !luxApps.suite?.id || !luxApps.suite?.headline || !luxApps.suite?.summary) {
+    issues.push("data/lux-apps.json: missing version or suite summary fields");
+  }
+  const expectedApps = ["cr8", "canoncraft", "signalcrafter", "realcraft", "promptops"];
+  const appIds = apps.map((app) => app.id);
+  if (appIds.join("|") !== expectedApps.join("|")) {
+    issues.push(`data/lux-apps.json: expected apps ${expectedApps.join(", ")}, found ${appIds.join(", ")}`);
+  }
+  for (const app of apps) {
+    for (const field of ["id", "slug", "suite", "name", "status", "category", "headline", "shortDescription", "audience", "primaryCta", "supportUrl", "privacyUrl", "termsUrl", "deleteDataUrl", "downloadUrl"]) {
+      if (!app[field]) issues.push(`data/lux-apps.json: ${app.id || "app"} missing ${field}`);
+    }
+    if (app.suite !== "luxflow") issues.push(`data/lux-apps.json: ${app.id || "app"} must remain in luxflow suite`);
+    if (!Array.isArray(app.platforms) || !app.platforms.includes("ios") || !app.platforms.includes("android") || !app.platforms.includes("web")) {
+      issues.push(`data/lux-apps.json: ${app.id || "app"} missing web/ios/android platforms`);
+    }
+    const base = `luxflow/${app.slug}`;
+    for (const route of ["index.html", "support.html", "privacy.html", "terms.html", "delete-data.html", "download.html"]) {
+      const rel = `${base}/${route}`;
+      if (!relFiles.has(rel)) issues.push(`${rel}: missing generated app route`);
+    }
+    const productHtml = relFiles.has(`${base}/index.html`)
+      ? await readFile(join(root, base, "index.html"), "utf8")
+      : "";
+    if (productHtml && (!productHtml.includes(app.name) || !productHtml.includes(app.supportUrl) || !productHtml.includes(app.privacyUrl) || !productHtml.includes(app.termsUrl) || !productHtml.includes(app.deleteDataUrl))) {
+      issues.push(`${base}/index.html: missing app compliance links`);
+    }
+  }
+  const appsHtml = await readFile(join(root, "apps/index.html"), "utf8");
+  const luxflowHtml = await readFile(join(root, "luxflow/index.html"), "utf8");
+  for (const app of apps) {
+    if (!appsHtml.includes(`data-lux-app="${app.id}"`)) issues.push(`apps/index.html: missing app card ${app.id}`);
+    if (!luxflowHtml.includes(`data-lux-app="${app.id}"`)) issues.push(`luxflow/index.html: missing app card ${app.id}`);
+  }
+} catch (error) {
+  issues.push(`data/lux-apps.json: invalid JSON (${error.message})`);
 }
 
 try {
