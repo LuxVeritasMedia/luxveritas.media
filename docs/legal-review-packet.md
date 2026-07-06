@@ -99,8 +99,8 @@ The reviewer should fill this out outside the public repo before any approval co
 - privacyVersion: `privacy-draft-2026-07-03`
 - termsVersion: `terms-draft-2026-06-09`
 - submissionTermsVersion: `submission-draft-2026-06-09`
-- assetVersion: `20260630-pilot-feedback-report`
-- pilotQaRunId: `20260705120526`
+- assetVersion: `20260705-app-market`
+- pilotQaRunId: `20260706012216`
 - evidenceReference: no-secret approval reference only
 - conditionsOrChanges:
 
