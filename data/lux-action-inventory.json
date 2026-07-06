@@ -1,7 +1,7 @@
 {
   "schemaVersion": "luxveritas.action_inventory.v1",
-  "version": "2026-07-05-luxflow-apps",
-  "buildAssetVersion": "20260705-luxflow-apps",
+  "version": "2026-07-05-app-market",
+  "buildAssetVersion": "20260705-app-market",
   "routeCount": 70,
   "actionCount": 2249,
   "summary": {

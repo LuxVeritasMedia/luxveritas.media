@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { actionInventoryVersion } from "./lib/action-inventory.mjs";
 import "./export-open-approvals.mjs";
 
-const assetVersion = "20260705-luxflow-apps";
+const assetVersion = "20260705-app-market";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const releaseRoom = JSON.parse(await readFile("data/lux-release-room.json", "utf8"));
 const radioProgramming = JSON.parse(await readFile("data/lux-radio-programming.json", "utf8"));

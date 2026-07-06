@@ -1,7 +1,7 @@
 import { readFile, readdir } from "node:fs/promises";
 import { join, normalize, relative } from "node:path";
 
-export const actionInventoryVersion = "2026-07-05-luxflow-apps";
+export const actionInventoryVersion = "2026-07-05-app-market";
 export const actionInventoryHtmlFiles = [
   "about.html",
   "apps/index.html",
