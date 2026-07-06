@@ -1,9 +1,9 @@
 {
   "schemaVersion": "luxveritas.pilot_write_evidence.v1",
-  "updatedAt": "2026-07-05T12:07:28Z",
+  "updatedAt": "2026-07-06T01:24:25Z",
   "liveUrl": "https://luxveritas.media",
-  "assetVersion": "20260705-cache-refresh",
-  "qaRunId": "20260705120526",
+  "assetVersion": "20260705-app-market",
+  "qaRunId": "20260706012216",
   "command": "LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs",
   "result": "passed",
   "operatorTokenSource": "macOS Keychain",

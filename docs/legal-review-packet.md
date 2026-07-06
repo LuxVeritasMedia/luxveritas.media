@@ -9,10 +9,10 @@ This packet is for Privacy and Terms review before public launch. It is not lega
 The public site is technically pilot-ready, but not cleared for unrestricted public launch until Privacy and Terms are approved.
 
 - Live URL: `https://luxveritas.media`
-- Current asset version: `20260705-cache-refresh`
+- Current asset version: `20260705-app-market`
 - Pilot write evidence file: `data/lux-pilot-write-evidence.json`
-- Latest pilot QA run: `20260705120526`
-- Pilot evidence updated: `2026-07-05T12:07:28Z`
+- Latest pilot QA run: `20260706012216`
+- Pilot evidence updated: `2026-07-06T01:24:25Z`
 - Pilot result: `passed`
 - Live capture intents written: `11`
 - Live event/reporting writes: `13`
