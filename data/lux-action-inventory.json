@@ -3,14 +3,14 @@
   "version": "2026-07-05-app-market",
   "buildAssetVersion": "20260705-app-market",
   "routeCount": 70,
-  "actionCount": 2249,
+  "actionCount": 2254,
   "summary": {
     "byType": {
       "navigation_toggle": 69,
-      "form_open": 183,
+      "form_open": 187,
       "dialog_close": 69,
       "form_submit": 69,
-      "link_click": 1806,
+      "link_click": 1807,
       "portal_signin": 1,
       "fan_signal_export": 8,
       "media_action": 18,
@@ -43,7 +43,7 @@
       "legal/privacy.html": 29,
       "legal/terms.html": 29,
       "luxflow/index.html": 35,
-      "luxflow/cr8/index.html": 34,
+      "luxflow/cr8/index.html": 39,
       "luxflow/cr8/support.html": 30,
       "luxflow/cr8/privacy.html": 30,
       "luxflow/cr8/terms.html": 30,
@@ -93,10 +93,10 @@
     },
     "byReportingEvent": {
       "navigation_toggle": 69,
-      "form_open": 183,
+      "form_open": 187,
       "dialog_close": 69,
       "lead_accepted": 69,
-      "link_click": 1806,
+      "link_click": 1807,
       "portal_signin_capture": 1,
       "local_export": 8,
       "media_action": 18,
@@ -106,16 +106,16 @@
       "consent_update": 2
     },
     "byReportingStatus": {
-      "declared": 2249
+      "declared": 2254
     },
     "byReportingChannel": {
-      "consented_event": 2161,
+      "consented_event": 2166,
       "server_capture": 70,
       "local_receipt": 8,
       "protected_operator": 10
     },
     "bySurface": {
-      "implicit_surface": 1769,
+      "implicit_surface": 1774,
       "brand_house": 12,
       "footer_house": 414,
       "fan_flywheel": 30,
@@ -14434,7 +14434,83 @@
       "expectedOutcome": "Opens screened capture form"
     },
     {
-      "id": "luxflow_cr8_index_html__3__dialog_close__action",
+      "id": "luxflow_cr8_index_html__3__form_open__fan",
+      "route": "luxflow/cr8/index.html",
+      "element": "button",
+      "label": "Join waitlist",
+      "actionType": "form_open",
+      "actionValue": "fan",
+      "target": "",
+      "formType": "fan",
+      "mediaAction": "",
+      "reportAction": "",
+      "surface": "",
+      "intent": "",
+      "reportingKey": "luxflow-cr8-index-html__form-open__fan",
+      "reportingEvent": "form_open",
+      "reportingStatus": "declared",
+      "reportingChannel": "consented_event",
+      "expectedOutcome": "Opens screened capture form"
+    },
+    {
+      "id": "luxflow_cr8_index_html__4__form_open__fan",
+      "route": "luxflow/cr8/index.html",
+      "element": "button",
+      "label": "Request creator access",
+      "actionType": "form_open",
+      "actionValue": "fan",
+      "target": "",
+      "formType": "fan",
+      "mediaAction": "",
+      "reportAction": "",
+      "surface": "",
+      "intent": "",
+      "reportingKey": "luxflow-cr8-index-html__form-open__fan",
+      "reportingEvent": "form_open",
+      "reportingStatus": "declared",
+      "reportingChannel": "consented_event",
+      "expectedOutcome": "Opens screened capture form"
+    },
+    {
+      "id": "luxflow_cr8_index_html__5__form_open__fan",
+      "route": "luxflow/cr8/index.html",
+      "element": "button",
+      "label": "Request partner path",
+      "actionType": "form_open",
+      "actionValue": "fan",
+      "target": "",
+      "formType": "fan",
+      "mediaAction": "",
+      "reportAction": "",
+      "surface": "",
+      "intent": "",
+      "reportingKey": "luxflow-cr8-index-html__form-open__fan",
+      "reportingEvent": "form_open",
+      "reportingStatus": "declared",
+      "reportingChannel": "consented_event",
+      "expectedOutcome": "Opens screened capture form"
+    },
+    {
+      "id": "luxflow_cr8_index_html__6__form_open__fan",
+      "route": "luxflow/cr8/index.html",
+      "element": "button",
+      "label": "Join CR8 waitlist",
+      "actionType": "form_open",
+      "actionValue": "fan",
+      "target": "",
+      "formType": "fan",
+      "mediaAction": "",
+      "reportAction": "",
+      "surface": "",
+      "intent": "",
+      "reportingKey": "luxflow-cr8-index-html__form-open__fan",
+      "reportingEvent": "form_open",
+      "reportingStatus": "declared",
+      "reportingChannel": "consented_event",
+      "expectedOutcome": "Opens screened capture form"
+    },
+    {
+      "id": "luxflow_cr8_index_html__7__dialog_close__action",
       "route": "luxflow/cr8/index.html",
       "element": "button",
       "label": "×",
@@ -14453,7 +14529,7 @@
       "expectedOutcome": "Closes capture dialog"
     },
     {
-      "id": "luxflow_cr8_index_html__4__form_submit__send-to-lux-veritas",
+      "id": "luxflow_cr8_index_html__8__form_submit__send-to-lux-veritas",
       "route": "luxflow/cr8/index.html",
       "element": "button",
       "label": "Send to Lux Veritas",
@@ -14472,7 +14548,7 @@
       "expectedOutcome": "Submits current capture form"
     },
     {
-      "id": "luxflow_cr8_index_html__5__link_click__main",
+      "id": "luxflow_cr8_index_html__9__link_click__main",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Skip to content",
@@ -14491,7 +14567,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__6__link_click__index-html",
+      "id": "luxflow_cr8_index_html__10__link_click__index-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "LV Lux Veritas",
@@ -14510,7 +14586,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__7__link_click__index-html",
+      "id": "luxflow_cr8_index_html__11__link_click__index-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Home",
@@ -14529,7 +14605,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__8__link_click__music-html",
+      "id": "luxflow_cr8_index_html__12__link_click__music-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Music",
@@ -14548,7 +14624,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__9__link_click__film-html",
+      "id": "luxflow_cr8_index_html__13__link_click__film-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Film",
@@ -14567,7 +14643,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__10__link_click__events-html",
+      "id": "luxflow_cr8_index_html__14__link_click__events-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Events",
@@ -14586,7 +14662,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__11__link_click__codex-html",
+      "id": "luxflow_cr8_index_html__15__link_click__codex-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Codex",
@@ -14605,7 +14681,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__12__link_click__about-html",
+      "id": "luxflow_cr8_index_html__16__link_click__about-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "About",
@@ -14624,7 +14700,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__13__link_click__luxflow-cr8-download-html",
+      "id": "luxflow_cr8_index_html__17__link_click__luxflow-cr8-download-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Join CR8 waitlist",
@@ -14643,7 +14719,26 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__14__link_click__luxflow-cr8-support-html",
+      "id": "luxflow_cr8_index_html__18__link_click__luxflow-cr8-support-html",
+      "route": "luxflow/cr8/index.html",
+      "element": "a",
+      "label": "View support path",
+      "actionType": "link_click",
+      "actionValue": "/luxflow/cr8/support.html",
+      "target": "/luxflow/cr8/support.html",
+      "formType": "",
+      "mediaAction": "",
+      "reportAction": "",
+      "surface": "",
+      "intent": "",
+      "reportingKey": "luxflow-cr8-index-html__link-click__luxflow-cr8-support-html",
+      "reportingEvent": "link_click",
+      "reportingStatus": "declared",
+      "reportingChannel": "consented_event",
+      "expectedOutcome": "Navigates to public or screened route"
+    },
+    {
+      "id": "luxflow_cr8_index_html__19__link_click__luxflow-cr8-support-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "/luxflow/cr8/support.html",
@@ -14662,7 +14757,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__15__link_click__luxflow-cr8-privacy-html",
+      "id": "luxflow_cr8_index_html__20__link_click__luxflow-cr8-privacy-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "/luxflow/cr8/privacy.html",
@@ -14681,7 +14776,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__16__link_click__luxflow-cr8-terms-html",
+      "id": "luxflow_cr8_index_html__21__link_click__luxflow-cr8-terms-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "/luxflow/cr8/terms.html",
@@ -14700,7 +14795,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__17__link_click__luxflow-cr8-delete-data-html",
+      "id": "luxflow_cr8_index_html__22__link_click__luxflow-cr8-delete-data-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "/luxflow/cr8/delete-data.html",
@@ -14719,7 +14814,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__18__link_click__music-html",
+      "id": "luxflow_cr8_index_html__23__link_click__music-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Lux Veritas Records",
@@ -14738,7 +14833,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__19__link_click__film-html",
+      "id": "luxflow_cr8_index_html__24__link_click__film-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Lux Veritas Studios",
@@ -14757,7 +14852,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__20__link_click__codex-html",
+      "id": "luxflow_cr8_index_html__25__link_click__codex-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Lux Veritas Publishing",
@@ -14776,7 +14871,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__21__link_click__events-html",
+      "id": "luxflow_cr8_index_html__26__link_click__events-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Lux Veritas Live",
@@ -14795,7 +14890,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__22__link_click__membership-html",
+      "id": "luxflow_cr8_index_html__27__link_click__membership-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Lux Circle",
@@ -14814,7 +14909,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__23__link_click__store-html",
+      "id": "luxflow_cr8_index_html__28__link_click__store-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Lux Atelier",
@@ -14833,7 +14928,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__24__link_click__works-index-html",
+      "id": "luxflow_cr8_index_html__29__link_click__works-index-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Works",
@@ -14852,7 +14947,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__25__link_click__store-html",
+      "id": "luxflow_cr8_index_html__30__link_click__store-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Store",
@@ -14871,7 +14966,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__26__link_click__membership-html",
+      "id": "luxflow_cr8_index_html__31__link_click__membership-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Membership",
@@ -14890,7 +14985,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__27__link_click__submissions-html",
+      "id": "luxflow_cr8_index_html__32__link_click__submissions-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Submissions",
@@ -14909,7 +15004,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__28__link_click__press-html",
+      "id": "luxflow_cr8_index_html__33__link_click__press-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Press",
@@ -14928,7 +15023,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__29__link_click__contact-html",
+      "id": "luxflow_cr8_index_html__34__link_click__contact-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Contact",
@@ -14947,7 +15042,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__30__link_click__legal-privacy-html",
+      "id": "luxflow_cr8_index_html__35__link_click__legal-privacy-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Privacy",
@@ -14966,7 +15061,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__31__link_click__legal-terms-html",
+      "id": "luxflow_cr8_index_html__36__link_click__legal-terms-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Terms",
@@ -14985,7 +15080,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__32__link_click__legal-privacy-html",
+      "id": "luxflow_cr8_index_html__37__link_click__legal-privacy-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Privacy",
@@ -15004,7 +15099,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "luxflow_cr8_index_html__33__link_click__legal-terms-html",
+      "id": "luxflow_cr8_index_html__38__link_click__legal-terms-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
       "label": "Terms",

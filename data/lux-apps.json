@@ -17,11 +17,72 @@
       "status": "waitlist",
       "statusLabel": "Waitlist",
       "category": "Creator App",
+      "flagship": true,
       "platforms": ["web", "ios", "android"],
       "headline": "Create from the source.",
       "shortDescription": "A LuxFlow creator app for shaping media ideas, release assets, prompts, and creative packages into reviewable next steps.",
       "audience": "Artists, creators, and creative operators preparing work for review, release, or collaboration.",
       "features": ["Idea capture", "Prompt-ready briefs", "Release asset planning", "Review packet export"],
+      "heroProof": ["Flagship creator app", "Waitlist open", "Web, iOS, and Android planned"],
+      "previewScreens": [
+        {
+          "eyebrow": "Capture",
+          "title": "Start with the raw idea.",
+          "body": "Collect the song, scene, visual, drop, or campaign thought before it gets lost.",
+          "items": ["Idea note", "Reference mood", "Audience door"]
+        },
+        {
+          "eyebrow": "Shape",
+          "title": "Turn fragments into a packet.",
+          "body": "CR8 frames the work into a reviewable brief with creative direction and next steps.",
+          "items": ["Creative brief", "Asset needs", "Review status"]
+        },
+        {
+          "eyebrow": "Send",
+          "title": "Move only what is ready.",
+          "body": "Export a clean package for submission, collaboration, or future release review.",
+          "items": ["Packet export", "Credit notes", "Access path"]
+        }
+      ],
+      "waitlistTiers": [
+        {
+          "name": "First Access",
+          "price": "Free waitlist",
+          "body": "For fans and creators who want early notice when CR8 opens.",
+          "features": ["Launch updates", "Early beta invitations", "Download alerts"],
+          "cta": "Join waitlist"
+        },
+        {
+          "name": "Creator Seat",
+          "price": "Pricing to be announced",
+          "body": "For artists, writers, designers, and builders preparing active creative work.",
+          "features": ["Project packets", "Prompt-ready briefs", "Submission-ready exports"],
+          "cta": "Request creator access"
+        },
+        {
+          "name": "Studio Circle",
+          "price": "Screened partner access",
+          "body": "For teams and partners that need a cleaner path from idea to review.",
+          "features": ["Team review paths", "Partner-ready packets", "Priority access review"],
+          "cta": "Request partner path"
+        }
+      ],
+      "storeCopy": {
+        "appStore": {
+          "subtitle": "Creative packets for artists",
+          "description": "CR8 helps creators shape ideas, prompts, assets, and release thoughts into clean packets for review, collaboration, and future release pathways."
+        },
+        "googlePlay": {
+          "shortDescription": "Shape ideas, prompts, and creative assets into reviewable packets.",
+          "fullDescription": "CR8 is a creator app from Lux Veritas for capturing raw ideas, shaping them into structured creative packets, and preparing work for review, collaboration, or future release paths. Start with the source, clarify the signal, and move only what is ready."
+        }
+      },
+      "conversion": {
+        "headline": "The first door is simple.",
+        "body": "Join the CR8 waitlist to receive launch updates, store availability, beta invitations, and early creator access opportunities.",
+        "primaryCta": "Join CR8 waitlist",
+        "secondaryCta": "View support path"
+      },
       "primaryCta": "Join CR8 waitlist",
       "appStoreUrl": "",
       "playStoreUrl": "",

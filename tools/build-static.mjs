@@ -861,6 +861,57 @@ function appFeatureCards(app) {
   return features.map((feature) => `<article><span>${app.name}</span><h3>${feature}</h3><p>${app.name} will open this path through approved product releases, waitlists, or download links.</p></article>`).join("");
 }
 
+function appProofBar(app) {
+  const items = Array.isArray(app.heroProof) ? app.heroProof : [];
+  if (!items.length) return "";
+  return `<section class="app-proof" aria-label="${app.name} launch status">${items.map((item) => `<span>${item}</span>`).join("")}</section>`;
+}
+
+function appPreviewScreens(app) {
+  const screens = Array.isArray(app.previewScreens) ? app.previewScreens : [];
+  if (!screens.length) return "";
+  return `<section class="section app-preview-section"><div class="section-heading"><p class="kicker">Interface Preview</p><h2>From spark to reviewable packet.</h2><p>These previews show the public product direction for ${app.name}. The live app opens later through approved release paths.</p></div><div class="app-preview-grid">${screens.map((screen) => `<article class="app-screen">
+    <div class="screen-shell">
+      <div class="screen-topbar"><span>${screen.eyebrow}</span><i></i></div>
+      <h3>${screen.title}</h3>
+      <p>${screen.body}</p>
+      <ul>${(screen.items || []).map((item) => `<li><span></span>${item}</li>`).join("")}</ul>
+    </div>
+  </article>`).join("")}</div></section>`;
+}
+
+function appWaitlistTiers(app) {
+  const tiers = Array.isArray(app.waitlistTiers) ? app.waitlistTiers : [];
+  if (!tiers.length) return "";
+  return `<section class="section app-pricing-section"><div class="section-heading"><p class="kicker">Access Tiers</p><h2>Start on the waitlist. Open deeper by fit.</h2><p>Pricing and account features will be confirmed before public launch. Today, the page captures the right path without overpromising access.</p></div><div class="pricing-grid">${tiers.map((tier) => `<article class="pricing-card">
+    <span>${tier.name}</span>
+    <h3>${tier.price}</h3>
+    <p>${tier.body}</p>
+    <ul>${(tier.features || []).map((feature) => `<li>${feature}</li>`).join("")}</ul>
+    <button class="button button-quiet" type="button" data-open-form="fan">${tier.cta}</button>
+  </article>`).join("")}</div></section>`;
+}
+
+function appStoreCopy(app) {
+  const storeCopy = app.storeCopy || {};
+  if (!storeCopy.appStore && !storeCopy.googlePlay) return "";
+  return `<section class="section store-copy-section"><div class="section-heading"><p class="kicker">Store Copy</p><h2>Prepared for App Store and Google Play review.</h2><p>This public copy can be refined into final listing metadata once screenshots, ratings, and release approvals are locked.</p></div><div class="store-copy-grid">
+    ${storeCopy.appStore ? `<article class="store-copy-card"><span>Apple App Store</span><h3>${storeCopy.appStore.subtitle}</h3><p>${storeCopy.appStore.description}</p></article>` : ""}
+    ${storeCopy.googlePlay ? `<article class="store-copy-card"><span>Google Play</span><h3>${storeCopy.googlePlay.shortDescription}</h3><p>${storeCopy.googlePlay.fullDescription}</p></article>` : ""}
+  </div></section>`;
+}
+
+function appConversionBand(app) {
+  const conversion = app.conversion;
+  if (!conversion) return "";
+  return `<section class="section app-conversion"><div><p class="kicker">${app.name} Waitlist</p><h2>${conversion.headline}</h2><p>${conversion.body}</p><div class="hero-actions"><button class="button button-primary" type="button" data-open-form="fan">${conversion.primaryCta}</button><a class="button button-quiet" href="${app.supportUrl}">${conversion.secondaryCta}</a></div></div></section>`;
+}
+
+function appFlagshipSections(app) {
+  if (!app.flagship) return "";
+  return `${appProofBar(app)}${appPreviewScreens(app)}${appWaitlistTiers(app)}${appStoreCopy(app)}${appConversionBand(app)}`;
+}
+
 function appProductPage(app) {
   const base = appBasePath(app);
   return shell({
@@ -868,8 +919,9 @@ function appProductPage(app) {
     title: `${app.name} | LuxFlow`,
     description: app.shortDescription,
     body: `${pageHero(app.category || "LuxFlow App", app.name, `${app.headline}\n\n${app.shortDescription}`, `<div class="hero-actions"><a class="button button-primary" href="${app.downloadUrl}">${app.primaryCta || "Join waitlist"}</a><button class="button button-quiet" data-open-form="fan">Request early access</button></div>`)}
+    ${appFlagshipSections(app)}
     <section class="section split-band"><div><p class="kicker">${app.statusLabel || "Waitlist"}</p><h2>${app.audience}</h2></div><div><p>Platforms planned: ${(app.platforms || []).join(", ")}.</p><p>Public app pages provide product information, support, legal, and download paths. Account-gated features open only when approved access is ready.</p></div></section>
-    <section class="section"><div class="release-rail">${appFeatureCards(app)}</div></section>
+    ${app.flagship ? "" : `<section class="section"><div class="release-rail">${appFeatureCards(app)}</div></section>`}
     <section class="section report-detail"><div><p class="kicker">App Store Readiness</p><h3>Public compliance paths</h3><ul class="report-list">
       <li><strong>Support</strong><span>Available</span><small><a href="${app.supportUrl}">${app.supportUrl}</a></small></li>
       <li><strong>Privacy</strong><span>Available</span><small><a href="${app.privacyUrl}">${app.privacyUrl}</a></small></li>
