@@ -71,6 +71,9 @@ const assetFiles = [
   "assets/luxveritas-threshold.png",
   "assets/luxveritas-signal-poster.svg",
   "assets/luxveritas-icon.svg",
+  "assets/apps/cr8/cr8-icon-1024.png",
+  "assets/apps/cr8/cr8-google-play-icon-512.png",
+  "assets/apps/cr8/cr8-google-play-feature-1024x500.png",
   "assets/lux-house-records.svg",
   "assets/lux-house-studios.svg",
   "assets/lux-house-publishing.svg",
@@ -100,6 +103,7 @@ await cp("data/lux-fan-flywheel.json", join(dist, "data/lux-fan-flywheel.json"))
 await cp("data/lux-drop-room.json", join(dist, "data/lux-drop-room.json"));
 await cp("data/lux-portal-rooms.json", join(dist, "data/lux-portal-rooms.json"));
 await cp("data/lux-apps.json", join(dist, "data/lux-apps.json"));
+await cp("data/cr8-store-submission.json", join(dist, "data/cr8-store-submission.json"));
 await cp("data/lux-phase-status.json", join(dist, "data/lux-phase-status.json"));
 await cp("data/lux-media-manifest.json", join(dist, "data/lux-media-manifest.json"));
 await cp("data/lux-release-room.json", join(dist, "data/lux-release-room.json"));
@@ -139,6 +143,7 @@ const requiredNonEmpty = [
   "data/lux-drop-room.json",
   "data/lux-portal-rooms.json",
   "data/lux-apps.json",
+  "data/cr8-store-submission.json",
   "data/lux-phase-status.json",
   "data/lux-build-manifest.json",
   "data/lux-action-inventory.json",
@@ -161,4 +166,4 @@ for (const file of requiredNonEmpty) {
   }
 }
 
-console.log(`Prepared Firebase Hosting artifact with ${files.length + assetFiles.length + 18} files.`);
+console.log(`Prepared Firebase Hosting artifact with ${files.length + assetFiles.length + 19} files.`);

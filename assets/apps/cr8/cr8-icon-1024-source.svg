@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">CR8 icon candidate</title>
+  <desc id="desc">Quiet luxury CR8 candidate artwork using obsidian, emerald, bone, and restrained gold.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#060807"/>
+      <stop offset=".54" stop-color="#0d1210"/>
+      <stop offset="1" stop-color="#101323"/>
+    </linearGradient>
+    <radialGradient id="gold" cx="54%" cy="38%" r="36%">
+      <stop offset="0" stop-color="#c8a86a" stop-opacity=".3"/>
+      <stop offset="1" stop-color="#060807" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="green" cx="78%" cy="18%" r="38%">
+      <stop offset="0" stop-color="#0d5a49" stop-opacity=".34"/>
+      <stop offset="1" stop-color="#060807" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="#060807"/>
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <rect width="1024" height="1024" fill="url(#gold)"/>
+  <rect width="1024" height="1024" fill="url(#green)"/>
+  <rect x="81.92" y="81.92" width="860.16" height="860.16" fill="none" stroke="#c8a86a" stroke-opacity=".62" stroke-width="4.096"/>
+  <line x1="512" x2="512" y1="184.32" y2="860.16" stroke="#0d5a49" stroke-opacity=".72" stroke-width="5.12"/>
+  <text x="512" y="552.96" fill="#f3eee4" font-family="Georgia, 'Times New Roman', serif" font-size="235.52" letter-spacing="17.408" text-anchor="middle">CR8</text>
+  <text x="512" y="675.84" fill="#c8a86a" font-family="Arial, sans-serif" font-size="26.624" letter-spacing="6.144" text-anchor="middle">CREATE FROM THE SOURCE</text>
+  
+</svg>

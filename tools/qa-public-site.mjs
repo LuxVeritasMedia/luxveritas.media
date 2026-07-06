@@ -22,6 +22,7 @@ const requiredFiles = [
   "data/lux-drop-room.json",
   "data/lux-portal-rooms.json",
   "data/lux-apps.json",
+  "data/cr8-store-submission.json",
   "data/lux-phase-status.json",
   "data/lux-pilot-write-evidence.json",
   "data/lux-media-manifest.json",
@@ -35,6 +36,9 @@ const requiredFiles = [
   "data/lux-public-terms.json",
   "assets/luxveritas-threshold.png",
   "assets/luxveritas-icon.svg",
+  "assets/apps/cr8/cr8-icon-1024.png",
+  "assets/apps/cr8/cr8-google-play-icon-512.png",
+  "assets/apps/cr8/cr8-google-play-feature-1024x500.png",
   "assets/lux-house-records.svg",
   "assets/lux-house-studios.svg",
   "assets/lux-house-publishing.svg",
@@ -358,6 +362,7 @@ const fanFlywheelRaw = await readFile(join(root, "data/lux-fan-flywheel.json"), 
 const dropRoomRaw = await readFile(join(root, "data/lux-drop-room.json"), "utf8");
 const portalRoomsRaw = await readFile(join(root, "data/lux-portal-rooms.json"), "utf8");
 const luxAppsRaw = await readFile(join(root, "data/lux-apps.json"), "utf8");
+const cr8StoreSubmissionRaw = await readFile(join(root, "data/cr8-store-submission.json"), "utf8");
 const phaseStatusRaw = await readFile(join(root, "data/lux-phase-status.json"), "utf8");
 const pilotWriteEvidenceRaw = await readFile(join(root, "data/lux-pilot-write-evidence.json"), "utf8");
 const mediaManifestRaw = await readFile(join(root, "data/lux-media-manifest.json"), "utf8");
@@ -383,6 +388,7 @@ for (const pattern of bannedTerms) {
   if (pattern.test(dropRoomRaw)) issues.push(`data/lux-drop-room.json: banned public term matched ${pattern}`);
   if (pattern.test(portalRoomsRaw)) issues.push(`data/lux-portal-rooms.json: banned public term matched ${pattern}`);
   if (pattern.test(luxAppsRaw)) issues.push(`data/lux-apps.json: banned public term matched ${pattern}`);
+  if (pattern.test(cr8StoreSubmissionRaw)) issues.push(`data/cr8-store-submission.json: banned public term matched ${pattern}`);
   if (pattern.test(phaseStatusRaw)) issues.push(`data/lux-phase-status.json: banned public term matched ${pattern}`);
   if (pattern.test(pilotWriteEvidenceRaw)) issues.push(`data/lux-pilot-write-evidence.json: banned public term matched ${pattern}`);
   if (pattern.test(mediaManifestRaw)) issues.push(`data/lux-media-manifest.json: banned public term matched ${pattern}`);
@@ -718,6 +724,53 @@ try {
   }
 } catch (error) {
   issues.push(`data/lux-apps.json: invalid JSON (${error.message})`);
+}
+
+try {
+  const packet = JSON.parse(cr8StoreSubmissionRaw);
+  if (packet.schemaVersion !== "luxveritas.cr8_store_submission.v1") {
+    issues.push("data/cr8-store-submission.json: missing schemaVersion luxveritas.cr8_store_submission.v1");
+  }
+  if (packet.app?.id !== "cr8" || packet.app?.availability !== "waitlist") {
+    issues.push("data/cr8-store-submission.json: expected CR8 waitlist app metadata");
+  }
+  for (const field of ["publicProductUrl", "supportUrl", "privacyUrl", "termsUrl", "deleteDataUrl", "downloadUrl"]) {
+    if (!packet.app?.[field]?.startsWith("https://luxveritas.media/")) {
+      issues.push(`data/cr8-store-submission.json: missing public app URL ${field}`);
+    }
+  }
+  const readinessRows = Array.isArray(packet.readinessRows) ? packet.readinessRows : [];
+  for (const label of ["Listing copy", "App icon", "Feature graphic", "Screenshots", "Age rating", "Privacy and data"]) {
+    if (!readinessRows.some((row) => row.label === label)) {
+      issues.push(`data/cr8-store-submission.json: missing readiness row ${label}`);
+    }
+  }
+  const icons = Array.isArray(packet.assetReadiness?.iconCandidates) ? packet.assetReadiness.iconCandidates : [];
+  const graphics = Array.isArray(packet.assetReadiness?.featureGraphicCandidates) ? packet.assetReadiness.featureGraphicCandidates : [];
+  for (const asset of [...icons, ...graphics]) {
+    if (!asset.path?.startsWith("/assets/apps/cr8/")) {
+      issues.push(`data/cr8-store-submission.json: asset ${asset.label || "unknown"} must stay under /assets/apps/cr8/`);
+    }
+    if (!/candidate_pending_approval/.test(asset.status || "")) {
+      issues.push(`data/cr8-store-submission.json: asset ${asset.label || "unknown"} must remain candidate_pending_approval`);
+    }
+  }
+  const screenshotPlan = Array.isArray(packet.assetReadiness?.screenshotPlan) ? packet.assetReadiness.screenshotPlan : [];
+  if (screenshotPlan.length < 3) {
+    issues.push("data/cr8-store-submission.json: expected Apple iPhone, Apple iPad, and Google Play screenshot plan");
+  }
+  if (screenshotPlan.some((item) => item.status !== "requires_captured_app_screenshots")) {
+    issues.push("data/cr8-store-submission.json: screenshot plan must require captured app screenshots");
+  }
+  const productHtml = await readFile(join(root, "luxflow/cr8/index.html"), "utf8");
+  if (!productHtml.includes(`data-cr8-store-submission="${packet.version}"`)) {
+    issues.push("luxflow/cr8/index.html: missing CR8 store submission version marker");
+  }
+  if (!productHtml.includes("Final screenshots must come from the actual CR8 app build")) {
+    issues.push("luxflow/cr8/index.html: missing real app screenshot guardrail copy");
+  }
+} catch (error) {
+  issues.push(`data/cr8-store-submission.json: invalid JSON (${error.message})`);
 }
 
 try {

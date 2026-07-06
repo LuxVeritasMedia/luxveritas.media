@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { actionInventoryVersion } from "./lib/action-inventory.mjs";
 import "./export-open-approvals.mjs";
 
-const assetVersion = "20260705-app-market";
+const assetVersion = "20260706-cr8-store";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const releaseRoom = JSON.parse(await readFile("data/lux-release-room.json", "utf8"));
 const radioProgramming = JSON.parse(await readFile("data/lux-radio-programming.json", "utf8"));
@@ -14,6 +14,7 @@ const fanFlywheel = JSON.parse(await readFile("data/lux-fan-flywheel.json", "utf
 const dropRoom = JSON.parse(await readFile("data/lux-drop-room.json", "utf8"));
 const portalRooms = JSON.parse(await readFile("data/lux-portal-rooms.json", "utf8"));
 const luxApps = JSON.parse(await readFile("data/lux-apps.json", "utf8"));
+const cr8StoreSubmission = JSON.parse(await readFile("data/cr8-store-submission.json", "utf8"));
 const phaseStatus = JSON.parse(await readFile("data/lux-phase-status.json", "utf8"));
 const openApprovals = JSON.parse(await readFile("data/lux-open-approvals.json", "utf8"));
 
@@ -901,6 +902,29 @@ function appStoreCopy(app) {
   </div></section>`;
 }
 
+function cr8StoreReadiness(app) {
+  if (app.id !== cr8StoreSubmission.app?.id) return "";
+  const rows = Array.isArray(cr8StoreSubmission.readinessRows) ? cr8StoreSubmission.readinessRows : [];
+  const icons = Array.isArray(cr8StoreSubmission.assetReadiness?.iconCandidates) ? cr8StoreSubmission.assetReadiness.iconCandidates : [];
+  const graphics = Array.isArray(cr8StoreSubmission.assetReadiness?.featureGraphicCandidates) ? cr8StoreSubmission.assetReadiness.featureGraphicCandidates : [];
+  const screenshotPlan = Array.isArray(cr8StoreSubmission.assetReadiness?.screenshotPlan) ? cr8StoreSubmission.assetReadiness.screenshotPlan : [];
+  const leadIcon = icons[0];
+  const leadGraphic = graphics[0];
+  return `<section class="section app-store-readiness" data-cr8-store-submission="${cr8StoreSubmission.version}">
+    <div class="section-heading"><p class="kicker">Store Submission</p><h2>Assets are prepared. Final screenshots still come from the app.</h2><p>${cr8StoreSubmission.assetReadiness?.publicPreviewNote || "Store screenshots must be captured from the actual app build before submission."}</p></div>
+    <div class="store-asset-grid">
+      ${leadIcon ? `<article class="store-asset-card"><img src="${leadIcon.path}" alt="CR8 app icon candidate" loading="lazy" decoding="async" /><span>${leadIcon.status.replaceAll("_", " ")}</span><h3>${leadIcon.label}</h3><p>${leadIcon.dimensions} ${leadIcon.format.toUpperCase()}.</p></article>` : ""}
+      ${leadGraphic ? `<article class="store-asset-card store-asset-card-wide"><img src="${leadGraphic.path}" alt="CR8 Google Play feature graphic candidate" loading="lazy" decoding="async" /><span>${leadGraphic.status.replaceAll("_", " ")}</span><h3>${leadGraphic.label}</h3><p>${leadGraphic.dimensions} ${leadGraphic.format.toUpperCase()}.</p></article>` : ""}
+    </div>
+    <div class="store-readiness-grid">
+      ${rows.map((row) => `<article><span>${row.status}</span><h3>${row.label}</h3><p>${row.detail}</p></article>`).join("")}
+    </div>
+    <div class="store-screenshot-plan"><p class="kicker">Screenshot Capture</p><ul>
+      ${screenshotPlan.map((item) => `<li><strong>${item.platform}</strong><span>${item.target}</span><small>${item.minimum}${item.maximum ? ` / ${item.maximum}` : ""}${item.recommended ? ` / ${item.recommended}` : ""}</small></li>`).join("")}
+    </ul></div>
+  </section>`;
+}
+
 function appConversionBand(app) {
   const conversion = app.conversion;
   if (!conversion) return "";
@@ -909,7 +933,7 @@ function appConversionBand(app) {
 
 function appFlagshipSections(app) {
   if (!app.flagship) return "";
-  return `${appProofBar(app)}${appPreviewScreens(app)}${appWaitlistTiers(app)}${appStoreCopy(app)}${appConversionBand(app)}`;
+  return `${appProofBar(app)}${appPreviewScreens(app)}${appWaitlistTiers(app)}${appStoreCopy(app)}${cr8StoreReadiness(app)}${appConversionBand(app)}`;
 }
 
 function appProductPage(app) {

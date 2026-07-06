@@ -1,7 +1,7 @@
 {
   "schemaVersion": "luxveritas.action_inventory.v1",
   "version": "2026-07-05-app-market",
-  "buildAssetVersion": "20260705-app-market",
+  "buildAssetVersion": "20260706-cr8-store",
   "routeCount": 70,
   "actionCount": 2254,
   "summary": {

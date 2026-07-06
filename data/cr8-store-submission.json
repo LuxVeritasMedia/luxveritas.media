@@ -1,0 +1,152 @@
+{
+  "schemaVersion": "luxveritas.cr8_store_submission.v1",
+  "version": "2026-07-06-cr8-store-readiness",
+  "updatedAt": "2026-07-06T00:00:00.000Z",
+  "status": "prepared_pending_final_assets",
+  "app": {
+    "id": "cr8",
+    "name": "CR8",
+    "suite": "LuxFlow",
+    "availability": "waitlist",
+    "platforms": ["web", "ios", "android"],
+    "publicProductUrl": "https://luxveritas.media/luxflow/cr8/",
+    "supportUrl": "https://luxveritas.media/luxflow/cr8/support.html",
+    "privacyUrl": "https://luxveritas.media/luxflow/cr8/privacy.html",
+    "termsUrl": "https://luxveritas.media/luxflow/cr8/terms.html",
+    "deleteDataUrl": "https://luxveritas.media/luxflow/cr8/delete-data.html",
+    "downloadUrl": "https://luxveritas.media/luxflow/cr8/download.html"
+  },
+  "listingMetadata": {
+    "apple": {
+      "appName": "CR8",
+      "subtitle": "Creative packets for artists",
+      "promotionalTextCandidate": "Create from the source. Shape ideas, prompts, assets, and release thoughts into clean packets for review and collaboration.",
+      "descriptionCandidate": "CR8 helps creators capture raw ideas, shape them into structured creative packets, and prepare work for review, collaboration, or future release paths. Start with the source, clarify the signal, and move only what is ready.",
+      "keywordsCandidate": "creator,ideas,prompts,briefs,artists,media,packets",
+      "primaryCategoryCandidate": "Productivity",
+      "secondaryCategoryCandidate": "Graphics & Design",
+      "supportUrl": "https://luxveritas.media/luxflow/cr8/support.html",
+      "marketingUrl": "https://luxveritas.media/luxflow/cr8/",
+      "privacyUrl": "https://luxveritas.media/luxflow/cr8/privacy.html",
+      "ageRatingStatus": "questionnaire_required",
+      "ageRatingNotes": [
+        "Candidate expectation is broad-audience creative utility, but final Apple rating must be set from the App Store Connect questionnaire.",
+        "Any account, community, submission, media, commerce, or creator-participation feature must be reviewed before final age-rating answers are submitted."
+      ]
+    },
+    "googlePlay": {
+      "appName": "CR8",
+      "shortDescription": "Shape ideas, prompts, and creative assets into reviewable packets.",
+      "fullDescriptionCandidate": "CR8 is a creator app from Lux Veritas for capturing raw ideas, shaping them into structured creative packets, and preparing work for review, collaboration, or future release paths. Start with the source, clarify the signal, and move only what is ready.",
+      "categoryCandidate": "Productivity",
+      "supportEmail": "info@luxveritas.media",
+      "supportUrl": "https://luxveritas.media/luxflow/cr8/support.html",
+      "privacyUrl": "https://luxveritas.media/luxflow/cr8/privacy.html",
+      "contentRatingStatus": "iarc_questionnaire_required",
+      "dataSafetyStatus": "final_data_safety_review_required"
+    }
+  },
+  "assetReadiness": {
+    "iconCandidates": [
+      {
+        "label": "Apple icon source candidate",
+        "path": "/assets/apps/cr8/cr8-icon-1024.png",
+        "dimensions": "1024x1024",
+        "format": "png",
+        "status": "candidate_pending_approval"
+      },
+      {
+        "label": "Google Play icon candidate",
+        "path": "/assets/apps/cr8/cr8-google-play-icon-512.png",
+        "dimensions": "512x512",
+        "format": "png",
+        "status": "candidate_pending_approval"
+      }
+    ],
+    "featureGraphicCandidates": [
+      {
+        "label": "Google Play feature graphic candidate",
+        "path": "/assets/apps/cr8/cr8-google-play-feature-1024x500.png",
+        "dimensions": "1024x500",
+        "format": "png",
+        "status": "candidate_pending_approval"
+      }
+    ],
+    "screenshotPlan": [
+      {
+        "platform": "Apple iPhone",
+        "target": "6.9-inch display set",
+        "minimum": "1 screenshot",
+        "maximum": "10 screenshots",
+        "status": "requires_captured_app_screenshots"
+      },
+      {
+        "platform": "Apple iPad",
+        "target": "13-inch display set if iPad is supported",
+        "minimum": "1 screenshot",
+        "maximum": "10 screenshots",
+        "status": "requires_captured_app_screenshots"
+      },
+      {
+        "platform": "Google Play phone",
+        "target": "portrait or landscape app screenshots",
+        "minimum": "2 screenshots across device types",
+        "recommended": "4 screenshots at 1080px or larger",
+        "status": "requires_captured_app_screenshots"
+      }
+    ],
+    "publicPreviewNote": "The public CR8 interface cards are product-direction previews. Store screenshots must be captured from the actual CR8 app build before submission."
+  },
+  "readinessRows": [
+    {
+      "label": "Listing copy",
+      "status": "Prepared",
+      "detail": "Apple and Google copy drafts are ready for final review."
+    },
+    {
+      "label": "App icon",
+      "status": "Candidate",
+      "detail": "Brand-derived icon candidates are generated and waiting for approval."
+    },
+    {
+      "label": "Feature graphic",
+      "status": "Candidate",
+      "detail": "Google Play feature graphic candidate is generated and waiting for approval."
+    },
+    {
+      "label": "Screenshots",
+      "status": "Capture required",
+      "detail": "Final screenshots must come from the actual CR8 app build."
+    },
+    {
+      "label": "Age rating",
+      "status": "Questionnaire required",
+      "detail": "Apple and Google rating answers must be completed after final feature scope is locked."
+    },
+    {
+      "label": "Privacy and data",
+      "status": "Review required",
+      "detail": "Store privacy and data-safety answers must match the shipped app behavior."
+    }
+  ],
+  "acceptanceRules": [
+    "Do not submit public preview cards as store screenshots.",
+    "Do not mark candidate assets as approved until owner approval is recorded.",
+    "Use captured CR8 app build screenshots for final App Store and Google Play submission.",
+    "Complete age-rating, privacy, and data-safety questionnaires from the final product behavior."
+  ],
+  "officialSources": [
+    {
+      "label": "Apple screenshot specifications",
+      "url": "https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications"
+    },
+    {
+      "label": "Apple app icon guidance",
+      "url": "https://developer.apple.com/help/app-store-connect/manage-app-information/add-an-app-icon/"
+    },
+    {
+      "label": "Google Play preview assets",
+      "url": "https://support.google.com/googleplay/android-developer/answer/9866151"
+    }
+  ]
+}

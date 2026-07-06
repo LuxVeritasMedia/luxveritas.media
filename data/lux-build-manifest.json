@@ -1,7 +1,7 @@
 {
   "schemaVersion": "luxveritas.build_manifest.v1",
-  "version": "20260705-app-market",
-  "assetVersion": "20260705-app-market",
+  "version": "20260706-cr8-store",
+  "assetVersion": "20260706-cr8-store",
   "mediaManifestVersion": "2026-06-10-mvp-media-preview",
   "releaseRoomVersion": "2026-06-30-release-room",
   "radioProgrammingVersion": "2026-06-30-radio-readiness",
@@ -18,6 +18,6 @@
   "publicTermsVersion": "2026-07-03-public-capture",
   "routeCount": 70,
   "publicRouteCount": 52,
-  "appScript": "app.js?v=20260705-app-market",
-  "stylesheet": "styles.css?v=20260705-app-market"
+  "appScript": "app.js?v=20260706-cr8-store",
+  "stylesheet": "styles.css?v=20260706-cr8-store"
 }

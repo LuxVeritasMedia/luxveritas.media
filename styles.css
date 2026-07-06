@@ -429,6 +429,103 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
   margin: 0;
   color: rgba(243,238,228,.7);
 }
+.app-store-readiness {
+  background:
+    linear-gradient(180deg, rgba(6,8,7,.96), rgba(8,21,18,.9)),
+    #07100d;
+}
+.store-asset-grid {
+  max-width: var(--max);
+  margin: 44px auto 0;
+  display: grid;
+  grid-template-columns: minmax(180px, 320px) 1fr;
+  gap: clamp(16px, 2vw, 24px);
+  align-items: stretch;
+}
+.store-asset-card {
+  min-height: 100%;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: clamp(18px, 2.4vw, 28px);
+  border: 1px solid rgba(200,168,106,.24);
+  background:
+    linear-gradient(180deg, rgba(13,90,73,.13), rgba(6,8,7,.88)),
+    #090d0c;
+}
+.store-asset-card img {
+  display: block;
+  width: min(100%, 180px);
+  aspect-ratio: 1;
+  object-fit: cover;
+  border: 1px solid rgba(243,238,228,.14);
+  background: #060807;
+}
+.store-asset-card-wide img {
+  width: 100%;
+  max-width: 520px;
+  aspect-ratio: 1024 / 500;
+}
+.store-asset-card span,
+.store-readiness-grid span,
+.store-screenshot-plan small {
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  font-size: .68rem;
+}
+.store-asset-card h3,
+.store-readiness-grid h3 {
+  margin: 0;
+  font-size: clamp(1.32rem, 2vw, 1.9rem);
+}
+.store-asset-card p,
+.store-readiness-grid p { margin: 0; }
+.store-readiness-grid {
+  max-width: var(--max);
+  margin: 24px auto 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: rgba(243,238,228,.12);
+  border: 1px solid rgba(243,238,228,.12);
+}
+.store-readiness-grid article {
+  min-height: 210px;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: clamp(18px, 2.4vw, 28px);
+  background: #09100f;
+}
+.store-screenshot-plan {
+  max-width: var(--max);
+  margin: 24px auto 0;
+  padding: clamp(18px, 2.4vw, 28px);
+  border: 1px solid rgba(200,168,106,.2);
+  background: rgba(6,8,7,.66);
+}
+.store-screenshot-plan ul {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--line);
+}
+.store-screenshot-plan li {
+  display: grid;
+  grid-template-columns: minmax(120px, 180px) 1fr minmax(180px, 260px);
+  gap: 1rem;
+  align-items: start;
+  padding: 16px;
+  background: #09100f;
+}
+.store-screenshot-plan strong {
+  color: var(--bone);
+  font-weight: 500;
+}
+.store-screenshot-plan span { color: var(--muted); }
 .app-conversion {
   background:
     linear-gradient(120deg, rgba(6,60,50,.78), rgba(16,19,35,.78)),
@@ -1494,11 +1591,11 @@ select option { color: var(--ink); }
     justify-content: flex-start;
   }
   .primary-nav.open { display: flex; }
-  .section-grid, .card-grid, .app-proof, .app-preview-grid, .pricing-grid, .store-copy-grid, .house-grid, .house-constellation, .flywheel-grid, .drop-grid, .release-room-path, .release-room-readiness, .release-rail, .slate, .ops-grid, .portal-grid, .event-grid, .codex-list, .split-band, .cta-band, .site-footer, .consent-banner, .media-player-section, .media-player, .radio-signal-panel, .radio-readiness-list, .fan-signal-section, .fan-signal-panel, .interest-paths, .report-grid, .report-detail, .report-list li {
+  .section-grid, .card-grid, .app-proof, .app-preview-grid, .pricing-grid, .store-copy-grid, .store-asset-grid, .store-readiness-grid, .store-screenshot-plan li, .house-grid, .house-constellation, .flywheel-grid, .drop-grid, .release-room-path, .release-room-readiness, .release-rail, .slate, .ops-grid, .portal-grid, .event-grid, .codex-list, .split-band, .cta-band, .site-footer, .consent-banner, .media-player-section, .media-player, .radio-signal-panel, .radio-readiness-list, .fan-signal-section, .fan-signal-panel, .interest-paths, .report-grid, .report-detail, .report-list li {
     grid-template-columns: 1fr;
   }
   .app-proof { margin-top: 0; }
-  .app-screen, .pricing-card, .store-copy-card { min-height: auto; }
+  .app-screen, .pricing-card, .store-copy-card, .store-readiness-grid article { min-height: auto; }
   h1, h2 {
     max-width: 100%;
     overflow-wrap: anywhere;
