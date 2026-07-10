@@ -1,6 +1,6 @@
 # Lux Veritas Website TODO
 
-Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout is approved and final release-gate verification is active.
+Current phase: Phase 5 of 10 - portal pilot prep and release control active; Phase 4 legal closeout is approved and final release-gate verification is active.
 
 ## P0 - Protect Internal Material
 - [x] Remove internal ops/backend terms from generated public pages.
@@ -245,7 +245,7 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Add no-secret launch readiness status helper for resolved external gates.
 - [x] Add no-cache hosting policy for the service worker.
 
-## P7 - Media MVP
+## Public Media MVP Workstream
 - [x] Add Lux Player MVP to Music and SPMVP with listen/watch/radio actions.
 - [x] Add versioned media manifest contract for release, visual, and radio slots.
 - [x] Record media intent events locally for reporting bridge readiness.
@@ -266,3 +266,10 @@ Current phase: Phase 5 of 10 - portal pilot prep active; Phase 4 legal closeout 
 - [x] Add live approved-operator report QA for private counts, summaries, readiness, playback reporting, handoff reporting, and secret-shaped value protection.
 - [x] Run the pilot write gate with `LUX_PILOT_WRITE_TESTS=1` before public release rehearsal so the latest live capture/reporting loop has fresh write evidence.
 - [x] Re-run the pilot write gate after post-write reconciliation lands so the latest live capture/reporting loop has exact report-return evidence.
+- [x] Add guided Song, Video, and Radio publishing controls with plan-before-write validation.
+- [x] Add automatic rollback backups for approved media-source updates.
+- [x] Include manifest-referenced local media in the Firebase Hosting artifact automatically.
+- [x] Add protected direct-review shortcuts for Song, Video, Radio, and the release room.
+- [x] Add media-control verification to pilot readiness and MVP preflight.
+- [ ] Replace MVP preview media with approved production Song, Video, Radio, and final poster artwork before campaign launch.
+- [ ] Run the fresh live write gate for the deployed `20260710-media-control-r2` build and archive its no-secret evidence.

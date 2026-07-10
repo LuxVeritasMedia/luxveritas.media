@@ -1,6 +1,6 @@
 # Lux Veritas Final Launch Runbook
 
-Status date: 2026-06-30
+Status date: 2026-07-10
 
 Use this only when moving from pilot-ready to public-release ready. Keep secrets out of the repo and terminal history where possible. Do not call the site release-ready until the final gate passes with write tests enabled and without blocker overrides.
 
@@ -8,14 +8,14 @@ Use this only when moving from pilot-ready to public-release ready. Keep secrets
 
 - Apex site is live at `https://luxveritas.media`.
 - `www.luxveritas.media` returns HTTP 200.
-- Current asset version is `20260705-app-market`.
-- Current phase status is Phase 5 portal pilot prep, with Phase 4 legal closeout still open.
+- Current release candidate asset version is `20260710-media-control-r2`.
+- Current phase status is Phase 5 portal pilot prep and release control. Phase 4 legal closeout is approved.
 - Media, fan reactions, inbox delivery, private handoff, operator reporting, private intake queue workbench, and private workflow-target recommendation reporting are ready.
 - The pilot write gate last passed on 2026-07-06 with 11 live QA submissions, including dedicated pilot feedback routing, inbox delivery required, 13 live event writes, media checks, browser-flow coverage, consented page-view reporting, signal-pass export coverage, protected activation-readiness reporting, and protected operator-report verification. QA run ID: `20260706012216`. Asset version: `20260705-app-market`. The live event matrix includes fan-reaction and release-room retention reporting for the media retention loop, and the gate reconciles exact write-run IDs back through the protected report.
 - The no-secret receipt is tracked in `data/lux-pilot-write-evidence.json` and validated with `node tools/qa-pilot-write-evidence.mjs`. Final release requires fresh pilot write evidence; the default freshness window is 72 hours and can be inspected with `LUX_PILOT_WRITE_EVIDENCE_MAX_AGE_HOURS`.
 - Known pilot issues are tracked without secrets in `data/lux-pilot-bug-register.json` and validated with `node tools/qa-pilot-bug-register.mjs`. The current decision is `pilot_can_continue` with no known blocking bugs.
 - Pilot scenario coverage is tracked in `data/lux-pilot-test-matrix.json`.
-- Remaining public-launch blockers are Privacy approval and Terms approval. Final release still requires pilot write evidence to remain fresh for the release window.
+- Privacy and Terms owner approval is recorded. Final release still requires pilot write evidence to be refreshed for the current deployed build.
 
 ## Launch Order
 
@@ -84,7 +84,7 @@ After any pilot write-gate rerun or bug triage change, rerun the bug-register QA
 node tools/qa-pilot-bug-register.mjs
 ```
 
-For pilot/TestFlight-quality proof before legal approval is closed, run the pilot write gate. This sends live QA submissions and event writes, requires inbox delivery, checks the live media sources, verifies protected operator reporting, reconciles the exact write-run IDs back through the protected report, and allows only the known Privacy and Terms review blockers:
+For current-build release proof, run the pilot write gate. This sends live QA submissions and event writes, requires inbox delivery, checks the live media sources, verifies protected operator reporting, and reconciles the exact write-run IDs back through the protected report:
 
 ```bash
 LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs
@@ -122,7 +122,7 @@ Inbox delivery was last confirmed by the 2026-07-06 pilot write gate, QA run ID 
 LUX_FORM_MATRIX_WRITE=1 LUX_EXPECT_EMAIL_SENT=1 node tools/qa-live-form-matrix.mjs
 ```
 
-4. Approve legal only after review:
+4. Reconfirm the recorded legal approval state. Do not change it unless a reviewer provides new evidence:
 
 ```bash
 node tools/export-legal-review-request.mjs

@@ -67,7 +67,7 @@ const files = [
   "works/index.html",
   "works/sample.html"
 ];
-const assetFiles = [
+const baseAssetFiles = [
   "assets/luxveritas-threshold.png",
   "assets/luxveritas-signal-poster.svg",
   "assets/luxveritas-icon.svg",
@@ -84,6 +84,29 @@ const assetFiles = [
   "assets/luxveritas-radio-preview.wav",
   "assets/luxveritas-visual-preview.webm"
 ];
+const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
+
+function localAssetPathFromUrl(value) {
+  if (!value) return null;
+  let pathname = "";
+  if (value.startsWith("/assets/")) pathname = value;
+  else {
+    try {
+      const url = new URL(value);
+      if (url.hostname === "luxveritas.media" && url.pathname.startsWith("/assets/")) pathname = url.pathname;
+    } catch {
+      return null;
+    }
+  }
+  const clean = pathname.replace(/^\/+/, "");
+  if (!clean.startsWith("assets/") || clean.includes("..")) return null;
+  return clean;
+}
+
+const manifestAssetFiles = (mediaManifest.items || [])
+  .flatMap((item) => [localAssetPathFromUrl(item.sourceUrl), localAssetPathFromUrl(item.posterUrl)])
+  .filter(Boolean);
+const assetFiles = [...new Set([...baseAssetFiles, ...manifestAssetFiles])];
 
 await rm(dist, { recursive: true, force: true });
 

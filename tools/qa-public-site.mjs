@@ -781,7 +781,8 @@ try {
   if (phaseStatus.schemaVersion !== "luxveritas.phase_status.v1") {
     issues.push("data/lux-phase-status.json: missing schemaVersion luxveritas.phase_status.v1");
   }
-  if (phaseStatus.version !== "2026-06-28-phase-status") {
+  const buildManifestForPhase = JSON.parse(buildManifestRaw);
+  if (!/^20\d{2}-\d{2}-\d{2}-phase-status$/.test(phaseStatus.version || "") || phaseStatus.version !== buildManifestForPhase.phaseStatusVersion) {
     issues.push("data/lux-phase-status.json: version mismatch");
   }
   if (currentPhase.id !== "phase-5" || currentPhase.status !== "active_pilot") {
@@ -950,8 +951,13 @@ try {
   if (!readiness.some((item) => item.status === "live")) {
     issues.push("data/lux-release-room.json: expected at least one live readiness item");
   }
-  if (!readiness.some((item) => item.id === "public-release" && item.status === "legal review")) {
-    issues.push("data/lux-release-room.json: public-release readiness must remain legal review");
+  const legalReviewForReleaseRoom = JSON.parse(legalReviewRaw);
+  const legalReadyForReleaseRoom = ["privacy", "terms"].every((id) => (
+    legalReviewForReleaseRoom.items?.find((item) => item.id === id)?.status === "approved"
+  ));
+  const expectedPublicReleaseStatus = legalReadyForReleaseRoom ? "final evidence" : "legal review";
+  if (!readiness.some((item) => item.id === "public-release" && item.status === expectedPublicReleaseStatus)) {
+    issues.push(`data/lux-release-room.json: public-release readiness must be ${expectedPublicReleaseStatus}`);
   }
   for (const item of readiness) {
     for (const field of ["id", "label", "status", "detail"]) {

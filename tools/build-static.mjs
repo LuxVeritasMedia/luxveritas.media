@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { actionInventoryVersion } from "./lib/action-inventory.mjs";
 import "./export-open-approvals.mjs";
 
-const assetVersion = "20260706-cr8-store";
+const assetVersion = "20260710-media-control-r2";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const releaseRoom = JSON.parse(await readFile("data/lux-release-room.json", "utf8"));
 const radioProgramming = JSON.parse(await readFile("data/lux-radio-programming.json", "utf8"));
@@ -442,7 +442,7 @@ self.addEventListener("fetch", (event) => {
 function mediaPlayerShell(context = "music") {
   const compact = context === "spmvp";
   const items = mediaManifest.items.filter((item) => item.contexts.includes(context));
-  return `<section class="section media-player-section" data-media-player data-player-context="${context}">
+  return `<section id="lux-player" class="section media-player-section" data-media-player data-player-context="${context}">
     <div class="media-player-copy">
       <p class="kicker">Lux Player</p>
       <h2>${compact ? "Start with the drop." : "Listen. Watch. Return."}</h2>
@@ -540,7 +540,7 @@ function radioProgrammingSection() {
   const onAir = radioProgramming.onAir || {};
   const listenerPath = Array.isArray(radioProgramming.listenerPath) ? radioProgramming.listenerPath : [];
   const readiness = Array.isArray(radioProgramming.readiness) ? radioProgramming.readiness : [];
-  return `<section class="section" data-radio-programming data-radio-programming-version="${radioProgramming.version || ""}">
+  return `<section id="lux-radio" class="section" data-radio-programming data-radio-programming-version="${radioProgramming.version || ""}">
     <div class="section-heading">
       <p class="kicker">Lux Radio</p>
       <h2>${radioProgramming.headline || "Lux Radio begins as a signal room."}</h2>
@@ -853,7 +853,7 @@ function luxflowIndex() {
     description: suite.summary || "LuxFlow is the public app suite for Lux Veritas creator and media tools.",
     body: `${pageHero("LuxFlow", suite.headline || "Creative systems for the Lux Veritas universe.", suite.summary || "LuxFlow apps help creators and teams shape media work without exposing private studio systems.", `<div class="hero-actions"><button class="button button-primary" data-open-form="fan">Join LuxFlow waitlist</button><a class="button button-quiet" href="/apps/index.html">All Apps</a></div>`)}
     <section class="section verticals"><div class="section-heading"><p class="kicker">Suite</p><h2>Choose the door that matches the work.</h2><p>LuxFlow app pages are public product surfaces. Actual private app rooms open later through approved account access.</p></div><div class="card-grid">${luxFlowApps.map(appCard).join("")}</div></section>
-    <section class="section empty-state"><p class="kicker">Boundary</p><h2>Product pages now. Private app access later.</h2><p>LuxVeritas.media can sell, explain, route, support, and capture interest for LuxFlow apps. It does not publish private prompts, dashboards, account logic, or protected studio systems in the public layer.</p></section>`
+    <section class="section empty-state"><p class="kicker">Access</p><h2>Product pages now. Deeper access later.</h2><p>LuxVeritas.media can explain, support, and capture interest for LuxFlow apps. Deeper studio capabilities open only through approved access.</p></section>`
   });
 }
 
@@ -1035,7 +1035,21 @@ function portalReport() {
     title: "Activity Report | Lux Veritas Portal",
     description: "Private activity report for Lux Veritas pilot testing.",
     noindex: true,
+    heroClass: "operator-surface",
     body: `${pageHero("Portal", "Activity Report", "A private pilot view for checking local and approved operator activity.")}
+    <section class="section operator-review-bar" aria-label="Live release review">
+      <div>
+        <p class="kicker">Live Release Check</p>
+        <h2>Review every public signal.</h2>
+        <p>Open the live song, visual, radio, and release-room states before each public update.</p>
+      </div>
+      <nav class="operator-review-actions" aria-label="Media review shortcuts">
+        <a class="button button-primary" href="/music.html#lux-player" data-track-surface="operator_release_review" data-track-intent="review_song" data-track-label="Review Song">Song</a>
+        <a class="button button-quiet" href="/music.html#lux-player" data-track-surface="operator_release_review" data-track-intent="review_video" data-track-label="Review Video">Video</a>
+        <a class="button button-quiet" href="/music.html#lux-radio" data-track-surface="operator_release_review" data-track-intent="review_radio" data-track-label="Review Radio">Radio</a>
+        <a class="button button-quiet" href="/spmvp.html" data-track-surface="operator_release_review" data-track-intent="review_release_room" data-track-label="Open Release Room">Release Room</a>
+      </nav>
+    </section>
     <section class="section report-panel" data-private-report>
       <div class="section-heading">
         <p class="kicker">Private Activity</p>

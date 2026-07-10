@@ -1286,6 +1286,33 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
   margin-inline: auto;
   border-top: 1px solid var(--line);
 }
+.operator-surface .page-hero {
+  padding-top: clamp(126px, 13vw, 172px);
+  padding-bottom: clamp(48px, 6vw, 76px);
+}
+.operator-surface .page-hero h1 {
+  max-width: 780px;
+  font-size: clamp(3.2rem, 7vw, 7rem);
+}
+.operator-review-bar {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(420px, 1.2fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: end;
+  max-width: var(--wide);
+  margin-inline: auto;
+  padding-top: clamp(46px, 6vw, 72px);
+  padding-bottom: clamp(46px, 6vw, 72px);
+  border-top: 1px solid var(--line);
+}
+.operator-review-bar h2 { font-size: clamp(2.5rem, 4.6vw, 4.8rem); }
+.operator-review-bar p { max-width: 640px; }
+.operator-review-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .75rem;
+}
+.operator-review-actions .button { width: 100%; }
 .report-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1331,6 +1358,7 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
 .report-detail > div {
   background: #0b0f0e;
   padding: 26px;
+  min-width: 0;
 }
 .report-list {
   display: grid;
@@ -1339,6 +1367,7 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
   padding: 0;
   list-style: none;
   background: var(--line);
+  min-width: 0;
 }
 .report-list li {
   display: grid;
@@ -1347,6 +1376,11 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
   align-items: start;
   background: #09100f;
   padding: 16px;
+  min-width: 0;
+}
+.report-list strong, .report-list span, .report-list small {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .report-list strong {
   color: var(--bone);
@@ -1591,7 +1625,7 @@ select option { color: var(--ink); }
     justify-content: flex-start;
   }
   .primary-nav.open { display: flex; }
-  .section-grid, .card-grid, .app-proof, .app-preview-grid, .pricing-grid, .store-copy-grid, .store-asset-grid, .store-readiness-grid, .store-screenshot-plan li, .house-grid, .house-constellation, .flywheel-grid, .drop-grid, .release-room-path, .release-room-readiness, .release-rail, .slate, .ops-grid, .portal-grid, .event-grid, .codex-list, .split-band, .cta-band, .site-footer, .consent-banner, .media-player-section, .media-player, .radio-signal-panel, .radio-readiness-list, .fan-signal-section, .fan-signal-panel, .interest-paths, .report-grid, .report-detail, .report-list li {
+  .section-grid, .card-grid, .app-proof, .app-preview-grid, .pricing-grid, .store-copy-grid, .store-asset-grid, .store-readiness-grid, .store-screenshot-plan li, .house-grid, .house-constellation, .flywheel-grid, .drop-grid, .release-room-path, .release-room-readiness, .release-rail, .slate, .ops-grid, .portal-grid, .event-grid, .codex-list, .split-band, .cta-band, .site-footer, .consent-banner, .media-player-section, .media-player, .radio-signal-panel, .radio-readiness-list, .fan-signal-section, .fan-signal-panel, .interest-paths, .operator-review-bar, .operator-review-actions, .report-grid, .report-detail, .report-list li {
     grid-template-columns: 1fr;
   }
   .app-proof { margin-top: 0; }

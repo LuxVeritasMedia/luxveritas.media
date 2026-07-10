@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260706-cr8-store";
+const CACHE_NAME = "luxveritas-static-20260710-media-control-r2";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260706-cr8-store",
-  "/app.js?v=20260706-cr8-store",
+  "/styles.css?v=20260710-media-control-r2",
+  "/app.js?v=20260710-media-control-r2",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"

@@ -44,6 +44,7 @@ const checks = [
   ["Pilot Test Matrix", "tools/qa-pilot-test-matrix.mjs"],
   ["Pilot Write Evidence", "tools/qa-pilot-write-evidence.mjs"],
   ["Pilot Bug Register", "tools/qa-pilot-bug-register.mjs"],
+  ["Media Control", "tools/qa-media-control.mjs"],
   ["Media Contract", "tools/qa-media-contract.mjs"],
   ["Fan Signal", "tools/qa-fan-signal.mjs"],
   ["Mobile Layout", "tools/qa-mobile-layout.mjs"],

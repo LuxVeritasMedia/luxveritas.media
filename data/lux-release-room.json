@@ -84,8 +84,8 @@
     {
       "id": "public-release",
       "label": "Public Release",
-      "status": "legal review",
-      "detail": "Full public release still waits for Privacy and Terms approval."
+      "status": "final evidence",
+      "detail": "Public experience, capture, and core release paths are approved; refresh live evidence for each release candidate."
     }
   ]
 }

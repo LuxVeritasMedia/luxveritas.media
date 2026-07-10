@@ -17,6 +17,7 @@ Use this repo for:
 - public SEO
 - audience capture
 - public portal entry points
+- public LuxFlow app marketplace, product, support, and app-compliance pages
 
 Primary path:
 

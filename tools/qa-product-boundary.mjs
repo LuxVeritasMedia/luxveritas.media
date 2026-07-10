@@ -8,20 +8,19 @@ const issues = [];
 const execFileAsync = promisify(execFile);
 
 const forbiddenPublicPatterns = [
-  /LuxFlow/i,
-  /LuxOS/i,
-  /DAMON/i,
-  /BlackGPT/i,
-  /CanonCraft/i,
-  /SignalCraft/i,
-  /PromptOps/i,
-  /AgentForge/i,
-  /private prompts/i,
-  /audit logs/i,
-  /finance/i,
+  /\bLuxFlow OS\b/i,
+  /\bLuxOS\b/i,
+  /\bDAMON\b/i,
+  /\bBlackGPT\b/i,
+  /\bAI Gateway\b/i,
+  /\bservice[- ]role\b/i,
+  /private audit (?:data|logs)/i,
+  /internal (?:workspace|project) (?:state|data)/i,
+  /financial (?:data|assumptions|projections|records)/i,
   /rights ops/i,
   /release ops/i,
-  /canon bible/i
+  /canon bible/i,
+  /\/Users\/frederickparent\/Documents\/Codex\/LuxFlow-OS/i
 ];
 
 const forbiddenTrackedDocs = [

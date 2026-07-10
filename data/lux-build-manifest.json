@@ -1,7 +1,7 @@
 {
   "schemaVersion": "luxveritas.build_manifest.v1",
-  "version": "20260706-cr8-store",
-  "assetVersion": "20260706-cr8-store",
+  "version": "20260710-media-control-r2",
+  "assetVersion": "20260710-media-control-r2",
   "mediaManifestVersion": "2026-06-10-mvp-media-preview",
   "releaseRoomVersion": "2026-06-30-release-room",
   "radioProgrammingVersion": "2026-06-30-radio-readiness",
@@ -14,10 +14,10 @@
   "dropRoomVersion": "2026-06-20-drop-room",
   "portalRoomsVersion": "2026-06-20-portal-rooms",
   "appCatalogVersion": "2026-07-05-app-market",
-  "phaseStatusVersion": "2026-06-28-phase-status",
+  "phaseStatusVersion": "2026-07-10-phase-status",
   "publicTermsVersion": "2026-07-03-public-capture",
   "routeCount": 70,
   "publicRouteCount": 52,
-  "appScript": "app.js?v=20260706-cr8-store",
-  "stylesheet": "styles.css?v=20260706-cr8-store"
+  "appScript": "app.js?v=20260710-media-control-r2",
+  "stylesheet": "styles.css?v=20260710-media-control-r2"
 }

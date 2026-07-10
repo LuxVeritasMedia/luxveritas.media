@@ -1,16 +1,16 @@
 {
   "schemaVersion": "luxveritas.action_inventory.v1",
   "version": "2026-07-05-app-market",
-  "buildAssetVersion": "20260706-cr8-store",
+  "buildAssetVersion": "20260710-media-control-r2",
   "routeCount": 70,
-  "actionCount": 2254,
+  "actionCount": 2258,
   "summary": {
     "byType": {
       "navigation_toggle": 69,
       "form_open": 187,
       "dialog_close": 69,
       "form_submit": 69,
-      "link_click": 1807,
+      "link_click": 1811,
       "portal_signin": 1,
       "fan_signal_export": 8,
       "media_action": 18,
@@ -81,7 +81,7 @@
       "portal/index.html": 37,
       "portal/library.html": 30,
       "portal/releases.html": 30,
-      "portal/reporting.html": 38,
+      "portal/reporting.html": 42,
       "press.html": 29,
       "private-steward.html": 30,
       "spmvp.html": 54,
@@ -96,7 +96,7 @@
       "form_open": 187,
       "dialog_close": 69,
       "lead_accepted": 69,
-      "link_click": 1807,
+      "link_click": 1811,
       "portal_signin_capture": 1,
       "local_export": 8,
       "media_action": 18,
@@ -106,10 +106,10 @@
       "consent_update": 2
     },
     "byReportingStatus": {
-      "declared": 2254
+      "declared": 2258
     },
     "byReportingChannel": {
-      "consented_event": 2166,
+      "consented_event": 2170,
       "server_capture": 70,
       "local_receipt": 8,
       "protected_operator": 10
@@ -122,6 +122,7 @@
       "release_room": 12,
       "radio_readiness": 4,
       "radio_programming": 6,
+      "operator_release_review": 4,
       "consent_banner": 2
     }
   },
@@ -37956,7 +37957,83 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__22__link_click__music-html",
+      "id": "portal_reporting_html__22__link_click__music-html-lux-player",
+      "route": "portal/reporting.html",
+      "element": "a",
+      "label": "Review Song",
+      "actionType": "link_click",
+      "actionValue": "/music.html#lux-player",
+      "target": "/music.html#lux-player",
+      "formType": "",
+      "mediaAction": "",
+      "reportAction": "",
+      "surface": "operator_release_review",
+      "intent": "review_song",
+      "reportingKey": "portal-reporting-html__link-click__music-html-lux-player",
+      "reportingEvent": "link_click",
+      "reportingStatus": "declared",
+      "reportingChannel": "consented_event",
+      "expectedOutcome": "Navigates to public or screened route"
+    },
+    {
+      "id": "portal_reporting_html__23__link_click__music-html-lux-player",
+      "route": "portal/reporting.html",
+      "element": "a",
+      "label": "Review Video",
+      "actionType": "link_click",
+      "actionValue": "/music.html#lux-player",
+      "target": "/music.html#lux-player",
+      "formType": "",
+      "mediaAction": "",
+      "reportAction": "",
+      "surface": "operator_release_review",
+      "intent": "review_video",
+      "reportingKey": "portal-reporting-html__link-click__music-html-lux-player",
+      "reportingEvent": "link_click",
+      "reportingStatus": "declared",
+      "reportingChannel": "consented_event",
+      "expectedOutcome": "Navigates to public or screened route"
+    },
+    {
+      "id": "portal_reporting_html__24__link_click__music-html-lux-radio",
+      "route": "portal/reporting.html",
+      "element": "a",
+      "label": "Review Radio",
+      "actionType": "link_click",
+      "actionValue": "/music.html#lux-radio",
+      "target": "/music.html#lux-radio",
+      "formType": "",
+      "mediaAction": "",
+      "reportAction": "",
+      "surface": "operator_release_review",
+      "intent": "review_radio",
+      "reportingKey": "portal-reporting-html__link-click__music-html-lux-radio",
+      "reportingEvent": "link_click",
+      "reportingStatus": "declared",
+      "reportingChannel": "consented_event",
+      "expectedOutcome": "Navigates to public or screened route"
+    },
+    {
+      "id": "portal_reporting_html__25__link_click__spmvp-html",
+      "route": "portal/reporting.html",
+      "element": "a",
+      "label": "Open Release Room",
+      "actionType": "link_click",
+      "actionValue": "/spmvp.html",
+      "target": "/spmvp.html",
+      "formType": "",
+      "mediaAction": "",
+      "reportAction": "",
+      "surface": "operator_release_review",
+      "intent": "review_release_room",
+      "reportingKey": "portal-reporting-html__link-click__spmvp-html",
+      "reportingEvent": "link_click",
+      "reportingStatus": "declared",
+      "reportingChannel": "consented_event",
+      "expectedOutcome": "Navigates to public or screened route"
+    },
+    {
+      "id": "portal_reporting_html__26__link_click__music-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Lux Veritas Records",
@@ -37975,7 +38052,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__23__link_click__film-html",
+      "id": "portal_reporting_html__27__link_click__film-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Lux Veritas Studios",
@@ -37994,7 +38071,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__24__link_click__codex-html",
+      "id": "portal_reporting_html__28__link_click__codex-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Lux Veritas Publishing",
@@ -38013,7 +38090,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__25__link_click__events-html",
+      "id": "portal_reporting_html__29__link_click__events-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Lux Veritas Live",
@@ -38032,7 +38109,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__26__link_click__membership-html",
+      "id": "portal_reporting_html__30__link_click__membership-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Lux Circle",
@@ -38051,7 +38128,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__27__link_click__store-html",
+      "id": "portal_reporting_html__31__link_click__store-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Lux Atelier",
@@ -38070,7 +38147,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__28__link_click__works-index-html",
+      "id": "portal_reporting_html__32__link_click__works-index-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Works",
@@ -38089,7 +38166,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__29__link_click__store-html",
+      "id": "portal_reporting_html__33__link_click__store-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Store",
@@ -38108,7 +38185,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__30__link_click__membership-html",
+      "id": "portal_reporting_html__34__link_click__membership-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Membership",
@@ -38127,7 +38204,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__31__link_click__submissions-html",
+      "id": "portal_reporting_html__35__link_click__submissions-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Submissions",
@@ -38146,7 +38223,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__32__link_click__press-html",
+      "id": "portal_reporting_html__36__link_click__press-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Press",
@@ -38165,7 +38242,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__33__link_click__contact-html",
+      "id": "portal_reporting_html__37__link_click__contact-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Contact",
@@ -38184,7 +38261,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__34__link_click__legal-privacy-html",
+      "id": "portal_reporting_html__38__link_click__legal-privacy-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Privacy",
@@ -38203,7 +38280,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__35__link_click__legal-terms-html",
+      "id": "portal_reporting_html__39__link_click__legal-terms-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Terms",
@@ -38222,7 +38299,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__36__link_click__legal-privacy-html",
+      "id": "portal_reporting_html__40__link_click__legal-privacy-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Privacy",
@@ -38241,7 +38318,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__37__link_click__legal-terms-html",
+      "id": "portal_reporting_html__41__link_click__legal-terms-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Terms",

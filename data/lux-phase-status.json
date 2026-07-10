@@ -1,14 +1,34 @@
 {
   "schemaVersion": "luxveritas.phase_status.v1",
-  "version": "2026-06-28-phase-status",
+  "version": "2026-07-10-phase-status",
   "updatedAt": "2026-07-10T01:32:00Z",
   "currentPhase": {
     "id": "phase-5",
     "number": 5,
-    "label": "Portal Pilot Prep",
+    "label": "Portal Pilot Prep and Release Control",
     "status": "active_pilot",
-    "summary": "Phase 5 pilot prep is active and technically pilot-ready: the public site, capture layer, media preview player, fan reactions, private access shell, operator reporting, private intake queue workbench, and pilot write gate are live. Privacy and Terms owner approval is recorded, and final release-gate verification is active; fresh pilot write evidence must be rerun before final release."
+    "summary": "Phase 5 pilot prep and release control are active: the public site, capture layer, guided media publishing, private access shell, operator reporting, and pilot write gate are ready. Privacy and Terms owner approval is recorded; fresh pilot write evidence must be rerun for the current deployed build before final release."
   },
+  "completion": {
+    "publicWebsiteReleaseReadiness": 92,
+    "fullTenPhaseEcosystem": 59,
+    "currentPhase": 72,
+    "mediaOperatorLane": 85,
+    "publicUiUxPolish": 88,
+    "basis": "Audited delivery estimate; public launch readiness is measured separately from the full ecosystem."
+  },
+  "phaseMap": [
+    { "number": 1, "label": "Public Site Foundation", "completion": 100, "status": "complete" },
+    { "number": 2, "label": "Firebase, GitHub, Domain", "completion": 100, "status": "complete" },
+    { "number": 3, "label": "Public Access-Control Cleanup", "completion": 100, "status": "complete" },
+    { "number": 4, "label": "Capture, Legal, Seed, Boundary Readiness", "completion": 98, "status": "closeout" },
+    { "number": 5, "label": "Authenticated Portal Shell and Release Control", "completion": 72, "status": "active" },
+    { "number": 6, "label": "Role/Tier Matrix and Screened Intake Routing", "completion": 56, "status": "contract_defined" },
+    { "number": 7, "label": "Controlled Internal Bridge", "completion": 18, "status": "deferred" },
+    { "number": 8, "label": "Receipts, Consent, Audit Layer", "completion": 10, "status": "foundation" },
+    { "number": 9, "label": "Partner and Creator Rooms", "completion": 22, "status": "capture_shells" },
+    { "number": 10, "label": "Governance, Membership, Commerce, Scale", "completion": 16, "status": "foundation" }
+  ],
   "publicLaunchStatus": "ready_for_final_release_gate",
   "pilotStatus": "pilot_ready_with_public_launch_blockers",
   "pilotEvidence": {
@@ -74,10 +94,10 @@
     },
     {
       "id": "media-mvp",
-      "phaseNumber": 7,
+      "phaseNumber": 5,
       "label": "Public Media MVP Workstream",
-      "status": "preview_sources_live",
-      "summary": "Listen, Watch, and Radio preview sources are live, with playback lifecycle, fan reaction, and retention reporting available to approved operators."
+      "status": "operator_control_ready",
+      "summary": "Listen, Watch, and Radio preview sources are live. Guided publishing, rollback, lifecycle reporting, fan reactions, retention signals, and protected review shortcuts are ready; approved production media remains required."
     }
   ],
   "deferredBoundaries": [

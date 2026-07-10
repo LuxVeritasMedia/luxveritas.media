@@ -1,15 +1,15 @@
 {
   "schemaVersion": "luxveritas.open_approvals_report.v1",
-  "generatedAt": "2026-07-10T01:37:34.502Z",
+  "generatedAt": "2026-07-10T14:12:09.920Z",
   "project": "LuxVeritas.media",
   "liveUrl": "https://luxveritas.media",
   "decision": "ready_for_final_release_gate",
   "phase": {
     "id": "phase-5",
     "number": 5,
-    "label": "Portal Pilot Prep",
+    "label": "Portal Pilot Prep and Release Control",
     "status": "active_pilot",
-    "summary": "Phase 5 pilot prep is active and technically pilot-ready: the public site, capture layer, media preview player, fan reactions, private access shell, operator reporting, private intake queue workbench, and pilot write gate are live. Privacy and Terms owner approval is recorded, and final release-gate verification is active; fresh pilot write evidence must be rerun before final release."
+    "summary": "Phase 5 pilot prep and release control are active: the public site, capture layer, guided media publishing, private access shell, operator reporting, and pilot write gate are ready. Privacy and Terms owner approval is recorded; fresh pilot write evidence must be rerun for the current deployed build before final release."
   },
   "pilotEvidence": {
     "result": "passed",
@@ -32,7 +32,7 @@
       "blocksPublicLaunch": false,
       "owner": "Legal/business reviewer",
       "source": "data/lux-legal-review.json",
-      "nextAction": "Complete legal review of the Privacy page before full public launch.",
+      "nextAction": "Monitor the approved Privacy page and reopen review if public data practices change.",
       "verification": "LUX_LEGAL_SYNC_LAUNCH=1 ... LUX_LEGAL_REVIEW_ITEM=privacy ... node tools/set-legal-review-status.mjs && node tools/qa-release-readiness.mjs",
       "notes": [
         "/legal/privacy.html",
@@ -91,7 +91,7 @@
       "blocksPublicLaunch": false,
       "owner": "Legal/business reviewer",
       "source": "data/lux-legal-review.json",
-      "nextAction": "Complete legal review of the Terms page before full public launch.",
+      "nextAction": "Monitor the approved Terms page and reopen review if public site practices change.",
       "verification": "LUX_LEGAL_SYNC_LAUNCH=1 ... LUX_LEGAL_REVIEW_ITEM=terms ... node tools/set-legal-review-status.mjs && node tools/qa-release-readiness.mjs",
       "notes": [
         "/legal/terms.html",

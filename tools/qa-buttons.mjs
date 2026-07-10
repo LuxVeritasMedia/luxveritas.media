@@ -176,6 +176,9 @@ for (const file of files) {
     if (!html.includes("data-media-player")) {
       issues.push(`${rel}: missing media player`);
     }
+    if (!html.includes('id="lux-player"')) {
+      issues.push(`${rel}: missing direct operator review anchor lux-player`);
+    }
     if (!html.includes("data-media-followup")) {
       issues.push(`${rel}: missing media follow-up conversion module`);
     }
@@ -192,12 +195,20 @@ for (const file of files) {
   }
 
   if (rel === "music.html") {
+    if (!html.includes('id="lux-radio"')) {
+      issues.push(`${rel}: missing direct operator review anchor lux-radio`);
+    }
     if (!/<div class="hero-actions">[\s\S]*data-media-action="play"[\s\S]*data-media-action="watch"[\s\S]*data-open-form="fan"[\s\S]*<\/div>/i.test(html)) {
       issues.push(`${rel}: hero Listen/Watch/Join CTAs must route to player play, player watch, and fan capture`);
     }
   }
 
   if (rel === "portal/reporting.html") {
+    for (const marker of ["operator-review-bar", "/music.html#lux-player", "/music.html#lux-radio", "/spmvp.html"]) {
+      if (!html.includes(marker)) {
+        issues.push(`${rel}: missing protected live-review shortcut ${marker}`);
+      }
+    }
     if (!html.includes('data-private-delivery="status"')) {
       issues.push(`${rel}: missing private delivery readiness tile`);
     }

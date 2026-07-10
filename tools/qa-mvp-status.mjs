@@ -53,7 +53,7 @@ try {
 if (report) {
   if (report.project !== "LuxVeritas.media") issue("project label mismatch");
   if (report.liveUrl !== "https://luxveritas.media") issue("liveUrl mismatch");
-  if (report.phaseStatus?.version !== "2026-06-28-phase-status") issue("phase status version mismatch");
+  if (!/^20\d{2}-\d{2}-\d{2}-phase-status$/.test(report.phaseStatus?.version || "")) issue("phase status version mismatch");
   if (report.phaseStatus?.currentPhase?.id !== "phase-5") issue("phase status current phase must be phase-5");
   if (report.phaseStatus?.currentPhase?.status !== "active_pilot") issue("phase status current phase must be active_pilot");
   const allowedPhasePilotStatuses = new Set(["pilot_ready", "pilot_ready_with_public_launch_blockers"]);
@@ -67,7 +67,7 @@ if (report) {
   for (const capability of ["live_form_writes", "live_event_writes", "inbox_delivery", "private_handoff", "operator_reporting", "post_write_reconciliation"]) {
     if (!report.phaseStatus?.pilotEvidence?.verifiedCapabilities?.includes(capability)) issue(`phase status pilot evidence missing ${capability}`);
   }
-  if (!/Phase 5 pilot prep is active/i.test(report.phase || "")) issue(`phase summary mismatch: ${report.phase || "missing"}`);
+  if (!/Phase 5 .*pilot prep.*active/i.test(report.phase || "")) issue(`phase summary mismatch: ${report.phase || "missing"}`);
   const localFreshness = pilotEvidenceFreshness(report.pilotWriteEvidence?.updatedAt, { maxAgeHours: maxPilotAgeHours });
   const phaseBlockers = Array.isArray(report.phaseStatus?.publicLaunchBlockers)
     ? report.phaseStatus.publicLaunchBlockers

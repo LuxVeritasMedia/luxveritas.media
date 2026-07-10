@@ -39,6 +39,10 @@ const checks = [
     script: "tools/qa-action-inventory.mjs"
   },
   {
+    label: "Media Control",
+    script: "tools/qa-media-control.mjs"
+  },
+  {
     label: "Launch Blockers",
     script: "tools/qa-launch-blockers.mjs"
   },
