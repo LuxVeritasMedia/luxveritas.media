@@ -1,0 +1,294 @@
+{
+  "schemaVersion": "luxveritas.cr8_app_release_readiness.v1",
+  "version": "2026-07-10-cr8-release-readiness",
+  "updatedAt": "2026-07-10T01:32:00Z",
+  "status": "release_readiness_handoff",
+  "confidence": "medium_until_app_repo_audited",
+  "project": {
+    "appId": "cr8",
+    "appName": "CR8",
+    "suite": "LuxFlow",
+    "websiteProductUrl": "https://luxveritas.media/luxflow/cr8/",
+    "storeSubmissionPacket": "data/cr8-store-submission.json",
+    "storeSubmissionDoc": "docs/cr8-store-submission.md"
+  },
+  "northStar": "CR8 should become the cleanest first LuxFlow product door: a calm, premium creator app that turns raw ideas into reviewable creative packets, while LuxVeritas.media sells the promise, captures aligned users, protects trust, and routes only ready people into deeper access.",
+  "currentPhase": {
+    "websiteEcosystemPhase": 5,
+    "websiteEcosystemLabel": "Portal Pilot Prep and App Marketplace Layer",
+    "cr8AppReleasePhase": 2,
+    "cr8AppReleaseLabel": "Scope Lock and Release Contract",
+    "summary": "LuxVeritas.media can sell and capture CR8 interest now. CR8 app release is not store-ready until the separate app build is audited, release scope is locked, real app screenshots are captured, store records are created, and QA/beta evidence passes."
+  },
+  "progression": {
+    "luxveritasWebsite": {
+      "percentComplete": 68,
+      "confidence": "high",
+      "basis": "Public site foundation, domain, Firebase/GitHub path, access cleanup, capture flows, CR8 product page, CR8 support/legal/download routes, and live deployment are complete. Remaining work is ongoing conversion polish, portal depth, app-download wiring, fresh pilot evidence after each release, and production-grade analytics/compliance loops."
+    },
+    "cr8WebsiteSalesLayer": {
+      "percentComplete": 78,
+      "confidence": "high",
+      "basis": "CR8 public product page, waitlist/download surface, support, privacy, terms, delete-data route, store metadata packet, candidate icon, candidate feature graphic, and store-readiness copy are live."
+    },
+    "cr8AppRelease": {
+      "percentCompleteFromWebsiteEvidence": 24,
+      "confidence": "medium_low_until_app_repo_audited",
+      "basis": "Website and store packet are prepared, but actual app build, app store records, real screenshots, signing, device QA, beta testing, and store submission evidence are outside this website repo and must be verified in the CR8 app build conversation."
+    },
+    "overallLuxFlowAppCommercialization": {
+      "percentComplete": 42,
+      "confidence": "medium",
+      "basis": "The public marketplace pattern exists and CR8 is the first flagship product page. Commercialization is not complete until app builds, store listings, payment decisions, support/legal operations, and launch analytics are proven."
+    }
+  },
+  "websitePhaseMap": [
+    {
+      "phase": 1,
+      "label": "Public Site Foundation",
+      "status": "complete",
+      "percentComplete": 100
+    },
+    {
+      "phase": 2,
+      "label": "Firebase, GitHub, Domain",
+      "status": "complete",
+      "percentComplete": 100
+    },
+    {
+      "phase": 3,
+      "label": "Public Access-Control Cleanup",
+      "status": "complete",
+      "percentComplete": 100
+    },
+    {
+      "phase": 4,
+      "label": "Capture, Legal, Seed, Boundary Readiness",
+      "status": "closed_for_current_public_layer",
+      "percentComplete": 92
+    },
+    {
+      "phase": 5,
+      "label": "Portal Pilot Prep and App Marketplace Layer",
+      "status": "current",
+      "percentComplete": 62
+    },
+    {
+      "phase": 6,
+      "label": "Role/Tier Matrix and Screened Intake Routing",
+      "status": "partially_defined",
+      "percentComplete": 46
+    },
+    {
+      "phase": 7,
+      "label": "LuxOS/LuxFlow Internal Bridge",
+      "status": "deferred_until_contract_ready",
+      "percentComplete": 12
+    },
+    {
+      "phase": 8,
+      "label": "KYS Receipts, Consent, and Audit Layer",
+      "status": "deferred",
+      "percentComplete": 8
+    },
+    {
+      "phase": 9,
+      "label": "Partner, Investor, Licensing, Creator Rooms",
+      "status": "gated_shells_only",
+      "percentComplete": 22
+    },
+    {
+      "phase": 10,
+      "label": "Full Launch Governance, Membership, Commerce, and Scale",
+      "status": "future",
+      "percentComplete": 14
+    }
+  ],
+  "cr8AppPhaseMap": [
+    {
+      "phase": 1,
+      "label": "Public Sales and Capture Layer",
+      "status": "complete",
+      "percentComplete": 100,
+      "doneEvidence": [
+        "Live CR8 product page",
+        "Support, privacy, terms, delete-data, and download/waitlist routes",
+        "Store submission packet",
+        "Candidate store assets"
+      ]
+    },
+    {
+      "phase": 2,
+      "label": "Scope Lock and Release Contract",
+      "status": "current",
+      "percentComplete": 35,
+      "requiredEvidence": [
+        "Final MVP user stories",
+        "Supported platforms confirmed",
+        "Account model confirmed",
+        "Data model confirmed",
+        "Export/share behavior confirmed",
+        "Paid/free launch posture confirmed"
+      ]
+    },
+    {
+      "phase": 3,
+      "label": "Working App MVP",
+      "status": "required",
+      "percentComplete": 0,
+      "requiredEvidence": [
+        "App runs locally",
+        "App runs on iOS target",
+        "App runs on Android target",
+        "Core CR8 create/shape/review/export path works",
+        "Error and empty states work"
+      ]
+    },
+    {
+      "phase": 4,
+      "label": "Platform Build, Signing, and Accounts",
+      "status": "required",
+      "percentComplete": 0,
+      "requiredEvidence": [
+        "Apple Developer setup",
+        "Bundle ID",
+        "Provisioning/signing",
+        "Google Play Console setup",
+        "Android package name",
+        "Release build artifacts"
+      ]
+    },
+    {
+      "phase": 5,
+      "label": "Store Assets, Legal, Rating, and Data Safety",
+      "status": "partially_prepared",
+      "percentComplete": 35,
+      "requiredEvidence": [
+        "Owner-approved app icon",
+        "Owner-approved feature graphic",
+        "Captured app screenshots",
+        "Apple rating questionnaire",
+        "Google IARC questionnaire",
+        "Apple privacy answers",
+        "Google Data Safety answers",
+        "Final app-specific legal review"
+      ]
+    },
+    {
+      "phase": 6,
+      "label": "QA, Security, Accessibility, and Beta",
+      "status": "required",
+      "percentComplete": 0,
+      "requiredEvidence": [
+        "Device QA",
+        "Crash-free smoke test",
+        "Accessibility review",
+        "Auth/account review if accounts exist",
+        "No-secret scan",
+        "TestFlight or Google internal testing evidence"
+      ]
+    },
+    {
+      "phase": 7,
+      "label": "Store Submission and Review",
+      "status": "required",
+      "percentComplete": 0,
+      "requiredEvidence": [
+        "App Store Connect submission",
+        "Google Play submission",
+        "Review notes or demo account if login is required",
+        "Approval or rejection response captured"
+      ]
+    },
+    {
+      "phase": 8,
+      "label": "Launch Loop and Website Conversion Wiring",
+      "status": "required",
+      "percentComplete": 10,
+      "requiredEvidence": [
+        "Live store links added to CR8 website page",
+        "Download route updated",
+        "Support loop active",
+        "Launch analytics reviewed",
+        "Post-launch feedback path active"
+      ]
+    }
+  ],
+  "qualityGates": [
+    {
+      "id": "website_sales_layer",
+      "label": "Website Sales Layer",
+      "status": "passed_current_release",
+      "evidence": "https://luxveritas.media/luxflow/cr8/"
+    },
+    {
+      "id": "store_metadata",
+      "label": "Store Metadata",
+      "status": "prepared_candidate",
+      "evidence": "data/cr8-store-submission.json"
+    },
+    {
+      "id": "real_screenshots",
+      "label": "Real App Screenshots",
+      "status": "blocked_until_app_build",
+      "evidence": "Store screenshots must be captured from the actual CR8 app build."
+    },
+    {
+      "id": "app_build_audit",
+      "label": "App Build Audit",
+      "status": "required_in_app_thread",
+      "evidence": "Separate CR8 app conversation/repo must be audited."
+    },
+    {
+      "id": "store_submission",
+      "label": "Store Submission",
+      "status": "not_ready",
+      "evidence": "App records, signing, screenshots, ratings, privacy, QA, and beta evidence are required first."
+    }
+  ],
+  "nextBestSteps": [
+    {
+      "priority": "P0",
+      "owner": "CR8 app build conversation",
+      "step": "Run release-readiness audit against this packet before adding more features.",
+      "doneCondition": "Audit returns files checked, app build status, blockers, and the first fix batch."
+    },
+    {
+      "priority": "P0",
+      "owner": "CR8 app build conversation",
+      "step": "Lock MVP scope and supported launch platforms.",
+      "doneCondition": "Approved MVP scope says web only, iOS plus Android, or staged platform launch."
+    },
+    {
+      "priority": "P0",
+      "owner": "CR8 app build conversation",
+      "step": "Produce runnable app build evidence.",
+      "doneCondition": "Local run, device/simulator run, and core create/shape/review/export path are verified."
+    },
+    {
+      "priority": "P1",
+      "owner": "CR8 app build conversation",
+      "step": "Capture real screenshots from the working app.",
+      "doneCondition": "Screenshots are saved from the real app build and mapped to Apple/Google slots."
+    },
+    {
+      "priority": "P1",
+      "owner": "LuxVeritas.media website",
+      "step": "Approve or replace candidate icon and feature graphic.",
+      "doneCondition": "Store packet changes asset statuses from candidate_pending_approval only after owner approval."
+    },
+    {
+      "priority": "P1",
+      "owner": "Store/legal operator",
+      "step": "Complete rating, privacy, and data-safety questionnaires from final app behavior.",
+      "doneCondition": "Apple and Google forms are completed from shipped behavior, not aspirational behavior."
+    },
+    {
+      "priority": "P2",
+      "owner": "LuxVeritas.media website",
+      "step": "Replace waitlist/download placeholders with live store links after approval.",
+      "doneCondition": "CR8 download route links to App Store and Google Play or clearly states staged availability."
+    }
+  ],
+  "handoffPrompt": "Use the Lux Veritas website packet as source context. Read docs/cr8-store-submission.md, data/cr8-store-submission.json, and data/cr8-app-release-readiness.json. Audit the CR8 app build for App Store and Google Play readiness. Do not mark real screenshots, approved assets, signing, TestFlight, Google internal testing, privacy answers, or store submission complete unless evidence exists in the app repo or store consoles. Return: files checked, current app phase, blockers, first fix batch, and QA commands."
+}

@@ -3,6 +3,7 @@
 Status: prepared, pending final app assets  
 Updated: 2026-07-06  
 Source of truth: `data/cr8-store-submission.json`
+Release audit: `docs/cr8-app-release-readiness-audit.md`
 
 ## Boundary
 

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "luxveritas.open_approvals_report.v1",
-  "generatedAt": "2026-07-06T04:45:45.309Z",
+  "generatedAt": "2026-07-10T01:37:34.502Z",
   "project": "LuxVeritas.media",
   "liveUrl": "https://luxveritas.media",
   "decision": "ready_for_final_release_gate",
@@ -9,7 +9,7 @@
     "number": 5,
     "label": "Portal Pilot Prep",
     "status": "active_pilot",
-    "summary": "Phase 5 pilot prep is active and technically pilot-ready: the public site, capture layer, media preview player, fan reactions, private access shell, operator reporting, private intake queue workbench, and pilot write gate are live. Privacy and Terms owner approval is recorded, and final release-gate verification is active."
+    "summary": "Phase 5 pilot prep is active and technically pilot-ready: the public site, capture layer, media preview player, fan reactions, private access shell, operator reporting, private intake queue workbench, and pilot write gate are live. Privacy and Terms owner approval is recorded, and final release-gate verification is active; fresh pilot write evidence must be rerun before final release."
   },
   "pilotEvidence": {
     "result": "passed",

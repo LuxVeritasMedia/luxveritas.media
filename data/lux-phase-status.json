@@ -1,16 +1,16 @@
 {
   "schemaVersion": "luxveritas.phase_status.v1",
   "version": "2026-06-28-phase-status",
-  "updatedAt": "2026-07-06T01:24:25Z",
+  "updatedAt": "2026-07-10T01:32:00Z",
   "currentPhase": {
     "id": "phase-5",
     "number": 5,
     "label": "Portal Pilot Prep",
     "status": "active_pilot",
-    "summary": "Phase 5 pilot prep is active and technically pilot-ready: the public site, capture layer, media preview player, fan reactions, private access shell, operator reporting, private intake queue workbench, and pilot write gate are live. Privacy and Terms owner approval is recorded, and final release-gate verification is active."
+    "summary": "Phase 5 pilot prep is active and technically pilot-ready: the public site, capture layer, media preview player, fan reactions, private access shell, operator reporting, private intake queue workbench, and pilot write gate are live. Privacy and Terms owner approval is recorded, and final release-gate verification is active; fresh pilot write evidence must be rerun before final release."
   },
   "publicLaunchStatus": "ready_for_final_release_gate",
-  "pilotStatus": "pilot_ready",
+  "pilotStatus": "pilot_ready_with_public_launch_blockers",
   "pilotEvidence": {
     "assetVersion": "20260705-app-market",
     "qaRunId": "20260706012216",
@@ -56,7 +56,7 @@
       "phaseNumber": 4,
       "label": "Capture, Legal, Seed, Boundary Closeout",
       "status": "approval_closed",
-      "summary": "Capture, media, reporting, domain, inbox, pilot write-gate, legal closeout, and boundary work are ready. Privacy and Terms owner approval is recorded; pilot write evidence is fresh for the current release window."
+      "summary": "Capture, media, reporting, domain, inbox, pilot write-gate, legal closeout, and boundary work are ready. Privacy and Terms owner approval is recorded; pilot write evidence must be refreshed before final release."
     },
     {
       "id": "phase-5-portal-shell",
@@ -96,7 +96,9 @@
       "rule": "Keep store and membership waitlist-only until purchase, refund, and membership terms are approved."
     }
   ],
-  "publicLaunchBlockers": [],
+  "publicLaunchBlockers": [
+    "pilot_write_evidence_freshness"
+  ],
   "codeConfigBlockers": [],
   "nextDecisions": [
     {
@@ -114,8 +116,8 @@
     {
       "id": "fresh-pilot-write-evidence",
       "label": "Fresh Pilot Write Evidence",
-      "status": "fresh_current",
-      "summary": "Fresh pilot write evidence is current. Rerun the live pilot write gate if the release window moves beyond the freshness limit."
+      "status": "refresh_required",
+      "summary": "Pilot write evidence is outside the freshness window. Rerun the live pilot write gate before final release."
     }
   ]
 }
