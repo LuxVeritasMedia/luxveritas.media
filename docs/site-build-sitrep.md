@@ -10,11 +10,11 @@ LuxVeritas.media is the calm, premium public front door to the Lux Veritas unive
 
 These percentages are audited delivery estimates, not marketing claims. Public-site release readiness and full-ecosystem completion are measured separately.
 
-- Public website release readiness: 92% after the media-control deployment and fresh live QA.
+- Public website release readiness: 94% after the media-control deployment and fresh live QA.
 - Full ten-phase ecosystem: 59%.
-- Current Phase 5 completion: 72%.
-- Public media and operator release lane: 85%.
-- Public UI/UX release polish: 88%.
+- Current Phase 5 completion: 74%.
+- Public media and operator release lane: 88%.
+- Public UI/UX release polish: 90%.
 
 ## Ten-Phase Map
 
@@ -24,7 +24,7 @@ These percentages are audited delivery estimates, not marketing claims. Public-s
 | 2 | Firebase, GitHub, and domain | 100% | Complete |
 | 3 | Public access-control cleanup | 100% | Complete |
 | 4 | Capture, legal, seed, and boundary readiness | 98% | Approved; evidence maintenance remains |
-| 5 | Authenticated portal shell and release control | 72% | Current |
+| 5 | Authenticated portal shell and release control | 74% | Current |
 | 6 | Role/tier matrix and screened intake routing | 56% | Contract defined; implementation continues |
 | 7 | Controlled LuxOS/LuxFlow bridge | 18% | Deliberately deferred |
 | 8 | KYS receipts, consent, and audit layer | 10% | Foundation only |

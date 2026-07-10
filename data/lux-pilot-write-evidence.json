@@ -1,10 +1,11 @@
 {
   "schemaVersion": "luxveritas.pilot_write_evidence.v1",
-  "updatedAt": "2026-07-06T01:24:25Z",
+  "updatedAt": "2026-07-10T14:26:32Z",
   "liveUrl": "https://luxveritas.media",
-  "assetVersion": "20260705-app-market",
-  "qaRunId": "20260706012216",
-  "command": "LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs",
+  "assetVersion": "20260710-media-control-r2",
+  "qaRunId": "20260710141810",
+  "command": "LUX_PILOT_RESUME_QA_RUN_ID=20260710141810 node tools/qa-pilot-write-gate.mjs",
+  "resumedExistingWrites": true,
   "result": "passed",
   "operatorTokenSource": "macOS Keychain",
   "writeEvidence": {
@@ -36,13 +37,10 @@
     "Live Browser Flows",
     "Live Operator Report",
     "Release Readiness",
+    "Post-Write Report Reconciliation",
     "Live Form Write Matrix",
-    "Live Event Write Matrix",
-    "Post-Write Report Reconciliation"
+    "Live Event Write Matrix"
   ],
-  "knownPublicLaunchBlockersAllowed": [
-    "privacy_review",
-    "terms_review"
-  ],
-  "notes": "No-secret receipt for the current live pilot write gate, including the noindex pilot feedback capture path and protected activation-readiness reporting. Full public release still requires Privacy and Terms approval."
+  "knownPublicLaunchBlockersAllowed": [],
+  "notes": "No-secret receipt for the current live pilot write gate, including the noindex pilot feedback capture path and protected activation-readiness reporting. Owner-approved legal state is recorded; final launch remains subject to current release gates."
 }

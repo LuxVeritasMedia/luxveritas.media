@@ -1,39 +1,89 @@
 {
   "schemaVersion": "luxveritas.phase_status.v1",
   "version": "2026-07-10-phase-status",
-  "updatedAt": "2026-07-10T01:32:00Z",
+  "updatedAt": "2026-07-10T14:26:32Z",
   "currentPhase": {
     "id": "phase-5",
     "number": 5,
     "label": "Portal Pilot Prep and Release Control",
     "status": "active_pilot",
-    "summary": "Phase 5 pilot prep and release control are active: the public site, capture layer, guided media publishing, private access shell, operator reporting, and pilot write gate are ready. Privacy and Terms owner approval is recorded; fresh pilot write evidence must be rerun for the current deployed build before final release."
+    "summary": "Phase 5 pilot prep and release control are active: the public site, capture layer, guided media publishing, private access shell, operator reporting, and pilot write gate are ready. Privacy and Terms owner approval is recorded, and current live write evidence is verified for this deployed build."
   },
   "completion": {
-    "publicWebsiteReleaseReadiness": 92,
+    "publicWebsiteReleaseReadiness": 94,
     "fullTenPhaseEcosystem": 59,
-    "currentPhase": 72,
-    "mediaOperatorLane": 85,
-    "publicUiUxPolish": 88,
+    "currentPhase": 74,
+    "mediaOperatorLane": 88,
+    "publicUiUxPolish": 90,
     "basis": "Audited delivery estimate; public launch readiness is measured separately from the full ecosystem."
   },
   "phaseMap": [
-    { "number": 1, "label": "Public Site Foundation", "completion": 100, "status": "complete" },
-    { "number": 2, "label": "Firebase, GitHub, Domain", "completion": 100, "status": "complete" },
-    { "number": 3, "label": "Public Access-Control Cleanup", "completion": 100, "status": "complete" },
-    { "number": 4, "label": "Capture, Legal, Seed, Boundary Readiness", "completion": 98, "status": "closeout" },
-    { "number": 5, "label": "Authenticated Portal Shell and Release Control", "completion": 72, "status": "active" },
-    { "number": 6, "label": "Role/Tier Matrix and Screened Intake Routing", "completion": 56, "status": "contract_defined" },
-    { "number": 7, "label": "Controlled Internal Bridge", "completion": 18, "status": "deferred" },
-    { "number": 8, "label": "Receipts, Consent, Audit Layer", "completion": 10, "status": "foundation" },
-    { "number": 9, "label": "Partner and Creator Rooms", "completion": 22, "status": "capture_shells" },
-    { "number": 10, "label": "Governance, Membership, Commerce, Scale", "completion": 16, "status": "foundation" }
+    {
+      "number": 1,
+      "label": "Public Site Foundation",
+      "completion": 100,
+      "status": "complete"
+    },
+    {
+      "number": 2,
+      "label": "Firebase, GitHub, Domain",
+      "completion": 100,
+      "status": "complete"
+    },
+    {
+      "number": 3,
+      "label": "Public Access-Control Cleanup",
+      "completion": 100,
+      "status": "complete"
+    },
+    {
+      "number": 4,
+      "label": "Capture, Legal, Seed, Boundary Readiness",
+      "completion": 98,
+      "status": "closeout"
+    },
+    {
+      "number": 5,
+      "label": "Authenticated Portal Shell and Release Control",
+      "completion": 72,
+      "status": "active"
+    },
+    {
+      "number": 6,
+      "label": "Role/Tier Matrix and Screened Intake Routing",
+      "completion": 56,
+      "status": "contract_defined"
+    },
+    {
+      "number": 7,
+      "label": "Controlled Internal Bridge",
+      "completion": 18,
+      "status": "deferred"
+    },
+    {
+      "number": 8,
+      "label": "Receipts, Consent, Audit Layer",
+      "completion": 10,
+      "status": "foundation"
+    },
+    {
+      "number": 9,
+      "label": "Partner and Creator Rooms",
+      "completion": 22,
+      "status": "capture_shells"
+    },
+    {
+      "number": 10,
+      "label": "Governance, Membership, Commerce, Scale",
+      "completion": 16,
+      "status": "foundation"
+    }
   ],
   "publicLaunchStatus": "ready_for_final_release_gate",
-  "pilotStatus": "pilot_ready_with_public_launch_blockers",
+  "pilotStatus": "pilot_ready",
   "pilotEvidence": {
-    "assetVersion": "20260705-app-market",
-    "qaRunId": "20260706012216",
+    "assetVersion": "20260710-media-control-r2",
+    "qaRunId": "20260710141810",
     "result": "passed",
     "evidenceFile": "data/lux-pilot-write-evidence.json",
     "verifiedCapabilities": [
@@ -76,7 +126,7 @@
       "phaseNumber": 4,
       "label": "Capture, Legal, Seed, Boundary Closeout",
       "status": "approval_closed",
-      "summary": "Capture, media, reporting, domain, inbox, pilot write-gate, legal closeout, and boundary work are ready. Privacy and Terms owner approval is recorded; pilot write evidence must be refreshed before final release."
+      "summary": "Capture, media, reporting, domain, inbox, legal closeout, boundary work, and current live write evidence are verified for the deployed build."
     },
     {
       "id": "phase-5-portal-shell",
@@ -116,9 +166,7 @@
       "rule": "Keep store and membership waitlist-only until purchase, refund, and membership terms are approved."
     }
   ],
-  "publicLaunchBlockers": [
-    "pilot_write_evidence_freshness"
-  ],
+  "publicLaunchBlockers": [],
   "codeConfigBlockers": [],
   "nextDecisions": [
     {
@@ -136,8 +184,8 @@
     {
       "id": "fresh-pilot-write-evidence",
       "label": "Fresh Pilot Write Evidence",
-      "status": "refresh_required",
-      "summary": "Pilot write evidence is outside the freshness window. Rerun the live pilot write gate before final release."
+      "status": "passed",
+      "summary": "Live form, event, inbox, browser, media, and protected-report evidence passed for QA run 20260710141810."
     }
   ]
 }

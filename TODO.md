@@ -272,4 +272,4 @@ Current phase: Phase 5 of 10 - portal pilot prep and release control active; Pha
 - [x] Add protected direct-review shortcuts for Song, Video, Radio, and the release room.
 - [x] Add media-control verification to pilot readiness and MVP preflight.
 - [ ] Replace MVP preview media with approved production Song, Video, Radio, and final poster artwork before campaign launch.
-- [ ] Run the fresh live write gate for the deployed `20260710-media-control-r2` build and archive its no-secret evidence.
+- [x] Run the fresh live write gate for the deployed `20260710-media-control-r2` build and archive its no-secret evidence (`20260710141810`).

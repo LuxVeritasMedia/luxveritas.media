@@ -39,9 +39,10 @@ function secretShape(value) {
   return /re_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN [A-Z ]+PRIVATE KEY-----|LUX_REPORT_TOKEN=.*[A-Za-z0-9_-]{12,}|REPORT_OPERATOR_TOKEN=.*[A-Za-z0-9_-]{12,}|Bearer\s+[A-Za-z0-9._-]{16,}/i.test(value);
 }
 
-const [raw, manifestRaw, runbook, handoff] = await Promise.all([
+const [raw, manifestRaw, legalReviewRaw, runbook, handoff] = await Promise.all([
   readFile("data/lux-pilot-write-evidence.json", "utf8"),
   readFile("data/lux-build-manifest.json", "utf8"),
+  readFile("data/lux-legal-review.json", "utf8"),
   readFile("docs/final-launch-runbook.md", "utf8"),
   readFile("docs/production-release-handoff.md", "utf8")
 ]);
@@ -56,6 +57,7 @@ try {
 }
 
 const manifest = JSON.parse(manifestRaw);
+const legalReview = JSON.parse(legalReviewRaw);
 const expectedAssetVersion = manifest.assetVersion || manifest.version || "";
 
 if (evidence) {
@@ -65,7 +67,10 @@ if (evidence) {
     staleEvidence(`pilot write evidence assetVersion ${evidence.assetVersion || "missing"} does not match current build ${expectedAssetVersion || "missing"}; rerun the live pilot write gate after deploy`);
   }
   if (!/^\d{14}$/.test(evidence.qaRunId || "")) issue("pilot write evidence qaRunId must be YYYYMMDDHHMMSS");
-  if (evidence.command !== "LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs") issue("pilot write evidence command mismatch");
+  const directWriteCommand = evidence.command === "LUX_PILOT_WRITE_TESTS=1 node tools/qa-pilot-write-gate.mjs";
+  const resumeCommand = new RegExp(`^LUX_PILOT_RESUME_QA_RUN_ID=${evidence.qaRunId || "missing"} node tools/qa-pilot-write-gate\\.mjs$`).test(evidence.command || "");
+  if (!directWriteCommand && !resumeCommand) issue("pilot write evidence command mismatch");
+  if (resumeCommand && evidence.resumedExistingWrites !== true) issue("resumed pilot evidence must identify existing reconciled writes");
   if (evidence.result !== "passed") issue("pilot write evidence result must be passed");
   if (!Date.parse(evidence.updatedAt || "")) issue("pilot write evidence updatedAt missing or invalid");
   const freshness = pilotEvidenceFreshness(evidence.updatedAt, { maxAgeHours });
@@ -100,8 +105,10 @@ if (evidence) {
   }
 
   const allowedBlockers = new Set(Array.isArray(evidence.knownPublicLaunchBlockersAllowed) ? evidence.knownPublicLaunchBlockersAllowed : []);
-  for (const id of ["privacy_review", "terms_review"]) {
-    if (!allowedBlockers.has(id)) issue(`pilot write evidence missing allowed legal blocker ${id}`);
+  for (const [blockerId, legalId] of [["privacy_review", "privacy"], ["terms_review", "terms"]]) {
+    const approved = legalReview.items?.find((item) => item.id === legalId)?.status === "approved";
+    if (!approved && !allowedBlockers.has(blockerId)) issue(`pilot write evidence missing allowed legal blocker ${blockerId}`);
+    if (approved && allowedBlockers.has(blockerId)) issue(`pilot write evidence must not allow approved legal blocker ${blockerId}`);
   }
 
   for (const [name, doc] of [["final launch runbook", runbook], ["production release handoff", handoff]]) {
