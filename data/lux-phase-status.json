@@ -1,7 +1,7 @@
 {
   "schemaVersion": "luxveritas.phase_status.v1",
   "version": "2026-07-10-phase-status",
-  "updatedAt": "2026-07-10T14:26:32Z",
+  "updatedAt": "2026-07-14T01:25:57Z",
   "currentPhase": {
     "id": "phase-5",
     "number": 5,
@@ -83,7 +83,7 @@
   "pilotStatus": "pilot_ready",
   "pilotEvidence": {
     "assetVersion": "20260710-media-control-r2",
-    "qaRunId": "20260710141810",
+    "qaRunId": "20260714012051",
     "result": "passed",
     "evidenceFile": "data/lux-pilot-write-evidence.json",
     "verifiedCapabilities": [
@@ -185,7 +185,7 @@
       "id": "fresh-pilot-write-evidence",
       "label": "Fresh Pilot Write Evidence",
       "status": "passed",
-      "summary": "Live form, event, inbox, browser, media, and protected-report evidence passed for QA run 20260710141810."
+      "summary": "Live form, event, inbox, browser, media, and protected-report evidence passed for QA run 20260714012051."
     }
   ]
 }

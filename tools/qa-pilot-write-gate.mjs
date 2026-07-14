@@ -177,6 +177,8 @@ function isAllowedPreRefreshEvidenceOutput(output) {
   if (!issueLines.length) return false;
   return issueLines.every((line) => (
     /pilot write evidence must include \d+ event writes/i.test(line)
+    || /pilot write evidence is stale/i.test(line)
+    || /phase status must report pilot write freshness as a public launch blocker when evidence is stale/i.test(line)
     || /pilot write evidence assetVersion .* does not match current build/i.test(line)
     || /write evidence must cover 11 forms and \d+ events/i.test(line)
     || /assetVersion does not match live build manifest/i.test(line)

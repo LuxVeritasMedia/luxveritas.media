@@ -1,6 +1,6 @@
 # Lux Veritas Open Approval Decision Forms
 
-Generated: 2026-07-04T14:31:33.117Z
+Generated: 2026-07-14T01:26:56.533Z
 
 Purpose: No-secret approval decision forms for private reviewer records. Fill completed decisions outside the public repo.
 
@@ -10,7 +10,7 @@ Decision: ready_for_final_release_gate
 Open or conditional approvals: 5
 Public launch blockers: 0
 
-Pilot evidence: passed run=20260703140813 forms=11 events=13
+Pilot evidence: passed run=20260714012051 forms=11 events=13
 
 ## Rules
 
@@ -55,8 +55,8 @@ Fill this record outside the public repo.
 - legalVersion: privacy-draft-2026-07-03
 - publicTermsVersion: 2026-07-03-public-capture
 - privacyVersion: privacy-draft-2026-07-03
-- assetVersion: 20260630-pilot-feedback-report
-- pilotQaRunId: 20260703140813
+- assetVersion: 20260710-media-control-r2
+- pilotQaRunId: 20260714012051
 
 ### Do Not Approve If
 
@@ -75,7 +75,7 @@ Fill this record outside the public repo.
 
 ### Next Action
 
-Complete legal review of the Privacy page before full public launch.
+Monitor the approved Privacy page and reopen review if public data practices change.
 
 ### Verification
 
@@ -119,8 +119,8 @@ Fill this record outside the public repo.
 - publicTermsVersion: 2026-07-03-public-capture
 - termsVersion: terms-draft-2026-06-09
 - submissionTermsVersion: submission-draft-2026-06-09
-- assetVersion: 20260630-pilot-feedback-report
-- pilotQaRunId: 20260703140813
+- assetVersion: 20260710-media-control-r2
+- pilotQaRunId: 20260714012051
 
 ### Do Not Approve If
 
@@ -139,7 +139,7 @@ Fill this record outside the public repo.
 
 ### Next Action
 
-Complete legal review of the Terms page before full public launch.
+Monitor the approved Terms page and reopen review if public site practices change.
 
 ### Verification
 
@@ -247,8 +247,8 @@ Fill this record outside the public repo.
 - recommendedTarget: google_workspace
 - currentPrimaryTarget: firebase_handoff
 - firstExternalApprovalStatus: identified_pending_explicit_private_workflow_owner_approval
-- pilotQaRunId: 20260703140813
-- assetVersion: 20260630-pilot-feedback-report
+- pilotQaRunId: 20260714012051
+- assetVersion: 20260710-media-control-r2
 
 ### Do Not Approve If
 

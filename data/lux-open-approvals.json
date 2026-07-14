@@ -1,6 +1,6 @@
 {
   "schemaVersion": "luxveritas.open_approvals_report.v1",
-  "generatedAt": "2026-07-10T14:31:05.398Z",
+  "generatedAt": "2026-07-14T01:26:56.445Z",
   "project": "LuxVeritas.media",
   "liveUrl": "https://luxveritas.media",
   "decision": "ready_for_final_release_gate",
@@ -13,8 +13,8 @@
   },
   "pilotEvidence": {
     "result": "passed",
-    "qaRunId": "20260710141810",
-    "updatedAt": "2026-07-10T14:26:32Z",
+    "qaRunId": "20260714012051",
+    "updatedAt": "2026-07-14T01:25:57Z",
     "formCaptureIntents": 11,
     "eventWrites": 13
   },
@@ -66,7 +66,7 @@
           "publicTermsVersion": "2026-07-03-public-capture",
           "privacyVersion": "privacy-draft-2026-07-03",
           "assetVersion": "20260710-media-control-r2",
-          "pilotQaRunId": "20260710141810"
+          "pilotQaRunId": "20260714012051"
         },
         "blockApprovalIf": [
           "The approval record would include secrets, API keys, private URLs, provider account IDs, private report exports, legal advice, contract terms, or non-public operational details.",
@@ -127,7 +127,7 @@
           "termsVersion": "terms-draft-2026-06-09",
           "submissionTermsVersion": "submission-draft-2026-06-09",
           "assetVersion": "20260710-media-control-r2",
-          "pilotQaRunId": "20260710141810"
+          "pilotQaRunId": "20260714012051"
         },
         "blockApprovalIf": [
           "The approval record would include secrets, API keys, private URLs, provider account IDs, private report exports, legal advice, contract terms, or non-public operational details.",
@@ -248,7 +248,7 @@
           "recommendedTarget": "google_workspace",
           "currentPrimaryTarget": "firebase_handoff",
           "firstExternalApprovalStatus": "identified_pending_explicit_private_workflow_owner_approval",
-          "pilotQaRunId": "20260710141810",
+          "pilotQaRunId": "20260714012051",
           "assetVersion": "20260710-media-control-r2"
         },
         "blockApprovalIf": [

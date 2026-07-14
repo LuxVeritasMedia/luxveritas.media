@@ -11,8 +11,8 @@ The public site is technically pilot-ready, and owner/business approval is recor
 - Live URL: `https://luxveritas.media`
 - Current asset version: `20260710-media-control-r2`
 - Pilot write evidence file: `data/lux-pilot-write-evidence.json`
-- Latest pilot QA run: `20260710141810`
-- Pilot evidence updated: `2026-07-10T14:26:32Z`
+- Latest pilot QA run: `20260714012051`
+- Pilot evidence updated: `2026-07-14T01:25:57Z`
 - Pilot result: `passed`
 - Live capture intents written: `11`
 - Live event/reporting writes: `13`
@@ -100,7 +100,7 @@ The reviewer should fill this out outside the public repo before any approval co
 - termsVersion: `terms-draft-2026-06-09`
 - submissionTermsVersion: `submission-draft-2026-06-09`
 - assetVersion: `20260710-media-control-r2`
-- pilotQaRunId: `20260710141810`
+- pilotQaRunId: `20260714012051`
 - evidenceReference: no-secret approval reference only
 - conditionsOrChanges:
 
