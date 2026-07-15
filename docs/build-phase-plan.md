@@ -1,12 +1,12 @@
 # Lux Veritas Build Phase Plan
 
-Status: Phase 5 pilot prep guide
+Status: Phase 5 pilot prep and release-control guide
 
-Date: June 2, 2026
+Date: July 15, 2026
 
 ## Current Phase
 
-LuxVeritas.media is in Phase 5 of 10: portal pilot prep. Phase 4 capture, domain, inbox, media, and boundary work is ready, but Privacy and Terms legal approval remain open before full public release.
+LuxVeritas.media is in Phase 5 of 10: portal pilot prep and release control. Phase 4 capture, domain, inbox, media, legal approval, and boundary work is closed for the current public MVP. The live site has zero recorded public-launch blockers and is ready for the final release gate; real account authentication and later private-system phases remain unfinished.
 
 KYS remains on its own clock: KYS Phase 1, which proves receipts before tokens, public identity claims, governance claims, biometrics, or public-chain records.
 
@@ -15,7 +15,7 @@ KYS remains on its own clock: KYS Phase 1, which proves receipts before tokens, 
 1. Public site foundation - complete.
 2. Firebase, GitHub, and domain deployment - complete.
 3. Public access-control cleanup - complete.
-4. Capture, legal, seed, and boundary readiness - ready except legal approval and private seed upload.
+4. Capture, legal, seed, and boundary readiness - 98% closeout; public legal approval recorded and private archive maintenance remains.
 5. Authenticated portal shell - current as a screened access shell, not full auth.
 6. Role/tier matrix and screened intake routing - contracts defined for intake and handoff.
 7. LuxOS/LuxFlow internal bridge - deferred controlled bridge, not public merge.

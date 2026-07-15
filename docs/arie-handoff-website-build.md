@@ -1,5 +1,7 @@
 # Lux Veritas Website Build Handoff For Arie
 
+> Historical iteration record. For the current Node Z assignment, live status, release priorities, commands, tool stack, and access protocol, use `docs/node-z-arie-release-handoff.md`. That document supersedes any stale status or priority in this file.
+
 ## Purpose
 
 This document is the internal handoff for Arie so he can understand every major move, decision, and iteration made in the LuxVeritas.media website build so far and continue the work in Codex from another machine.
@@ -471,7 +473,7 @@ In this order:
 ## Recommended Prompt For Arie To Use In Codex
 
 ```text
-Use AGENTS.md, docs/strategy-round2.md, docs/arie-handoff-website-build.md, and TODO.md as the source of truth.
+Use AGENTS.md, docs/node-z-arie-release-handoff.md, docs/PRODUCT_BOUNDARY.md, docs/site-build-sitrep.md, and TODO.md as the source of truth.
 
 Implementation only. Short final summary.
 
@@ -484,6 +486,7 @@ Internal material must not be visible publicly.
 
 Before editing:
 - Read the current generator in tools/build-static.mjs.
+- Do not inspect source_docs, old zip files, raw transcripts, private seeds, or internal LuxFlow repositories unless Node X assigns that work.
 - Do not reintroduce public backend or operations language.
 - Keep the public layer audience-facing and trust-building.
 - Keep private and internal layers gated or noindexed.
@@ -502,16 +505,18 @@ The TODO file now tracks the public website through Phase 5 pilot prep:
 - P6: QA
 - P7: media MVP
 
-Current posture: pilot-ready with public launch blocked by external Privacy and Terms approval.
+Current posture: the live public MVP has Privacy and Terms approval recorded, zero public-launch blockers, and current write evidence. It is ready for the final release gate while Phase 5 account authentication and later ecosystem phases remain unfinished.
 
 ## What Still Needs Human / Strategic Attention
 
-- final legal review
+- final Node Z UI/UX and interaction review
+- approved production Song, Video, Radio, and poster sources
+- human keyboard and screen-reader verification
 - GitHub manual Functions deploy IAM grant
-- approved external Google Workspace, GHL, or CodexOps workflow target
+- approved external workflow target when the private receiver is ready
 - approved curated website-build upload to Drive or a private internal repo
-- whether this static prototype should now be migrated to Next.js
 - portal auth / roles / real gated access implementation
+- any future framework migration only after separate approval
 - external analytics and CRM integration after approval
 - product / commerce launch logic
 - event-specific terms if events go live
@@ -530,10 +535,4 @@ If Arie rebuilds this elsewhere, these decisions should stay intact unless leade
 
 ## Google Drive Note
 
-I do **not** currently have access in this session to your `info@luxveritas.media` Google Drive, so I cannot create or upload the shared folder directly from here right now.
-
-What I can do:
-
-- prepare the handoff files locally
-- help you choose the exact folder structure to upload
-- prepare a second short `README` specifically for Arie if you want a tighter version than this full handoff
+Use `docs/upload-checklist.md` and `docs/private-upload-manifest.json` for a curated private Drive package. Connector access is session-specific; verify the signed-in Drive identity before any upload and keep GitHub as the canonical code source.

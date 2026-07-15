@@ -54,6 +54,7 @@ const [
   productBoundary,
   arieQuickstart,
   arieHandoff,
+  nodeZHandoff,
   trackedDocsRaw
 ] = await Promise.all([
   readFile("docs/private-upload-manifest.json", "utf8"),
@@ -61,10 +62,11 @@ const [
   readFile("docs/PRODUCT_BOUNDARY.md", "utf8"),
   readFile("docs/arie-quickstart.md", "utf8"),
   readFile("docs/arie-handoff-website-build.md", "utf8"),
+  readFile("docs/node-z-arie-release-handoff.md", "utf8"),
   execFileAsync("git", ["ls-files", "docs"], { timeout: 10000 }).then(({ stdout }) => stdout)
 ]);
 
-if (secretShape(`${manifestRaw}\n${checklist}\n${arieQuickstart}\n${arieHandoff}`)) {
+if (secretShape(`${manifestRaw}\n${checklist}\n${arieQuickstart}\n${arieHandoff}\n${nodeZHandoff}`)) {
   issue("private upload manifest or handoff docs appear to contain secret-shaped data");
 }
 
@@ -183,6 +185,7 @@ for (const marker of [
   "Approval Language",
   "I approve uploading the curated Lux Veritas Website Build package",
   "docs/private-upload-manifest.json",
+  "docs/node-z-arie-release-handoff.md",
   "docs/private-workflow-matrix.json",
   "docs/external-workflow-targets.json",
   "docs/private-workflow-selection.json",
@@ -203,27 +206,37 @@ for (const stale of [
   "/Users/frederickparent/Documents/New%20project",
   "/Users/frederickparent/Documents/New project"
 ]) {
-  if (`${manifestRaw}\n${checklist}\n${arieQuickstart}\n${arieHandoff}`.includes(stale)) {
+  if (`${manifestRaw}\n${checklist}\n${arieQuickstart}\n${arieHandoff}\n${nodeZHandoff}`.includes(stale)) {
     issue(`private upload guidance still references stale item: ${stale}`);
   }
 }
 
 for (const marker of [
-  "Privacy and Terms legal review",
-  "GitHub manual Functions deploy IAM grant",
-  "approved external workflow target selection",
-  "approved curated website-build upload to a private Drive folder or private repo"
+  "Role: Node Z website release partner",
+  "Public website release readiness: 94%",
+  "Public launch blockers: 0",
+  "SignalCode does not have an approved public route yet"
 ]) {
   if (!arieQuickstart.includes(marker)) issue(`Arie quickstart missing current open item: ${marker}`);
 }
 
 for (const marker of [
-  "Current posture: pilot-ready with public launch blocked by external Privacy and Terms approval.",
-  "GitHub manual Functions deploy IAM grant",
-  "approved external Google Workspace, GHL, or CodexOps workflow target",
-  "approved curated website-build upload to Drive or a private internal repo"
+  "Historical iteration record",
+  "docs/node-z-arie-release-handoff.md"
 ]) {
   if (!arieHandoff.includes(marker)) issue(`Arie handoff missing current status marker: ${marker}`);
+}
+
+for (const marker of [
+  "Audience: Arie, Node Z",
+  "Repository visibility: `PUBLIC`",
+  "Public website release readiness",
+  "ready_for_final_release_gate",
+  "SignalCode has no approved record or public route",
+  "Recommended Tool And MCP Stack",
+  "Do not introduce"
+]) {
+  if (!nodeZHandoff.includes(marker)) issue(`Node Z handoff missing current status marker: ${marker}`);
 }
 
 for (const marker of [

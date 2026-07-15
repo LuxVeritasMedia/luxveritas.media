@@ -1,6 +1,6 @@
 # Lux Veritas Website Build SITREP
 
-Status date: 2026-07-10
+Status date: 2026-07-15
 
 ## North Star
 
@@ -15,6 +15,8 @@ These percentages are audited delivery estimates, not marketing claims. Public-s
 - Current Phase 5 completion: 74%.
 - Public media and operator release lane: 88%.
 - Public UI/UX release polish: 90%.
+
+Current live evidence: `main@ddd7f30`, asset version `20260710-media-control-r2`, pilot write run `20260714012051`, 11 inbox-required capture intents, 13 event writes, zero public-launch blockers, and zero code/config blockers.
 
 ## Ten-Phase Map
 

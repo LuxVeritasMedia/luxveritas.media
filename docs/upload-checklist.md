@@ -4,6 +4,8 @@
 
 Use this checklist when uploading the Lux Veritas website project to Google Drive for Arie.
 
+GitHub is the canonical code source. Prefer cloning `LuxVeritasMedia/luxveritas.media` for active development and use the private Drive package for the Node Z handoff, approved assets, and materials that must not be committed to the currently public repository.
+
 This file explains:
 
 - what to upload
@@ -70,8 +72,11 @@ Lux Veritas Website Build/
   events/
   assets/
   docs/
+    node-z-arie-release-handoff.md
     arie-handoff-website-build.md
     arie-quickstart.md
+    PRODUCT_BOUNDARY.md
+    site-build-sitrep.md
     upload-checklist.md
     private-upload-manifest.json
     strategy-round2.md
@@ -100,6 +105,7 @@ If you want the lightest possible handoff, at minimum upload:
 - [styles.css](/Users/frederickparent/Documents/Codex/LuxVeritas-website/styles.css)
 - [app.js](/Users/frederickparent/Documents/Codex/LuxVeritas-website/app.js)
 - [docs/arie-handoff-website-build.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/arie-handoff-website-build.md)
+- [docs/node-z-arie-release-handoff.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/node-z-arie-release-handoff.md)
 - [docs/arie-quickstart.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/arie-quickstart.md)
 - [docs/strategy-round2.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/strategy-round2.md)
 - [docs/private-upload-manifest.json](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/private-upload-manifest.json)
@@ -177,15 +183,14 @@ If he only needs to continue the web build, the curated handoff docs should be e
 
 Ask Arie to open these files in this order:
 
-1. [docs/arie-quickstart.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/arie-quickstart.md)
-2. [docs/arie-handoff-website-build.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/arie-handoff-website-build.md)
-3. [AGENTS.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/AGENTS.md)
-4. [tools/build-static.mjs](/Users/frederickparent/Documents/Codex/LuxVeritas-website/tools/build-static.mjs)
-5. [tools/serve-preview.mjs](/Users/frederickparent/Documents/Codex/LuxVeritas-website/tools/serve-preview.mjs)
-6. [docs/private-upload-manifest.json](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/private-upload-manifest.json)
-7. [docs/private-workflow-selection.json](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/private-workflow-selection.json)
-8. [docs/external-workflow-targets.json](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/external-workflow-targets.json)
-9. [TODO.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/TODO.md)
+1. [AGENTS.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/AGENTS.md)
+2. [docs/arie-quickstart.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/arie-quickstart.md)
+3. [docs/node-z-arie-release-handoff.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/node-z-arie-release-handoff.md)
+4. [docs/PRODUCT_BOUNDARY.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/PRODUCT_BOUNDARY.md)
+5. [docs/site-build-sitrep.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/site-build-sitrep.md)
+6. [TODO.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/TODO.md)
+7. [tools/build-static.mjs](/Users/frederickparent/Documents/Codex/LuxVeritas-website/tools/build-static.mjs)
+8. [tools/serve-preview.mjs](/Users/frederickparent/Documents/Codex/LuxVeritas-website/tools/serve-preview.mjs)
 
 ## What Arie Should Run First
 
@@ -211,7 +216,7 @@ Lux Veritas Website Build
 ```
 
 2. Upload the selected files and folders.
-3. Confirm that `docs/arie-quickstart.md` and `docs/arie-handoff-website-build.md` are present.
+3. Confirm that `docs/arie-quickstart.md`, `docs/node-z-arie-release-handoff.md`, and `docs/arie-handoff-website-build.md` are present.
 4. Confirm that `tools/build-static.mjs` is present.
 5. Confirm that `tools/serve-preview.mjs` and `tools/qa-private-upload-manifest.mjs` are present.
 6. Confirm that `docs/external-workflow-targets.json` and `docs/private-workflow-selection.json` are present for private workflow activation planning.

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "luxveritas.private_upload_manifest.v1",
-  "version": "2026-06-30-private-upload-manifest",
+  "version": "2026-07-15-node-z-private-upload-manifest",
   "openApprovalId": "seed_binder_private_upload",
   "uploadStatus": "operator_review_required",
   "recommendedFolderName": "Lux Veritas Website Build",
@@ -22,7 +22,7 @@
     "requiredOperatorProof": [
       "Private folder or private repository exists.",
       "Arie/collaborator access is confirmed.",
-      "docs/arie-quickstart.md, docs/arie-handoff-website-build.md, and docs/upload-checklist.md are present.",
+      "docs/arie-quickstart.md, docs/node-z-arie-release-handoff.md, docs/arie-handoff-website-build.md, and docs/upload-checklist.md are present.",
       "data/, functions/, assets/, and required docs/tools are present.",
       "Excluded paths and secret exclusions are absent.",
       "Verification commands pass from a clean local copy after download or clone."
@@ -57,6 +57,9 @@
     "events/",
     "docs/arie-handoff-website-build.md",
     "docs/arie-quickstart.md",
+    "docs/node-z-arie-release-handoff.md",
+    "docs/PRODUCT_BOUNDARY.md",
+    "docs/site-build-sitrep.md",
     "docs/upload-checklist.md",
     "docs/private-upload-manifest.json",
     "docs/strategy-round2.md",
@@ -116,9 +119,11 @@
     "Printify tokens"
   ],
   "firstOpenOrder": [
-    "docs/arie-quickstart.md",
-    "docs/arie-handoff-website-build.md",
     "AGENTS.md",
+    "docs/arie-quickstart.md",
+    "docs/node-z-arie-release-handoff.md",
+    "docs/PRODUCT_BOUNDARY.md",
+    "docs/site-build-sitrep.md",
     "tools/build-static.mjs",
     "tools/serve-preview.mjs",
     "TODO.md"
