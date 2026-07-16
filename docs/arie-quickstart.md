@@ -8,12 +8,14 @@ Full handoff: `docs/node-z-arie-release-handoff.md`
 
 1. `AGENTS.md`
 2. `docs/node-z-arie-release-handoff.md`
-3. `docs/PRODUCT_BOUNDARY.md`
-4. `docs/site-build-sitrep.md`
-5. `TODO.md`
-6. `tools/build-static.mjs`
-7. `styles.css`
-8. `app.js`
+3. `docs/collaboration/README.md`
+4. `docs/collaboration/STATUS.md`
+5. `docs/PRODUCT_BOUNDARY.md`
+6. `docs/site-build-sitrep.md`
+7. `TODO.md`
+8. `tools/build-static.mjs`
+9. `styles.css`
+10. `app.js`
 
 Do not inspect old zip files, `source_docs`, raw transcripts, private seeds, or internal LuxFlow repositories unless Node X explicitly assigns that work.
 
@@ -42,6 +44,7 @@ git switch main
 git pull --ff-only
 npm --prefix functions ci
 node tools/report-mvp-status.mjs
+node tools/report-node-progress.mjs
 node tools/qa-mvp-preflight.mjs
 node tools/serve-preview.mjs
 ```

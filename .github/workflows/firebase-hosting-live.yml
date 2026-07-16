@@ -114,6 +114,9 @@ jobs:
       - name: QA MVP status
         run: node tools/qa-mvp-status.mjs
 
+      - name: QA node collaboration
+        run: node tools/qa-node-collaboration.mjs
+
       - name: QA launch evidence
         run: node tools/qa-launch-evidence.mjs
 

@@ -316,13 +316,15 @@ Read in this order:
 
 1. `AGENTS.md`
 2. `docs/node-z-arie-release-handoff.md`
-3. `docs/PRODUCT_BOUNDARY.md`
-4. `docs/site-build-sitrep.md`
-5. `TODO.md`
-6. `docs/media-publishing-runbook.md`
-7. `tools/build-static.mjs`
-8. `styles.css`
-9. `app.js`
+3. `docs/collaboration/README.md`
+4. `docs/collaboration/STATUS.md`
+5. `docs/PRODUCT_BOUNDARY.md`
+6. `docs/site-build-sitrep.md`
+7. `TODO.md`
+8. `docs/media-publishing-runbook.md`
+9. `tools/build-static.mjs`
+10. `styles.css`
+11. `app.js`
 
 Do not inspect old zip files, `source_docs`, raw transcripts, private seeds, or previous strategy packets unless Node X explicitly assigns a task that requires them.
 

@@ -77,6 +77,7 @@ Lux Veritas Website Build/
     arie-quickstart.md
     PRODUCT_BOUNDARY.md
     site-build-sitrep.md
+    collaboration/
     upload-checklist.md
     private-upload-manifest.json
     strategy-round2.md
@@ -90,6 +91,8 @@ Lux Veritas Website Build/
   tools/
     build-static.mjs
     serve-preview.mjs
+    report-node-progress.mjs
+    qa-node-collaboration.mjs
     qa-private-upload-manifest.mjs
     qa-preview-helper.mjs
 ```
@@ -186,11 +189,13 @@ Ask Arie to open these files in this order:
 1. [AGENTS.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/AGENTS.md)
 2. [docs/arie-quickstart.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/arie-quickstart.md)
 3. [docs/node-z-arie-release-handoff.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/node-z-arie-release-handoff.md)
-4. [docs/PRODUCT_BOUNDARY.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/PRODUCT_BOUNDARY.md)
-5. [docs/site-build-sitrep.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/site-build-sitrep.md)
-6. [TODO.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/TODO.md)
-7. [tools/build-static.mjs](/Users/frederickparent/Documents/Codex/LuxVeritas-website/tools/build-static.mjs)
-8. [tools/serve-preview.mjs](/Users/frederickparent/Documents/Codex/LuxVeritas-website/tools/serve-preview.mjs)
+4. `docs/collaboration/README.md`
+5. `docs/collaboration/STATUS.md`
+6. [docs/PRODUCT_BOUNDARY.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/PRODUCT_BOUNDARY.md)
+7. [docs/site-build-sitrep.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/docs/site-build-sitrep.md)
+8. [TODO.md](/Users/frederickparent/Documents/Codex/LuxVeritas-website/TODO.md)
+9. [tools/build-static.mjs](/Users/frederickparent/Documents/Codex/LuxVeritas-website/tools/build-static.mjs)
+10. [tools/serve-preview.mjs](/Users/frederickparent/Documents/Codex/LuxVeritas-website/tools/serve-preview.mjs)
 
 ## What Arie Should Run First
 
