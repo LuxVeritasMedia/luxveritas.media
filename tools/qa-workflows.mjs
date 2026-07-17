@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 const issues = [];
 const hosting = await readFile(".github/workflows/firebase-hosting-live.yml", "utf8");
 const hostingPreview = await readFile(".github/workflows/firebase-hosting-preview.yml", "utf8");
+const hostingPreviewDeploy = await readFile(".github/workflows/firebase-hosting-preview-deploy.yml", "utf8");
 const functions = await readFile(".github/workflows/firebase-functions-manual.yml", "utf8");
 const finalAudit = await readFile(".github/workflows/final-release-audit.yml", "utf8");
 const deployStatus = await readFile("tools/qa-deploy-status.mjs", "utf8");
@@ -26,7 +27,7 @@ const firebaseCiTokenSetup = await readFile("tools/setup-firebase-ci-token.mjs",
 const firebaseRestDeploy = await readFile("tools/deploy-firebase-hosting-rest.mjs", "utf8");
 const googleCloudAuth = await readFile("tools/lib/google-cloud-auth.mjs", "utf8");
 const finalLaunchRunbook = await readFile("docs/final-launch-runbook.md", "utf8");
-const workflowBundle = `${hosting}\n${hostingPreview}\n${functions}\n${finalAudit}`;
+const workflowBundle = `${hosting}\n${hostingPreview}\n${hostingPreviewDeploy}\n${functions}\n${finalAudit}`;
 
 for (const marker of [
   "concurrency:",
@@ -125,13 +126,33 @@ for (const marker of [
   "node tools/qa-hosting-config.mjs",
   "node tools/qa-public-site.mjs",
   "node tools/qa-browser-flows.mjs",
-  "hosting:channel:deploy",
-  "--expires 7d",
-  "firebase-tools@15.22.1",
-  "FIREBASE_CI_TOKEN: ${{ secrets.FIREBASE_CI_TOKEN }}",
-  "GITHUB_STEP_SUMMARY"
+  "actions/upload-artifact@v4",
+  "name: firebase-hosting-preview",
+  "retention-days: 7"
 ]) {
   if (!hostingPreview.includes(marker)) issues.push(`firebase-hosting-preview.yml: missing ${marker}`);
+}
+
+for (const marker of [
+  "name: Firebase Hosting Preview Deploy",
+  "workflow_run:",
+  "Firebase Hosting Preview",
+  "github.event.workflow_run.head_repository.full_name == github.repository",
+  "ref: main",
+  "google-github-actions/auth@v3",
+  "actions/download-artifact@v5",
+  "run-id: ${{ github.event.workflow_run.id }}",
+  "test ! -e dist/data/lux-phase-status.json",
+  "test ! -e dist/data/lux-action-inventory.json",
+  "LUX_FIREBASE_HOSTING_CHANNEL=\"${CHANNEL_ID}\"",
+  "node tools/deploy-firebase-hosting-rest.mjs",
+  "GITHUB_STEP_SUMMARY"
+]) {
+  if (!hostingPreviewDeploy.includes(marker)) issues.push(`firebase-hosting-preview-deploy.yml: missing ${marker}`);
+}
+
+if (/secrets\.(?:GCP_|FIREBASE_)/.test(hostingPreview)) {
+  issues.push("firebase-hosting-preview.yml: unprivileged PR build must not receive Firebase or Google Cloud secrets");
 }
 
 for (const marker of [
@@ -218,7 +239,10 @@ for (const marker of [
   "uploadRequiredHashes",
   "populateFiles",
   "updateMask=status",
-  "channels/live/releases",
+  "LUX_FIREBASE_HOSTING_CHANNEL",
+  "ensurePreviewChannel",
+  "channels/${encodeURIComponent(channel)}/releases",
+  "Firebase Hosting preview URL:",
   "googleAccessToken",
   "LUX_FIREBASE_HOSTING_REST_DRY_RUN"
 ]) {

@@ -26,11 +26,6 @@ jobs:
         with:
           node-version: 22
 
-      - name: Preflight Firebase deploy auth
-        run: node tools/qa-firebase-deploy-auth.mjs
-        env:
-          FIREBASE_CI_TOKEN: ${{ secrets.FIREBASE_CI_TOKEN }}
-
       - name: Build static site
         run: node tools/build-static.mjs
 
@@ -62,27 +57,10 @@ jobs:
       - name: QA browser flows
         run: node tools/qa-browser-flows.mjs
 
-      - name: Deploy Firebase preview channel
-        env:
-          FIREBASE_CI_TOKEN: ${{ secrets.FIREBASE_CI_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          CHANNEL_ID="pr-${PR_NUMBER}"
-          OUTPUT_FILE="${RUNNER_TEMP}/firebase-preview.txt"
-          if [ -n "${FIREBASE_CI_TOKEN:-}" ]; then
-            npx firebase-tools@15.22.1 hosting:channel:deploy "${CHANNEL_ID}" --expires 7d --project lux-veritas-media --non-interactive --token "${FIREBASE_CI_TOKEN}" | tee "${OUTPUT_FILE}"
-          else
-            npx firebase-tools@15.22.1 hosting:channel:deploy "${CHANNEL_ID}" --expires 7d --project lux-veritas-media --non-interactive | tee "${OUTPUT_FILE}"
-          fi
-          PREVIEW_URL="$(grep -Eo 'https://[^[:space:]]+\.web\.app' "${OUTPUT_FILE}" | tail -1)"
-          {
-            echo "## Firebase Hosting preview"
-            echo
-            if [ -n "${PREVIEW_URL}" ]; then
-              echo "[Open PR ${PR_NUMBER} preview](${PREVIEW_URL})"
-            else
-              echo "Preview deployed. Open the deployment step log for the channel URL."
-            fi
-            echo
-            echo "Channel: \`${CHANNEL_ID}\` · Expires after 7 days"
-          } >> "${GITHUB_STEP_SUMMARY}"
+      - name: Upload sanitized Hosting artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: firebase-hosting-preview
+          path: dist
+          if-no-files-found: error
+          retention-days: 7
