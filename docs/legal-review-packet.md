@@ -9,10 +9,10 @@ This packet is for Privacy and Terms review before public launch. It is not lega
 The public site is technically pilot-ready, and owner/business approval is recorded for Privacy and Terms. Reopen review if public practices, commerce, membership, events, or data handling materially change.
 
 - Live URL: `https://luxveritas.media`
-- Current asset version: `20260710-media-control-r2`
+- Current asset version: `20260717-public-release-r7`
 - Pilot write evidence file: `data/lux-pilot-write-evidence.json`
-- Latest pilot QA run: `20260714012051`
-- Pilot evidence updated: `2026-07-14T01:25:57Z`
+- Latest pilot QA run: `20260717104612`
+- Pilot evidence updated: `2026-07-17T10:47:59Z`
 - Pilot result: `passed`
 - Live capture intents written: `11`
 - Live event/reporting writes: `13`
@@ -99,8 +99,8 @@ The reviewer should fill this out outside the public repo before any approval co
 - privacyVersion: `privacy-draft-2026-07-03`
 - termsVersion: `terms-draft-2026-06-09`
 - submissionTermsVersion: `submission-draft-2026-06-09`
-- assetVersion: `20260710-media-control-r2`
-- pilotQaRunId: `20260714012051`
+- assetVersion: `20260717-public-release-r7`
+- pilotQaRunId: `20260717104612`
 - evidenceReference: no-secret approval reference only
 - conditionsOrChanges:
 
