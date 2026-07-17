@@ -171,9 +171,19 @@ if (matrix) {
         }
       }
     }
-    if (Array.isArray(scenario.reportSurfaces)) {
-      for (const surface of scenario.reportSurfaces) {
-        if (!reportingHtml.includes(surface)) issue(`${scenario.id}: reporting surface missing ${surface}`);
+    if (Array.isArray(scenario.publicBoundaryMarkers)) {
+      for (const marker of scenario.publicBoundaryMarkers) {
+        if (!reportingHtml.includes(marker)) issue(`${scenario.id}: public reporting boundary missing ${marker}`);
+      }
+    }
+    if (Array.isArray(scenario.forbiddenPublicMarkers)) {
+      for (const marker of scenario.forbiddenPublicMarkers) {
+        if (reportingHtml.includes(marker)) issue(`${scenario.id}: public reporting route exposes ${marker}`);
+      }
+    }
+    if (Array.isArray(scenario.protectedReportContractMarkers)) {
+      for (const marker of scenario.protectedReportContractMarkers) {
+        if (!appJs.includes(marker)) issue(`${scenario.id}: protected report client contract missing ${marker}`);
       }
     }
     for (const command of scenario.qaCommands || []) {
