@@ -117,7 +117,7 @@
       "expectedRolePath": "General",
       "expectedInquiryType": "Pilot Feedback",
       "expectedQueue": "access_review",
-      "reportSurfaces": [
+      "protectedReportContractMarkers": [
         "data-private-feedback=\"summary\"",
         "data-private-feedback=\"detail\"",
         "data-private-feedback=\"list\""
@@ -168,14 +168,24 @@
       "label": "Operator reporting",
       "coverage": ["operator_reporting", "launch_gates", "private_workflow_readiness"],
       "route": "/portal/reporting.html",
-      "selector": "[data-private-report]",
-      "reportSurfaces": [
+      "selector": "main",
+      "publicBoundaryMarkers": [
+        "No activity records, launch controls, workflow details, or operator tools are published on this route."
+      ],
+      "forbiddenPublicMarkers": [
+        "data-private-report",
+        "data-report-action",
+        "data-action-inventory",
+        "data-launch-readiness"
+      ],
+      "protectedReportContractMarkers": [
         "data-private-queue=\"summary\"",
         "data-private-workflow=\"primary\"",
         "data-launch-readiness-summary",
         "data-media-readiness-summary"
       ],
       "evidence": [
+        "The public reporting route contains only screened boundary copy and no operator controls.",
         "Unauthenticated report requests are rejected.",
         "Approved operator report returns counts, queue workbench, launch gates, media readiness, and workflow target recommendations.",
         "Private JSON and CSV exports omit secret-shaped values."

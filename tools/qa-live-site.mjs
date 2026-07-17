@@ -86,12 +86,16 @@ try {
     ["x-content-type-options", "nosniff"],
     ["referrer-policy", "strict-origin-when-cross-origin"],
     ["permissions-policy", "camera=(), microphone=(), geolocation=(), payment=()"],
-    ["x-frame-options", "SAMEORIGIN"],
-    ["strict-transport-security", "max-age=31536000"]
+    ["x-frame-options", "SAMEORIGIN"]
   ]);
   for (const [key, value] of expectedHeaders) {
     const actual = response.headers.get(key);
-    if (actual !== value) issues.push(`/: header ${key} expected ${value}, received ${actual || "missing"}`);
+      if (actual !== value) issues.push(`/: header ${key} expected ${value}, received ${actual || "missing"}`);
+  }
+  const hsts = response.headers.get("strict-transport-security") || "";
+  const hstsMaxAge = Number(hsts.match(/max-age=(\d+)/i)?.[1] || 0);
+  if (hstsMaxAge < 31536000) {
+    issues.push(`/: header strict-transport-security must keep max-age at least 31536000, received ${hsts || "missing"}`);
   }
 } catch (error) {
   issues.push(`/: header check failed (${error.message})`);
