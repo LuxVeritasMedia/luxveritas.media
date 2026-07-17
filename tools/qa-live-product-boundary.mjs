@@ -13,7 +13,6 @@ const fallbackHostingBaseUrl = "https://lux-veritas-media.web.app";
 const forbiddenPatterns = [
   /DAMON/i,
   /BlackGPT/i,
-  /LuxFlow/i,
   /LuxOS/i,
   /CanonCraft/i,
   /SignalCraft/i,
@@ -154,17 +153,39 @@ try {
   issue(`/robots.txt: request failed (${error.message})`);
 }
 
-try {
-  const { response, text } = await fetchText("/data/lux-launch-closeout-public.json");
-  if (!response.ok) {
-    issue("/data/lux-launch-closeout-public.json: expected HTTP 200");
+for (const path of [
+  "/data/cr8-store-submission.json",
+  "/data/lux-action-inventory.json",
+  "/data/lux-launch-closeout-public.json",
+  "/data/lux-launch-readiness.json",
+  "/data/lux-legal-review.json",
+  "/data/lux-open-approvals.json",
+  "/data/lux-phase-status.json",
+  "/data/lux-pilot-bug-register.json",
+  "/data/lux-pilot-write-evidence.json",
+  "/data/lux-radio-programming.json",
+  "/data/lux-release-room.json"
+]) {
+  try {
+    const { response } = await fetchText(path);
+    if (response.status !== 404) {
+      issue(`${path}: expected HTTP 404, received ${response.status}`);
+    }
+  } catch (error) {
+    issue(`${path}: request failed (${error.message})`);
   }
-  scan("/data/lux-launch-closeout-public.json", text);
-  if (/commands|requiredEvidence|RESEND_API_KEY|firebase login|Secret Manager/i.test(text)) {
-    issue("/data/lux-launch-closeout-public.json: exposes operator-only closeout fields");
+}
+
+try {
+  const { response, text } = await fetchText(`/not-a-lux-route-${Date.now()}`);
+  if (response.status !== 404) {
+    issue(`unknown route: expected HTTP 404, received ${response.status}`);
+  }
+  if (!text.includes("The signal ends here.")) {
+    issue("unknown route: missing Lux Veritas 404 content");
   }
 } catch (error) {
-  issue(`/data/lux-launch-closeout-public.json: request failed (${error.message})`);
+  issue(`unknown route: request failed (${error.message})`);
 }
 
 try {

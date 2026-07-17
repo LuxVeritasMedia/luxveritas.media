@@ -429,7 +429,10 @@ async function openFlow(page, baseUrl, flow) {
 
   await page.fill('input[name="name"]', "Lux Browser QA");
   await page.fill('input[name="email"]', "qa@luxveritas.media");
-  await page.fill('textarea[name="message"]', `Browser flow QA for ${flow.path}`);
+  const messageField = page.locator('textarea[name="message"]');
+  if (await messageField.isVisible()) {
+    await messageField.fill(`Browser flow QA for ${flow.path}`);
+  }
   await page.check('input[name="interest_paths"][value="music"]');
   await page.check('input[name="interest_paths"][value="events"]');
   await page.check('input[name="consent_email"]');
@@ -495,7 +498,6 @@ async function formFallbackFlow(page, baseUrl) {
   await page.waitForSelector("[data-dialog][open]", { timeout: 5000 });
   await page.fill('input[name="name"]', "Lux Fallback QA");
   await page.fill('input[name="email"]', "fallback@luxveritas.media");
-  await page.fill('textarea[name="message"]', "Browser fallback QA");
   await page.check('input[name="consent_email"]');
   await clickSubmitButton(page);
   await page.waitForFunction(() => {
@@ -1102,10 +1104,13 @@ async function portalSigninFlow(page, baseUrl) {
 async function portalAccessFlow(page, baseUrl) {
   await page.goto(`${baseUrl}/portal/index.html`, { waitUntil: "domcontentloaded" });
   const html = await page.content();
-  for (const role of ["member", "artist", "creator", "press", "partner", "investor", "operator"]) {
+  for (const role of ["member", "artist", "creator", "press", "partner", "investor"]) {
     if (!html.includes(`data-portal-role="${role}"`)) {
       issues.push(`/portal/index.html: missing portal role ${role}`);
     }
+  }
+  if (html.includes('data-portal-role="operator"') || html.includes("Operator Room")) {
+    issues.push("/portal/index.html: public portal exposes the operator room");
   }
   if (!html.includes('name="robots" content="noindex, nofollow"')) {
     issues.push("/portal/index.html: missing noindex metadata");
@@ -1116,6 +1121,19 @@ async function portalAccessFlow(page, baseUrl) {
   const inquiry = await page.locator('select[name="inquiry_type"]').inputValue();
   if (role !== "Creator" || inquiry !== "Portal") {
     issues.push(`/portal/index.html: creator role card did not open creator access defaults`);
+  }
+}
+
+async function operatorBoundaryFlow(page, baseUrl) {
+  await page.goto(`${baseUrl}/portal/reporting.html`, { waitUntil: "domcontentloaded" });
+  const html = await page.content();
+  if (!html.includes("No activity records, launch controls, workflow details, or operator tools are published on this route.")) {
+    issues.push("/portal/reporting.html: missing operator boundary copy");
+  }
+  for (const marker of ["data-private-report", "data-report-action", "data-action-inventory", "data-launch-readiness"]) {
+    if (html.includes(marker)) {
+      issues.push(`/portal/reporting.html: exposed operator marker ${marker}`);
+    }
   }
 }
 
@@ -1643,7 +1661,7 @@ try {
   await fanReactionFlow(page, baseUrl);
   await fanSignalPassFlow(page, baseUrl);
   await portalAccessFlow(page, baseUrl);
-  await operatorReportFlow(page, baseUrl);
+  await operatorBoundaryFlow(page, baseUrl);
 } catch (error) {
   issues.push(`browser flow failed: ${error.stack || error.message}`);
 } finally {
@@ -1658,4 +1676,4 @@ if (issues.length) {
   process.exit(1);
 }
 
-console.log(`Browser flow QA passed for consented page-view reporting, ${flows.length} form flows, form fallback/rate-limit, portal sign-in/fallback, 2 media flows, media action/playback mapping, signal pass export, interaction/pathway reporting, and operator reporting at ${baseUrl}.`);
+console.log(`Browser flow QA passed for consented page-view reporting, ${flows.length} form flows, form fallback/rate-limit, portal sign-in/fallback, 2 media flows, media action/playback mapping, signal pass export, interaction/pathway reporting, and the public operator boundary at ${baseUrl}.`);

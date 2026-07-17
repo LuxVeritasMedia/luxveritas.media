@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="A public-facing doorway for future visual realism, style, wardrobe, environment, and prompt-export workflows." />
-    
     <link rel="canonical" href="https://luxveritas.media/luxflow/realcraft/" />
     <meta property="og:title" content="RealCraft | LuxFlow" />
     <meta property="og:description" content="A public-facing doorway for future visual realism, style, wardrobe, environment, and prompt-export workflows." />
@@ -24,7 +23,7 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070909'/%3E%3Cpath d='M18 48V16h6v27h18v5H18Zm21-32h7L34 48h-6l11-32Z' fill='%23c8a86a'/%3E%3C/svg%3E" />
     <link rel="manifest" href="../../../site.webmanifest" />
     <link rel="apple-touch-icon" href="../../../assets/luxveritas-icon.svg" />
-    <link rel="stylesheet" href="../../../styles.css?v=20260710-media-control-r2" />
+    <link rel="stylesheet" href="../../../styles.css?v=20260717-public-release-r7" />
   </head>
   <body data-page="/luxflow/realcraft/index.html">
     <a class="skip-link" href="#main">Skip to content</a>
@@ -51,14 +50,14 @@ A public-facing doorway for future visual realism, style, wardrobe, environment,
     </div>
   </section>
     
-    <section class="section split-band"><div><p class="kicker">Waitlist</p><h2>Visual artists, filmmakers, fashion teams, and creators developing coherent image systems.</h2></div><div><p>Platforms planned: web, ios, android.</p><p>Public app pages provide product information, support, legal, and download paths. Account-gated features open only when approved access is ready.</p></div></section>
+    <section class="section split-band"><div><p class="kicker">Waitlist</p><h2>Visual artists, filmmakers, fashion teams, and creators developing coherent image systems.</h2></div><div><p>Designed for web, ios, android.</p><p>Follow the product, join early access, or open the support path for a direct question.</p></div></section>
     <section class="section"><div class="release-rail"><article><span>RealCraft</span><h3>Realism prompts</h3><p>RealCraft will open this path through approved product releases, waitlists, or download links.</p></article><article><span>RealCraft</span><h3>Wardrobe notes</h3><p>RealCraft will open this path through approved product releases, waitlists, or download links.</p></article><article><span>RealCraft</span><h3>Scene texture</h3><p>RealCraft will open this path through approved product releases, waitlists, or download links.</p></article><article><span>RealCraft</span><h3>Platform-ready exports</h3><p>RealCraft will open this path through approved product releases, waitlists, or download links.</p></article></div></section>
-    <section class="section report-detail"><div><p class="kicker">App Store Readiness</p><h3>Public compliance paths</h3><ul class="report-list">
-      <li><strong>Support</strong><span>Available</span><small><a href="/luxflow/realcraft/support.html">/luxflow/realcraft/support.html</a></small></li>
-      <li><strong>Privacy</strong><span>Available</span><small><a href="/luxflow/realcraft/privacy.html">/luxflow/realcraft/privacy.html</a></small></li>
-      <li><strong>Terms</strong><span>Available</span><small><a href="/luxflow/realcraft/terms.html">/luxflow/realcraft/terms.html</a></small></li>
-      <li><strong>Data</strong><span>Available</span><small><a href="/luxflow/realcraft/delete-data.html">/luxflow/realcraft/delete-data.html</a></small></li>
-    </ul></div></section>
+    <section class="section app-utility-links" aria-label="RealCraft help and policies">
+      <a href="/luxflow/realcraft/support.html">Support</a>
+      <a href="/luxflow/realcraft/privacy.html">Privacy</a>
+      <a href="/luxflow/realcraft/terms.html">Terms</a>
+      <a href="/luxflow/realcraft/delete-data.html">Data requests</a>
+    </section>
     </main>
     <footer class="site-footer">
   <nav class="footer-house-rail" aria-label="Lux Veritas house">
@@ -104,7 +103,7 @@ A public-facing doorway for future visual realism, style, wardrobe, environment,
   </nav>
 </footer>
     <dialog class="form-dialog" data-dialog>
-  <form action="/api/submit" method="post" class="dialog-shell" data-form-endpoint="/api/submit">
+  <form action="/api/submit" method="post" class="dialog-shell" data-form-endpoint="/api/submit" data-form-mode="full">
     <button class="dialog-close" type="button" aria-label="Close" data-close-dialog>×</button>
     <p class="kicker" data-form-kicker>Request Access</p>
     <h2 data-form-title>Screened Access</h2>
@@ -112,11 +111,11 @@ A public-facing doorway for future visual realism, style, wardrobe, environment,
     <div class="form-status" data-form-status role="status" aria-live="polite" hidden></div>
     <label><span>Name</span><input name="name" autocomplete="name" required /></label>
     <label><span>Email</span><input name="email" type="email" autocomplete="email" required /></label>
-    <label><span>Phone <em>optional</em></span><input name="phone" type="tel" autocomplete="tel" /></label>
-    <label><span>Role path</span><select name="role_path" required>
+    <label class="form-field-extended"><span>Phone <em>optional</em></span><input name="phone" type="tel" autocomplete="tel" /></label>
+    <label class="form-field-routing"><span>Role path</span><select name="role_path" required>
       <option value="">Select one</option><option>Member</option><option>Artist</option><option>Creator</option><option>Press</option><option>Partner</option><option>Investor</option><option>Event guest</option><option>General</option>
     </select></label>
-    <label><span>Inquiry type</span><select name="inquiry_type" required>
+    <label class="form-field-routing"><span>Inquiry type</span><select name="inquiry_type" required>
       <option value="">Select one</option><option>Membership</option><option>Submissions</option><option>Events</option><option>Press</option><option>Partnership</option><option>Licensing</option><option>Investor</option><option>Portal</option><option>General</option>
     </select></label>
     <fieldset class="interest-paths" data-interest-paths>
@@ -129,9 +128,9 @@ A public-facing doorway for future visual realism, style, wardrobe, environment,
       <label><input type="checkbox" name="interest_paths" value="codex" /> <span>Codex</span></label>
       <label><input type="checkbox" name="interest_paths" value="create" /> <span>Create</span></label>
     </fieldset>
-    <label><span>Message</span><textarea name="message" rows="5" required></textarea></label>
+    <label class="form-field-message"><span>Message</span><textarea name="message" rows="5" required></textarea></label>
     <label class="check-row"><input type="checkbox" name="consent_email" value="yes" /> <span>Email follow-up is allowed.</span></label>
-    <label class="check-row"><input type="checkbox" name="consent_sms" value="yes" /> <span>SMS follow-up is allowed if a phone number is supplied.</span></label>
+    <label class="check-row form-field-extended"><input type="checkbox" name="consent_sms" value="yes" /> <span>SMS follow-up is allowed if a phone number is supplied.</span></label>
     <p class="form-terms">By submitting, you agree that Lux Veritas may review and route your message under the current Privacy, Terms, and Submission terms. <a href="/legal/privacy.html">Privacy</a> · <a href="/legal/terms.html">Terms</a></p>
     <input type="hidden" name="public_terms_version" value="2026-07-03-public-capture" />
     <input type="hidden" name="privacy_version" value="privacy-draft-2026-07-03" />
@@ -141,6 +140,6 @@ A public-facing doorway for future visual realism, style, wardrobe, environment,
     <button class="button button-primary" type="submit" data-submit-form data-default-label="Send to Lux Veritas">Send to Lux Veritas</button>
   </form>
 </dialog>
-    <script src="../../../app.js?v=20260710-media-control-r2"></script>
+    <script src="../../../app.js?v=20260717-public-release-r7"></script>
   </body>
 </html>

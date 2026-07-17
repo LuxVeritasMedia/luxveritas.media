@@ -1,22 +1,21 @@
 {
   "schemaVersion": "luxveritas.action_inventory.v1",
   "version": "2026-07-05-app-market",
-  "buildAssetVersion": "20260710-media-control-r2",
+  "buildAssetVersion": "20260717-public-release-r7",
   "routeCount": 70,
-  "actionCount": 2258,
+  "actionCount": 2245,
   "summary": {
     "byType": {
       "navigation_toggle": 69,
-      "form_open": 187,
+      "form_open": 188,
       "dialog_close": 69,
       "form_submit": 69,
-      "link_click": 1811,
+      "link_click": 1807,
       "portal_signin": 1,
       "fan_signal_export": 8,
       "media_action": 18,
       "fan_reaction": 8,
       "media_select": 6,
-      "operator_report_action": 10,
       "consent_update": 2
     },
     "byRoute": {
@@ -78,10 +77,10 @@
       "offline.html": 30,
       "portal/admin.html": 30,
       "portal/admin/users.html": 30,
-      "portal/index.html": 37,
+      "portal/index.html": 36,
       "portal/library.html": 30,
       "portal/releases.html": 30,
-      "portal/reporting.html": 42,
+      "portal/reporting.html": 30,
       "press.html": 29,
       "private-steward.html": 30,
       "spmvp.html": 54,
@@ -93,36 +92,33 @@
     },
     "byReportingEvent": {
       "navigation_toggle": 69,
-      "form_open": 187,
+      "form_open": 188,
       "dialog_close": 69,
       "lead_accepted": 69,
-      "link_click": 1811,
+      "link_click": 1807,
       "portal_signin_capture": 1,
       "local_export": 8,
       "media_action": 18,
       "fan_reaction": 8,
       "media_select": 6,
-      "report_action": 10,
       "consent_update": 2
     },
     "byReportingStatus": {
-      "declared": 2258
+      "declared": 2245
     },
     "byReportingChannel": {
-      "consented_event": 2170,
+      "consented_event": 2167,
       "server_capture": 70,
-      "local_receipt": 8,
-      "protected_operator": 10
+      "local_receipt": 8
     },
     "bySurface": {
-      "implicit_surface": 1774,
+      "implicit_surface": 1765,
       "brand_house": 12,
       "footer_house": 414,
       "fan_flywheel": 30,
       "release_room": 12,
       "radio_readiness": 4,
       "radio_programming": 6,
-      "operator_release_review": 4,
       "consent_banner": 2
     }
   },
@@ -853,7 +849,7 @@
       "id": "apps_index_html__2__form_open__fan",
       "route": "apps/index.html",
       "element": "button",
-      "label": "Join app waitlist",
+      "label": "Join first access",
       "actionType": "form_open",
       "actionValue": "fan",
       "target": "",
@@ -1062,7 +1058,7 @@
       "id": "apps_index_html__13__link_click__luxflow-index-html",
       "route": "apps/index.html",
       "element": "a",
-      "label": "Open LuxFlow",
+      "label": "Explore LuxFlow",
       "actionType": "link_click",
       "actionValue": "/luxflow/index.html",
       "target": "/luxflow/index.html",
@@ -13754,7 +13750,7 @@
       "id": "luxflow_index_html__2__form_open__fan",
       "route": "luxflow/index.html",
       "element": "button",
-      "label": "Join LuxFlow waitlist",
+      "label": "Join LuxFlow first access",
       "actionType": "form_open",
       "actionValue": "fan",
       "target": "",
@@ -14742,7 +14738,7 @@
       "id": "luxflow_cr8_index_html__19__link_click__luxflow-cr8-support-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
-      "label": "/luxflow/cr8/support.html",
+      "label": "Support",
       "actionType": "link_click",
       "actionValue": "/luxflow/cr8/support.html",
       "target": "/luxflow/cr8/support.html",
@@ -14761,7 +14757,7 @@
       "id": "luxflow_cr8_index_html__20__link_click__luxflow-cr8-privacy-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
-      "label": "/luxflow/cr8/privacy.html",
+      "label": "Privacy",
       "actionType": "link_click",
       "actionValue": "/luxflow/cr8/privacy.html",
       "target": "/luxflow/cr8/privacy.html",
@@ -14780,7 +14776,7 @@
       "id": "luxflow_cr8_index_html__21__link_click__luxflow-cr8-terms-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
-      "label": "/luxflow/cr8/terms.html",
+      "label": "Terms",
       "actionType": "link_click",
       "actionValue": "/luxflow/cr8/terms.html",
       "target": "/luxflow/cr8/terms.html",
@@ -14799,7 +14795,7 @@
       "id": "luxflow_cr8_index_html__22__link_click__luxflow-cr8-delete-data-html",
       "route": "luxflow/cr8/index.html",
       "element": "a",
-      "label": "/luxflow/cr8/delete-data.html",
+      "label": "Data requests",
       "actionType": "link_click",
       "actionValue": "/luxflow/cr8/delete-data.html",
       "target": "/luxflow/cr8/delete-data.html",
@@ -18238,7 +18234,7 @@
       "id": "luxflow_canoncraft_index_html__14__link_click__luxflow-canoncraft-support-html",
       "route": "luxflow/canoncraft/index.html",
       "element": "a",
-      "label": "/luxflow/canoncraft/support.html",
+      "label": "Support",
       "actionType": "link_click",
       "actionValue": "/luxflow/canoncraft/support.html",
       "target": "/luxflow/canoncraft/support.html",
@@ -18257,7 +18253,7 @@
       "id": "luxflow_canoncraft_index_html__15__link_click__luxflow-canoncraft-privacy-html",
       "route": "luxflow/canoncraft/index.html",
       "element": "a",
-      "label": "/luxflow/canoncraft/privacy.html",
+      "label": "Privacy",
       "actionType": "link_click",
       "actionValue": "/luxflow/canoncraft/privacy.html",
       "target": "/luxflow/canoncraft/privacy.html",
@@ -18276,7 +18272,7 @@
       "id": "luxflow_canoncraft_index_html__16__link_click__luxflow-canoncraft-terms-html",
       "route": "luxflow/canoncraft/index.html",
       "element": "a",
-      "label": "/luxflow/canoncraft/terms.html",
+      "label": "Terms",
       "actionType": "link_click",
       "actionValue": "/luxflow/canoncraft/terms.html",
       "target": "/luxflow/canoncraft/terms.html",
@@ -18295,7 +18291,7 @@
       "id": "luxflow_canoncraft_index_html__17__link_click__luxflow-canoncraft-delete-data-html",
       "route": "luxflow/canoncraft/index.html",
       "element": "a",
-      "label": "/luxflow/canoncraft/delete-data.html",
+      "label": "Data requests",
       "actionType": "link_click",
       "actionValue": "/luxflow/canoncraft/delete-data.html",
       "target": "/luxflow/canoncraft/delete-data.html",
@@ -21734,7 +21730,7 @@
       "id": "luxflow_signalcrafter_index_html__14__link_click__luxflow-signalcrafter-support-html",
       "route": "luxflow/signalcrafter/index.html",
       "element": "a",
-      "label": "/luxflow/signalcrafter/support.html",
+      "label": "Support",
       "actionType": "link_click",
       "actionValue": "/luxflow/signalcrafter/support.html",
       "target": "/luxflow/signalcrafter/support.html",
@@ -21753,7 +21749,7 @@
       "id": "luxflow_signalcrafter_index_html__15__link_click__luxflow-signalcrafter-privacy-html",
       "route": "luxflow/signalcrafter/index.html",
       "element": "a",
-      "label": "/luxflow/signalcrafter/privacy.html",
+      "label": "Privacy",
       "actionType": "link_click",
       "actionValue": "/luxflow/signalcrafter/privacy.html",
       "target": "/luxflow/signalcrafter/privacy.html",
@@ -21772,7 +21768,7 @@
       "id": "luxflow_signalcrafter_index_html__16__link_click__luxflow-signalcrafter-terms-html",
       "route": "luxflow/signalcrafter/index.html",
       "element": "a",
-      "label": "/luxflow/signalcrafter/terms.html",
+      "label": "Terms",
       "actionType": "link_click",
       "actionValue": "/luxflow/signalcrafter/terms.html",
       "target": "/luxflow/signalcrafter/terms.html",
@@ -21791,7 +21787,7 @@
       "id": "luxflow_signalcrafter_index_html__17__link_click__luxflow-signalcrafter-delete-data-html",
       "route": "luxflow/signalcrafter/index.html",
       "element": "a",
-      "label": "/luxflow/signalcrafter/delete-data.html",
+      "label": "Data requests",
       "actionType": "link_click",
       "actionValue": "/luxflow/signalcrafter/delete-data.html",
       "target": "/luxflow/signalcrafter/delete-data.html",
@@ -25230,7 +25226,7 @@
       "id": "luxflow_realcraft_index_html__14__link_click__luxflow-realcraft-support-html",
       "route": "luxflow/realcraft/index.html",
       "element": "a",
-      "label": "/luxflow/realcraft/support.html",
+      "label": "Support",
       "actionType": "link_click",
       "actionValue": "/luxflow/realcraft/support.html",
       "target": "/luxflow/realcraft/support.html",
@@ -25249,7 +25245,7 @@
       "id": "luxflow_realcraft_index_html__15__link_click__luxflow-realcraft-privacy-html",
       "route": "luxflow/realcraft/index.html",
       "element": "a",
-      "label": "/luxflow/realcraft/privacy.html",
+      "label": "Privacy",
       "actionType": "link_click",
       "actionValue": "/luxflow/realcraft/privacy.html",
       "target": "/luxflow/realcraft/privacy.html",
@@ -25268,7 +25264,7 @@
       "id": "luxflow_realcraft_index_html__16__link_click__luxflow-realcraft-terms-html",
       "route": "luxflow/realcraft/index.html",
       "element": "a",
-      "label": "/luxflow/realcraft/terms.html",
+      "label": "Terms",
       "actionType": "link_click",
       "actionValue": "/luxflow/realcraft/terms.html",
       "target": "/luxflow/realcraft/terms.html",
@@ -25287,7 +25283,7 @@
       "id": "luxflow_realcraft_index_html__17__link_click__luxflow-realcraft-delete-data-html",
       "route": "luxflow/realcraft/index.html",
       "element": "a",
-      "label": "/luxflow/realcraft/delete-data.html",
+      "label": "Data requests",
       "actionType": "link_click",
       "actionValue": "/luxflow/realcraft/delete-data.html",
       "target": "/luxflow/realcraft/delete-data.html",
@@ -28726,7 +28722,7 @@
       "id": "luxflow_promptops_index_html__14__link_click__luxflow-promptops-support-html",
       "route": "luxflow/promptops/index.html",
       "element": "a",
-      "label": "/luxflow/promptops/support.html",
+      "label": "Support",
       "actionType": "link_click",
       "actionValue": "/luxflow/promptops/support.html",
       "target": "/luxflow/promptops/support.html",
@@ -28745,7 +28741,7 @@
       "id": "luxflow_promptops_index_html__15__link_click__luxflow-promptops-privacy-html",
       "route": "luxflow/promptops/index.html",
       "element": "a",
-      "label": "/luxflow/promptops/privacy.html",
+      "label": "Privacy",
       "actionType": "link_click",
       "actionValue": "/luxflow/promptops/privacy.html",
       "target": "/luxflow/promptops/privacy.html",
@@ -28764,7 +28760,7 @@
       "id": "luxflow_promptops_index_html__16__link_click__luxflow-promptops-terms-html",
       "route": "luxflow/promptops/index.html",
       "element": "a",
-      "label": "/luxflow/promptops/terms.html",
+      "label": "Terms",
       "actionType": "link_click",
       "actionValue": "/luxflow/promptops/terms.html",
       "target": "/luxflow/promptops/terms.html",
@@ -28783,7 +28779,7 @@
       "id": "luxflow_promptops_index_html__17__link_click__luxflow-promptops-delete-data-html",
       "route": "luxflow/promptops/index.html",
       "element": "a",
-      "label": "/luxflow/promptops/delete-data.html",
+      "label": "Data requests",
       "actionType": "link_click",
       "actionValue": "/luxflow/promptops/delete-data.html",
       "target": "/luxflow/promptops/delete-data.html",
@@ -36060,7 +36056,7 @@
       "id": "portal_index_html__19__link_click__auth-signin-html",
       "route": "portal/index.html",
       "element": "a",
-      "label": "Sign In",
+      "label": "Check Access",
       "actionType": "link_click",
       "actionValue": "/auth/signin.html",
       "target": "/auth/signin.html",
@@ -36076,26 +36072,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_index_html__20__link_click__portal-reporting-html",
-      "route": "portal/index.html",
-      "element": "a",
-      "label": "Open Reporting",
-      "actionType": "link_click",
-      "actionValue": "/portal/reporting.html",
-      "target": "/portal/reporting.html",
-      "formType": "",
-      "mediaAction": "",
-      "reportAction": "",
-      "surface": "",
-      "intent": "",
-      "reportingKey": "portal-index-html__link-click__portal-reporting-html",
-      "reportingEvent": "link_click",
-      "reportingStatus": "declared",
-      "reportingChannel": "consented_event",
-      "expectedOutcome": "Navigates to public or screened route"
-    },
-    {
-      "id": "portal_index_html__21__link_click__music-html",
+      "id": "portal_index_html__20__link_click__music-html",
       "route": "portal/index.html",
       "element": "a",
       "label": "Lux Veritas Records",
@@ -36114,7 +36091,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_index_html__22__link_click__film-html",
+      "id": "portal_index_html__21__link_click__film-html",
       "route": "portal/index.html",
       "element": "a",
       "label": "Lux Veritas Studios",
@@ -36133,7 +36110,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_index_html__23__link_click__codex-html",
+      "id": "portal_index_html__22__link_click__codex-html",
       "route": "portal/index.html",
       "element": "a",
       "label": "Lux Veritas Publishing",
@@ -36152,7 +36129,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_index_html__24__link_click__events-html",
+      "id": "portal_index_html__23__link_click__events-html",
       "route": "portal/index.html",
       "element": "a",
       "label": "Lux Veritas Live",
@@ -36171,7 +36148,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_index_html__25__link_click__membership-html",
+      "id": "portal_index_html__24__link_click__membership-html",
       "route": "portal/index.html",
       "element": "a",
       "label": "Lux Circle",
@@ -36190,7 +36167,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_index_html__26__link_click__store-html",
+      "id": "portal_index_html__25__link_click__store-html",
       "route": "portal/index.html",
       "element": "a",
       "label": "Lux Atelier",
@@ -36209,7 +36186,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_index_html__27__link_click__works-index-html",
+      "id": "portal_index_html__26__link_click__works-index-html",
       "route": "portal/index.html",
       "element": "a",
       "label": "Works",
@@ -36228,7 +36205,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_index_html__28__link_click__store-html",
+      "id": "portal_index_html__27__link_click__store-html",
       "route": "portal/index.html",
       "element": "a",
       "label": "Store",
@@ -36247,7 +36224,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_index_html__29__link_click__membership-html",
+      "id": "portal_index_html__28__link_click__membership-html",
       "route": "portal/index.html",
       "element": "a",
       "label": "Membership",
@@ -36266,7 +36243,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_index_html__30__link_click__submissions-html",
+      "id": "portal_index_html__29__link_click__submissions-html",
       "route": "portal/index.html",
       "element": "a",
       "label": "Submissions",
@@ -36285,7 +36262,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_index_html__31__link_click__press-html",
+      "id": "portal_index_html__30__link_click__press-html",
       "route": "portal/index.html",
       "element": "a",
       "label": "Press",
@@ -36304,7 +36281,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_index_html__32__link_click__contact-html",
+      "id": "portal_index_html__31__link_click__contact-html",
       "route": "portal/index.html",
       "element": "a",
       "label": "Contact",
@@ -36323,7 +36300,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_index_html__33__link_click__legal-privacy-html",
+      "id": "portal_index_html__32__link_click__legal-privacy-html",
       "route": "portal/index.html",
       "element": "a",
       "label": "Privacy",
@@ -36342,7 +36319,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_index_html__34__link_click__legal-terms-html",
+      "id": "portal_index_html__33__link_click__legal-terms-html",
       "route": "portal/index.html",
       "element": "a",
       "label": "Terms",
@@ -36361,7 +36338,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_index_html__35__link_click__legal-privacy-html",
+      "id": "portal_index_html__34__link_click__legal-privacy-html",
       "route": "portal/index.html",
       "element": "a",
       "label": "Privacy",
@@ -36380,7 +36357,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_index_html__36__link_click__legal-terms-html",
+      "id": "portal_index_html__35__link_click__legal-terms-html",
       "route": "portal/index.html",
       "element": "a",
       "label": "Terms",
@@ -37577,197 +37554,26 @@
       "expectedOutcome": "Opens screened capture form"
     },
     {
-      "id": "portal_reporting_html__2__operator_report_action__load-private",
+      "id": "portal_reporting_html__2__form_open__request",
       "route": "portal/reporting.html",
       "element": "button",
-      "label": "Load Private Activity",
-      "actionType": "operator_report_action",
-      "actionValue": "load-private",
+      "label": "Request Operator Access",
+      "actionType": "form_open",
+      "actionValue": "request",
       "target": "",
-      "formType": "",
+      "formType": "request",
       "mediaAction": "",
-      "reportAction": "load-private",
+      "reportAction": "",
       "surface": "",
       "intent": "",
-      "reportingKey": "portal-reporting-html__report-action__load-private",
-      "reportingEvent": "report_action",
+      "reportingKey": "portal-reporting-html__form-open__request",
+      "reportingEvent": "form_open",
       "reportingStatus": "declared",
-      "reportingChannel": "protected_operator",
-      "expectedOutcome": "Runs approved operator report action"
+      "reportingChannel": "consented_event",
+      "expectedOutcome": "Opens screened capture form"
     },
     {
-      "id": "portal_reporting_html__3__operator_report_action__test-inbox",
-      "route": "portal/reporting.html",
-      "element": "button",
-      "label": "Test Inbox",
-      "actionType": "operator_report_action",
-      "actionValue": "test-inbox",
-      "target": "",
-      "formType": "",
-      "mediaAction": "",
-      "reportAction": "test-inbox",
-      "surface": "",
-      "intent": "",
-      "reportingKey": "portal-reporting-html__report-action__test-inbox",
-      "reportingEvent": "report_action",
-      "reportingStatus": "declared",
-      "reportingChannel": "protected_operator",
-      "expectedOutcome": "Runs approved operator report action"
-    },
-    {
-      "id": "portal_reporting_html__4__operator_report_action__replay-private",
-      "route": "portal/reporting.html",
-      "element": "button",
-      "label": "Replay Pending Inbox",
-      "actionType": "operator_report_action",
-      "actionValue": "replay-private",
-      "target": "",
-      "formType": "",
-      "mediaAction": "",
-      "reportAction": "replay-private",
-      "surface": "",
-      "intent": "",
-      "reportingKey": "portal-reporting-html__report-action__replay-private",
-      "reportingEvent": "report_action",
-      "reportingStatus": "declared",
-      "reportingChannel": "protected_operator",
-      "expectedOutcome": "Runs approved operator report action"
-    },
-    {
-      "id": "portal_reporting_html__5__operator_report_action__replay-integration",
-      "route": "portal/reporting.html",
-      "element": "button",
-      "label": "Replay Pending Handoff",
-      "actionType": "operator_report_action",
-      "actionValue": "replay-integration",
-      "target": "",
-      "formType": "",
-      "mediaAction": "",
-      "reportAction": "replay-integration",
-      "surface": "",
-      "intent": "",
-      "reportingKey": "portal-reporting-html__report-action__replay-integration",
-      "reportingEvent": "report_action",
-      "reportingStatus": "declared",
-      "reportingChannel": "protected_operator",
-      "expectedOutcome": "Runs approved operator report action"
-    },
-    {
-      "id": "portal_reporting_html__6__operator_report_action__export-private-json",
-      "route": "portal/reporting.html",
-      "element": "button",
-      "label": "Export Private JSON",
-      "actionType": "operator_report_action",
-      "actionValue": "export-private-json",
-      "target": "",
-      "formType": "",
-      "mediaAction": "",
-      "reportAction": "export-private-json",
-      "surface": "",
-      "intent": "",
-      "reportingKey": "portal-reporting-html__report-action__export-private-json",
-      "reportingEvent": "report_action",
-      "reportingStatus": "declared",
-      "reportingChannel": "protected_operator",
-      "expectedOutcome": "Runs approved operator report action"
-    },
-    {
-      "id": "portal_reporting_html__7__operator_report_action__export-private-csv",
-      "route": "portal/reporting.html",
-      "element": "button",
-      "label": "Export Private CSV",
-      "actionType": "operator_report_action",
-      "actionValue": "export-private-csv",
-      "target": "",
-      "formType": "",
-      "mediaAction": "",
-      "reportAction": "export-private-csv",
-      "surface": "",
-      "intent": "",
-      "reportingKey": "portal-reporting-html__report-action__export-private-csv",
-      "reportingEvent": "report_action",
-      "reportingStatus": "declared",
-      "reportingChannel": "protected_operator",
-      "expectedOutcome": "Runs approved operator report action"
-    },
-    {
-      "id": "portal_reporting_html__8__operator_report_action__refresh",
-      "route": "portal/reporting.html",
-      "element": "button",
-      "label": "Refresh Report",
-      "actionType": "operator_report_action",
-      "actionValue": "refresh",
-      "target": "",
-      "formType": "",
-      "mediaAction": "",
-      "reportAction": "refresh",
-      "surface": "",
-      "intent": "",
-      "reportingKey": "portal-reporting-html__report-action__refresh",
-      "reportingEvent": "report_action",
-      "reportingStatus": "declared",
-      "reportingChannel": "protected_operator",
-      "expectedOutcome": "Runs approved operator report action"
-    },
-    {
-      "id": "portal_reporting_html__9__operator_report_action__export",
-      "route": "portal/reporting.html",
-      "element": "button",
-      "label": "Export JSON",
-      "actionType": "operator_report_action",
-      "actionValue": "export",
-      "target": "",
-      "formType": "",
-      "mediaAction": "",
-      "reportAction": "export",
-      "surface": "",
-      "intent": "",
-      "reportingKey": "portal-reporting-html__report-action__export",
-      "reportingEvent": "report_action",
-      "reportingStatus": "declared",
-      "reportingChannel": "protected_operator",
-      "expectedOutcome": "Runs approved operator report action"
-    },
-    {
-      "id": "portal_reporting_html__10__operator_report_action__export-csv",
-      "route": "portal/reporting.html",
-      "element": "button",
-      "label": "Export CSV",
-      "actionType": "operator_report_action",
-      "actionValue": "export-csv",
-      "target": "",
-      "formType": "",
-      "mediaAction": "",
-      "reportAction": "export-csv",
-      "surface": "",
-      "intent": "",
-      "reportingKey": "portal-reporting-html__report-action__export-csv",
-      "reportingEvent": "report_action",
-      "reportingStatus": "declared",
-      "reportingChannel": "protected_operator",
-      "expectedOutcome": "Runs approved operator report action"
-    },
-    {
-      "id": "portal_reporting_html__11__operator_report_action__clear",
-      "route": "portal/reporting.html",
-      "element": "button",
-      "label": "Clear Local Report",
-      "actionType": "operator_report_action",
-      "actionValue": "clear",
-      "target": "",
-      "formType": "",
-      "mediaAction": "",
-      "reportAction": "clear",
-      "surface": "",
-      "intent": "",
-      "reportingKey": "portal-reporting-html__report-action__clear",
-      "reportingEvent": "report_action",
-      "reportingStatus": "declared",
-      "reportingChannel": "protected_operator",
-      "expectedOutcome": "Runs approved operator report action"
-    },
-    {
-      "id": "portal_reporting_html__12__dialog_close__action",
+      "id": "portal_reporting_html__3__dialog_close__action",
       "route": "portal/reporting.html",
       "element": "button",
       "label": "×",
@@ -37786,7 +37592,7 @@
       "expectedOutcome": "Closes capture dialog"
     },
     {
-      "id": "portal_reporting_html__13__form_submit__send-to-lux-veritas",
+      "id": "portal_reporting_html__4__form_submit__send-to-lux-veritas",
       "route": "portal/reporting.html",
       "element": "button",
       "label": "Send to Lux Veritas",
@@ -37805,7 +37611,7 @@
       "expectedOutcome": "Submits current capture form"
     },
     {
-      "id": "portal_reporting_html__14__link_click__main",
+      "id": "portal_reporting_html__5__link_click__main",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Skip to content",
@@ -37824,7 +37630,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__15__link_click__index-html",
+      "id": "portal_reporting_html__6__link_click__index-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "LV Lux Veritas",
@@ -37843,7 +37649,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__16__link_click__index-html",
+      "id": "portal_reporting_html__7__link_click__index-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Home",
@@ -37862,7 +37668,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__17__link_click__music-html",
+      "id": "portal_reporting_html__8__link_click__music-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Music",
@@ -37881,7 +37687,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__18__link_click__film-html",
+      "id": "portal_reporting_html__9__link_click__film-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Film",
@@ -37900,7 +37706,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__19__link_click__events-html",
+      "id": "portal_reporting_html__10__link_click__events-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Events",
@@ -37919,7 +37725,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__20__link_click__codex-html",
+      "id": "portal_reporting_html__11__link_click__codex-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Codex",
@@ -37938,7 +37744,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__21__link_click__about-html",
+      "id": "portal_reporting_html__12__link_click__about-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "About",
@@ -37957,83 +37763,26 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__22__link_click__music-html-lux-player",
+      "id": "portal_reporting_html__13__link_click__join-html",
       "route": "portal/reporting.html",
       "element": "a",
-      "label": "Review Song",
+      "label": "Return Home",
       "actionType": "link_click",
-      "actionValue": "/music.html#lux-player",
-      "target": "/music.html#lux-player",
+      "actionValue": "/join.html",
+      "target": "/join.html",
       "formType": "",
       "mediaAction": "",
       "reportAction": "",
-      "surface": "operator_release_review",
-      "intent": "review_song",
-      "reportingKey": "portal-reporting-html__link-click__music-html-lux-player",
+      "surface": "",
+      "intent": "",
+      "reportingKey": "portal-reporting-html__link-click__join-html",
       "reportingEvent": "link_click",
       "reportingStatus": "declared",
       "reportingChannel": "consented_event",
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__23__link_click__music-html-lux-player",
-      "route": "portal/reporting.html",
-      "element": "a",
-      "label": "Review Video",
-      "actionType": "link_click",
-      "actionValue": "/music.html#lux-player",
-      "target": "/music.html#lux-player",
-      "formType": "",
-      "mediaAction": "",
-      "reportAction": "",
-      "surface": "operator_release_review",
-      "intent": "review_video",
-      "reportingKey": "portal-reporting-html__link-click__music-html-lux-player",
-      "reportingEvent": "link_click",
-      "reportingStatus": "declared",
-      "reportingChannel": "consented_event",
-      "expectedOutcome": "Navigates to public or screened route"
-    },
-    {
-      "id": "portal_reporting_html__24__link_click__music-html-lux-radio",
-      "route": "portal/reporting.html",
-      "element": "a",
-      "label": "Review Radio",
-      "actionType": "link_click",
-      "actionValue": "/music.html#lux-radio",
-      "target": "/music.html#lux-radio",
-      "formType": "",
-      "mediaAction": "",
-      "reportAction": "",
-      "surface": "operator_release_review",
-      "intent": "review_radio",
-      "reportingKey": "portal-reporting-html__link-click__music-html-lux-radio",
-      "reportingEvent": "link_click",
-      "reportingStatus": "declared",
-      "reportingChannel": "consented_event",
-      "expectedOutcome": "Navigates to public or screened route"
-    },
-    {
-      "id": "portal_reporting_html__25__link_click__spmvp-html",
-      "route": "portal/reporting.html",
-      "element": "a",
-      "label": "Open Release Room",
-      "actionType": "link_click",
-      "actionValue": "/spmvp.html",
-      "target": "/spmvp.html",
-      "formType": "",
-      "mediaAction": "",
-      "reportAction": "",
-      "surface": "operator_release_review",
-      "intent": "review_release_room",
-      "reportingKey": "portal-reporting-html__link-click__spmvp-html",
-      "reportingEvent": "link_click",
-      "reportingStatus": "declared",
-      "reportingChannel": "consented_event",
-      "expectedOutcome": "Navigates to public or screened route"
-    },
-    {
-      "id": "portal_reporting_html__26__link_click__music-html",
+      "id": "portal_reporting_html__14__link_click__music-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Lux Veritas Records",
@@ -38052,7 +37801,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__27__link_click__film-html",
+      "id": "portal_reporting_html__15__link_click__film-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Lux Veritas Studios",
@@ -38071,7 +37820,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__28__link_click__codex-html",
+      "id": "portal_reporting_html__16__link_click__codex-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Lux Veritas Publishing",
@@ -38090,7 +37839,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__29__link_click__events-html",
+      "id": "portal_reporting_html__17__link_click__events-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Lux Veritas Live",
@@ -38109,7 +37858,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__30__link_click__membership-html",
+      "id": "portal_reporting_html__18__link_click__membership-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Lux Circle",
@@ -38128,7 +37877,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__31__link_click__store-html",
+      "id": "portal_reporting_html__19__link_click__store-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Lux Atelier",
@@ -38147,7 +37896,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__32__link_click__works-index-html",
+      "id": "portal_reporting_html__20__link_click__works-index-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Works",
@@ -38166,7 +37915,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__33__link_click__store-html",
+      "id": "portal_reporting_html__21__link_click__store-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Store",
@@ -38185,7 +37934,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__34__link_click__membership-html",
+      "id": "portal_reporting_html__22__link_click__membership-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Membership",
@@ -38204,7 +37953,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__35__link_click__submissions-html",
+      "id": "portal_reporting_html__23__link_click__submissions-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Submissions",
@@ -38223,7 +37972,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__36__link_click__press-html",
+      "id": "portal_reporting_html__24__link_click__press-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Press",
@@ -38242,7 +37991,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__37__link_click__contact-html",
+      "id": "portal_reporting_html__25__link_click__contact-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Contact",
@@ -38261,7 +38010,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__38__link_click__legal-privacy-html",
+      "id": "portal_reporting_html__26__link_click__legal-privacy-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Privacy",
@@ -38280,7 +38029,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__39__link_click__legal-terms-html",
+      "id": "portal_reporting_html__27__link_click__legal-terms-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Terms",
@@ -38299,7 +38048,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__40__link_click__legal-privacy-html",
+      "id": "portal_reporting_html__28__link_click__legal-privacy-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Privacy",
@@ -38318,7 +38067,7 @@
       "expectedOutcome": "Navigates to public or screened route"
     },
     {
-      "id": "portal_reporting_html__41__link_click__legal-terms-html",
+      "id": "portal_reporting_html__29__link_click__legal-terms-html",
       "route": "portal/reporting.html",
       "element": "a",
       "label": "Terms",

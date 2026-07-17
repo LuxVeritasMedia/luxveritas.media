@@ -6,6 +6,8 @@ import { googleAccessToken } from "./lib/google-cloud-auth.mjs";
 
 const project = process.env.LUX_FIREBASE_PROJECT || "lux-veritas-media";
 const site = process.env.LUX_FIREBASE_SITE || project;
+const channel = String(process.env.LUX_FIREBASE_HOSTING_CHANNEL || "live").trim().toLowerCase();
+const channelTtl = String(process.env.LUX_FIREBASE_HOSTING_CHANNEL_TTL || "604800s").trim();
 const dryRun = process.env.LUX_FIREBASE_HOSTING_REST_DRY_RUN === "1";
 const apiRoot = "https://firebasehosting.googleapis.com/v1beta1";
 const uploadRoot = "https://upload-firebasehosting.googleapis.com/upload";
@@ -31,7 +33,7 @@ function releaseMessage() {
   const sha = process.env.GITHUB_SHA || "";
   const runId = process.env.GITHUB_RUN_ID || "";
   return [
-    "GitHub Actions REST deploy",
+    channel === "live" ? "GitHub Actions REST deploy" : `GitHub Actions REST preview ${channel}`,
     sha ? `commit ${sha.slice(0, 12)}` : "",
     runId ? `run ${runId}` : ""
   ].filter(Boolean).join(" ");
@@ -95,6 +97,28 @@ async function apiFetch(path, { method = "GET", body, token, root = apiRoot } = 
   return json;
 }
 
+async function ensurePreviewChannel(token) {
+  if (channel === "live") return null;
+  const sitePath = `/sites/${encodeURIComponent(site)}`;
+  const createPath = `${sitePath}/channels?channelId=${encodeURIComponent(channel)}`;
+  const response = await fetch(`${apiRoot}${createPath}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ ttl: channelTtl })
+  });
+  const text = await response.text();
+  const json = parseJson(text);
+  if (response.ok) return json;
+  if (response.status === 409) {
+    return apiFetch(`${sitePath}/channels/${encodeURIComponent(channel)}`, { token });
+  }
+  const detail = json?.error?.message || text || response.statusText;
+  throw new Error(`POST ${createPath} failed: ${response.status} ${response.statusText}: ${detail}`);
+}
+
 async function uploadFile(uploadUrl, hash, gzipped, token) {
   const response = await fetch(`${uploadUrl}/${encodeURIComponent(hash)}`, {
     method: "POST",
@@ -112,6 +136,9 @@ async function uploadFile(uploadUrl, hash, gzipped, token) {
 }
 
 async function main() {
+  if (!/^[a-z0-9][a-z0-9-]{0,31}$/.test(channel)) {
+    throw new Error(`Invalid Firebase Hosting channel id: ${channel}`);
+  }
   const firebaseConfig = JSON.parse(await readFile("firebase.json", "utf8"));
   const hosting = firebaseConfig.hosting || {};
   const publicDir = process.env.LUX_FIREBASE_HOSTING_PUBLIC || hosting.public || "dist";
@@ -133,15 +160,17 @@ async function main() {
   }
 
   if (dryRun) {
-    console.log(`Firebase Hosting REST deploy dry run for site ${site}.`);
+    console.log(`Firebase Hosting REST deploy dry run for site ${site}, channel ${channel}.`);
     console.log(`Would deploy ${fileEntries.length} file(s) from ${publicDir}.`);
     console.log(`Would preserve ${hosting.headers?.length || 0} header rule(s), ${hosting.redirects?.length || 0} redirect(s), and ${hosting.rewrites?.length || 0} rewrite(s).`);
+    if (channel !== "live") console.log(`Would create or refresh preview channel ${channel} with TTL ${channelTtl}.`);
     return;
   }
 
   const { token, source } = await googleAccessToken();
-  console.log(`Firebase Hosting REST deploy for site ${site} using ${source}.`);
+  console.log(`Firebase Hosting REST deploy for site ${site}, channel ${channel}, using ${source}.`);
   console.log(`Deploying ${fileEntries.length} file(s) from ${publicDir}.`);
+  let channelInfo = await ensurePreviewChannel(token);
 
   const version = await apiFetch(`/sites/${encodeURIComponent(site)}/versions`, {
     method: "POST",
@@ -181,7 +210,7 @@ async function main() {
     body: { status: "FINALIZED" }
   });
 
-  const release = await apiFetch(`/sites/${encodeURIComponent(site)}/channels/live/releases?versionName=${encodeURIComponent(versionName)}`, {
+  const release = await apiFetch(`/sites/${encodeURIComponent(site)}/channels/${encodeURIComponent(channel)}/releases?versionName=${encodeURIComponent(versionName)}`, {
     method: "POST",
     token,
     body: {
@@ -190,6 +219,10 @@ async function main() {
   });
 
   console.log(`Firebase Hosting REST deploy released ${release.name || versionName}.`);
+  if (channel !== "live") {
+    channelInfo = await apiFetch(`/sites/${encodeURIComponent(site)}/channels/${encodeURIComponent(channel)}`, { token });
+    if (channelInfo?.url) console.log(`Firebase Hosting preview URL: ${channelInfo.url}`);
+  }
 }
 
 main().catch((error) => {

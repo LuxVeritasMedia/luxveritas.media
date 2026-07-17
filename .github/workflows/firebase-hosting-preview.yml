@@ -1,0 +1,66 @@
+name: Firebase Hosting Preview
+
+on:
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: firebase-hosting-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Build static site
+        run: node tools/build-static.mjs
+
+      - name: Prepare Hosting artifact
+        run: node tools/prepare-hosting.mjs
+
+      - name: QA Hosting boundary
+        run: node tools/qa-hosting-config.mjs
+
+      - name: QA public site
+        run: node tools/qa-public-site.mjs
+
+      - name: QA buttons and actions
+        run: |
+          node tools/qa-buttons.mjs
+          node tools/qa-action-inventory.mjs
+
+      - name: QA access and presentation
+        run: |
+          node tools/qa-access-model.mjs
+          node tools/qa-mobile-layout.mjs
+          node tools/qa-accessibility.mjs
+
+      - name: Install browser QA dependencies
+        run: |
+          npm install --no-save playwright
+          npx playwright install chromium
+
+      - name: QA browser flows
+        run: node tools/qa-browser-flows.mjs
+
+      - name: Upload sanitized Hosting artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: firebase-hosting-preview
+          path: dist
+          if-no-files-found: error
+          retention-days: 7

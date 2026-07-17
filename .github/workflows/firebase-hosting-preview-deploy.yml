@@ -1,0 +1,85 @@
+name: Firebase Hosting Preview Deploy
+
+on:
+  workflow_run:
+    workflows:
+      - Firebase Hosting Preview
+    types:
+      - completed
+
+concurrency:
+  group: firebase-hosting-preview-deploy-${{ github.event.workflow_run.id }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Check out trusted deploy code
+        uses: actions/checkout@v5
+        with:
+          ref: main
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: lux-veritas-media
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Download sanitized Hosting artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: firebase-hosting-preview
+          path: dist
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Verify artifact boundary
+        run: |
+          test -f dist/404.html
+          test -f dist/data/lux-build-manifest.json
+          test ! -e dist/data/lux-phase-status.json
+          test ! -e dist/data/lux-action-inventory.json
+          test ! -e dist/data/lux-open-approvals.json
+          test ! -e dist/data/lux-pilot-write-evidence.json
+
+      - name: Deploy Firebase preview channel
+        id: deploy
+        env:
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+        run: |
+          CHANNEL_ID="pr-${PR_NUMBER}"
+          OUTPUT_FILE="${RUNNER_TEMP}/firebase-preview.txt"
+          LUX_FIREBASE_HOSTING_PUBLIC=dist \
+          LUX_FIREBASE_HOSTING_CHANNEL="${CHANNEL_ID}" \
+          LUX_FIREBASE_HOSTING_CHANNEL_TTL=604800s \
+          node tools/deploy-firebase-hosting-rest.mjs | tee "${OUTPUT_FILE}"
+          PREVIEW_URL="$(grep -Eo 'https://[^[:space:]]+\.web\.app' "${OUTPUT_FILE}" | tail -1)"
+          echo "preview_url=${PREVIEW_URL}" >> "${GITHUB_OUTPUT}"
+          {
+            echo "## Firebase Hosting preview"
+            echo
+            if [ -n "${PREVIEW_URL}" ]; then
+              echo "[Open PR ${PR_NUMBER} preview](${PREVIEW_URL})"
+            else
+              echo "Preview deployed. Open this step log for the channel URL."
+            fi
+            echo
+            echo "Channel: \`${CHANNEL_ID}\` · Artifact retention: 7 days"
+          } >> "${GITHUB_STEP_SUMMARY}"

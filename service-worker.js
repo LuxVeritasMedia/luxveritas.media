@@ -1,8 +1,8 @@
-const CACHE_NAME = "luxveritas-static-20260710-media-control-r2";
+const CACHE_NAME = "luxveritas-static-20260717-public-release-r7";
 const PRECACHE_URLS = [
   "/offline.html",
-  "/styles.css?v=20260710-media-control-r2",
-  "/app.js?v=20260710-media-control-r2",
+  "/styles.css?v=20260717-public-release-r7",
+  "/app.js?v=20260717-public-release-r7",
   "/site.webmanifest",
   "/assets/luxveritas-icon.svg",
   "/assets/luxveritas-threshold.png"

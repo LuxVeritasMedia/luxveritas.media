@@ -19,10 +19,11 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: clip; }
 body {
   margin: 0;
   min-width: 320px;
+  overflow-x: clip;
   background:
     radial-gradient(circle at 72% 12%, rgba(13, 90, 73, .24), transparent 31rem),
     linear-gradient(180deg, var(--obsidian), #08100e 54%, var(--obsidian));
@@ -110,7 +111,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .section { padding: clamp(74px, 10vw, 132px) clamp(20px, 5vw, 70px); }
 .hero {
   position: relative;
-  min-height: 100svh;
+  min-height: 92svh;
   display: grid;
   align-items: end;
   overflow: hidden;
@@ -132,8 +133,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 .page-hero {
   position: relative;
-  padding-top: clamp(140px, 18vw, 220px);
-  padding-bottom: clamp(74px, 9vw, 118px);
+  padding-top: clamp(104px, 10vw, 140px);
+  padding-bottom: clamp(30px, 4vw, 52px);
   overflow: hidden;
 }
 .page-hero::before {
@@ -154,6 +155,8 @@ body[data-page="/spmvp.html"] .page-hero::before {
   max-width: var(--max);
   margin: 0 auto;
 }
+.page-hero + .section { padding-top: clamp(24px, 3vw, 44px); }
+body[data-page="/apps/index.html"] .page-hero + .section { padding-top: 12px; }
 .kicker {
   margin: 0 0 1.1rem;
   color: var(--gold);
@@ -1499,6 +1502,18 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
 }
 .form-dialog::backdrop { background: rgba(0,0,0,.72); backdrop-filter: blur(6px); }
 .dialog-shell { display: grid; gap: 1rem; padding: clamp(24px, 5vw, 44px); }
+.dialog-shell[data-form-mode="compact"] {
+  gap: .85rem;
+  padding: clamp(22px, 4vw, 36px);
+}
+.dialog-shell[data-form-mode="compact"] .form-field-extended,
+.dialog-shell[data-form-mode="compact"] .form-field-routing,
+.dialog-shell[data-form-mode="compact"] .form-field-message {
+  display: none;
+}
+.dialog-shell[data-form-mode="compact"] .interest-paths {
+  margin-top: .15rem;
+}
 .dialog-close {
   justify-self: end;
   width: 38px;
@@ -1556,6 +1571,20 @@ select option { color: var(--ink); }
   line-height: 1.55;
 }
 .form-terms a { color: var(--gold); }
+.app-utility-links {
+  align-items: center;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem 1.5rem;
+  padding-top: 28px;
+}
+.app-utility-links a {
+  color: rgba(243,238,228,.7);
+  font-size: .82rem;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
 .honeypot { position: absolute; left: -9999px; }
 .form-status {
   border: 1px solid rgba(200,168,106,.28);
@@ -1584,13 +1613,13 @@ select option { color: var(--ink); }
 .consent-banner {
   position: fixed;
   z-index: 25;
-  top: 86px;
+  bottom: 18px;
   right: clamp(14px, 2vw, 24px);
   display: none;
   grid-template-columns: 1fr auto;
   gap: 1rem;
   align-items: center;
-  width: min(720px, calc(100vw - 28px));
+  width: min(560px, calc(100vw - 28px));
   background: rgba(6,8,7,.96);
   border: 1px solid var(--line);
   padding: 18px;

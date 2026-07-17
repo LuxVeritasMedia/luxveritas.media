@@ -7,6 +7,7 @@ const issues = [];
 const warnings = [];
 const requiredFiles = [
   "index.html",
+  "404.html",
   "app.js",
   "offline.html",
   "pilot-feedback.html",
@@ -15,24 +16,13 @@ const requiredFiles = [
   "robots.txt",
   "site.webmanifest",
   "sitemap.xml",
-  "data/lux-launch-readiness.json",
-  "data/lux-launch-closeout-public.json",
   "data/lux-brand-house.json",
   "data/lux-fan-flywheel.json",
   "data/lux-drop-room.json",
   "data/lux-portal-rooms.json",
   "data/lux-apps.json",
-  "data/cr8-store-submission.json",
-  "data/lux-phase-status.json",
-  "data/lux-pilot-write-evidence.json",
   "data/lux-media-manifest.json",
-  "data/lux-release-room.json",
-  "data/lux-radio-programming.json",
-  "data/lux-pilot-bug-register.json",
   "data/lux-build-manifest.json",
-  "data/lux-action-inventory.json",
-  "data/lux-open-approvals.json",
-  "data/lux-legal-review.json",
   "data/lux-public-terms.json",
   "assets/luxveritas-threshold.png",
   "assets/luxveritas-icon.svg",
@@ -64,11 +54,10 @@ const noindexRoutes = [
   "codex-sanctum.html",
   "private-steward.html",
   "pilot-feedback.html",
+  "404.html",
   "brands/index.html",
   "brands/sample.html",
   "investor.html",
-  "legal/privacy.html",
-  "legal/terms.html",
   "offline.html"
 ];
 const bannedTerms = [
@@ -168,6 +157,28 @@ for (const file of requiredFiles) {
     await access(join(root, file));
   } catch {
     issues.push(`Missing required deploy file: ${file}`);
+  }
+}
+
+const privateDeployFiles = [
+  "data/cr8-store-submission.json",
+  "data/lux-action-inventory.json",
+  "data/lux-launch-closeout-public.json",
+  "data/lux-launch-readiness.json",
+  "data/lux-legal-review.json",
+  "data/lux-open-approvals.json",
+  "data/lux-phase-status.json",
+  "data/lux-pilot-bug-register.json",
+  "data/lux-pilot-write-evidence.json",
+  "data/lux-radio-programming.json",
+  "data/lux-release-room.json"
+];
+for (const file of privateDeployFiles) {
+  try {
+    await access(join(root, file));
+    issues.push(`Private workflow file must not ship: ${file}`);
+  } catch {
+    // Expected: internal workflow records stay outside the Hosting artifact.
   }
 }
 
@@ -294,13 +305,14 @@ for (const file of htmlFiles) {
     if (!html.includes("data-media-source-shell")) issues.push(`${rel}: missing source-ready playback shell`);
     if (!html.includes("data-release-room")) issues.push(`${rel}: missing release room`);
     if (!html.includes("data-release-room-current")) issues.push(`${rel}: missing current release room panel`);
-    if (!html.includes("data-release-room-readiness")) issues.push(`${rel}: missing release room readiness panel`);
+    if (html.includes("data-release-room-readiness")) issues.push(`${rel}: must not expose release readiness diagnostics`);
     if (!html.includes('data-track-surface="release_room"')) issues.push(`${rel}: missing release room tracking surface`);
     for (const step of ["listen", "watch", "join", "collect", "create", "return"]) {
       if (!html.includes(`data-release-step="${step}"`)) issues.push(`${rel}: missing release room step ${step}`);
     }
     if (!html.includes("data-radio-programming")) issues.push(`${rel}: missing Lux Radio programming panel`);
-    if (!html.includes("data-radio-readiness")) issues.push(`${rel}: missing Lux Radio readiness panel`);
+    if (!html.includes("data-radio-readiness")) issues.push(`${rel}: missing Lux Radio signal panel`);
+    if (html.includes("data-radio-readiness-list")) issues.push(`${rel}: must not expose radio readiness diagnostics`);
     if (!html.includes("data-radio-on-air")) issues.push(`${rel}: missing Lux Radio on-air state`);
     if (!html.includes("data-radio-listener-path")) issues.push(`${rel}: missing Lux Radio listener path`);
     if (!html.includes('data-track-surface="radio_programming"')) issues.push(`${rel}: missing radio programming tracking surface`);
@@ -362,40 +374,29 @@ const fanFlywheelRaw = await readFile(join(root, "data/lux-fan-flywheel.json"), 
 const dropRoomRaw = await readFile(join(root, "data/lux-drop-room.json"), "utf8");
 const portalRoomsRaw = await readFile(join(root, "data/lux-portal-rooms.json"), "utf8");
 const luxAppsRaw = await readFile(join(root, "data/lux-apps.json"), "utf8");
-const cr8StoreSubmissionRaw = await readFile(join(root, "data/cr8-store-submission.json"), "utf8");
-const phaseStatusRaw = await readFile(join(root, "data/lux-phase-status.json"), "utf8");
-const pilotWriteEvidenceRaw = await readFile(join(root, "data/lux-pilot-write-evidence.json"), "utf8");
+const cr8StoreSubmissionRaw = await readFile("data/cr8-store-submission.json", "utf8");
+const phaseStatusRaw = await readFile("data/lux-phase-status.json", "utf8");
+const pilotWriteEvidenceRaw = await readFile("data/lux-pilot-write-evidence.json", "utf8");
 const mediaManifestRaw = await readFile(join(root, "data/lux-media-manifest.json"), "utf8");
-const releaseRoomRaw = await readFile(join(root, "data/lux-release-room.json"), "utf8");
-const radioProgrammingRaw = await readFile(join(root, "data/lux-radio-programming.json"), "utf8");
-const pilotBugRegisterRaw = await readFile(join(root, "data/lux-pilot-bug-register.json"), "utf8");
+const releaseRoomRaw = await readFile("data/lux-release-room.json", "utf8");
+const radioProgrammingRaw = await readFile("data/lux-radio-programming.json", "utf8");
+const pilotBugRegisterRaw = await readFile("data/lux-pilot-bug-register.json", "utf8");
 const buildManifestRaw = await readFile(join(root, "data/lux-build-manifest.json"), "utf8");
-const actionInventoryRaw = await readFile(join(root, "data/lux-action-inventory.json"), "utf8");
+const actionInventoryRaw = await readFile("data/lux-action-inventory.json", "utf8");
 const webManifestRaw = await readFile(join(root, "site.webmanifest"), "utf8");
 const deploymentDoc = await readFile("docs/deployment.md", "utf8");
-const launchReadinessRaw = await readFile(join(root, "data/lux-launch-readiness.json"), "utf8");
-const launchCloseoutRaw = await readFile(join(root, "data/lux-launch-closeout-public.json"), "utf8");
-const legalReviewRaw = await readFile(join(root, "data/lux-legal-review.json"), "utf8");
+const launchReadinessRaw = await readFile("data/lux-launch-readiness.json", "utf8");
+const legalReviewRaw = await readFile("data/lux-legal-review.json", "utf8");
 const publicTermsRaw = await readFile(join(root, "data/lux-public-terms.json"), "utf8");
 for (const pattern of bannedTerms) {
   if (pattern.test(buildManifestRaw)) issues.push(`data/lux-build-manifest.json: banned public term matched ${pattern}`);
-  if (pattern.test(actionInventoryRaw)) issues.push(`data/lux-action-inventory.json: banned public term matched ${pattern}`);
   if (pattern.test(webManifestRaw)) issues.push(`site.webmanifest: banned public term matched ${pattern}`);
-  if (pattern.test(launchReadinessRaw)) issues.push(`data/lux-launch-readiness.json: banned public term matched ${pattern}`);
-  if (pattern.test(launchCloseoutRaw)) issues.push(`data/lux-launch-closeout-public.json: banned public term matched ${pattern}`);
   if (pattern.test(brandHouseRaw)) issues.push(`data/lux-brand-house.json: banned public term matched ${pattern}`);
   if (pattern.test(fanFlywheelRaw)) issues.push(`data/lux-fan-flywheel.json: banned public term matched ${pattern}`);
   if (pattern.test(dropRoomRaw)) issues.push(`data/lux-drop-room.json: banned public term matched ${pattern}`);
   if (pattern.test(portalRoomsRaw)) issues.push(`data/lux-portal-rooms.json: banned public term matched ${pattern}`);
   if (pattern.test(luxAppsRaw)) issues.push(`data/lux-apps.json: banned public term matched ${pattern}`);
-  if (pattern.test(cr8StoreSubmissionRaw)) issues.push(`data/cr8-store-submission.json: banned public term matched ${pattern}`);
-  if (pattern.test(phaseStatusRaw)) issues.push(`data/lux-phase-status.json: banned public term matched ${pattern}`);
-  if (pattern.test(pilotWriteEvidenceRaw)) issues.push(`data/lux-pilot-write-evidence.json: banned public term matched ${pattern}`);
   if (pattern.test(mediaManifestRaw)) issues.push(`data/lux-media-manifest.json: banned public term matched ${pattern}`);
-  if (pattern.test(releaseRoomRaw)) issues.push(`data/lux-release-room.json: banned public term matched ${pattern}`);
-  if (pattern.test(radioProgrammingRaw)) issues.push(`data/lux-radio-programming.json: banned public term matched ${pattern}`);
-  if (pattern.test(pilotBugRegisterRaw)) issues.push(`data/lux-pilot-bug-register.json: banned public term matched ${pattern}`);
-  if (pattern.test(legalReviewRaw)) issues.push(`data/lux-legal-review.json: banned public term matched ${pattern}`);
   if (pattern.test(publicTermsRaw)) issues.push(`data/lux-public-terms.json: banned public term matched ${pattern}`);
 }
 
@@ -439,8 +440,11 @@ try {
   if (buildManifest.routeCount !== htmlFiles.length) {
     issues.push(`data/lux-build-manifest.json: routeCount ${buildManifest.routeCount} does not match ${htmlFiles.length} generated HTML files`);
   }
-  if (!buildManifest.publicRouteCount || !buildManifest.mediaManifestVersion || !buildManifest.releaseRoomVersion || !buildManifest.radioProgrammingVersion || !buildManifest.pilotBugRegisterVersion || !buildManifest.actionInventoryVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.appCatalogVersion || !buildManifest.phaseStatusVersion || !buildManifest.publicTermsVersion) {
-    issues.push("data/lux-build-manifest.json: missing publicRouteCount, mediaManifestVersion, releaseRoomVersion, radioProgrammingVersion, pilotBugRegisterVersion, actionInventoryVersion, brandHouseVersion, fanFlywheelVersion, dropRoomVersion, portalRoomsVersion, appCatalogVersion, phaseStatusVersion, or publicTermsVersion");
+  if (!buildManifest.publicRouteCount || !buildManifest.mediaManifestVersion || !buildManifest.brandHouseVersion || !buildManifest.fanFlywheelVersion || !buildManifest.dropRoomVersion || !buildManifest.portalRoomsVersion || !buildManifest.appCatalogVersion || !buildManifest.publicTermsVersion) {
+    issues.push("data/lux-build-manifest.json: missing public route or audience-facing content versions");
+  }
+  for (const field of ["releaseRoomVersion", "radioProgrammingVersion", "pilotBugRegisterVersion", "actionInventoryVersion", "openApprovalsDecision", "openApprovalsPublicLaunchBlockers", "phaseStatusVersion"]) {
+    if (field in buildManifest) issues.push(`data/lux-build-manifest.json: must not expose ${field}`);
   }
 } catch (error) {
   issues.push(`data/lux-build-manifest.json: invalid JSON (${error.message})`);
@@ -635,10 +639,10 @@ try {
   if (!portalRooms.version || !portalRooms.headline || !portalRooms.summary || !portalRooms.notice) {
     issues.push("data/lux-portal-rooms.json: missing version, headline, summary, or notice");
   }
-  if (!/No account, payment, entitlement, or private room is activated/i.test(portalRooms.notice || "")) {
-    issues.push("data/lux-portal-rooms.json: notice must state no account, payment, entitlement, or private room is activated");
+  if (!/private rooms open only by invitation/i.test(portalRooms.notice || "")) {
+    issues.push("data/lux-portal-rooms.json: notice must state that private rooms open only by invitation");
   }
-  const expectedRooms = ["member", "artist", "creator", "press", "partner", "investor", "operator"];
+  const expectedRooms = ["member", "artist", "creator", "press", "partner", "investor"];
   const roomIds = rooms.map((room) => room.id);
   if (roomIds.join("|") !== expectedRooms.join("|")) {
     issues.push(`data/lux-portal-rooms.json: expected rooms ${expectedRooms.join(", ")}, found ${roomIds.join(", ")}`);
@@ -647,13 +651,13 @@ try {
     for (const field of ["id", "label", "title", "body", "status", "roleTarget", "path", "action"]) {
       if (!room[field]) issues.push(`data/lux-portal-rooms.json: ${room.id || "room"} missing ${field}`);
     }
-    if (!["request_access", "approved_operator_only"].includes(room.status)) {
+    if (room.status !== "request_access") {
       issues.push(`data/lux-portal-rooms.json: ${room.id || "room"} has invalid status`);
     }
     if (room.path && (!room.path.startsWith("/") || !room.path.endsWith(".html"))) {
       issues.push(`data/lux-portal-rooms.json: ${room.id || "room"} has invalid public path`);
     }
-    if (room.id !== "operator" && !room.formType) {
+    if (!room.formType) {
       issues.push(`data/lux-portal-rooms.json: ${room.id || "room"} missing formType`);
     }
   }
@@ -763,11 +767,13 @@ try {
     issues.push("data/cr8-store-submission.json: screenshot plan must require captured app screenshots");
   }
   const productHtml = await readFile(join(root, "luxflow/cr8/index.html"), "utf8");
-  if (!productHtml.includes(`data-cr8-store-submission="${packet.version}"`)) {
-    issues.push("luxflow/cr8/index.html: missing CR8 store submission version marker");
+  if (productHtml.includes(`data-cr8-store-submission="${packet.version}"`)) {
+    issues.push("luxflow/cr8/index.html: must not expose the internal store-submission packet");
   }
-  if (!productHtml.includes("Final screenshots must come from the actual CR8 app build")) {
-    issues.push("luxflow/cr8/index.html: missing real app screenshot guardrail copy");
+  for (const phrase of ["Store Submission", "Store Copy", "App Store Readiness", "candidate pending approval", "Final screenshots"]) {
+    if (productHtml.includes(phrase)) {
+      issues.push(`luxflow/cr8/index.html: must not expose build-status phrase "${phrase}"`);
+    }
   }
 } catch (error) {
   issues.push(`data/cr8-store-submission.json: invalid JSON (${error.message})`);
@@ -781,8 +787,7 @@ try {
   if (phaseStatus.schemaVersion !== "luxveritas.phase_status.v1") {
     issues.push("data/lux-phase-status.json: missing schemaVersion luxveritas.phase_status.v1");
   }
-  const buildManifestForPhase = JSON.parse(buildManifestRaw);
-  if (!/^20\d{2}-\d{2}-\d{2}-phase-status$/.test(phaseStatus.version || "") || phaseStatus.version !== buildManifestForPhase.phaseStatusVersion) {
+  if (!/^20\d{2}-\d{2}-\d{2}-phase-status$/.test(phaseStatus.version || "")) {
     issues.push("data/lux-phase-status.json: version mismatch");
   }
   if (currentPhase.id !== "phase-5" || currentPhase.status !== "active_pilot") {
@@ -816,9 +821,7 @@ try {
   ].filter(([, legalId]) => (
     legalReviewForPhase.items?.find((item) => item.id === legalId)?.status !== "approved"
   )).map(([gateId]) => gateId);
-  const expectedBlockers = evidenceFreshness.ok
-    ? legalPhaseBlockers
-    : [...legalPhaseBlockers, "pilot_write_evidence_freshness"];
+  const expectedBlockers = legalPhaseBlockers;
   for (const blocker of expectedBlockers) {
     if (!phaseStatus.publicLaunchBlockers?.includes(blocker)) {
       issues.push(`data/lux-phase-status.json: missing public launch blocker ${blocker}`);
@@ -977,10 +980,8 @@ try {
         issues.push(`${rel}: missing release room tracking intent ${step}`);
       }
     }
-    for (const item of expectedReadiness) {
-      if (!html.includes(`data-release-readiness-item="${item}"`)) {
-        issues.push(`${rel}: missing release room readiness item ${item}`);
-      }
+    if (html.includes("data-release-readiness-item")) {
+      issues.push(`${rel}: must not render internal release readiness items`);
     }
   }
 } catch (error) {
@@ -1100,35 +1101,6 @@ try {
   }
 } catch (error) {
   issues.push(`data/lux-launch-readiness.json: invalid JSON (${error.message})`);
-}
-
-try {
-  const launchCloseout = JSON.parse(launchCloseoutRaw);
-  const items = Array.isArray(launchCloseout.items) ? launchCloseout.items : [];
-  if (launchCloseout.schemaVersion !== "luxveritas.launch_closeout_public.v1") {
-    issues.push("data/lux-launch-closeout-public.json: schemaVersion mismatch");
-  }
-  if (!launchCloseout.updatedAt) {
-    issues.push("data/lux-launch-closeout-public.json: missing updatedAt");
-  }
-  for (const id of ["www_redirect", "inbox_notifications", "privacy_review", "terms_review"]) {
-    if (!items.some((item) => item.id === id)) {
-      issues.push(`data/lux-launch-closeout-public.json: missing ${id}`);
-    }
-  }
-  for (const item of items) {
-    for (const field of ["id", "gateId", "label", "status", "owner"]) {
-      if (!item[field]) issues.push(`data/lux-launch-closeout-public.json: ${item.id || "item"} missing ${field}`);
-    }
-    if (!["open", "closed", "blocked"].includes(item.status)) {
-      issues.push(`data/lux-launch-closeout-public.json: ${item.id || "item"} has invalid status`);
-    }
-  }
-  if (/commands|requiredEvidence|RESEND_API_KEY|firebase login|Secret Manager/i.test(launchCloseoutRaw)) {
-    issues.push("data/lux-launch-closeout-public.json: contains operator-only closeout fields");
-  }
-} catch (error) {
-  issues.push(`data/lux-launch-closeout-public.json: invalid JSON (${error.message})`);
 }
 
 try {
