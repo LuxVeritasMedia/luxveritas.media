@@ -1,0 +1,96 @@
+name: Firebase Hosting Preview
+
+on:
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: firebase-hosting-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: lux-veritas-media
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Preflight Firebase deploy auth
+        run: node tools/qa-firebase-deploy-auth.mjs
+        env:
+          FIREBASE_CI_TOKEN: ${{ secrets.FIREBASE_CI_TOKEN }}
+
+      - name: Build static site
+        run: node tools/build-static.mjs
+
+      - name: Prepare Hosting artifact
+        run: node tools/prepare-hosting.mjs
+
+      - name: QA Hosting boundary
+        run: node tools/qa-hosting-config.mjs
+
+      - name: QA public site
+        run: node tools/qa-public-site.mjs
+
+      - name: QA buttons and actions
+        run: |
+          node tools/qa-buttons.mjs
+          node tools/qa-action-inventory.mjs
+
+      - name: QA access and presentation
+        run: |
+          node tools/qa-access-model.mjs
+          node tools/qa-mobile-layout.mjs
+          node tools/qa-accessibility.mjs
+
+      - name: Install browser QA dependencies
+        run: |
+          npm install --no-save playwright
+          npx playwright install chromium
+
+      - name: QA browser flows
+        run: node tools/qa-browser-flows.mjs
+
+      - name: Deploy Firebase preview channel
+        env:
+          FIREBASE_CI_TOKEN: ${{ secrets.FIREBASE_CI_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          CHANNEL_ID="pr-${PR_NUMBER}"
+          OUTPUT_FILE="${RUNNER_TEMP}/firebase-preview.txt"
+          if [ -n "${FIREBASE_CI_TOKEN:-}" ]; then
+            npx firebase-tools@15.22.1 hosting:channel:deploy "${CHANNEL_ID}" --expires 7d --project lux-veritas-media --non-interactive --token "${FIREBASE_CI_TOKEN}" | tee "${OUTPUT_FILE}"
+          else
+            npx firebase-tools@15.22.1 hosting:channel:deploy "${CHANNEL_ID}" --expires 7d --project lux-veritas-media --non-interactive | tee "${OUTPUT_FILE}"
+          fi
+          PREVIEW_URL="$(grep -Eo 'https://[^[:space:]]+\.web\.app' "${OUTPUT_FILE}" | tail -1)"
+          {
+            echo "## Firebase Hosting preview"
+            echo
+            if [ -n "${PREVIEW_URL}" ]; then
+              echo "[Open PR ${PR_NUMBER} preview](${PREVIEW_URL})"
+            else
+              echo "Preview deployed. Open the deployment step log for the channel URL."
+            fi
+            echo
+            echo "Channel: \`${CHANNEL_ID}\` · Expires after 7 days"
+          } >> "${GITHUB_STEP_SUMMARY}"

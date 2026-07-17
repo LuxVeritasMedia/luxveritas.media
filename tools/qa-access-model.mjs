@@ -11,7 +11,7 @@ const signInHtml = await readFile("auth/signin.html", "utf8");
 const portalRoles = ["visitor", "member", "artist", "creator", "press", "partner", "investor", "operator", "admin"];
 const publicRoleLabels = ["Member", "Artist", "Creator", "Press", "Partner", "Investor", "Event guest", "General"];
 const publicAccessKeys = ["member", "artist", "creator", "press", "partner", "investor", "event_guest", "general"];
-const portalSurfaceKeys = ["member", "artist", "creator", "press", "partner", "investor", "operator"];
+const portalSurfaceKeys = ["member", "artist", "creator", "press", "partner", "investor"];
 const inquiryLabels = ["Membership", "Submissions", "Events", "Press", "Partnership", "Licensing", "Investor", "Portal", "General"];
 const inquiryKeys = ["membership", "submissions", "events", "press", "partnership", "licensing", "investor", "portal", "general"];
 const payloadFields = [
@@ -58,6 +58,9 @@ for (const key of portalSurfaceKeys) {
   if (!portalHtml.includes(`data-portal-role="${key}"`)) {
     issues.push(`portal/index.html: portal shell missing role card ${key}`);
   }
+}
+if (portalHtml.includes('data-portal-role="operator"') || portalHtml.includes("Operator Room")) {
+  issues.push("portal/index.html: public portal shell must not expose the operator room");
 }
 
 if (!signInHtml.includes('data-portal-access-path')) {

@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Terms information for RealCraft." />
-    
     <link rel="canonical" href="https://luxveritas.media/luxflow/realcraft/terms.html" />
     <meta property="og:title" content="RealCraft Terms | LuxFlow" />
     <meta property="og:description" content="Terms information for RealCraft." />
@@ -24,7 +23,7 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070909'/%3E%3Cpath d='M18 48V16h6v27h18v5H18Zm21-32h7L34 48h-6l11-32Z' fill='%23c8a86a'/%3E%3C/svg%3E" />
     <link rel="manifest" href="../../../site.webmanifest" />
     <link rel="apple-touch-icon" href="../../../assets/luxveritas-icon.svg" />
-    <link rel="stylesheet" href="../../../styles.css?v=20260710-media-control-r2" />
+    <link rel="stylesheet" href="../../../styles.css?v=20260717-public-release-r7" />
   </head>
   <body data-page="/luxflow/realcraft/terms.html">
     <a class="skip-link" href="#main">Skip to content</a>
@@ -94,7 +93,7 @@
   </nav>
 </footer>
     <dialog class="form-dialog" data-dialog>
-  <form action="/api/submit" method="post" class="dialog-shell" data-form-endpoint="/api/submit">
+  <form action="/api/submit" method="post" class="dialog-shell" data-form-endpoint="/api/submit" data-form-mode="full">
     <button class="dialog-close" type="button" aria-label="Close" data-close-dialog>×</button>
     <p class="kicker" data-form-kicker>Request Access</p>
     <h2 data-form-title>Screened Access</h2>
@@ -102,11 +101,11 @@
     <div class="form-status" data-form-status role="status" aria-live="polite" hidden></div>
     <label><span>Name</span><input name="name" autocomplete="name" required /></label>
     <label><span>Email</span><input name="email" type="email" autocomplete="email" required /></label>
-    <label><span>Phone <em>optional</em></span><input name="phone" type="tel" autocomplete="tel" /></label>
-    <label><span>Role path</span><select name="role_path" required>
+    <label class="form-field-extended"><span>Phone <em>optional</em></span><input name="phone" type="tel" autocomplete="tel" /></label>
+    <label class="form-field-routing"><span>Role path</span><select name="role_path" required>
       <option value="">Select one</option><option>Member</option><option>Artist</option><option>Creator</option><option>Press</option><option>Partner</option><option>Investor</option><option>Event guest</option><option>General</option>
     </select></label>
-    <label><span>Inquiry type</span><select name="inquiry_type" required>
+    <label class="form-field-routing"><span>Inquiry type</span><select name="inquiry_type" required>
       <option value="">Select one</option><option>Membership</option><option>Submissions</option><option>Events</option><option>Press</option><option>Partnership</option><option>Licensing</option><option>Investor</option><option>Portal</option><option>General</option>
     </select></label>
     <fieldset class="interest-paths" data-interest-paths>
@@ -119,9 +118,9 @@
       <label><input type="checkbox" name="interest_paths" value="codex" /> <span>Codex</span></label>
       <label><input type="checkbox" name="interest_paths" value="create" /> <span>Create</span></label>
     </fieldset>
-    <label><span>Message</span><textarea name="message" rows="5" required></textarea></label>
+    <label class="form-field-message"><span>Message</span><textarea name="message" rows="5" required></textarea></label>
     <label class="check-row"><input type="checkbox" name="consent_email" value="yes" /> <span>Email follow-up is allowed.</span></label>
-    <label class="check-row"><input type="checkbox" name="consent_sms" value="yes" /> <span>SMS follow-up is allowed if a phone number is supplied.</span></label>
+    <label class="check-row form-field-extended"><input type="checkbox" name="consent_sms" value="yes" /> <span>SMS follow-up is allowed if a phone number is supplied.</span></label>
     <p class="form-terms">By submitting, you agree that Lux Veritas may review and route your message under the current Privacy, Terms, and Submission terms. <a href="/legal/privacy.html">Privacy</a> · <a href="/legal/terms.html">Terms</a></p>
     <input type="hidden" name="public_terms_version" value="2026-07-03-public-capture" />
     <input type="hidden" name="privacy_version" value="privacy-draft-2026-07-03" />
@@ -131,6 +130,6 @@
     <button class="button button-primary" type="submit" data-submit-form data-default-label="Send to Lux Veritas">Send to Lux Veritas</button>
   </form>
 </dialog>
-    <script src="../../../app.js?v=20260710-media-control-r2"></script>
+    <script src="../../../app.js?v=20260717-public-release-r7"></script>
   </body>
 </html>

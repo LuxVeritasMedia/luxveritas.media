@@ -15,7 +15,6 @@ const actionAttributes = [
   "data-media-item",
   "data-fan-signal-export",
   "data-portal-signin",
-  "data-report-action",
   "data-submit-form"
 ];
 
@@ -72,7 +71,7 @@ for (const marker of ["portalSigninPayload", 'formType: "portal_signin"', "Porta
     issues.push(`app.js: missing portal sign-in capture marker ${marker}`);
   }
 }
-for (const marker of ['trackInteraction("form_open"', 'trackInteraction("link_click"', 'trackInteraction("report_action"']) {
+for (const marker of ['trackInteraction("form_open"', 'trackInteraction("link_click"']) {
   if (!appJs.includes(marker)) {
     issues.push(`app.js: missing interaction reporting marker ${marker}`);
   }
@@ -82,25 +81,9 @@ for (const marker of ['trackInteraction("media_select"', 'trackInteraction("dial
     issues.push(`app.js: missing button reporting marker ${marker}`);
   }
 }
-if (!appJs.includes("renderPrivateSummary")) {
-  issues.push("app.js: missing private report summary rendering");
-}
-if (!appJs.includes("renderPrivateDelivery")) {
-  issues.push("app.js: missing private delivery readiness rendering");
-}
 for (const marker of ["public_terms_version", "privacy_version", "terms_version", "submission_terms_version"]) {
   if (!appJs.includes(marker)) {
     issues.push(`app.js: missing legal version marker ${marker}`);
-  }
-}
-for (const marker of ["privateReportCache", "exportPrivateReport", "exportLocalReportCsv", "rowsToCsv"]) {
-  if (!appJs.includes(marker)) {
-    issues.push(`app.js: missing report export marker ${marker}`);
-  }
-}
-for (const marker of ["replayPendingIntegration", "replay_integration", "replay-integration"]) {
-  if (!appJs.includes(marker)) {
-    issues.push(`app.js: missing private handoff replay marker ${marker}`);
   }
 }
 for (const marker of ["showMediaFollowup", "media_followup_offered"]) {
@@ -111,16 +94,6 @@ for (const marker of ["showMediaFollowup", "media_followup_offered"]) {
 for (const marker of ["source_status", "source_ready", "source_required", "reporting_key", "data-source-status", "data-reporting-key"]) {
   if (!appJs.includes(marker)) {
     issues.push(`app.js: missing media reporting marker ${marker}`);
-  }
-}
-for (const marker of ["launchChecklistPath", "legalReviewPath", "loadLegalReview", "renderLaunchReadinessReport", "evaluateLaunchGate", "launchGateStatusLabel"]) {
-  if (!appJs.includes(marker)) {
-    issues.push(`app.js: missing launch readiness marker ${marker}`);
-  }
-}
-for (const marker of ["launchGateActionText", "launchGateMarkup"]) {
-  if (!appJs.includes(marker)) {
-    issues.push(`app.js: missing operator launch gate marker ${marker}`);
   }
 }
 for (const marker of ["cta_id", "interactionId", "interactionIntent", "slugify"]) {
@@ -204,60 +177,12 @@ for (const file of files) {
   }
 
   if (rel === "portal/reporting.html") {
-    for (const marker of ["operator-review-bar", "/music.html#lux-player", "/music.html#lux-radio", "/spmvp.html"]) {
-      if (!html.includes(marker)) {
-        issues.push(`${rel}: missing protected live-review shortcut ${marker}`);
-      }
+    if (!html.includes("No activity records, launch controls, workflow details, or operator tools are published on this route.")) {
+      issues.push(`${rel}: missing private reporting boundary copy`);
     }
-    if (!html.includes('data-private-delivery="status"')) {
-      issues.push(`${rel}: missing private delivery readiness tile`);
-    }
-    if (!html.includes('data-private-delivery="target"') || !html.includes('data-private-delivery="targetDetail"')) {
-      issues.push(`${rel}: missing private handoff target readiness tile`);
-    }
-    if (!html.includes('data-private-auth="mode"') || !html.includes('data-private-auth="viewer"')) {
-      issues.push(`${rel}: missing private report auth tile`);
-    }
-    if (!html.includes("data-media-readiness-summary") || !html.includes("data-media-readiness-list")) {
-      issues.push(`${rel}: missing media readiness report`);
-    }
-    if (!html.includes("data-private-funnel")) {
-      issues.push(`${rel}: missing private pilot funnel report`);
-    }
-    for (const marker of ['data-private-feedback="summary"', 'data-private-feedback="detail"', 'data-private-feedback="list"']) {
-      if (!html.includes(marker)) {
-        issues.push(`${rel}: missing pilot feedback report marker ${marker}`);
-      }
-    }
-    if (!html.includes('data-private-count="pendingIntegrations"')) {
-      issues.push(`${rel}: missing pending handoff count`);
-    }
-    if (!html.includes("data-launch-readiness-summary") || !html.includes("data-launch-readiness-list")) {
-      issues.push(`${rel}: missing launch gates report`);
-    }
-    if (!html.includes("data-open-approvals-summary") || !html.includes("data-open-approvals-list")) {
-      issues.push(`${rel}: missing open approvals report`);
-    }
-    for (const marker of [
-      'data-action-inventory="summary"',
-      'data-action-inventory="detail"',
-      'data-action-inventory="types"',
-      'data-action-inventory="events"',
-      'data-action-inventory="routes"',
-      'data-action-inventory="status"'
-    ]) {
-      if (!html.includes(marker)) {
-        issues.push(`${rel}: missing action inventory report marker ${marker}`);
-      }
-    }
-    for (const action of ["replay-integration", "export-private-json", "export-private-csv", "export-csv"]) {
-      if (!html.includes(`data-report-action="${action}"`)) {
-        issues.push(`${rel}: missing report export action "${action}"`);
-      }
-    }
-    for (const summary of ["forms", "roles", "interests", "routing", "delivery", "integrations", "events", "ctas", "destinations", "playback", "playback-sources", "playback-milestones", "reactions"]) {
-      if (!html.includes(`data-private-summary="${summary}"`)) {
-        issues.push(`${rel}: missing private summary "${summary}"`);
+    for (const marker of ["data-private-report", "data-report-action", "data-action-inventory", "data-launch-readiness"]) {
+      if (html.includes(marker)) {
+        issues.push(`${rel}: must not expose operator marker ${marker}`);
       }
     }
   }

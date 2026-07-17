@@ -47,21 +47,21 @@
       "waitlistTiers": [
         {
           "name": "First Access",
-          "price": "Free waitlist",
+          "price": "First notice",
           "body": "For fans and creators who want early notice when CR8 opens.",
           "features": ["Launch updates", "Early beta invitations", "Download alerts"],
           "cta": "Join waitlist"
         },
         {
           "name": "Creator Seat",
-          "price": "Pricing to be announced",
+          "price": "Early access request",
           "body": "For artists, writers, designers, and builders preparing active creative work.",
           "features": ["Project packets", "Prompt-ready briefs", "Submission-ready exports"],
           "cta": "Request creator access"
         },
         {
           "name": "Studio Circle",
-          "price": "Screened partner access",
+          "price": "Partner invitation",
           "body": "For teams and partners that need a cleaner path from idea to review.",
           "features": ["Team review paths", "Partner-ready packets", "Priority access review"],
           "cta": "Request partner path"

@@ -3,7 +3,7 @@ import { actionInventoryVersion, extractActionInventory, summarizeActions } from
 
 const issues = [];
 const root = process.env.LUX_ACTION_INVENTORY_ROOT || "dist";
-const inventoryPath = process.env.LUX_ACTION_INVENTORY_PATH || `${root}/data/lux-action-inventory.json`;
+const inventoryPath = process.env.LUX_ACTION_INVENTORY_PATH || "data/lux-action-inventory.json";
 const requiredActionTypes = [
   "link_click",
   "form_open",
@@ -13,7 +13,6 @@ const requiredActionTypes = [
   "fan_reaction",
   "fan_signal_export",
   "portal_signin",
-  "operator_report_action",
   "dialog_close",
   "navigation_toggle",
   "consent_update"
@@ -27,7 +26,6 @@ const requiredReportingEvents = [
   "fan_reaction",
   "local_export",
   "portal_signin_capture",
-  "report_action",
   "dialog_close",
   "navigation_toggle",
   "consent_update"
@@ -35,7 +33,6 @@ const requiredReportingEvents = [
 const requiredReportingChannels = [
   "consented_event",
   "server_capture",
-  "protected_operator",
   "local_receipt"
 ];
 
@@ -109,7 +106,7 @@ if (inventory.summary?.byReportingStatus?.missing) {
 if (inventory.summary?.byReportingStatus?.declared !== inventory.actionCount) {
   issue(`summary declared reporting count ${inventory.summary?.byReportingStatus?.declared || 0} does not match actionCount ${inventory.actionCount}`);
 }
-for (const route of ["index.html", "music.html", "spmvp.html", "portal/reporting.html", "auth/signin.html"]) {
+for (const route of ["index.html", "music.html", "spmvp.html", "auth/signin.html"]) {
   if (!inventory.summary?.byRoute?.[route]) {
     issue(`summary missing route ${route}`);
   }

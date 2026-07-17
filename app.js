@@ -42,10 +42,11 @@ const formCopy = {
   fan: {
     kicker: "Membership",
     title: "Join the List",
-    copy: "Get release signals and selected Lux Veritas updates.",
+    copy: "Choose what should reach you. You can add more detail later.",
     tag: "membership-waitlist",
     rolePath: "Member",
-    inquiryType: "Membership"
+    inquiryType: "Membership",
+    compact: true
   },
   investor: {
     kicker: "Strategic Access",
@@ -117,21 +118,11 @@ const submitEndpoint = "/api/submit";
 const eventEndpoint = "/api/event";
 const reportEndpoint = "/api/report";
 const mediaManifestPath = "/data/lux-media-manifest.json";
-const actionInventoryPath = "/data/lux-action-inventory.json";
-const openApprovalsPath = "/data/lux-open-approvals.json";
-const launchChecklistPath = "/data/lux-launch-readiness.json";
-const launchCloseoutPath = "/data/lux-launch-closeout-public.json";
-const legalReviewPath = "/data/lux-legal-review.json";
 const submitTimeoutMs = 8000;
-const publicBuildVersion = "20260710-media-control-r2";
+const publicBuildVersion = "20260717-public-release-r7";
 const allowedInterestPaths = new Set(["music", "film", "events", "drops", "community", "codex", "create"]);
 let activeFormType = "request";
 let mediaManifestPromise = null;
-let actionInventoryPromise = null;
-let openApprovalsPromise = null;
-let launchChecklistPromise = null;
-let launchCloseoutPromise = null;
-let legalReviewPromise = null;
 let privateReportCache = null;
 let pageViewTracked = false;
 
@@ -412,10 +403,19 @@ function openForm(type) {
   document.querySelector("[data-form-copy]").textContent = config.copy;
   const rolePath = dialogForm?.elements.role_path;
   const inquiryType = dialogForm?.elements.inquiry_type;
+  const message = dialogForm?.elements.message;
+  if (dialogForm) dialogForm.dataset.formMode = config.compact ? "compact" : "full";
   if (rolePath && config.rolePath) rolePath.value = config.rolePath;
   if (inquiryType && config.inquiryType) {
     ensureSelectOption(inquiryType, config.inquiryType);
     inquiryType.value = config.inquiryType;
+  }
+  if (message) {
+    if (config.compact) {
+      message.value = `First access request from ${window.location.pathname}.`;
+    } else if (/^First access request from \//.test(message.value)) {
+      message.value = "";
+    }
   }
   statusBox.hidden = true;
   statusBox.textContent = "";
@@ -804,81 +804,6 @@ async function loadMediaManifest() {
       });
   }
   return mediaManifestPromise;
-}
-
-async function loadActionInventory() {
-  if (!actionInventoryPromise) {
-    actionInventoryPromise = fetch(actionInventoryPath, { headers: { Accept: "application/json" } })
-      .then((response) => {
-        if (!response.ok) throw new Error("action_inventory_unavailable");
-        return response.json();
-      })
-      .then((inventory) => {
-        if (!inventory.summary || !Array.isArray(inventory.actions)) throw new Error("action_inventory_invalid");
-        return inventory;
-      });
-  }
-  return actionInventoryPromise;
-}
-
-async function loadOpenApprovals() {
-  if (!openApprovalsPromise) {
-    openApprovalsPromise = fetch(openApprovalsPath, { headers: { Accept: "application/json" } })
-      .then((response) => {
-        if (!response.ok) throw new Error("open_approvals_unavailable");
-        return response.json();
-      })
-      .then((report) => {
-        if (!Array.isArray(report.approvals)) throw new Error("open_approvals_invalid");
-        return report;
-      });
-  }
-  return openApprovalsPromise;
-}
-
-async function loadLaunchChecklist() {
-  if (!launchChecklistPromise) {
-    launchChecklistPromise = fetch(launchChecklistPath, { headers: { Accept: "application/json" } })
-      .then((response) => {
-        if (!response.ok) throw new Error("launch_checklist_unavailable");
-        return response.json();
-      })
-      .then((checklist) => {
-        if (!Array.isArray(checklist.gates)) throw new Error("launch_checklist_invalid");
-        return checklist;
-      });
-  }
-  return launchChecklistPromise;
-}
-
-async function loadLaunchCloseout() {
-  if (!launchCloseoutPromise) {
-    launchCloseoutPromise = fetch(launchCloseoutPath, { headers: { Accept: "application/json" } })
-      .then((response) => {
-        if (!response.ok) throw new Error("launch_closeout_unavailable");
-        return response.json();
-      })
-      .then((closeout) => {
-        if (!Array.isArray(closeout.items)) throw new Error("launch_closeout_invalid");
-        return closeout;
-      });
-  }
-  return launchCloseoutPromise;
-}
-
-async function loadLegalReview() {
-  if (!legalReviewPromise) {
-    legalReviewPromise = fetch(legalReviewPath, { headers: { Accept: "application/json" } })
-      .then((response) => {
-        if (!response.ok) throw new Error("legal_review_unavailable");
-        return response.json();
-      })
-      .then((manifest) => {
-        if (!Array.isArray(manifest.items)) throw new Error("legal_review_invalid");
-        return manifest;
-      });
-  }
-  return legalReviewPromise;
 }
 
 function renderMediaPlayer(player, manifest) {
@@ -1602,7 +1527,6 @@ function renderPrivateReport(report) {
   renderPrivateWorkflow(panel, report.summary?.workflowTargets, report.delivery);
   renderPrivateRetention(panel, report.summary?.retentionPaths);
   renderPilotFeedback(panel, report.summary?.pilotFeedback);
-  renderLaunchReadinessReport(report);
   renderPrivateFunnel(panel, report.summary?.funnel || report.funnel);
   renderPrivateSummary(panel, "forms", report.summary?.submissions?.byFormType);
   renderPrivateSummary(panel, "roles", report.summary?.submissions?.byRolePath);
@@ -2507,10 +2431,6 @@ if ("serviceWorker" in navigator) {
   });
 }
 renderMediaReadinessReport();
-renderLaunchReadinessReport();
-renderLaunchCloseoutReport();
-renderOpenApprovalsReport();
-renderActionInventoryReport();
 renderLocalReport();
 renderFanSignal();
 
@@ -2521,7 +2441,7 @@ document.querySelectorAll(".section, .vertical-card, .release-rail article, .sla
 if ("IntersectionObserver" in window) {
   const observer = new IntersectionObserver(
     (entries) => entries.forEach((entry) => entry.target.classList.toggle("visible", entry.isIntersecting)),
-    { threshold: 0.12 }
+    { threshold: 0.02 }
   );
   document.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
 } else {

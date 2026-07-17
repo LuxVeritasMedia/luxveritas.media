@@ -1,22 +1,16 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { actionInventoryVersion } from "./lib/action-inventory.mjs";
-import "./export-open-approvals.mjs";
 
-const assetVersion = "20260710-media-control-r2";
+const assetVersion = "20260717-public-release-r7";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const releaseRoom = JSON.parse(await readFile("data/lux-release-room.json", "utf8"));
 const radioProgramming = JSON.parse(await readFile("data/lux-radio-programming.json", "utf8"));
-const pilotBugRegister = JSON.parse(await readFile("data/lux-pilot-bug-register.json", "utf8"));
 const publicTerms = JSON.parse(await readFile("data/lux-public-terms.json", "utf8"));
 const brandHouse = JSON.parse(await readFile("data/lux-brand-house.json", "utf8"));
 const fanFlywheel = JSON.parse(await readFile("data/lux-fan-flywheel.json", "utf8"));
 const dropRoom = JSON.parse(await readFile("data/lux-drop-room.json", "utf8"));
 const portalRooms = JSON.parse(await readFile("data/lux-portal-rooms.json", "utf8"));
 const luxApps = JSON.parse(await readFile("data/lux-apps.json", "utf8"));
-const cr8StoreSubmission = JSON.parse(await readFile("data/cr8-store-submission.json", "utf8"));
-const phaseStatus = JSON.parse(await readFile("data/lux-phase-status.json", "utf8"));
-const openApprovals = JSON.parse(await readFile("data/lux-open-approvals.json", "utf8"));
 
 const nav = [
   ["Home", "/index.html"],
@@ -129,8 +123,7 @@ function shell({ path, title, description, eyebrow = "Lux Veritas", body, heroCl
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="${description}" />
-    ${noindex ? '<meta name="robots" content="noindex, nofollow" />' : ""}
-    <link rel="canonical" href="${canonical}" />
+${noindex ? '    <meta name="robots" content="noindex, nofollow" />\n' : ""}    <link rel="canonical" href="${canonical}" />
     <meta property="og:title" content="${title}" />
     <meta property="og:description" content="${description}" />
     <meta property="og:type" content="website" />
@@ -207,7 +200,7 @@ function footerHouseRail() {
 
 function formDialog() {
   return `<dialog class="form-dialog" data-dialog>
-  <form action="/api/submit" method="post" class="dialog-shell" data-form-endpoint="/api/submit">
+  <form action="/api/submit" method="post" class="dialog-shell" data-form-endpoint="/api/submit" data-form-mode="full">
     <button class="dialog-close" type="button" aria-label="Close" data-close-dialog>×</button>
     <p class="kicker" data-form-kicker>Request Access</p>
     <h2 data-form-title>Screened Access</h2>
@@ -215,11 +208,11 @@ function formDialog() {
     <div class="form-status" data-form-status role="status" aria-live="polite" hidden></div>
     <label><span>Name</span><input name="name" autocomplete="name" required /></label>
     <label><span>Email</span><input name="email" type="email" autocomplete="email" required /></label>
-    <label><span>Phone <em>optional</em></span><input name="phone" type="tel" autocomplete="tel" /></label>
-    <label><span>Role path</span><select name="role_path" required>
+    <label class="form-field-extended"><span>Phone <em>optional</em></span><input name="phone" type="tel" autocomplete="tel" /></label>
+    <label class="form-field-routing"><span>Role path</span><select name="role_path" required>
       <option value="">Select one</option><option>Member</option><option>Artist</option><option>Creator</option><option>Press</option><option>Partner</option><option>Investor</option><option>Event guest</option><option>General</option>
     </select></label>
-    <label><span>Inquiry type</span><select name="inquiry_type" required>
+    <label class="form-field-routing"><span>Inquiry type</span><select name="inquiry_type" required>
       <option value="">Select one</option><option>Membership</option><option>Submissions</option><option>Events</option><option>Press</option><option>Partnership</option><option>Licensing</option><option>Investor</option><option>Portal</option><option>General</option>
     </select></label>
     <fieldset class="interest-paths" data-interest-paths>
@@ -232,9 +225,9 @@ function formDialog() {
       <label><input type="checkbox" name="interest_paths" value="codex" /> <span>Codex</span></label>
       <label><input type="checkbox" name="interest_paths" value="create" /> <span>Create</span></label>
     </fieldset>
-    <label><span>Message</span><textarea name="message" rows="5" required></textarea></label>
+    <label class="form-field-message"><span>Message</span><textarea name="message" rows="5" required></textarea></label>
     <label class="check-row"><input type="checkbox" name="consent_email" value="yes" /> <span>Email follow-up is allowed.</span></label>
-    <label class="check-row"><input type="checkbox" name="consent_sms" value="yes" /> <span>SMS follow-up is allowed if a phone number is supplied.</span></label>
+    <label class="check-row form-field-extended"><input type="checkbox" name="consent_sms" value="yes" /> <span>SMS follow-up is allowed if a phone number is supplied.</span></label>
     <p class="form-terms">${publicTerms.notice} <a href="/legal/privacy.html">Privacy</a> · <a href="/legal/terms.html">Terms</a></p>
     <input type="hidden" name="public_terms_version" value="${publicTerms.version}" />
     <input type="hidden" name="privacy_version" value="${publicTerms.privacyVersion}" />
@@ -335,7 +328,7 @@ function fanSignalSection() {
     <div class="fan-signal-copy">
       <p class="kicker">Circle Signal</p>
       <h2>Your path remembers the signal.</h2>
-      <p>Listening, watching, joining, and requesting access create a private signal on this device. Account identity comes later; for now, this gives fans a visible sense of return without exposing private systems.</p>
+      <p>Return through music, film, rooms, and drops. This device keeps a simple signal so the next door feels familiar.</p>
     </div>
     <div class="fan-signal-panel" aria-label="Your Lux Veritas signal">
       <article class="fan-signal-tier">
@@ -344,8 +337,8 @@ function fanSignalSection() {
         <small data-fan-signal-detail>Start by listening, watching, or joining for first access.</small>
       </article>
       <article><span>Media</span><strong data-fan-signal-count="media">0</strong><small>Listen, watch, and radio actions</small></article>
-      <article><span>Access</span><strong data-fan-signal-count="submissions">0</strong><small>Requests prepared from this browser</small></article>
-      <article><span>Portal</span><strong data-fan-signal-count="portal">0</strong><small>Private access checks</small></article>
+      <article><span>Access</span><strong data-fan-signal-count="submissions">0</strong><small>Doors approached</small></article>
+      <article><span>Portal</span><strong data-fan-signal-count="portal">0</strong><small>Invitations checked</small></article>
       <div class="fan-signal-latest">
         <span>Latest path</span>
         <ul data-fan-signal-list><li>Your first signal will appear here.</li></ul>
@@ -496,7 +489,6 @@ function mediaPlayerShell(context = "music") {
 
 function releaseRoomSection() {
   const fanPath = Array.isArray(releaseRoom.fanPath) ? releaseRoom.fanPath : [];
-  const readiness = Array.isArray(releaseRoom.readiness) ? releaseRoom.readiness : [];
   return `<section class="section release-room" data-release-room data-release-room-version="${releaseRoom.version || ""}">
     <div class="section-heading">
       <p class="kicker">Release Room</p>
@@ -525,13 +517,6 @@ function releaseRoomSection() {
         </article>`;
       }).join("")}
     </div>
-    <div class="release-room-readiness" data-release-room-readiness aria-label="Release room readiness">
-      ${readiness.map((item) => `<article data-release-readiness-item="${item.id || ""}" data-release-readiness-status="${item.status || ""}">
-        <span>${item.status || "ready"}</span>
-        <strong>${item.label || "Readiness"}</strong>
-        <p>${item.detail || ""}</p>
-      </article>`).join("")}
-    </div>
   </section>`;
 }
 
@@ -539,7 +524,6 @@ function radioProgrammingSection() {
   const slots = Array.isArray(radioProgramming.slots) ? radioProgramming.slots : [];
   const onAir = radioProgramming.onAir || {};
   const listenerPath = Array.isArray(radioProgramming.listenerPath) ? radioProgramming.listenerPath : [];
-  const readiness = Array.isArray(radioProgramming.readiness) ? radioProgramming.readiness : [];
   return `<section id="lux-radio" class="section" data-radio-programming data-radio-programming-version="${radioProgramming.version || ""}">
     <div class="section-heading">
       <p class="kicker">Lux Radio</p>
@@ -562,13 +546,6 @@ function radioProgrammingSection() {
           <span>${String(index + 1).padStart(2, "0")}</span>
           <strong>${step.label || "Signal"}</strong>
           <p>${step.body || ""}</p>
-        </article>`).join("")}
-      </div>
-      <div class="radio-readiness-list" data-radio-readiness-list aria-label="Lux Radio readiness">
-        ${readiness.map((item) => `<article data-radio-readiness-item="${item.id || ""}" data-radio-readiness-status="${item.status || ""}">
-          <span>${item.status || "ready"}</span>
-          <strong>${item.label || "Readiness"}</strong>
-          <p>${item.detail || ""}</p>
         </article>`).join("")}
       </div>
     </div>
@@ -730,10 +707,10 @@ function utility(path, title, description, content, formType = "request", noinde
 function signInShell() {
   return shell({
     path: "/auth/signin.html",
-    title: "Sign In | Lux Veritas",
-    description: "Private sign-in for invited members, collaborators, and approved guests.",
+    title: "Check Access | Lux Veritas",
+    description: "Private access check for invited members, collaborators, and approved guests.",
     noindex: true,
-    body: `${pageHero("Private Access", "Sign In", "Use the email connected to your approved Lux Veritas access.\n\nAccess is screened by role and invitation.\n\nThis portal is for approved artists, creators, partners, members, and operators.\n\nSign in if you already have access, or request access if you are entering through submissions, membership, press, partnerships, licensing, or investor inquiry.")}
+    body: `${pageHero("Private Access", "Check Access", "Enter the email connected to an approved Lux Veritas invitation. We will route the check for review and return the right next step.\n\nThis page does not create an account or open a private session.")}
     <section class="section prose-block">
       <form class="inline-form auth-form" action="/portal/index.html" method="get" data-portal-signin-form>
         <label><span>Email</span><input type="email" name="email" autocomplete="email" placeholder="you@example.com" required /></label>
@@ -772,7 +749,9 @@ function portal(path, title, cards = "") {
   });
 }
 
-const portalAccessCards = Array.isArray(portalRooms.rooms) ? portalRooms.rooms : [];
+const portalAccessCards = Array.isArray(portalRooms.rooms)
+  ? portalRooms.rooms.filter((room) => room.id !== "operator")
+  : [];
 
 function portalAccessCard(card) {
   const role = card.roleTarget || card.id || String(card.label || "").toLowerCase();
@@ -793,8 +772,8 @@ function portalIndex() {
     title: "Portal | Lux Veritas",
     description: "Private access for approved members, collaborators, and selected guests.",
     noindex: true,
-    body: `${pageHero("Private Access", "Private Access", "This portal is for approved artists, creators, partners, members, and operators.", `<div class="hero-actions"><a class="button button-primary" href="/auth/signin.html">Sign In</a><button class="button button-quiet" data-open-form="request">Request Access</button></div>`)}
-    <section class="section split-band" data-portal-rooms-version="${portalRooms.version || ""}" data-access-mode="${portalRooms.accessMode || ""}"><div><p class="kicker">Access Model</p><h2>${portalRooms.headline || "Screened by role. Opened by approval."}</h2></div><div><p>${portalRooms.summary || "Start with the door that matches your relationship to the work. Approved access will open only to the rooms and materials connected to that path."}</p><p class="drop-notice">${portalRooms.notice || ""}</p></div></section>
+    body: `${pageHero("Private Access", "Enter by invitation.", "Approved members, artists, creators, press, partners, and strategic guests can check their access path here.", `<div class="hero-actions"><a class="button button-primary" href="/auth/signin.html">Check Access</a><button class="button button-quiet" data-open-form="request">Request Access</button></div>`)}
+    <section class="section split-band" data-portal-rooms-version="${portalRooms.version || ""}" data-access-mode="${portalRooms.accessMode || ""}"><div><p class="kicker">Choose Your Door</p><h2>${portalRooms.headline || "Screened by role. Opened by approval."}</h2></div><div><p>${portalRooms.summary || "Start with the door that matches your relationship to the work. Approved access opens only to the rooms connected to that path."}</p></div></section>
     <section class="section portal-grid" aria-label="Portal access paths" data-portal-rooms>
       ${portalAccessCards.map(portalAccessCard).join("")}
     </section>
@@ -837,11 +816,11 @@ function appCard(app) {
 function appsIndex() {
   return shell({
     path: "/apps/index.html",
-    title: "Apps | Lux Veritas",
-    description: "Public Lux Veritas app marketplace for LuxFlow creator, worldbuilding, release, visual, and operations tools.",
-    body: `${pageHero("Apps", "Tools for the world we are building.", "Lux Veritas apps begin as public product doors: waitlists, downloads, support, and app-store readiness. The private systems behind them stay separate until access and roles are approved.", `<div class="hero-actions"><a class="button button-primary" href="/luxflow/index.html">Open LuxFlow</a><button class="button button-quiet" data-open-form="fan">Join app waitlist</button></div>`)}
-    <section class="section verticals"><div class="section-heading"><p class="kicker">Marketplace</p><h2>Public app doors. Private systems protected.</h2><p>Explore upcoming LuxFlow apps and join the path that matches your work.</p></div><div class="card-grid">${luxFlowApps.map(appCard).join("")}</div></section>
-    <section class="section split-band"><div><p class="kicker">Access</p><h2>Download when live. Request access before then.</h2></div><div><p>Each app page carries the public product story, support path, privacy terms, and download links required for web, App Store, and Google Play rollout.</p></div></section>`
+    title: "Creative Apps | Lux Veritas",
+    description: "Explore LuxFlow creative tools from Lux Veritas.",
+    body: `${pageHero("Creative Apps", "Make the work clearer.", "LuxFlow brings focused creative tools to artists, writers, visual teams, studios, and cultural builders.", `<div class="hero-actions"><a class="button button-primary" href="/luxflow/index.html">Explore LuxFlow</a><button class="button button-quiet" data-open-form="fan">Join first access</button></div>`)}
+    <section class="section verticals"><div class="section-heading"><p class="kicker">The Suite</p><h2>Choose your instrument.</h2><p>Move from first idea to a stronger, more coherent creative world.</p></div><div class="card-grid">${luxFlowApps.map(appCard).join("")}</div></section>
+    <section class="section split-band"><div><p class="kicker">First Access</p><h2>Begin with the app that meets your work.</h2></div><div><p>Join upcoming releases, product previews, and selected early-access rooms from each app page.</p></div></section>`
   });
 }
 
@@ -851,9 +830,9 @@ function luxflowIndex() {
     path: "/luxflow/index.html",
     title: "LuxFlow | Lux Veritas Apps",
     description: suite.summary || "LuxFlow is the public app suite for Lux Veritas creator and media tools.",
-    body: `${pageHero("LuxFlow", suite.headline || "Creative systems for the Lux Veritas universe.", suite.summary || "LuxFlow apps help creators and teams shape media work without exposing private studio systems.", `<div class="hero-actions"><button class="button button-primary" data-open-form="fan">Join LuxFlow waitlist</button><a class="button button-quiet" href="/apps/index.html">All Apps</a></div>`)}
-    <section class="section verticals"><div class="section-heading"><p class="kicker">Suite</p><h2>Choose the door that matches the work.</h2><p>LuxFlow app pages are public product surfaces. Actual private app rooms open later through approved account access.</p></div><div class="card-grid">${luxFlowApps.map(appCard).join("")}</div></section>
-    <section class="section empty-state"><p class="kicker">Access</p><h2>Product pages now. Deeper access later.</h2><p>LuxVeritas.media can explain, support, and capture interest for LuxFlow apps. Deeper studio capabilities open only through approved access.</p></section>`
+    body: `${pageHero("LuxFlow", suite.headline || "Creative systems for the Lux Veritas universe.", suite.summary || "LuxFlow helps creators turn ideas into coherent, reviewable work.", `<div class="hero-actions"><button class="button button-primary" data-open-form="fan">Join LuxFlow first access</button><a class="button button-quiet" href="/apps/index.html">All Apps</a></div>`)}
+    <section class="section verticals"><div class="section-heading"><p class="kicker">Suite</p><h2>Choose the tool that moves the work.</h2><p>Each LuxFlow app is built around a focused creative act: shaping, writing, worldbuilding, refining, or releasing.</p></div><div class="card-grid">${luxFlowApps.map(appCard).join("")}</div></section>
+    <section class="section empty-state"><p class="kicker">First Access</p><h2>Enter through the work.</h2><p>Join the first release path for product previews, selected testing, and launch notice.</p></section>`
   });
 }
 
@@ -865,13 +844,13 @@ function appFeatureCards(app) {
 function appProofBar(app) {
   const items = Array.isArray(app.heroProof) ? app.heroProof : [];
   if (!items.length) return "";
-  return `<section class="app-proof" aria-label="${app.name} launch status">${items.map((item) => `<span>${item}</span>`).join("")}</section>`;
+  return `<section class="app-proof" aria-label="${app.name} highlights">${items.map((item) => `<span>${item}</span>`).join("")}</section>`;
 }
 
 function appPreviewScreens(app) {
   const screens = Array.isArray(app.previewScreens) ? app.previewScreens : [];
   if (!screens.length) return "";
-  return `<section class="section app-preview-section"><div class="section-heading"><p class="kicker">Interface Preview</p><h2>From spark to reviewable packet.</h2><p>These previews show the public product direction for ${app.name}. The live app opens later through approved release paths.</p></div><div class="app-preview-grid">${screens.map((screen) => `<article class="app-screen">
+  return `<section class="section app-preview-section"><div class="section-heading"><p class="kicker">Inside ${app.name}</p><h2>From spark to reviewable packet.</h2><p>A focused path for shaping ideas, making choices, and carrying stronger creative direction forward.</p></div><div class="app-preview-grid">${screens.map((screen) => `<article class="app-screen">
     <div class="screen-shell">
       <div class="screen-topbar"><span>${screen.eyebrow}</span><i></i></div>
       <h3>${screen.title}</h3>
@@ -884,45 +863,13 @@ function appPreviewScreens(app) {
 function appWaitlistTiers(app) {
   const tiers = Array.isArray(app.waitlistTiers) ? app.waitlistTiers : [];
   if (!tiers.length) return "";
-  return `<section class="section app-pricing-section"><div class="section-heading"><p class="kicker">Access Tiers</p><h2>Start on the waitlist. Open deeper by fit.</h2><p>Pricing and account features will be confirmed before public launch. Today, the page captures the right path without overpromising access.</p></div><div class="pricing-grid">${tiers.map((tier) => `<article class="pricing-card">
+  return `<section class="section app-pricing-section"><div class="section-heading"><p class="kicker">First Access</p><h2>Choose how you want to begin.</h2><p>Join the path that best matches your creative practice and how closely you want to follow the first release.</p></div><div class="pricing-grid">${tiers.map((tier) => `<article class="pricing-card">
     <span>${tier.name}</span>
     <h3>${tier.price}</h3>
     <p>${tier.body}</p>
     <ul>${(tier.features || []).map((feature) => `<li>${feature}</li>`).join("")}</ul>
     <button class="button button-quiet" type="button" data-open-form="fan">${tier.cta}</button>
   </article>`).join("")}</div></section>`;
-}
-
-function appStoreCopy(app) {
-  const storeCopy = app.storeCopy || {};
-  if (!storeCopy.appStore && !storeCopy.googlePlay) return "";
-  return `<section class="section store-copy-section"><div class="section-heading"><p class="kicker">Store Copy</p><h2>Prepared for App Store and Google Play review.</h2><p>This public copy can be refined into final listing metadata once screenshots, ratings, and release approvals are locked.</p></div><div class="store-copy-grid">
-    ${storeCopy.appStore ? `<article class="store-copy-card"><span>Apple App Store</span><h3>${storeCopy.appStore.subtitle}</h3><p>${storeCopy.appStore.description}</p></article>` : ""}
-    ${storeCopy.googlePlay ? `<article class="store-copy-card"><span>Google Play</span><h3>${storeCopy.googlePlay.shortDescription}</h3><p>${storeCopy.googlePlay.fullDescription}</p></article>` : ""}
-  </div></section>`;
-}
-
-function cr8StoreReadiness(app) {
-  if (app.id !== cr8StoreSubmission.app?.id) return "";
-  const rows = Array.isArray(cr8StoreSubmission.readinessRows) ? cr8StoreSubmission.readinessRows : [];
-  const icons = Array.isArray(cr8StoreSubmission.assetReadiness?.iconCandidates) ? cr8StoreSubmission.assetReadiness.iconCandidates : [];
-  const graphics = Array.isArray(cr8StoreSubmission.assetReadiness?.featureGraphicCandidates) ? cr8StoreSubmission.assetReadiness.featureGraphicCandidates : [];
-  const screenshotPlan = Array.isArray(cr8StoreSubmission.assetReadiness?.screenshotPlan) ? cr8StoreSubmission.assetReadiness.screenshotPlan : [];
-  const leadIcon = icons[0];
-  const leadGraphic = graphics[0];
-  return `<section class="section app-store-readiness" data-cr8-store-submission="${cr8StoreSubmission.version}">
-    <div class="section-heading"><p class="kicker">Store Submission</p><h2>Assets are prepared. Final screenshots still come from the app.</h2><p>${cr8StoreSubmission.assetReadiness?.publicPreviewNote || "Store screenshots must be captured from the actual app build before submission."}</p></div>
-    <div class="store-asset-grid">
-      ${leadIcon ? `<article class="store-asset-card"><img src="${leadIcon.path}" alt="CR8 app icon candidate" loading="lazy" decoding="async" /><span>${leadIcon.status.replaceAll("_", " ")}</span><h3>${leadIcon.label}</h3><p>${leadIcon.dimensions} ${leadIcon.format.toUpperCase()}.</p></article>` : ""}
-      ${leadGraphic ? `<article class="store-asset-card store-asset-card-wide"><img src="${leadGraphic.path}" alt="CR8 Google Play feature graphic candidate" loading="lazy" decoding="async" /><span>${leadGraphic.status.replaceAll("_", " ")}</span><h3>${leadGraphic.label}</h3><p>${leadGraphic.dimensions} ${leadGraphic.format.toUpperCase()}.</p></article>` : ""}
-    </div>
-    <div class="store-readiness-grid">
-      ${rows.map((row) => `<article><span>${row.status}</span><h3>${row.label}</h3><p>${row.detail}</p></article>`).join("")}
-    </div>
-    <div class="store-screenshot-plan"><p class="kicker">Screenshot Capture</p><ul>
-      ${screenshotPlan.map((item) => `<li><strong>${item.platform}</strong><span>${item.target}</span><small>${item.minimum}${item.maximum ? ` / ${item.maximum}` : ""}${item.recommended ? ` / ${item.recommended}` : ""}</small></li>`).join("")}
-    </ul></div>
-  </section>`;
 }
 
 function appConversionBand(app) {
@@ -933,7 +880,7 @@ function appConversionBand(app) {
 
 function appFlagshipSections(app) {
   if (!app.flagship) return "";
-  return `${appProofBar(app)}${appPreviewScreens(app)}${appWaitlistTiers(app)}${appStoreCopy(app)}${cr8StoreReadiness(app)}${appConversionBand(app)}`;
+  return `${appProofBar(app)}${appPreviewScreens(app)}${appWaitlistTiers(app)}${appConversionBand(app)}`;
 }
 
 function appProductPage(app) {
@@ -944,14 +891,14 @@ function appProductPage(app) {
     description: app.shortDescription,
     body: `${pageHero(app.category || "LuxFlow App", app.name, `${app.headline}\n\n${app.shortDescription}`, `<div class="hero-actions"><a class="button button-primary" href="${app.downloadUrl}">${app.primaryCta || "Join waitlist"}</a><button class="button button-quiet" data-open-form="fan">Request early access</button></div>`)}
     ${appFlagshipSections(app)}
-    <section class="section split-band"><div><p class="kicker">${app.statusLabel || "Waitlist"}</p><h2>${app.audience}</h2></div><div><p>Platforms planned: ${(app.platforms || []).join(", ")}.</p><p>Public app pages provide product information, support, legal, and download paths. Account-gated features open only when approved access is ready.</p></div></section>
+    <section class="section split-band"><div><p class="kicker">${app.statusLabel || "First Access"}</p><h2>${app.audience}</h2></div><div><p>Designed for ${(app.platforms || []).join(", ")}.</p><p>Follow the product, join early access, or open the support path for a direct question.</p></div></section>
     ${app.flagship ? "" : `<section class="section"><div class="release-rail">${appFeatureCards(app)}</div></section>`}
-    <section class="section report-detail"><div><p class="kicker">App Store Readiness</p><h3>Public compliance paths</h3><ul class="report-list">
-      <li><strong>Support</strong><span>Available</span><small><a href="${app.supportUrl}">${app.supportUrl}</a></small></li>
-      <li><strong>Privacy</strong><span>Available</span><small><a href="${app.privacyUrl}">${app.privacyUrl}</a></small></li>
-      <li><strong>Terms</strong><span>Available</span><small><a href="${app.termsUrl}">${app.termsUrl}</a></small></li>
-      <li><strong>Data</strong><span>Available</span><small><a href="${app.deleteDataUrl}">${app.deleteDataUrl}</a></small></li>
-    </ul></div></section>`
+    <section class="section app-utility-links" aria-label="${app.name} help and policies">
+      <a href="${app.supportUrl}">Support</a>
+      <a href="${app.privacyUrl}">Privacy</a>
+      <a href="${app.termsUrl}">Terms</a>
+      <a href="${app.deleteDataUrl}">Data requests</a>
+    </section>`
   });
 }
 
@@ -1304,8 +1251,32 @@ function placeholder(path, title, description) {
   });
 }
 
+function notFound() {
+  return shell({
+    path: "/404.html",
+    title: "Not Found | Lux Veritas",
+    description: "The requested Lux Veritas page could not be found.",
+    noindex: true,
+    body: `${pageHero("404", "The signal ends here.", "This page is not part of the public Lux Veritas world, or it has moved.", `<div class="hero-actions"><a class="button button-primary" href="/index.html">Return Home</a><a class="button button-quiet" href="/music.html">Open Music</a></div>`)}
+    <section class="section empty-state"><p class="kicker">Find the Signal</p><h2>Choose a public door.</h2><p>Return home, listen to the current release, or join for first access.</p></section>`
+  });
+}
+
+function portalReportShell() {
+  return accessShell(
+    "/portal/reporting.html",
+    "Private Reporting",
+    "Operator reporting is available only through an approved internal session.",
+    "No activity records, launch controls, workflow details, or operator tools are published on this route.",
+    "Request Operator Access",
+    "Return Home",
+    "request"
+  );
+}
+
 const pages = [
   ["/index.html", home()],
+  ["/404.html", notFound()],
   ["/apps/index.html", appsIndex()],
   ["/luxflow/index.html", luxflowIndex()],
   ...appPages(),
@@ -1339,7 +1310,8 @@ const pages = [
   ["/submissions.html", utility("/submissions.html", "Submissions", "Lux Veritas accepts selected artist, creator, story, music, visual, and partnership submissions through a screened intake process.", "<p>Lux Veritas accepts selected artist, creator, story, music, visual, and partnership submissions through a screened intake process.</p><p>Please do not submit confidential material unless specifically invited. Submitting material does not create an obligation, partnership, employment relationship, or guarantee of review, response, release, or compensation.</p>", "submission", false, "Submit for review")],
   ["/pilot-feedback.html", utility("/pilot-feedback.html", "Pilot Feedback", "A noindex feedback path for approved Lux Veritas pilot testers.", "<p>Use this private pilot path to report a broken button, frozen submit, unclear page, media issue, mobile layout problem, or any other release-readiness note.</p><p>Include the page, device, browser, what you expected, and what happened. This path feeds the same screened intake and operator reporting loop as the rest of the site.</p>", "feedback", true, "Send Pilot Note")],
   ["/ledger.html", utility("/ledger.html", "Public Ledger", "The Lux Veritas Ledger is our public stance on trust, credit, rights literacy, and artist protection.", "<p>The Lux Veritas Ledger is our public stance on trust, credit, rights literacy, and artist protection.</p><p>We believe releases should be intentional, credits should be clear, and creative work should be protected before it is scaled.</p><p>Deeper details are shared only through approved access.</p>", "request", false, "Request Access")],
-  ["/legal/privacy.html", utility("/legal/privacy.html", "Privacy", "This page describes Lux Veritas website practices at a high level and remains subject to legal review.", `
+  ["/legal/privacy.html", utility("/legal/privacy.html", "Privacy", "This notice describes how Lux Veritas handles information shared through this website.", `
+    <p><strong>Effective July 4, 2026.</strong></p>
     <h2>Overview</h2>
     <p>This page describes, at a high level, how Lux Veritas may collect and use information through its public website, forms, events, memberships, submissions, and related experiences.</p>
     <h2>Data Collected</h2>
@@ -1362,8 +1334,9 @@ const pages = [
     <p>Information may be used to respond to messages, review submissions, manage access requests, operate memberships, deliver events, support purchases, improve the site, route reports, and protect the integrity of Lux Veritas services and community spaces.</p>
     <h2>Contact</h2>
     <p>For privacy-related questions, use the contact path available on this site.</p>
-  `, "press", true, "Contact")],
-  ["/legal/terms.html", utility("/legal/terms.html", "Terms", "These terms describe general site use and remain subject to legal review.", `
+  `, "press", false, "Contact")],
+  ["/legal/terms.html", utility("/legal/terms.html", "Terms", "These terms describe use of the Lux Veritas website and its public experiences.", `
+    <p><strong>Effective July 4, 2026.</strong></p>
     <h2>Overview</h2>
     <p>These terms describe general rules for accessing and using the Lux Veritas website, forms, releases, events, memberships, submissions, and related experiences.</p>
     <h2>Site Use</h2>
@@ -1388,7 +1361,7 @@ const pages = [
     <p>Lux Veritas may update site content, offerings, and these terms from time to time.</p>
     <h2>Contact</h2>
     <p>For questions about these terms, use the contact path available on this site.</p>
-  `, "press", true, "Contact")],
+  `, "press", false, "Contact")],
   ["/offline.html", shell({ path: "/offline.html", title: "Offline | Lux Veritas", description: "A Lux Veritas offline fallback for the public portal.", noindex: true, body: `${pageHero("Offline", "Signal Paused.", "The Lux Veritas portal could not reach the network. Reconnect and return to continue listening, watching, joining, and requesting access.", `<div class="hero-actions"><a class="button button-primary" href="/index.html">Return Home</a><a class="button button-quiet" href="/music.html">Music</a></div>`)}
     <section class="section empty-state"><p class="kicker">Saved Shell</p><h2>The door is still here.</h2><p>This fallback keeps the public entrance present while your connection returns. Forms, private reports, and fresh media actions need the live network.</p></section>` })],
   ["/spmvp.html", shell({ path: "/spmvp.html", title: "SPMVP | Lux Veritas", description: "A release room for a new Lux Veritas music drop.", body: `${pageHero("New Drop", "SPMVP", "Start with the drop. Follow the signal. Join for the deeper version.", `<div class="hero-actions"><button class="button button-primary" type="button" data-media-action="play">Listen</button><button class="button button-quiet" type="button" data-media-action="watch">Watch</button><button class="button button-quiet" type="button" data-open-form="fan">Join for early access</button></div>`)}${mediaPlayerShell("spmvp")}${releaseRoomSection()}${radioProgrammingSection()}<section class="section split-band"><div><p class="kicker">Context</p><h2>Enter through the work.</h2></div><div><p>Listen, watch, and enter the Lux Veritas circle for early access, private drops, and future live rooms.</p></div></section>` })],
@@ -1396,7 +1369,7 @@ const pages = [
   ["/portal/index.html", portalIndex()],
   ["/portal/library.html", accessShell("/portal/library.html", "Creator", "Private creator materials are available by screened access.", "Creator tools and private materials are not published in the public layer.", "Request Creator Access", "Join", "creator")],
   ["/portal/releases.html", accessShell("/portal/releases.html", "Licensing", "Private release and licensing materials are available by request.", "Licensing conversations and private release materials are screened before access opens.", "Request Licensing Access", "Join", "licensing")],
-  ["/portal/reporting.html", portalReport()],
+  ["/portal/reporting.html", portalReportShell()],
   ["/portal/admin.html", accessShell("/portal/admin.html", "Admin", "This area is not available for public browsing.", "Administrative views are internal-only and not published in client-facing markup.")],
   ["/portal/admin/users.html", accessShell("/portal/admin/users.html", "Users", "This area is not available for public browsing.", "Administrative views are internal-only and not published in client-facing markup.")],
   ["/works/index.html", utility("/works/index.html", "Works", "Selected published projects and intentional teasers from across Lux Veritas.", "<p>Works gathers music, film, and related releases that are ready to be seen publicly. What appears here has been chosen for public view with intention.</p>")],
@@ -1491,6 +1464,8 @@ const publicPaths = [
   "/press.html",
   "/submissions.html",
   "/ledger.html",
+  "/legal/privacy.html",
+  "/legal/terms.html",
   "/works/index.html",
   "/store.html",
   "/insights.html",
@@ -1546,18 +1521,11 @@ await writeFile("data/lux-build-manifest.json", `${JSON.stringify({
   version: assetVersion,
   assetVersion,
   mediaManifestVersion: mediaManifest.version,
-  releaseRoomVersion: releaseRoom.version,
-  radioProgrammingVersion: radioProgramming.version,
-  pilotBugRegisterVersion: pilotBugRegister.version,
-  actionInventoryVersion,
-  openApprovalsDecision: openApprovals.decision || "review_required",
-  openApprovalsPublicLaunchBlockers: openApprovals.counts?.publicLaunchBlockers || 0,
   brandHouseVersion: brandHouse.version,
   fanFlywheelVersion: fanFlywheel.version,
   dropRoomVersion: dropRoom.version,
   portalRoomsVersion: portalRooms.version,
   appCatalogVersion: luxApps.version,
-  phaseStatusVersion: phaseStatus.version,
   publicTermsVersion: publicTerms.version,
   routeCount: pages.length,
   publicRouteCount: publicPaths.length,

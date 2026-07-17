@@ -1,11 +1,11 @@
 {
   "schemaVersion": "luxveritas.portal_rooms.v1",
-  "version": "2026-06-20-portal-rooms",
-  "updatedAt": "2026-06-20T00:00:00.000Z",
+  "version": "2026-07-17-public-portal-rooms",
+  "updatedAt": "2026-07-17T00:00:00.000Z",
   "accessMode": "request_access_only",
   "headline": "Private rooms open by role.",
-  "summary": "Lux Veritas portal access begins with screened paths for members, artists, creators, press, partners, investors, and approved operators.",
-  "notice": "No account, payment, entitlement, or private room is activated from this public shell.",
+  "summary": "Choose the path that matches your relationship to the work. Approved access opens only after review.",
+  "notice": "This public page accepts access requests; private rooms open only by invitation.",
   "rooms": [
     {
       "id": "member",
@@ -72,16 +72,6 @@
       "path": "/investor.html",
       "action": "Request Investor Access",
       "formType": "investor"
-    },
-    {
-      "id": "operator",
-      "label": "Operator",
-      "title": "Operator Room",
-      "body": "Reserved for approved operators. Access opens only through the private reporting path.",
-      "status": "approved_operator_only",
-      "roleTarget": "operator",
-      "path": "/portal/reporting.html",
-      "action": "Open Reporting"
     }
   ]
 }

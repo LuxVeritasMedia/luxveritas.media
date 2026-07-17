@@ -245,7 +245,8 @@ add(buildManifest.schemaVersion === "luxveritas.build_manifest.v1", "Build manif
 add(Boolean(expectedAssetVersion), "Build script exposes an asset version.");
 add(buildManifest.assetVersion === expectedAssetVersion && buildManifest.version === expectedAssetVersion, "Build manifest asset version matches the generated app version.");
 add(buildManifest.appScript === `app.js?v=${expectedAssetVersion}` && buildManifest.stylesheet === `styles.css?v=${expectedAssetVersion}`, "Build manifest lists current app and stylesheet assets.");
-add(Boolean(buildManifest.mediaManifestVersion && buildManifest.releaseRoomVersion && buildManifest.radioProgrammingVersion && buildManifest.pilotBugRegisterVersion && buildManifest.actionInventoryVersion && buildManifest.brandHouseVersion && buildManifest.fanFlywheelVersion && buildManifest.dropRoomVersion && buildManifest.portalRoomsVersion && buildManifest.appCatalogVersion && buildManifest.phaseStatusVersion && buildManifest.publicTermsVersion), "Build manifest carries media, release room, radio programming, pilot bug register, action inventory, brand house, fan flywheel, drop room, portal rooms, app catalog, phase status, and public terms version pointers.");
+add(Boolean(buildManifest.mediaManifestVersion && buildManifest.brandHouseVersion && buildManifest.fanFlywheelVersion && buildManifest.dropRoomVersion && buildManifest.portalRoomsVersion && buildManifest.appCatalogVersion && buildManifest.publicTermsVersion), "Public build manifest carries only audience-facing content version pointers.");
+add(!["releaseRoomVersion", "radioProgrammingVersion", "pilotBugRegisterVersion", "actionInventoryVersion", "openApprovalsDecision", "phaseStatusVersion"].some((field) => field in buildManifest), "Public build manifest excludes operational version pointers.");
 add(portalRooms.schemaVersion === "luxveritas.portal_rooms.v1" && portalRooms.accessMode === "request_access_only", "Portal rooms manifest defines request-access-only Phase 5 shell.");
 add(phaseStatus.schemaVersion === "luxveritas.phase_status.v1" && phaseStatus.currentPhase?.id === "phase-5" && phaseStatus.currentPhase?.status === "active_pilot", "Phase status manifest reports active Phase 5 pilot prep.");
 const pilotFreshness = pilotEvidenceFreshness(pilotWriteEvidence.updatedAt, { maxAgeHours: pilotEvidenceMaxAgeHours() });
@@ -257,7 +258,6 @@ if (pilotFreshness.ok) {
 add(publicTerms.schemaVersion === "luxveritas.public_terms.v1", "Public terms version manifest is current.");
 add(Boolean(publicTerms.version && publicTerms.privacyVersion && publicTerms.termsVersion && publicTerms.submissionTermsVersion), "Public terms manifest contains active legal version IDs.");
 add(pilotBugRegister.schemaVersion === "luxveritas.pilot_bug_register.v1", "Pilot bug register schema version is current.");
-add(pilotBugRegister.version === buildManifest.pilotBugRegisterVersion, "Pilot bug register version matches build manifest.");
 add(pilotBugRegister.evidence?.assetVersion === expectedAssetVersion, "Pilot bug register asset version does not match generated build; rerun the live pilot write gate after deploy.", "warning");
 add(pilotBugRegister.evidence?.pilotWriteQaRunId === pilotWriteEvidence.qaRunId, "Pilot bug register references current pilot write evidence.");
 add(pilotBugRegister.status === "no_known_blocking_bugs" && pilotBugRegister.decision === "pilot_can_continue", "Pilot bug register reports no known blocking bugs.");

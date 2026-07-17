@@ -87,7 +87,7 @@ if (report) {
     }
   }
   if (!localFreshness.ok && !phaseBlockers.includes("pilot_write_evidence_freshness")) {
-    issue("phase status must report pilot write freshness as a public launch blocker when evidence is stale");
+    pilotEvidenceStale("phase status should report pilot write freshness while evidence is stale");
   }
   if (localFreshness.ok && phaseBlockers.includes("pilot_write_evidence_freshness")) {
     issue("phase status must not report pilot write freshness as active while evidence is fresh");
@@ -99,7 +99,7 @@ if (report) {
     issue("phase status must keep internal bridge deferred");
   }
 
-  if (report.repo?.branch !== "main") issue(`repo branch is ${report.repo?.branch || "missing"}`);
+  if (report.repo?.branch !== "main") warn(`repo branch is ${report.repo?.branch || "missing"}; final deployment still requires main`);
   if (!/^[a-f0-9]{40}$/i.test(report.repo?.localSha || "")) issue("repo localSha missing or invalid");
   if (!/^[a-f0-9]{40}$/i.test(report.repo?.originSha || "")) issue("repo originSha missing or invalid");
   if (report.repo?.clean !== true) warn("repo is not clean in status report");

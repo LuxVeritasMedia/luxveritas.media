@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 
 const issues = [];
 const hosting = await readFile(".github/workflows/firebase-hosting-live.yml", "utf8");
+const hostingPreview = await readFile(".github/workflows/firebase-hosting-preview.yml", "utf8");
 const functions = await readFile(".github/workflows/firebase-functions-manual.yml", "utf8");
 const finalAudit = await readFile(".github/workflows/final-release-audit.yml", "utf8");
 const deployStatus = await readFile("tools/qa-deploy-status.mjs", "utf8");
@@ -25,7 +26,7 @@ const firebaseCiTokenSetup = await readFile("tools/setup-firebase-ci-token.mjs",
 const firebaseRestDeploy = await readFile("tools/deploy-firebase-hosting-rest.mjs", "utf8");
 const googleCloudAuth = await readFile("tools/lib/google-cloud-auth.mjs", "utf8");
 const finalLaunchRunbook = await readFile("docs/final-launch-runbook.md", "utf8");
-const workflowBundle = `${hosting}\n${functions}\n${finalAudit}`;
+const workflowBundle = `${hosting}\n${hostingPreview}\n${functions}\n${finalAudit}`;
 
 for (const marker of [
   "concurrency:",
@@ -114,6 +115,23 @@ for (const deprecatedAction of [
 
 if (hosting.includes("firebase-tools@latest") || functions.includes("firebase-tools@latest")) {
   issues.push("workflows: pin firebase-tools to a known-good version instead of @latest");
+}
+
+for (const marker of [
+  "name: Firebase Hosting Preview",
+  "pull_request:",
+  "group: firebase-hosting-preview-${{ github.event.pull_request.number }}",
+  "github.event.pull_request.head.repo.full_name == github.repository",
+  "node tools/qa-hosting-config.mjs",
+  "node tools/qa-public-site.mjs",
+  "node tools/qa-browser-flows.mjs",
+  "hosting:channel:deploy",
+  "--expires 7d",
+  "firebase-tools@15.22.1",
+  "FIREBASE_CI_TOKEN: ${{ secrets.FIREBASE_CI_TOKEN }}",
+  "GITHUB_STEP_SUMMARY"
+]) {
+  if (!hostingPreview.includes(marker)) issues.push(`firebase-hosting-preview.yml: missing ${marker}`);
 }
 
 for (const marker of [

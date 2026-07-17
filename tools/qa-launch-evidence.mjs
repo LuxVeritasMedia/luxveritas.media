@@ -71,7 +71,6 @@ for (const marker of [
   "Reporting channels:",
   "consented_event",
   "server_capture",
-  "protected_operator",
   "local_receipt",
   "Reporting status:",
   "declared",
@@ -153,8 +152,8 @@ if (evidence) {
     issue("evidence action inventory topRouteSurfaces does not match source inventory");
   }
   for (const [field, required] of [
-    ["byType", ["link_click", "form_open", "media_action", "operator_report_action"]],
-    ["byReportingEvent", ["link_click", "lead_accepted", "media_action", "report_action"]],
+    ["byType", ["link_click", "form_open", "media_action"]],
+    ["byReportingEvent", ["link_click", "lead_accepted", "media_action"]],
     ["byRoute", ["index.html", "music.html", "portal/reporting.html"]]
   ]) {
     const source = actionInventory.summary?.[field] || {};

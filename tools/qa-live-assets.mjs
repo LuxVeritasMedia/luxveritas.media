@@ -118,9 +118,6 @@ if (!assetFiles.some((asset) => asset.path === "/data/lux-build-manifest.json"))
 if (!assetFiles.some((asset) => asset.path === "/data/lux-fan-flywheel.json")) {
   issue("dist artifact missing /data/lux-fan-flywheel.json");
 }
-if (!assetFiles.some((asset) => asset.path === "/data/lux-release-room.json")) {
-  issue("dist artifact missing /data/lux-release-room.json");
-}
 if (!assetFiles.some((asset) => asset.path === "/data/lux-drop-room.json")) {
   issue("dist artifact missing /data/lux-drop-room.json");
 }
@@ -130,14 +127,11 @@ if (!assetFiles.some((asset) => asset.path === "/data/lux-portal-rooms.json")) {
 if (!assetFiles.some((asset) => asset.path === "/data/lux-apps.json")) {
   issue("dist artifact missing /data/lux-apps.json");
 }
-if (!assetFiles.some((asset) => asset.path === "/data/lux-phase-status.json")) {
-  issue("dist artifact missing /data/lux-phase-status.json");
+if (!assetFiles.some((asset) => asset.path === "/data/lux-media-manifest.json")) {
+  issue("dist artifact missing /data/lux-media-manifest.json");
 }
-if (!assetFiles.some((asset) => asset.path === "/data/lux-pilot-write-evidence.json")) {
-  issue("dist artifact missing /data/lux-pilot-write-evidence.json");
-}
-if (!assetFiles.some((asset) => asset.path === "/data/lux-pilot-bug-register.json")) {
-  issue("dist artifact missing /data/lux-pilot-bug-register.json");
+if (!assetFiles.some((asset) => asset.path === "/data/lux-public-terms.json")) {
+  issue("dist artifact missing /data/lux-public-terms.json");
 }
 if (!assetFiles.some((asset) => asset.path === "/assets/luxveritas-icon.svg")) {
   issue("dist artifact missing /assets/luxveritas-icon.svg");

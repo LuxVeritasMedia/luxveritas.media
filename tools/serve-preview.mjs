@@ -64,8 +64,18 @@ function buildServer() {
 
     const file = await fileForRequest(new URL(req.url, "http://localhost").pathname);
     if (!file) {
-      res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-      res.end("Not found");
+      try {
+        const body = await readFile(join(root, "404.html"));
+        res.writeHead(404, {
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": "no-store"
+        });
+        if (req.method === "HEAD") res.end();
+        else res.end(body);
+      } catch {
+        res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+        res.end("Not found");
+      }
       return;
     }
 

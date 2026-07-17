@@ -75,9 +75,16 @@ if (
   issues.push("hosting redirects must permanently send the old internal route to /index.html");
 }
 
-const fallback = rewrites.at(-1);
-if (fallback?.source !== "**" || fallback?.destination !== "/index.html") {
-  issues.push("hosting fallback rewrite must end with ** -> /index.html");
+if (rewrites.some((item) => item.source === "**")) {
+  issues.push("hosting must not rewrite unknown public routes; Firebase should serve 404.html with HTTP 404");
+}
+
+const notFoundHtml = await readFile("404.html", "utf8");
+if (!notFoundHtml.includes('name="robots" content="noindex, nofollow"')) {
+  issues.push("404.html must include noindex, nofollow metadata");
+}
+if (!notFoundHtml.includes("The signal ends here.")) {
+  issues.push("404.html is missing the Lux Veritas not-found message");
 }
 
 if (issues.length) {
