@@ -1616,8 +1616,15 @@ async function responsiveAccessibilityFlow(page, baseUrl) {
       if (!formLayout.honeypotHidden) issues.push(`${label}: honeypot is exposed to assistive technology`);
       for (let step = 0; step < 24; step += 1) {
         await page.keyboard.press("Tab");
+        const focusState = await dialog.evaluate((element) => ({
+          inside: element.contains(document.activeElement),
+          browserBoundary: document.activeElement === document.body
+        }));
+        // Native dialogs permit Tab to reach browser chrome. During that stop,
+        // activeElement is BODY; the next Tab must return to the open modal.
+        if (!focusState.inside && focusState.browserBoundary) await page.keyboard.press("Tab");
         if (!await dialog.evaluate((element) => element.contains(document.activeElement))) {
-          issues.push(`${label}: keyboard focus escaped modal`);
+          issues.push(`${label}: keyboard focus reached the underlying page or failed to return from browser chrome`);
           break;
         }
       }
