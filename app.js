@@ -621,16 +621,40 @@ function writeFanReaction(button, player) {
 function instrumentMediaElement(player, element, sourceType) {
   if (!element || element.dataset.playbackInstrumented === "true") return;
   element.dataset.playbackInstrumented = "true";
-  element.addEventListener("play", () => writeMediaPlaybackEvent("play", player, element));
-  element.addEventListener("pause", () => {
-    if (!element.ended) writeMediaPlaybackEvent("pause", player, element);
+  const isCurrentSource = () => !element.hidden && Boolean(element.getAttribute("src"));
+  const setStatus = (message) => {
+    if (!isCurrentSource()) return;
+    const title = player.querySelector("[data-media-title]")?.textContent?.trim() || "Media";
+    const status = player.querySelector("[data-media-status]");
+    if (status) status.textContent = `${title}: ${message}`;
+  };
+  element.addEventListener("play", () => {
+    if (isCurrentSource()) writeMediaPlaybackEvent("play", player, element);
   });
-  element.addEventListener("ended", () => writeMediaPlaybackEvent("ended", player, element, { milestone: "ended" }));
+  element.addEventListener("playing", () => setStatus("Playing."));
+  element.addEventListener("waiting", () => setStatus("Buffering…"));
+  element.addEventListener("pause", () => {
+    if (isCurrentSource() && !element.ended) {
+      setStatus("Paused.");
+      writeMediaPlaybackEvent("pause", player, element);
+    }
+  });
+  element.addEventListener("ended", () => {
+    if (!isCurrentSource()) return;
+    setStatus("Playback complete.");
+    setMediaProgress(player, 100);
+    writeMediaPlaybackEvent("ended", player, element, { milestone: "ended" });
+  });
+  element.addEventListener("error", () => {
+    setStatus("Playback could not load. Try again or request access.");
+  });
   element.addEventListener("timeupdate", () => {
+    if (!isCurrentSource()) return;
     const duration = Number.isFinite(element.duration) ? element.duration : 0;
+    const currentTime = Number.isFinite(element.currentTime) ? element.currentTime : 0;
+    setMediaProgress(player, duration > 0 ? (currentTime / duration) * 100 : 0);
     const seen = new Set(String(element.dataset.playbackMilestones || "").split(",").filter(Boolean));
     if (duration <= 0) {
-      const currentTime = Number.isFinite(element.currentTime) ? element.currentTime : 0;
       const timeMilestones = [30, 60, 120].filter((mark) => currentTime >= mark);
       for (const mark of timeMilestones) {
         const key = `${mark}s`;
@@ -693,7 +717,7 @@ function renderMediaSession(player, knownCount) {
 
 function setMediaProgress(player, percent) {
   const bar = player?.querySelector("[data-media-progress]");
-  if (bar) bar.style.width = `${Math.max(0, Math.min(percent, 100))}%`;
+  if (bar) bar.style.width = `${Number.isFinite(percent) ? Math.max(0, Math.min(percent, 100)) : 0}%`;
 }
 
 function resetMediaSources(player) {
@@ -701,23 +725,24 @@ function resetMediaSources(player) {
   const audio = player?.querySelector("[data-media-audio]");
   const video = player?.querySelector("[data-media-video]");
   if (audio) {
+    audio.hidden = true;
     audio.pause();
     audio.removeAttribute("src");
     audio.dataset.playbackMilestones = "";
     audio.dataset.playbackSourceType = "";
-    audio.hidden = true;
     audio.load();
   }
   if (video) {
+    video.hidden = true;
     video.pause();
     video.removeAttribute("src");
     video.removeAttribute("poster");
     video.dataset.playbackMilestones = "";
     video.dataset.playbackSourceType = "";
-    video.hidden = true;
     video.load();
   }
   if (shell) shell.hidden = true;
+  setMediaProgress(player, 0);
   hideMediaFollowup(player);
 }
 
@@ -764,6 +789,7 @@ function setActiveMediaItem(player, item, options = {}) {
   if (!player || !item) return;
   player.querySelectorAll("[data-media-item]").forEach((button) => {
     button.classList.toggle("active", button === item);
+    button.setAttribute("aria-pressed", String(button === item));
   });
   const mode = player.querySelector("[data-media-mode]");
   const title = player.querySelector("[data-media-title]");
@@ -771,7 +797,6 @@ function setActiveMediaItem(player, item, options = {}) {
   if (mode) mode.textContent = item.dataset.kind || "signal";
   if (title) title.textContent = item.dataset.title || "SPMVP";
   if (status) status.textContent = item.dataset.status || "Ready for public preview routing.";
-  setMediaProgress(player, 18);
   resetMediaSources(player);
   if (options.record !== false) writeMediaEvent("select", player, item.dataset);
   updateMediaReport(player);
@@ -781,7 +806,7 @@ function setActiveMediaItem(player, item, options = {}) {
 function mediaItemMarkup(item, index) {
   const sourceUrl = item.sourceUrl || "";
   const posterUrl = item.posterUrl || "";
-  return `<button class="media-item${index === 0 ? " active" : ""}" type="button" data-media-item data-media-id="${escapeHtml(item.id)}" data-kind="${escapeHtml(item.kind)}" data-title="${escapeHtml(item.title)}" data-status="${escapeHtml(item.status)}" data-action="${escapeHtml(item.primaryAction)}" data-access="${escapeHtml(item.access)}" data-source-status="${escapeHtml(item.sourceStatus || "queued")}" data-source-required="${escapeHtml(String(Boolean(item.sourceRequired)))}" data-source-type="${escapeHtml(item.sourceType)}" data-source-url="${escapeHtml(sourceUrl)}" data-poster-url="${escapeHtml(posterUrl)}" data-reporting-key="${escapeHtml(item.reportingKey || item.id || "")}" data-fallback-form-type="${escapeHtml(item.fallbackFormType || "fan")}" role="listitem">
+  return `<button class="media-item${index === 0 ? " active" : ""}" type="button" data-media-item data-media-id="${escapeHtml(item.id)}" data-kind="${escapeHtml(item.kind)}" data-title="${escapeHtml(item.title)}" data-status="${escapeHtml(item.status)}" data-action="${escapeHtml(item.primaryAction)}" data-access="${escapeHtml(item.access)}" data-source-status="${escapeHtml(item.sourceStatus || "queued")}" data-source-required="${escapeHtml(String(Boolean(item.sourceRequired)))}" data-source-type="${escapeHtml(item.sourceType)}" data-source-url="${escapeHtml(sourceUrl)}" data-poster-url="${escapeHtml(posterUrl)}" data-reporting-key="${escapeHtml(item.reportingKey || item.id || "")}" data-fallback-form-type="${escapeHtml(item.fallbackFormType || "fan")}" aria-pressed="${index === 0}">
     <span>${escapeHtml(item.label)}</span><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.summary)}</small>
   </button>`;
 }
@@ -2032,13 +2057,12 @@ function handleMediaAction(action, player) {
   const posterUrl = activeItem?.dataset.posterUrl;
   const sourceReady = /^https:\/\//i.test(approvedSource || "");
   const messages = {
-    play: `${title} listen intent recorded. Full audio source attaches here when the approved release link is live.`,
-    watch: `${title} watch intent recorded. Public video routing is ready for the approved visual source.`,
-    radio: "Lux Radio intent recorded. Programming slots, live-room notes, and future episodes will attach here."
+    play: `${title} is not available for listening yet. Join for release access.`,
+    watch: `${title} is not available to watch yet. Join for visual access.`,
+    radio: "Lux Radio is not available yet. Join for programming updates."
   };
 
-  if (status) status.textContent = messages[action] || "Media intent recorded.";
-  setMediaProgress(player, action === "play" ? 48 : action === "watch" ? 66 : 82);
+  if (status) status.textContent = sourceReady ? `${title}: Loading…` : messages[action] || "Media is not available yet.";
   writeMediaEvent(action, player, activeItem?.dataset || {});
   updateMediaReport(player);
   renderFanSignal();
@@ -2046,6 +2070,7 @@ function handleMediaAction(action, player) {
   if (sourceReady) {
     loadApprovedMedia(player, { sourceUrl: approvedSource, sourceType, posterUrl, title });
   } else {
+    resetMediaSources(player);
     showMediaFollowup(player, action, title);
   }
 }
@@ -2058,31 +2083,35 @@ function loadApprovedMedia(player, item) {
   if (!shell) return;
 
   resetMediaSources(player);
-  shell.hidden = false;
+  const playbackFailed = (element, error) => {
+    if (element.hidden || element.getAttribute("src") !== item.sourceUrl || error?.name === "AbortError") return;
+    if (status) status.textContent = error?.name === "NotAllowedError"
+      ? `${item.title}: Press play in the ${item.sourceType === "video" ? "video" : "audio"} control to begin.`
+      : `${item.title}: Playback could not load. Try again or request access.`;
+  };
 
   if (["audio", "stream"].includes(item.sourceType) && audio) {
+    shell.hidden = false;
     audio.src = item.sourceUrl;
     instrumentMediaElement(player, audio, item.sourceType);
     audio.dataset.playbackSourceType = item.sourceType || "";
     audio.hidden = false;
-    audio.play().catch(() => {
-      if (status) status.textContent = `${item.title} is ready. Press play in the audio control to begin.`;
-    });
+    audio.play().catch((error) => playbackFailed(audio, error));
     return;
   }
 
   if (item.sourceType === "video" && video) {
+    shell.hidden = false;
     video.src = item.sourceUrl;
     if (item.posterUrl) video.poster = item.posterUrl;
     instrumentMediaElement(player, video, item.sourceType);
     video.dataset.playbackSourceType = item.sourceType || "";
     video.hidden = false;
-    video.play().catch(() => {
-      if (status) status.textContent = `${item.title} is ready. Press play in the video control to begin.`;
-    });
+    video.play().catch((error) => playbackFailed(video, error));
     return;
   }
 
+  if (status) status.textContent = `${item.title}: Opening the media source in a new tab.`;
   window.open(item.sourceUrl, "_blank", "noopener");
 }
 

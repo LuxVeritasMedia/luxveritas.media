@@ -713,6 +713,9 @@ async function musicHeroMediaFlow(page, baseUrl) {
   const beforeListenEvents = events.length;
   await heroListen.click();
   await page.waitForSelector("[data-media-audio]:not([hidden])", { timeout: 5000 });
+  if (await page.locator("[data-media-video]").isVisible()) {
+    issues.push("/music.html: inactive video is visible during audio playback");
+  }
   const listenState = await page.evaluate(() => {
     const active = document.querySelector("[data-media-player] [data-media-item].active");
     return {
@@ -735,6 +738,9 @@ async function musicHeroMediaFlow(page, baseUrl) {
   const beforeWatchEvents = events.length;
   await heroWatch.click();
   await page.waitForSelector("[data-media-video]:not([hidden])", { timeout: 5000 });
+  if (await page.locator("[data-media-audio]").isVisible()) {
+    issues.push("/music.html: inactive audio is visible during video playback");
+  }
   const watchState = await page.evaluate(() => {
     const active = document.querySelector("[data-media-player] [data-media-item].active");
     return {
@@ -769,9 +775,12 @@ async function mediaPlaybackReportingFlow(page, baseUrl) {
     await clickMediaAction(page, expected.action);
     await page.waitForSelector(`${expected.selector}:not([hidden])`, { timeout: 5000 });
 
-    await page.evaluate((selector) => {
+    const simulatedPlayback = await page.evaluate((selector) => {
       const element = document.querySelector(selector);
       if (!element) return;
+      const player = element.closest("[data-media-player]");
+      const progress = player.querySelector("[data-media-progress]");
+      const status = player.querySelector("[data-media-status]");
       try {
         Object.defineProperty(element, "duration", { configurable: true, value: 100 });
       } catch {
@@ -783,13 +792,17 @@ async function mediaPlaybackReportingFlow(page, baseUrl) {
         element.currentTime = 0;
       }
       element.dispatchEvent(new Event("play"));
+      element.dispatchEvent(new Event("playing"));
+      const playing = status.textContent;
       try {
         Object.defineProperty(element, "currentTime", { configurable: true, value: 30 });
       } catch {
         element.currentTime = 30;
       }
       element.dispatchEvent(new Event("timeupdate"));
+      const progressAt30Seconds = progress.style.width;
       element.dispatchEvent(new Event("pause"));
+      const paused = status.textContent;
       try {
         Object.defineProperty(element, "currentTime", { configurable: true, value: 100 });
       } catch {
@@ -801,7 +814,21 @@ async function mediaPlaybackReportingFlow(page, baseUrl) {
         // Native ended state may be read-only; dispatching ended still exercises the listener.
       }
       element.dispatchEvent(new Event("ended"));
+      const complete = { progress: progress.style.width, status: status.textContent };
+      element.dispatchEvent(new Event("error"));
+      const failed = status.textContent;
+      Object.defineProperty(element, "duration", { configurable: true, value: Infinity });
+      element.dispatchEvent(new Event("timeupdate"));
+      return { playing, paused, progressAt30Seconds, complete, failed, liveProgress: progress.style.width };
     }, expected.selector);
+
+    if (simulatedPlayback?.progressAt30Seconds !== "30%" || simulatedPlayback?.complete.progress !== "100%" || simulatedPlayback?.liveProgress !== "0%") {
+      issues.push(`/music.html: ${expected.action} progress does not follow finite media time or handle unknown duration`);
+    }
+    if (!/Playing\./.test(simulatedPlayback?.playing) || !/Paused\./.test(simulatedPlayback?.paused)
+      || !/Playback complete\./.test(simulatedPlayback?.complete.status) || !/Playback could not load\./.test(simulatedPlayback?.failed)) {
+      issues.push(`/music.html: ${expected.action} does not expose actual playback, pause, end, and error status`);
+    }
 
     await waitForCondition(() => (
       events.slice(beforeEventCount).some((item) => item.event === "media_playback" && item.detail?.action === "ended")
@@ -1543,6 +1570,80 @@ async function operatorReportFlow(page, baseUrl) {
   }, null, { timeout: 5000 });
 }
 
+// Browser-emulated widths exercise rendering and interaction; physical devices and
+// assistive-technology evaluation remain separate release checks.
+async function responsiveAccessibilityFlow(page, baseUrl) {
+  const originalViewport = page.viewportSize();
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  for (const width of [320, 360, 390, 430, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const path of ["/index.html", "/music.html", "/join.html"]) {
+      const label = `${path} at ${width}px`;
+      await page.goto(`${baseUrl}${path}`, { waitUntil: "networkidle" });
+      const layout = await page.evaluate(() => ({
+        width: document.documentElement.clientWidth,
+        scrollWidth: document.documentElement.scrollWidth,
+        scrollBehavior: getComputedStyle(document.documentElement).scrollBehavior
+      }));
+      if (layout.scrollWidth > layout.width + 1) issues.push(`${label}: horizontal page overflow (${layout.scrollWidth}px)`);
+      if (layout.scrollBehavior !== "auto") issues.push(`${label}: reduced motion still uses smooth scrolling`);
+
+      const toggle = page.locator("[data-nav-toggle]");
+      if (await toggle.isVisible()) {
+        await toggle.click();
+        if (await toggle.getAttribute("aria-expanded") !== "true" || !await page.locator("#primary-nav").isVisible()) {
+          issues.push(`${label}: mobile navigation failed to open`);
+        }
+        const navBounds = await page.locator("#primary-nav").boundingBox();
+        if (!navBounds || navBounds.x < 0 || navBounds.x + navBounds.width > width + 1) issues.push(`${label}: navigation extends outside viewport`);
+        if (await page.locator("#primary-nav a").count() !== 6) issues.push(`${label}: primary navigation must expose six links`);
+        await toggle.click();
+        if (await toggle.getAttribute("aria-expanded") !== "false") issues.push(`${label}: mobile navigation failed to close`);
+      }
+
+      const trigger = page.locator("main [data-open-form]").first();
+      await trigger.click();
+      const dialog = page.locator("[data-dialog]");
+      const title = await dialog.locator("[data-form-title]").innerText();
+      if (await page.getByRole("dialog", { name: title, exact: true }).count() !== 1) issues.push(`${label}: dialog lacks its current accessible name`);
+      const formLayout = await dialog.evaluate((element) => ({
+        width: element.clientWidth,
+        scrollWidth: element.scrollWidth,
+        rect: { left: element.getBoundingClientRect().left, right: element.getBoundingClientRect().right },
+        honeypotHidden: element.querySelector(".honeypot")?.getAttribute("aria-hidden") === "true"
+      }));
+      if (formLayout.scrollWidth > formLayout.width + 1 || formLayout.rect.left < 0 || formLayout.rect.right > width + 1) issues.push(`${label}: dialog has horizontal overflow`);
+      if (!formLayout.honeypotHidden) issues.push(`${label}: honeypot is exposed to assistive technology`);
+      for (let step = 0; step < 24; step += 1) {
+        await page.keyboard.press("Tab");
+        if (!await dialog.evaluate((element) => element.contains(document.activeElement))) {
+          issues.push(`${label}: keyboard focus escaped modal`);
+          break;
+        }
+      }
+      await page.keyboard.press("Escape");
+      if (await dialog.isVisible()) issues.push(`${label}: Escape did not close dialog`);
+      if (!await trigger.evaluate((element) => document.activeElement === element)) issues.push(`${label}: closing dialog did not restore trigger focus`);
+
+      if (path === "/music.html") {
+        const queue = page.getByRole("group", { name: "Media queue" });
+        const items = queue.getByRole("button");
+        if (await items.count() < 2) issues.push(`${label}: media items lack button semantics`);
+        await items.nth(1).focus();
+        await page.keyboard.press("Enter");
+        if (await items.nth(1).getAttribute("aria-pressed") !== "true" || await queue.locator('[aria-pressed="true"]').count() !== 1) {
+          issues.push(`${label}: media selection does not expose a single pressed state`);
+        }
+        if (await page.locator("[data-media-progress]").evaluate((element) => element.style.width) !== "0%") issues.push(`${label}: selecting media fabricates playback progress`);
+        if (await page.locator("[data-media-source-shell]").isVisible()) issues.push(`${label}: selection shows an inactive media shell`);
+      }
+    }
+  }
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  if (originalViewport) await page.setViewportSize(originalViewport);
+  console.log("Responsive interaction QA covered Home, Music, and Join at 320, 360, 390, 430, 768, and 1440 CSS px.");
+}
+
 const localServer = externalBaseUrl ? { server: null, baseUrl: externalBaseUrl } : await startServer();
 const { server, baseUrl } = localServer;
 let browser;
@@ -1662,6 +1763,7 @@ try {
   await fanSignalPassFlow(page, baseUrl);
   await portalAccessFlow(page, baseUrl);
   await operatorBoundaryFlow(page, baseUrl);
+  await responsiveAccessibilityFlow(page, baseUrl);
 } catch (error) {
   issues.push(`browser flow failed: ${error.stack || error.message}`);
 } finally {

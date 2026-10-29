@@ -1,7 +1,7 @@
 {
   "schemaVersion": "luxveritas.build_manifest.v1",
-  "version": "20260717-public-release-r7",
-  "assetVersion": "20260717-public-release-r7",
+  "version": "20261029-accessibility-r1",
+  "assetVersion": "20261029-accessibility-r1",
   "mediaManifestVersion": "2026-06-10-mvp-media-preview",
   "brandHouseVersion": "2026-06-30-brand-constellation",
   "fanFlywheelVersion": "2026-06-20-fan-flywheel",
@@ -11,6 +11,6 @@
   "publicTermsVersion": "2026-07-03-public-capture",
   "routeCount": 71,
   "publicRouteCount": 54,
-  "appScript": "app.js?v=20260717-public-release-r7",
-  "stylesheet": "styles.css?v=20260717-public-release-r7"
+  "appScript": "app.js?v=20261029-accessibility-r1",
+  "stylesheet": "styles.css?v=20261029-accessibility-r1"
 }

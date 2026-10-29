@@ -75,8 +75,24 @@ for (const file of htmlFiles) {
     if (!ids.includes(match[1])) issues.push(`${rel}: aria-controls references missing id "${match[1]}"`);
   }
 
+  for (const match of html.matchAll(/aria-(?:labelledby|describedby)=["']([^"']+)["']/gi)) {
+    for (const id of match[1].trim().split(/\s+/)) {
+      if (!ids.includes(id)) issues.push(`${rel}: ARIA text reference points to missing id "${id}"`);
+    }
+  }
+
+  for (const match of html.matchAll(/<dialog\b([^>]*)>/gi)) {
+    if (!attrValue(match[1], "aria-label").trim() && !attrValue(match[1], "aria-labelledby").trim()) {
+      issues.push(`${rel}: dialog missing accessible name`);
+    }
+  }
+
   for (const match of html.matchAll(/<button\b([^>]*)>([\s\S]*?)<\/button>/gi)) {
     if (!hasAccessibleText(match[1], match[2])) issues.push(`${rel}: button missing accessible name`);
+    if (attrValue(match[1], "role") === "listitem") issues.push(`${rel}: button role=listitem removes button semantics`);
+    if (match[1].includes("data-media-item") && !["true", "false"].includes(attrValue(match[1], "aria-pressed"))) {
+      issues.push(`${rel}: media selection button missing aria-pressed state`);
+    }
   }
 
   for (const match of html.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/gi)) {
@@ -92,7 +108,13 @@ for (const file of htmlFiles) {
     const tag = match[1].toLowerCase();
     const attrs = match[2];
     const type = attrValue(attrs, "type").toLowerCase();
-    if (type === "hidden" || attrs.includes("honeypot") || attrValue(attrs, "aria-hidden") === "true") continue;
+    if (attrs.includes("honeypot")) {
+      if (attrValue(attrs, "aria-hidden") !== "true" || attrValue(attrs, "tabindex") !== "-1") {
+        issues.push(`${rel}: honeypot must be hidden from assistive technology and keyboard focus`);
+      }
+      continue;
+    }
+    if (type === "hidden" || attrValue(attrs, "aria-hidden") === "true") continue;
     if (attrValue(attrs, "aria-label") || attrValue(attrs, "aria-labelledby")) continue;
     const id = attrValue(attrs, "id");
     if (id && new RegExp(`<label\\b[^>]*for=["']${id}["']`, "i").test(html)) continue;
@@ -112,4 +134,4 @@ if (issues.length) {
   process.exit(1);
 }
 
-console.log(`Accessibility QA passed for ${htmlFiles.length} HTML files.`);
+console.log(`Structural accessibility QA passed for ${htmlFiles.length} HTML files. Rendering, assistive technology, and full WCAG conformance require separate checks.`);
