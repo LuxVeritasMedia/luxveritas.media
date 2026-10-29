@@ -861,7 +861,7 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
 }
 .media-progress span {
   display: block;
-  width: 18%;
+  width: 0%;
   height: 100%;
   background: var(--gold);
   transition: width .35s ease;
@@ -875,6 +875,11 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
 .media-source-shell video {
   display: block;
   width: 100%;
+}
+.media-source-shell[hidden],
+.media-source-shell audio[hidden],
+.media-source-shell video[hidden] {
+  display: none;
 }
 .media-source-shell audio {
   min-height: 48px;
@@ -1525,7 +1530,7 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
   font-size: 1.4rem;
 }
 label { display: grid; gap: .45rem; color: rgba(243,238,228,.74); font-size: .86rem; }
-label em { color: rgba(243,238,228,.45); font-style: normal; }
+label em { color: rgba(243,238,228,.58); font-style: normal; }
 input, select, textarea {
   width: 100%;
   border: 1px solid var(--line);
@@ -1702,6 +1707,11 @@ select option { color: var(--ink); }
   .hero-actions .button, .cta-actions .button { width: 100%; }
   .footer-house-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .footer-house-link { min-height: 84px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .media-progress span { transition: none; }
 }
 
 @media (prefers-reduced-motion: no-preference) {

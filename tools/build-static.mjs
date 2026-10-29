@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260717-public-release-r7";
+const assetVersion = "20261029-accessibility-r1";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const releaseRoom = JSON.parse(await readFile("data/lux-release-room.json", "utf8"));
 const radioProgramming = JSON.parse(await readFile("data/lux-radio-programming.json", "utf8"));
@@ -199,12 +199,12 @@ function footerHouseRail() {
 }
 
 function formDialog() {
-  return `<dialog class="form-dialog" data-dialog>
+  return `<dialog class="form-dialog" data-dialog aria-labelledby="access-dialog-title" aria-describedby="access-dialog-copy">
   <form action="/api/submit" method="post" class="dialog-shell" data-form-endpoint="/api/submit" data-form-mode="full">
     <button class="dialog-close" type="button" aria-label="Close" data-close-dialog>×</button>
     <p class="kicker" data-form-kicker>Request Access</p>
-    <h2 data-form-title>Screened Access</h2>
-    <p data-form-copy>Tell us who you are and what door you are approaching.</p>
+    <h2 id="access-dialog-title" data-form-title>Screened Access</h2>
+    <p id="access-dialog-copy" data-form-copy>Tell us who you are and what door you are approaching.</p>
     <div class="form-status" data-form-status role="status" aria-live="polite" hidden></div>
     <label><span>Name</span><input name="name" autocomplete="name" required /></label>
     <label><span>Email</span><input name="email" type="email" autocomplete="email" required /></label>
@@ -233,7 +233,7 @@ function formDialog() {
     <input type="hidden" name="privacy_version" value="${publicTerms.privacyVersion}" />
     <input type="hidden" name="terms_version" value="${publicTerms.termsVersion}" />
     <input type="hidden" name="submission_terms_version" value="${publicTerms.submissionTermsVersion}" />
-    <input class="honeypot" name="company_url" tabindex="-1" autocomplete="off" />
+    <input class="honeypot" name="company_url" tabindex="-1" aria-hidden="true" autocomplete="off" />
     <button class="button button-primary" type="submit" data-submit-form data-default-label="Send to Lux Veritas">Send to Lux Veritas</button>
   </form>
 </dialog>`;
@@ -445,7 +445,7 @@ function mediaPlayerShell(context = "music") {
       <div class="media-now">
         <span data-media-mode>Signal</span>
         <h3 data-media-title>SPMVP</h3>
-        <p data-media-status>Ready for public preview routing.</p>
+        <p data-media-status role="status" aria-live="polite">Ready for public preview routing.</p>
         <div class="media-progress" aria-hidden="true"><span data-media-progress></span></div>
         <div class="media-source-shell" data-media-source-shell hidden>
           <audio controls preload="none" data-media-audio hidden></audio>
@@ -477,8 +477,8 @@ function mediaPlayerShell(context = "music") {
           </div>
         </div>
       </div>
-      <div class="media-queue" role="list" aria-label="Media queue">
-        ${items.map((item, index) => `<button class="media-item${index === 0 ? " active" : ""}" type="button" data-media-item data-media-id="${item.id}" data-kind="${item.kind}" data-title="${item.title}" data-status="${item.status}" data-action="${item.primaryAction}" data-access="${item.access}" data-source-status="${item.sourceStatus || "queued"}" data-source-required="${String(Boolean(item.sourceRequired))}" data-source-type="${item.sourceType}" data-source-url="${item.sourceUrl || ""}" data-poster-url="${item.posterUrl || ""}" data-reporting-key="${item.reportingKey || item.id}" data-fallback-form-type="${item.fallbackFormType || "fan"}" role="listitem">
+      <div class="media-queue" role="group" aria-label="Media queue">
+        ${items.map((item, index) => `<button class="media-item${index === 0 ? " active" : ""}" type="button" data-media-item data-media-id="${item.id}" data-kind="${item.kind}" data-title="${item.title}" data-status="${item.status}" data-action="${item.primaryAction}" data-access="${item.access}" data-source-status="${item.sourceStatus || "queued"}" data-source-required="${String(Boolean(item.sourceRequired))}" data-source-type="${item.sourceType}" data-source-url="${item.sourceUrl || ""}" data-poster-url="${item.posterUrl || ""}" data-reporting-key="${item.reportingKey || item.id}" data-fallback-form-type="${item.fallbackFormType || "fan"}" aria-pressed="${index === 0}">
           <span>${item.label}</span><strong>${item.title}</strong><small>${item.summary}</small>
         </button>`).join("")}
       </div>
