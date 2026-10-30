@@ -1,7 +1,7 @@
 {
   "schemaVersion": "luxveritas.fan_flywheel.v1",
-  "version": "2026-06-20-fan-flywheel",
-  "updatedAt": "2026-06-20T00:00:00.000Z",
+  "version": "2026-10-30-fan-journey",
+  "updatedAt": "2026-10-30T00:00:00.000Z",
   "publicPurpose": "Audience-facing map for moving fans through Lux Veritas music, film, events, membership, drops, and submissions.",
   "headline": "The world opens by return.",
   "summary": "Lux Veritas is built so a fan can enter through one signal and keep finding the next door: music, visuals, rooms, drops, story, and creation moving together.",
@@ -26,7 +26,7 @@
       "id": "join",
       "label": "Join",
       "title": "Enter the Circle",
-      "body": "First access creates a clean fan path for early release notes, private drops, listening rooms, and future member identity.",
+      "body": "Join for release updates, private drops, and invitations to listening rooms.",
       "path": "/join.html",
       "action": "Join first access"
     },

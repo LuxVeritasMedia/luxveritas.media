@@ -1,16 +1,16 @@
 {
   "schemaVersion": "luxveritas.build_manifest.v1",
-  "version": "20260717-public-release-r7",
-  "assetVersion": "20260717-public-release-r7",
-  "mediaManifestVersion": "2026-06-10-mvp-media-preview",
+  "version": "20261030-player-copy-preview-r1",
+  "assetVersion": "20261030-player-copy-preview-r1",
+  "mediaManifestVersion": "2026-10-30-media-preview",
   "brandHouseVersion": "2026-06-30-brand-constellation",
-  "fanFlywheelVersion": "2026-06-20-fan-flywheel",
+  "fanFlywheelVersion": "2026-10-30-fan-journey",
   "dropRoomVersion": "2026-06-20-drop-room",
   "portalRoomsVersion": "2026-07-17-public-portal-rooms",
   "appCatalogVersion": "2026-07-05-app-market",
   "publicTermsVersion": "2026-07-03-public-capture",
   "routeCount": 71,
   "publicRouteCount": 54,
-  "appScript": "app.js?v=20260717-public-release-r7",
-  "stylesheet": "styles.css?v=20260717-public-release-r7"
+  "appScript": "app.js?v=20261030-player-copy-preview-r1",
+  "stylesheet": "styles.css?v=20261030-player-copy-preview-r1"
 }
