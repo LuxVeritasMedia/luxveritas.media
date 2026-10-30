@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-const assetVersion = "20260717-public-release-r7";
+const assetVersion = "20261030-player-copy-preview-r1";
 const mediaManifest = JSON.parse(await readFile("data/lux-media-manifest.json", "utf8"));
 const releaseRoom = JSON.parse(await readFile("data/lux-release-room.json", "utf8"));
 const radioProgramming = JSON.parse(await readFile("data/lux-radio-programming.json", "utf8"));
@@ -287,7 +287,7 @@ function fanFlywheelSection() {
   const stages = Array.isArray(fanFlywheel.stages) ? fanFlywheel.stages : [];
   return `<section class="section fan-flywheel" data-fan-flywheel data-fan-flywheel-version="${fanFlywheel.version || ""}">
     <div class="section-heading">
-      <p class="kicker">Fan Flywheel</p>
+      <p class="kicker">Explore Lux Veritas</p>
       <h2>${fanFlywheel.headline || "The world opens by return."}</h2>
       <p>${fanFlywheel.summary || ""}</p>
     </div>
@@ -439,20 +439,20 @@ function mediaPlayerShell(context = "music") {
     <div class="media-player-copy">
       <p class="kicker">Lux Player</p>
       <h2>${compact ? "Start with the drop." : "Listen. Watch. Return."}</h2>
-      <p>${compact ? "SPMVP is the current doorway. The public player captures listen, watch, and radio intent while deeper access opens by request." : "A fan-facing player for releases, visuals, sessions, and future radio programming. Public actions are remembered on this device today so the experience can become more personal as the world opens."}</p>
+      <p>${compact ? "Listen to the SPMVP preview, watch the visual, and join for first access to what comes next." : "Listen to the music preview, watch the visual, or explore Lux Radio. Join for new releases and listening-room invitations."}</p>
     </div>
     <div class="media-player" aria-label="Lux Veritas media player">
       <div class="media-now">
         <span data-media-mode>Signal</span>
         <h3 data-media-title>SPMVP</h3>
-        <p data-media-status>Ready for public preview routing.</p>
+        <p data-media-status role="status" aria-live="polite" aria-atomic="true">Choose a preview to listen or watch.</p>
         <div class="media-progress" aria-hidden="true"><span data-media-progress></span></div>
         <div class="media-source-shell" data-media-source-shell hidden>
           <audio controls preload="none" data-media-audio hidden></audio>
           <video controls playsinline preload="metadata" data-media-video hidden></video>
         </div>
         <div class="media-followup" data-media-followup hidden>
-          <span data-media-followup-copy>Join for first access when this source opens.</span>
+          <span data-media-followup-copy>Join for first access when this preview opens.</span>
           <button class="button button-primary" type="button" data-open-form="fan" data-media-followup-action>Join for access</button>
         </div>
         <div class="media-actions">

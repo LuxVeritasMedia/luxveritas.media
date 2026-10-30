@@ -755,6 +755,66 @@ async function musicHeroMediaFlow(page, baseUrl) {
   }
 }
 
+async function mediaVisibilityAndCopyFlow(page, baseUrl) {
+  const originalViewport = page.viewportSize();
+  const actions = ["play", "watch", "radio", "watch", "play"];
+  try {
+    for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }]) {
+      await page.setViewportSize(viewport);
+      for (const path of ["/music.html", "/spmvp.html"]) {
+        await page.goto(`${baseUrl}${path}`, { waitUntil: "domcontentloaded" });
+        await page.waitForFunction(() => document.querySelector("[data-media-mode]")?.textContent === "release");
+        if (await page.locator("[data-media-source-shell]").isVisible()) {
+          issues.push(`${path} at ${viewport.width}px: inactive source shell must be hidden`);
+        }
+        for (const action of actions) {
+          await clickMediaAction(page, action);
+          const expected = action === "watch" ? "video" : "audio";
+          await page.locator(`[data-media-${expected}]`).waitFor({ state: "visible" });
+          const state = await page.evaluate(() => {
+            const media = [...document.querySelectorAll("[data-media-audio], [data-media-video]")];
+            const visible = media.filter((el) => el.getClientRects().length && getComputedStyle(el).display !== "none");
+            const status = document.querySelector("[data-media-status]");
+            const before = status.textContent;
+            media.filter((el) => el.hidden).forEach((el) => el.dispatchEvent(new Event("error")));
+            return {
+              visible: visible.map((el) => el.tagName.toLowerCase()),
+              inactiveStopped: media.filter((el) => el.hidden).every((el) => el.paused && !el.getAttribute("src")),
+              staleEventIgnored: status.textContent === before,
+              status: status.textContent,
+              overflow: document.documentElement.scrollWidth > window.innerWidth + 1
+            };
+          });
+          if (state.visible.length !== 1 || state.visible[0] !== expected || !state.inactiveStopped) {
+            issues.push(`${path} at ${viewport.width}px: ${action} must show only ${expected} and stop/reset inactive media`);
+          }
+          if (!state.staleEventIgnored) issues.push(`${path}: inactive media overwrote current playback status`);
+          if (/intent recorded|source attaches|routing is ready|MVP preview/i.test(state.status)) {
+            issues.push(`${path}: player still exposes implementation copy`);
+          }
+          if (state.overflow) issues.push(`${path} at ${viewport.width}px: player produces horizontal overflow`);
+        }
+      }
+    }
+  } finally {
+    if (originalViewport) await page.setViewportSize(originalViewport);
+  }
+
+  const audioUrl = "**/assets/luxveritas-spmvp-preview.wav";
+  await page.route(audioUrl, (route) => route.fulfill({ status: 200, contentType: "audio/wav", body: "Invalid audio for error-state QA" }));
+  try {
+    await page.goto(`${baseUrl}/music.html`, { waitUntil: "domcontentloaded" });
+    await page.waitForFunction(() => document.querySelector("[data-media-mode]")?.textContent === "release");
+    await clickMediaAction(page, "play");
+    await page.waitForFunction(() => /Unable to play/.test(document.querySelector("[data-media-status]").textContent));
+    if (!await page.locator('[data-media-action="watch"]').last().isEnabled()) {
+      issues.push("/music.html: media failure disabled the alternative preview control");
+    }
+  } finally {
+    await page.unroute(audioUrl);
+  }
+}
+
 async function mediaPlaybackReportingFlow(page, baseUrl) {
   const playbackExpectations = [
     { action: "play", sourceType: "audio", selector: "[data-media-audio]" },
@@ -1551,7 +1611,7 @@ let context;
 try {
   const { chromium } = await loadPlaywright();
   browser = await launchBrowserWithRetry(chromium);
-  context = await browser.newContext({ acceptDownloads: true });
+  context = await browser.newContext({ acceptDownloads: true, serviceWorkers: "block" });
   const page = await context.newPage();
 
   await page.route("**/api/submit", async (route) => {
@@ -1657,6 +1717,7 @@ try {
   }
   await mediaActionMappingFlow(page, baseUrl);
   await musicHeroMediaFlow(page, baseUrl);
+  await mediaVisibilityAndCopyFlow(page, baseUrl);
   await mediaPlaybackReportingFlow(page, baseUrl);
   await fanReactionFlow(page, baseUrl);
   await fanSignalPassFlow(page, baseUrl);

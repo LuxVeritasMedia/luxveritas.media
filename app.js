@@ -119,7 +119,7 @@ const eventEndpoint = "/api/event";
 const reportEndpoint = "/api/report";
 const mediaManifestPath = "/data/lux-media-manifest.json";
 const submitTimeoutMs = 8000;
-const publicBuildVersion = "20260717-public-release-r7";
+const publicBuildVersion = "20261030-player-copy-preview-r1";
 const allowedInterestPaths = new Set(["music", "film", "events", "drops", "community", "codex", "create"]);
 let activeFormType = "request";
 let mediaManifestPromise = null;
@@ -621,12 +621,33 @@ function writeFanReaction(button, player) {
 function instrumentMediaElement(player, element, sourceType) {
   if (!element || element.dataset.playbackInstrumented === "true") return;
   element.dataset.playbackInstrumented = "true";
-  element.addEventListener("play", () => writeMediaPlaybackEvent("play", player, element));
-  element.addEventListener("pause", () => {
-    if (!element.ended) writeMediaPlaybackEvent("pause", player, element);
+  // Ignore events from a source that was replaced while playback was loading.
+  const isCurrent = () => !element.hidden && element.getAttribute("src") === activeMediaItemData(player).sourceUrl;
+  const setStatus = (message) => {
+    const status = player.querySelector("[data-media-status]");
+    if (status && isCurrent()) status.textContent = message;
+  };
+  element.addEventListener("play", () => {
+    if (isCurrent()) writeMediaPlaybackEvent("play", player, element);
   });
-  element.addEventListener("ended", () => writeMediaPlaybackEvent("ended", player, element, { milestone: "ended" }));
+  element.addEventListener("playing", () => setStatus(`Playing ${activeMediaItemData(player).title}.`));
+  element.addEventListener("waiting", () => setStatus(`Loading ${activeMediaItemData(player).title}...`));
+  element.addEventListener("pause", () => {
+    if (!isCurrent() || element.ended || element.error) return;
+    setStatus(`${activeMediaItemData(player).title} paused. Press play to continue.`);
+    writeMediaPlaybackEvent("pause", player, element);
+  });
+  element.addEventListener("ended", () => {
+    if (!isCurrent()) return;
+    setStatus(`${activeMediaItemData(player).title} finished. Replay or explore another preview.`);
+    setMediaProgress(player, 100);
+    writeMediaPlaybackEvent("ended", player, element, { milestone: "ended" });
+  });
+  element.addEventListener("error", () => {
+    setStatus(`Unable to play ${activeMediaItemData(player).title}. Try again or choose another preview.`);
+  });
   element.addEventListener("timeupdate", () => {
+    if (!isCurrent()) return;
     const duration = Number.isFinite(element.duration) ? element.duration : 0;
     const seen = new Set(String(element.dataset.playbackMilestones || "").split(",").filter(Boolean));
     if (duration <= 0) {
@@ -644,6 +665,7 @@ function instrumentMediaElement(player, element, sourceType) {
     }
 
     const percent = Math.floor((element.currentTime / duration) * 100);
+    setMediaProgress(player, percent);
     const milestones = [25, 50, 75].filter((mark) => percent >= mark);
     for (const mark of milestones) {
       const key = String(mark);
@@ -735,19 +757,19 @@ function showMediaFollowup(player, action, title) {
   const config = {
     play: {
       label: "Join for release access",
-      copy: `${title} is queued for approved listening access. Join for first notice when the release source opens.`
+      copy: `${title} is not available to listen to yet. Join for first access.`
     },
     watch: {
       label: "Join for visual access",
-      copy: `${title} is queued for approved visual access. Join for first notice when the visual opens.`
+      copy: `${title} is not available to watch yet. Join for first access.`
     },
     radio: {
       label: "Join for radio access",
-      copy: "Lux Radio is queued for future programming. Join for first notice when the signal opens."
+      copy: "Lux Radio is not available to play yet. Join for programming updates."
     }
   }[action] || {
     label: "Join for access",
-    copy: "Join for first access when this source opens."
+    copy: "Join for first access when this preview opens."
   };
 
   if (copy) copy.textContent = config.copy;
@@ -770,8 +792,8 @@ function setActiveMediaItem(player, item, options = {}) {
   const status = player.querySelector("[data-media-status]");
   if (mode) mode.textContent = item.dataset.kind || "signal";
   if (title) title.textContent = item.dataset.title || "SPMVP";
-  if (status) status.textContent = item.dataset.status || "Ready for public preview routing.";
-  setMediaProgress(player, 18);
+  if (status) status.textContent = item.dataset.status || "Choose a preview to listen or watch.";
+  setMediaProgress(player, 0);
   resetMediaSources(player);
   if (options.record !== false) writeMediaEvent("select", player, item.dataset);
   updateMediaReport(player);
@@ -2031,14 +2053,10 @@ function handleMediaAction(action, player) {
   const sourceType = activeItem?.dataset.sourceType;
   const posterUrl = activeItem?.dataset.posterUrl;
   const sourceReady = /^https:\/\//i.test(approvedSource || "");
-  const messages = {
-    play: `${title} listen intent recorded. Full audio source attaches here when the approved release link is live.`,
-    watch: `${title} watch intent recorded. Public video routing is ready for the approved visual source.`,
-    radio: "Lux Radio intent recorded. Programming slots, live-room notes, and future episodes will attach here."
-  };
-
-  if (status) status.textContent = messages[action] || "Media intent recorded.";
-  setMediaProgress(player, action === "play" ? 48 : action === "watch" ? 66 : 82);
+  if (status) status.textContent = sourceReady
+    ? `Loading ${title}...`
+    : `${title} is not available to play yet. Join for first access.`;
+  setMediaProgress(player, 0);
   writeMediaEvent(action, player, activeItem?.dataset || {});
   updateMediaReport(player);
   renderFanSignal();
@@ -2046,6 +2064,7 @@ function handleMediaAction(action, player) {
   if (sourceReady) {
     loadApprovedMedia(player, { sourceUrl: approvedSource, sourceType, posterUrl, title });
   } else {
+    resetMediaSources(player);
     showMediaFollowup(player, action, title);
   }
 }
@@ -2065,8 +2084,11 @@ function loadApprovedMedia(player, item) {
     instrumentMediaElement(player, audio, item.sourceType);
     audio.dataset.playbackSourceType = item.sourceType || "";
     audio.hidden = false;
-    audio.play().catch(() => {
-      if (status) status.textContent = `${item.title} is ready. Press play in the audio control to begin.`;
+    audio.play().catch((error) => {
+      if (audio.hidden || audio.getAttribute("src") !== item.sourceUrl || error.name === "AbortError") return;
+      if (status) status.textContent = error.name === "NotAllowedError"
+        ? `${item.title} is ready. Press play in the audio control to begin.`
+        : `Unable to play ${item.title}. Try again or choose another preview.`;
     });
     return;
   }
@@ -2077,8 +2099,11 @@ function loadApprovedMedia(player, item) {
     instrumentMediaElement(player, video, item.sourceType);
     video.dataset.playbackSourceType = item.sourceType || "";
     video.hidden = false;
-    video.play().catch(() => {
-      if (status) status.textContent = `${item.title} is ready. Press play in the video control to begin.`;
+    video.play().catch((error) => {
+      if (video.hidden || video.getAttribute("src") !== item.sourceUrl || error.name === "AbortError") return;
+      if (status) status.textContent = error.name === "NotAllowedError"
+        ? `${item.title} is ready. Press play in the video control to begin.`
+        : `Unable to play ${item.title}. Try again or choose another preview.`;
     });
     return;
   }

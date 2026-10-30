@@ -1,7 +1,7 @@
 {
   "schemaVersion": "luxveritas.media_manifest.v1",
-  "version": "2026-06-10-mvp-media-preview",
-  "updatedAt": "2026-06-10T03:00:00.000Z",
+  "version": "2026-10-30-media-preview",
+  "updatedAt": "2026-10-30T00:00:00.000Z",
   "items": [
     {
       "id": "spmvp-release",
@@ -10,7 +10,7 @@
       "label": "Release",
       "title": "SPMVP",
       "summary": "Current doorway",
-      "status": "Current release signal. MVP preview source is live while full listening links prepare for release.",
+      "status": "Listen to a short SPMVP preview. Join for release updates.",
       "access": "public-preview",
       "primaryAction": "play",
       "sourceStatus": "ready",
@@ -29,7 +29,7 @@
       "label": "Visual",
       "title": "Visual World",
       "summary": "Watch path",
-      "status": "Visual chapter routing is ready. MVP visual preview is live while the full chapter prepares.",
+      "status": "Watch a short visual preview. Join for new chapters.",
       "access": "public-preview",
       "primaryAction": "watch",
       "sourceStatus": "ready",
@@ -48,7 +48,7 @@
       "label": "Radio",
       "title": "Lux Radio",
       "summary": "Coming signal",
-      "status": "Radio mode is live as a preview loop for scheduled programming, notes, and future live rooms.",
+      "status": "Listen to the Lux Radio preview loop. Full programming is not yet available.",
       "access": "waitlist",
       "primaryAction": "radio",
       "sourceStatus": "ready",

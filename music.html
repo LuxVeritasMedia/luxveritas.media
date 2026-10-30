@@ -23,7 +23,7 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070909'/%3E%3Cpath d='M18 48V16h6v27h18v5H18Zm21-32h7L34 48h-6l11-32Z' fill='%23c8a86a'/%3E%3C/svg%3E" />
     <link rel="manifest" href="../site.webmanifest" />
     <link rel="apple-touch-icon" href="../assets/luxveritas-icon.svg" />
-    <link rel="stylesheet" href="../styles.css?v=20260717-public-release-r7" />
+    <link rel="stylesheet" href="../styles.css?v=20261030-player-copy-preview-r1" />
   </head>
   <body data-page="/music.html">
     <a class="skip-link" href="#main">Skip to content</a>
@@ -53,20 +53,20 @@ Every release is intentional, protected, and built to last.</p>
     <div class="media-player-copy">
       <p class="kicker">Lux Player</p>
       <h2>Listen. Watch. Return.</h2>
-      <p>A fan-facing player for releases, visuals, sessions, and future radio programming. Public actions are remembered on this device today so the experience can become more personal as the world opens.</p>
+      <p>Listen to the music preview, watch the visual, or explore Lux Radio. Join for new releases and listening-room invitations.</p>
     </div>
     <div class="media-player" aria-label="Lux Veritas media player">
       <div class="media-now">
         <span data-media-mode>Signal</span>
         <h3 data-media-title>SPMVP</h3>
-        <p data-media-status>Ready for public preview routing.</p>
+        <p data-media-status role="status" aria-live="polite" aria-atomic="true">Choose a preview to listen or watch.</p>
         <div class="media-progress" aria-hidden="true"><span data-media-progress></span></div>
         <div class="media-source-shell" data-media-source-shell hidden>
           <audio controls preload="none" data-media-audio hidden></audio>
           <video controls playsinline preload="metadata" data-media-video hidden></video>
         </div>
         <div class="media-followup" data-media-followup hidden>
-          <span data-media-followup-copy>Join for first access when this source opens.</span>
+          <span data-media-followup-copy>Join for first access when this preview opens.</span>
           <button class="button button-primary" type="button" data-open-form="fan" data-media-followup-action>Join for access</button>
         </div>
         <div class="media-actions">
@@ -92,11 +92,11 @@ Every release is intentional, protected, and built to last.</p>
         </div>
       </div>
       <div class="media-queue" role="list" aria-label="Media queue">
-        <button class="media-item active" type="button" data-media-item data-media-id="spmvp-release" data-kind="release" data-title="SPMVP" data-status="Current release signal. MVP preview source is live while full listening links prepare for release." data-action="play" data-access="public-preview" data-source-status="ready" data-source-required="true" data-source-type="audio" data-source-url="https://luxveritas.media/assets/luxveritas-spmvp-preview.wav" data-poster-url="/assets/luxveritas-signal-poster.svg" data-reporting-key="spmvp_release_audio" data-fallback-form-type="fan" role="listitem">
+        <button class="media-item active" type="button" data-media-item data-media-id="spmvp-release" data-kind="release" data-title="SPMVP" data-status="Listen to a short SPMVP preview. Join for release updates." data-action="play" data-access="public-preview" data-source-status="ready" data-source-required="true" data-source-type="audio" data-source-url="https://luxveritas.media/assets/luxveritas-spmvp-preview.wav" data-poster-url="/assets/luxveritas-signal-poster.svg" data-reporting-key="spmvp_release_audio" data-fallback-form-type="fan" role="listitem">
           <span>Release</span><strong>SPMVP</strong><small>Current doorway</small>
-        </button><button class="media-item" type="button" data-media-item data-media-id="visual-world" data-kind="visual" data-title="Visual World" data-status="Visual chapter routing is ready. MVP visual preview is live while the full chapter prepares." data-action="watch" data-access="public-preview" data-source-status="ready" data-source-required="true" data-source-type="video" data-source-url="https://luxveritas.media/assets/luxveritas-visual-preview.webm" data-poster-url="/assets/luxveritas-signal-poster.svg" data-reporting-key="spmvp_visual_world" data-fallback-form-type="fan" role="listitem">
+        </button><button class="media-item" type="button" data-media-item data-media-id="visual-world" data-kind="visual" data-title="Visual World" data-status="Watch a short visual preview. Join for new chapters." data-action="watch" data-access="public-preview" data-source-status="ready" data-source-required="true" data-source-type="video" data-source-url="https://luxveritas.media/assets/luxveritas-visual-preview.webm" data-poster-url="/assets/luxveritas-signal-poster.svg" data-reporting-key="spmvp_visual_world" data-fallback-form-type="fan" role="listitem">
           <span>Visual</span><strong>Visual World</strong><small>Watch path</small>
-        </button><button class="media-item" type="button" data-media-item data-media-id="lux-radio" data-kind="radio" data-title="Lux Radio" data-status="Radio mode is live as a preview loop for scheduled programming, notes, and future live rooms." data-action="radio" data-access="waitlist" data-source-status="ready" data-source-required="true" data-source-type="stream" data-source-url="https://luxveritas.media/assets/luxveritas-radio-preview.wav" data-poster-url="/assets/luxveritas-signal-poster.svg" data-reporting-key="lux_radio_stream" data-fallback-form-type="fan" role="listitem">
+        </button><button class="media-item" type="button" data-media-item data-media-id="lux-radio" data-kind="radio" data-title="Lux Radio" data-status="Listen to the Lux Radio preview loop. Full programming is not yet available." data-action="radio" data-access="waitlist" data-source-status="ready" data-source-required="true" data-source-type="stream" data-source-url="https://luxveritas.media/assets/luxveritas-radio-preview.wav" data-poster-url="/assets/luxveritas-signal-poster.svg" data-reporting-key="lux_radio_stream" data-fallback-form-type="fan" role="listitem">
           <span>Radio</span><strong>Lux Radio</strong><small>Coming signal</small>
         </button>
       </div>
@@ -148,7 +148,7 @@ Every release is intentional, protected, and built to last.</p>
         </article>
     </div>
   </section>
-    <section id="lux-radio" class="section" data-radio-programming data-radio-programming-version="2026-06-30-radio-readiness">
+    <section id="lux-radio" class="section" data-radio-programming data-radio-programming-version="2026-10-30-radio-preview-copy">
     <div class="section-heading">
       <p class="kicker">Lux Radio</p>
       <h2>Lux Radio begins as a signal room.</h2>
@@ -191,13 +191,13 @@ Every release is intentional, protected, and built to last.</p>
         </article><article data-radio-slot="visual-notes">
           <span>Next</span>
           <h3>Visual Notes</h3>
-          <p>A holding lane for director notes, visual-world cues, and story fragments released only when the chapter is ready.</p>
+          <p>Selected director notes, visual details, and story fragments. Join to hear when new chapters open.</p>
           <small>Access opens by request</small>
           <button class="button button-quiet" type="button" data-open-form="fan" data-track-surface="radio_programming" data-track-intent="radio_visual-notes" data-track-label="Visual Notes">Join for radio access</button>
         </article><article data-radio-slot="room-afterglow">
           <span>Later</span>
           <h3>Room Afterglow</h3>
-          <p>A future path for listening-room recaps, salon fragments, and member-only follow-up after selected gatherings.</p>
+          <p>Highlights and reflections from selected gatherings, shared when each room is ready to open.</p>
           <small>Members first</small>
           <button class="button button-quiet" type="button" data-open-form="fan" data-track-surface="radio_programming" data-track-intent="radio_room-afterglow" data-track-label="Room Afterglow">Join the circle</button>
         </article>
@@ -328,6 +328,6 @@ Every release is intentional, protected, and built to last.</p>
     <button class="button button-primary" type="submit" data-submit-form data-default-label="Send to Lux Veritas">Send to Lux Veritas</button>
   </form>
 </dialog>
-    <script src="../app.js?v=20260717-public-release-r7"></script>
+    <script src="../app.js?v=20261030-player-copy-preview-r1"></script>
   </body>
 </html>

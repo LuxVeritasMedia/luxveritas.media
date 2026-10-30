@@ -861,7 +861,7 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
 }
 .media-progress span {
   display: block;
-  width: 18%;
+  width: 0;
   height: 100%;
   background: var(--gold);
   transition: width .35s ease;
@@ -882,6 +882,11 @@ p { color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.14rem); }
 .media-source-shell video {
   aspect-ratio: 16 / 9;
   background: #020403;
+}
+.media-source-shell[hidden],
+.media-source-shell audio[hidden],
+.media-source-shell video[hidden] {
+  display: none;
 }
 .media-followup {
   margin-top: 1rem;
